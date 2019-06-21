@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,6 +14,7 @@ import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 import teal from '@material-ui/core/colors/teal';
 
@@ -20,6 +22,7 @@ const useStyles = makeStyles((theme) =>({
   card: {
     maxWidth: 345,
     margin: '32px auto',
+    borderRadius: 0
   },
   learnMore: {
     color: teal[500],
@@ -28,9 +31,13 @@ const useStyles = makeStyles((theme) =>({
       backgroundColor: teal[100],
     },
   },
+  cardMedia: {
+    maxHeight: 200
+  },
   cardMobile: {
     maxWidth: 345,
     margin: '5% auto',
+    borderRadius: 0
   },
   cardMobileDetails: {
     display: 'flex',
@@ -48,7 +55,7 @@ const useStyles = makeStyles((theme) =>({
     maxWidth: 345,
   },
   cardMobileMedia: {
-    height: 280
+    maxHeight: 180
   },
   cardMobileAction: {
     display: 'flex',
@@ -60,44 +67,57 @@ const useStyles = makeStyles((theme) =>({
       duration: theme.transitions.duration.shortest,
     }),
   },
+  locationIcon: {
+    fontSize: 24,
+    color: teal[600],
+    '&:hover': {
+      color: teal[800],
+    },
+  }
 }));
 
-export default function MatchCard() {
+export default function MatchCard(props) {
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false)
-  const matchPicture = null
+  const matchPicture = 'null'
 
   function expandHandler(){
     setExpanded(!expanded)
   }
-
   const renderCard = (
     <Card className={classes.card}>
-      <CardActionArea>
-        <CardHeader
-          title="Match Title"
-          subheader="01/01/2000"
-        />
+      <div style={{ padding: 8, paddingBottom: 0, paddingLeft: 16 }}>
+        <Typography component="div">
+          <Box fontWeight={600} fontSize="h6.fontSize" m={1}>
+            Match {props.index}
+          </Box>
+          <Box style={{ fontStyle: 'oblique' }} fontFamily="Monospace" m={1}>
+            01/01/2000
+          </Box>
+        </Typography>
+      </div>
       { matchPicture?
         <CardMedia
+          className={classes.cardMedia}
           component="img"
           alt="Match Picture"
-          height="140"
           src={"https://i.ytimg.com/vi/ZbofJucjkSU/maxresdefault.jpg"}
           title="Match Picture"
         />:
         <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
       }
-        <CardContent>
-          <Typography gutterBottom variant="body1" component="p">
+      <CardContent>
+        <Typography gutterBottom component="div" style={{ display: 'flex' }}>
+          <LocationOnIcon className={classes.locationIcon}/>
+          <Box style={{ flex: 1, marginLeft: 8, marginTop: 4 }}>
             Location
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Match detail ==> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+          </Box>
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          Match detail ==> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+        </Typography>
+      </CardContent>
       <CardActions style={{ float: 'right'}}>
         <Button size="small"
           classes={{
@@ -116,15 +136,17 @@ export default function MatchCard() {
           className={classes.cardMobileMedia}
           component="img"
           alt="Match Picture"
-          height="140"
           src={"https://i.ytimg.com/vi/ZbofJucjkSU/maxresdefault.jpg"}
           title="Match Picture"
         />:
         <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
       }
         <CardContent className={classes.cardMobileContent}>
-          <Typography className={classes.cardMobileTitle} gutterBottom variant="h6" component="h6">
-            Matchaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          <Typography
+            className={classes.cardMobileTitle} component="div">
+            <Box fontWeight={600} fontSize="h6.fontSize">
+              Match {props.index}
+            </Box>
           </Typography>
         </CardContent>
       <CardActions>
@@ -145,15 +167,34 @@ export default function MatchCard() {
           <ExpandMoreIcon />
         </IconButton>
       </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent style={{ paddingTop: 0 }}>
+          <Typography component="div">
+            <Box style={{ fontStyle: 'oblique', paddingBottom: 8 }} fontFamily="Monospace">
+              01/01/2000
+            </Box>
+          </Typography>
+          <Typography gutterBottom component="div" style={{ display: 'flex' }}>
+            <LocationOnIcon className={classes.locationIcon}/>
+            <Box style={{ flex: 1, marginLeft: 8, marginTop: 4 }}>
+              Location
+            </Box>
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Match detail ==> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+          </Typography>
+        </CardContent>
+      </Collapse>
     </Card>
   );
 
   const [ isMobile, setIsMobile ] = React.useState(
-    window.innerWidth >= 600? false:true
+    window.innerWidth >= 500? false:true
   )
   function resizeHandler(){
     let wd = window.innerWidth
-    if( wd >= 600 ){
+    if( wd >= 500 ){
       setIsMobile(false)
     }
     else {

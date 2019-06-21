@@ -20,8 +20,58 @@ async function fetchPost({ url, obj }){
     if(typeof(obj) !== 'object'){ console.error('obj is required object'); }
   }
 }
+function xhrGet(func){
+  /*--------------------USEAGE--------------------
+  const [ csrfToken, setCSRFToken ] = React.useState(null)
+  .
+  .
+  .
+  API.xhrGet(function(csrf){
+    setCSRFToken(csrf)  // set New token
+  })
+
+  --------------------------------------------------*/
+  var req = new XMLHttpRequest();
+  req.open('GET', 'https://thai-pga.com', false);
+  req.send(null);
+  func(req.getResponseHeader('csrf-token'))
+}
+function xhrPost(token, func){
+  /*--------------------USEAGE--------------------
+  const [ csrfToken, setCSRFToken ] = React.useState(null)
+  const [ dataSomeThing, setSomeThing ] = React.useState(null)
+  .
+  .
+  .
+  API.xhrPost( TOKEN, function(csrf, d){
+    setCSRFToken(csrf)  // set New token
+    setSomeThing(d)     // set data from response
+  })
+
+  --------------------------------------------------*/
+  var req = new XMLHttpRequest();
+  req.open("POST", 'https://thai-pga.com/users/login', true);
+  req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+  req.setRequestHeader("Cache-Control", "no-cache")
+  req.onreadystatechange = function() {
+    if (req.readyState !== 4) return;
+    if (req.status >= 200 && req.status < 300) {
+      console.log("JSON: ",JSON.parse(req.responseText));
+      func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
+    }else{
+      console.log('Invalid Token !!!');
+    }
+  }
+  req.send(JSON.stringify({
+    username: 'sp2@pds.com',
+    password: '1234',
+    _csrf: token
+  }));
+}
 
 export {
   fetchUrl,
-  fetchPost
+  fetchPost,
+  xhrGet,
+  xhrPost
 }

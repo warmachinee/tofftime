@@ -2,7 +2,10 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import * as API from './api'
 import { LDTopnav } from './components/loading/LDTopnav';
-import { LDMatchCard } from './components/loading/LDMatchCard';
+import { LDMatchList } from './components/loading/LDMatchList';
+import AnnouncementNewsGrid from './components/AnnouncementNewsGrid';
+
+import blueGrey from '@material-ui/core/colors/blueGrey';
 
 const Header = Loadable({
   loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
@@ -13,27 +16,16 @@ const Header = Loadable({
 
 const MatchList = Loadable({
   loader: () => import(/* webpackChunkName: "MatchList" */'./components/Match/MatchList'),
-  loading: () => <LDMatchCard />
-});
-
-const Slider = Loadable({
-  loader: () => import(/* webpackChunkName: "Slider" */'./components/Slider'),
-  loading: () => null
-});
-
-const News = Loadable({
-  loader: () => import(/* webpackChunkName: "News" */'./components/News'),
-  loading: () => null
+  loading: () => <LDMatchList />
 });
 
 function App() {
 
   return (
-    <div>
+    <div style={{ backgroundColor: blueGrey[50] }}>
       <Header />
       <div>
-        {/*<News />
-        <Slider />*/}
+        <AnnouncementNewsGrid />
         <MatchList />
       </div>
     </div>
