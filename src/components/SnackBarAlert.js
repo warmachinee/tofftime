@@ -13,6 +13,7 @@ import green from '@material-ui/core/colors/green';
 const useStyles = makeStyles(theme => ({
   close: {
     padding: 8,
+    marginRight: 8,
   },
   success: {
     backgroundColor: green[600],
@@ -20,10 +21,14 @@ const useStyles = makeStyles(theme => ({
   error: {
     backgroundColor: theme.palette.error.dark,
   },
-  icon: {
+  closeIcon: {
     fontSize: 20,
     opacity: 0.9,
+  },
+  icon: {
     marginRight: 8,
+    fontSize: 20,
+    opacity: 0.9,
   },
   message: {
     display: 'flex',
@@ -31,20 +36,18 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function SnackBarAlert(props) {
+export default function SnackBarAlert(props) {
   const classes = useStyles();
   const { open, onClose, autoHideDuration, message, variant } = props;
-  
+
   const VariantIcon = {
     success: <CheckCircleIcon className={classes.icon} />,
     error: <ErrorIcon className={classes.icon} />,
   };
   return (
     <Snackbar
-      anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
+      key={message}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         open={open}
         autoHideDuration={autoHideDuration}
         onClose={onClose}
@@ -59,16 +62,15 @@ function SnackBarAlert(props) {
         }
         action={[
           <IconButton
+            key="close"
             color="inherit"
             className={classes.close}
             onClick={onClose}
           >
-            <CloseIcon className={classes.icon} />
+            <CloseIcon className={classes.closeIcon} />
           </IconButton>,
         ]}
       />
     </Snackbar>
   );
 }
-
-export default SnackBarAlert;

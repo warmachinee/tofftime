@@ -4,8 +4,6 @@ import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import * as API from './api'
 
 import TestSocket from './TestSocket'
-import SnackBarAlert from './components/SnackBarAlert'
-import Dialog from './components/Dialog'
 import { LDTopnav } from './components/loading/LDTopnav';
 
 import blueGrey from '@material-ui/core/colors/blueGrey';
@@ -61,6 +59,16 @@ const NoMatch = Loadable({
   loading: () => null
 });
 
+const Dialog = Loadable({
+  loader: () => import(/* webpackChunkName: "Dialog" */'./components/Account/Dialog'),
+  loading: () => null
+});
+
+const SnackBarAlert = Loadable({
+  loader: () => import(/* webpackChunkName: "SnackBarAlert" */'./components/SnackBarAlert'),
+  loading: () => null
+});
+
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
   const [ snackBar, setSnackBar ] = React.useState({
@@ -88,17 +96,6 @@ function App() {
   return (
     <div style={{ backgroundColor: blueGrey[50], minHeight: window.innerHeight }}>
       <Header handleOpen={handleOpen}/>
-      <button onClick={handleOpen}>Modal</button>
-      <button onClick={()=>setSnackBar({
-        state: true,
-        message: 'Please use admin account',
-        variant: 'error'
-      })}>error</button>
-      <button onClick={()=>setSnackBar({
-        state: true,
-        message: 'Success',
-        variant: 'success'
-      })}>success</button>
     {/*
       <TestSocket /><MatchDetail />
       <Link to="/">Home</Link>
@@ -110,7 +107,9 @@ function App() {
         <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}/>
         <Route component={NoMatch} />
       </Switch>
-      <Dialog open={!open} handleClose={handleClose} />
+      <Dialog open={!open} handleClose={handleClose}
+        token={csrfToken} setCSRFToken={setCSRFToken}
+        handleSnack={setSnackBar}/>
       <SnackBarAlert
         variant={snackBar.variant}
         autoHideDuration={2000}

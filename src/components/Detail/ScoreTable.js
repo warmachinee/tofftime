@@ -132,7 +132,7 @@ function ScoreRow(props){
       </ListItem>
       {!expanded && <Divider />}
       <Collapse in={expanded} unmountOnExit>
-        <div style={{ overflow: 'auto', padding: '16px 0 36px 0' }}>
+        <div style={{ overflow: 'auto', padding: '16px 0 36px 0', overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch', }}>
           <ListItem style={{ padding: 0 }}>
             <div style={{ display: 'flex', margin: 'auto' }}>
               <div style={{ backgroundColor: 'black', color: 'white',

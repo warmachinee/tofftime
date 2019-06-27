@@ -50,12 +50,12 @@ const useStyles = makeStyles((theme) =>({
     padding: '8px 16px'
   },
   cardMobileTitle: {
-    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-    width: '70vw',
+    width: '100%',
     maxWidth: 345,
   },
   cardMobileMedia: {
-    maxHeight: 180
+    maxHeight: 180,
+    minHeight: 140
   },
   cardMobileAction: {
     display: 'flex',
@@ -87,7 +87,7 @@ export default function MatchCard(props) {
   }
   const renderCard = (
     <Card className={classes.card}>
-      <div style={{ padding: 8, paddingBottom: 0, paddingLeft: 16 }}>
+      <div style={{ padding: 8, paddingBottom: 0, paddingLeft: 16, height: 150 }}>
         <Typography component="div">
           <Box fontWeight={600} fontSize="h6.fontSize" m={1}>
             {data.title}
@@ -146,7 +146,7 @@ export default function MatchCard(props) {
         <CardContent className={classes.cardMobileContent}>
           <Typography
             className={classes.cardMobileTitle} component="div">
-            <Box fontWeight={600} fontSize="h6.fontSize">
+            <Box fontWeight={600} fontSize="h6.fontSize" style={{ overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', }}>
               {data.title}
             </Box>
           </Typography>

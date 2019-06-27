@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from "react-router-dom";
 import { fade, makeStyles } from '@material-ui/core/styles';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -161,13 +162,15 @@ function Header(props) {
             colorDefault: classes.appBar,
           }}>
           <Toolbar className={classes.toolbar}>
-            <IconButton
-              edge="start"
-              className={classes.logo}
-              color="inherit"
-            >
-              <img src={ic_logo} className={classes.logoImg}/>
-            </IconButton>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <IconButton
+                edge="start"
+                className={classes.logo}
+                color="inherit"
+              >
+                <img src={ic_logo} className={classes.logoImg}/>
+              </IconButton>
+            </Link>
             <Typography className={classes.title} variant="h6" noWrap>T-off Time</Typography>
             <div className={classes.search}>
               <div className={classes.searchIcon}>
@@ -213,7 +216,7 @@ function Header(props) {
             }
             { !auth &&
               <Button className={classes.loginBtn} color="inherit"
-                onClick={props.handleOpen}>Login</Button> 
+                onClick={props.handleOpen}>Login</Button>
             }
           </Toolbar>
         </AppBar>

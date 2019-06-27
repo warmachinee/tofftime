@@ -3,50 +3,22 @@ import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles
 import { ThemeProvider } from '@material-ui/styles';
 
 import Typography from '@material-ui/core/Typography';
-import Modal from '@material-ui/core/Modal';
-import Portal from '@material-ui/core/Portal';
-import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 
-import CloseIcon from '@material-ui/icons/Close';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
 
-import ic_facebook from './img/facebook.png'
-import ic_facebook_16 from './img/facebook16px.png'
-import ic_google from './img/google.png'
-import ic_google_16 from './img/google16px.png'
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-function rand() {
-  return Math.round(Math.random() * 20) - 10;
-}
-
-function getModalStyle() {
-  const top = 50
-  const left = 50
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-  };
-}
+import ic_facebook from '../img/facebook.png'
+import ic_facebook_16 from '../img/facebook16px.png'
+import ic_google from '../img/google.png'
+import ic_google_16 from '../img/google16px.png'
 
 const useStyles = makeStyles(theme => ({
-  paper: {
-    position: 'absolute',
-    width: '100%',
-    maxWidth: 450,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(4),
-    outline: 'none',
-  },
   margin: {
     width: '100%',
     margin: 4,
@@ -61,9 +33,6 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: 8,
     right: 8
-  },
-  closeIcon: {
-    fontSize: '2rem',
   },
   title: {
     textAlign: 'center', color: teal[900],
@@ -85,6 +54,9 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up(500)]: {
       padding: 16,
     },
+  },
+  textButton: {
+    color: teal[900]
   },
   loginWith: {
     position: 'absolute',
@@ -128,12 +100,12 @@ const theme = createMuiTheme({
   },
 });
 
-export default function Dialog(props) {
+
+export default function SignInComponent(props){
   const classes = useStyles();
-  const [ modalStyle ] = React.useState(getModalStyle);
-  const { open, handleClose } = props
-  const container = React.useRef(null);
-  const SignIn = (
+  const { setUsername, setPassword, handleSignIn, response } = props
+  const status = response?response.status:null
+  return(
     <div>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
@@ -148,21 +120,28 @@ export default function Dialog(props) {
       <div>
         <ThemeProvider theme={theme}>
           <TextField
+            error={status === 'wrong email'}
             className={classes.margin}
             label="Username or Email"
+            helperText={status === 'wrong email'?status:null}
             variant="outlined"
             type="email"
             autoComplete="email"
+            onChange={(e)=>setUsername(e.target.value)}
           />
           <TextField
+            error={status === 'wrong password'}
             className={classes.margin}
             label="Password"
+            helperText={status === 'wrong password'?status:null}
             variant="outlined"
             type="password"
             autoComplete="current-password"
+            onChange={(e)=>setPassword(e.target.value)}
           />
         </ThemeProvider>
-        <SignInButton variant="contained" color="primary" className={classes.button}>
+        <SignInButton variant="contained" color="primary" className={classes.button}
+          onClick={handleSignIn}>
           Sign in
         </SignInButton>
         <div style={{ position: 'relative' }}>
@@ -179,26 +158,16 @@ export default function Dialog(props) {
           <img src={ (window.innerWidth >= 500)?ic_google:ic_google_16} className={classes.loginWith}/>
           Log in with Google
         </Google>
+        <div style={{ display: 'flex' }}>
+          <Button color="primary" className={classes.textButton}>
+            Join us?
+          </Button>
+          <div style={{ flexGrow: 1 }}></div>
+          <Button color="primary" className={classes.textButton}>
+            Forgot?
+          </Button>
+        </div>
       </div>
-    </div>
-  )
-
-  return (
-    <div>
-      <Portal container={container.current}>
-        <Modal
-          open={open}
-          onClose={handleClose}
-        >
-          <div style={modalStyle} className={classes.paper}>
-            <IconButton className={classes.close} onClick={handleClose}>
-              <CloseIcon classes={{ root: classes.closeIcon }}/>
-            </IconButton>
-            {SignIn}
-          </div>
-        </Modal>
-      </Portal>
-      <div ref={container} />
     </div>
   );
 }
