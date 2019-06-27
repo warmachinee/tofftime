@@ -2,6 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import SwipeableViews from 'react-swipeable-views';
+import * as API from '../../api'
 
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
@@ -60,14 +61,31 @@ const useStyles = makeStyles({
   },
 });
 
-function MatchList() {
+function MatchList(props){
+  const [ csrfToken, setCSRFToken ] = React.useState(null)
+  const [ data, setData ] = React.useState(null)
+  async function handleFetch(){
+    await API.xhrPost( props.token, 'loadmatchsystem', {
+      action: 'matchlist'
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+      setData(d)
+    })
+  }
+  React.useEffect(()=>{
+    handleFetch()
+  },[ ])
+  return <MatchListBody data={data?data:[]}/>
+}
+
+function MatchListBody(props) {
   const classes = useStyles();
   const [ gridRes, setGridRes ] = React.useState(
     window.innerWidth >= 1080? { width: '33.333333%', indicator: 3 }:
     window.innerWidth >= 850? { width: '50%', indicator: 2 }:{ width: '100%', indicator: 1 }
   );
   const [ sliderIndex, setSliderIndex ] = React.useState(0)
-  const data = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+  const data = props.data
 
   function nextHandler(){
     if( (sliderIndex + 1) * gridRes.indicator < data.length ){
@@ -102,7 +120,6 @@ function MatchList() {
       window.removeEventListener('resize',resizeHandler)
     }
   },[ window.innerWidth ])
-
   return (
     <div className={classes.root}>
       <Typography classes={{ root: classes.title }} variant="h4">
@@ -114,7 +131,7 @@ function MatchList() {
            slideStyle={{ padding: '0 10px', width: gridRes.width }}
           >
           {data.map( d =>
-            <MatchCard key={d} index={d}/>
+            <MatchCard key={d.matchid} data={d}/>
           )}
         </SwipeableViews>
       </div>

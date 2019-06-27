@@ -108,7 +108,9 @@ function Slider() {
 
   return (
     <div className={classes.root}>
-      <AutoPlaySwipeableViews enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
+      <AutoPlaySwipeableViews
+        interval={10000}
+        enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
       {matchPicture?
         data.map( d=>
           <img src="https://i.ytimg.com/vi/ZbofJucjkSU/maxresdefault.jpg" className={classes.slide} key={d} />
@@ -116,7 +118,6 @@ function Slider() {
       :
         data.map( d=>
           <div className={classes.slide} key={d}>Match {d}</div>
-
         )
       }
       </AutoPlaySwipeableViews>

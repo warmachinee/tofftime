@@ -211,7 +211,10 @@ function Header(props) {
                 </div>
               </React.Fragment>
             }
-            { !auth && <Button className={classes.loginBtn} color="inherit">Login</Button> }
+            { !auth &&
+              <Button className={classes.loginBtn} color="inherit"
+                onClick={props.handleOpen}>Login</Button> 
+            }
           </Toolbar>
         </AppBar>
       </HideOnScroll>
@@ -228,6 +231,7 @@ function Header(props) {
           <MenuItem onClick={menuCloseHandler}>Menu3</MenuItem>
         </Menu>
       </Portal>
+      <div ref={container} />
     </React.Fragment>
   );
 }

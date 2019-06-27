@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { Link } from "react-router-dom";
 
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -32,7 +33,8 @@ const useStyles = makeStyles((theme) =>({
     },
   },
   cardMedia: {
-    maxHeight: 200
+    maxHeight: 200,
+    minHeight: 140
   },
   cardMobile: {
     maxWidth: 345,
@@ -48,9 +50,7 @@ const useStyles = makeStyles((theme) =>({
     padding: '8px 16px'
   },
   cardMobileTitle: {
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
     width: '70vw',
     maxWidth: 345,
   },
@@ -79,7 +79,8 @@ const useStyles = makeStyles((theme) =>({
 export default function MatchCard(props) {
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false)
-  const matchPicture = 'null'
+  const { data } = props
+  const matchPicture = data.picture?('https://thai-pga.com' + data.picture):null
 
   function expandHandler(){
     setExpanded(!expanded)
@@ -89,19 +90,19 @@ export default function MatchCard(props) {
       <div style={{ padding: 8, paddingBottom: 0, paddingLeft: 16 }}>
         <Typography component="div">
           <Box fontWeight={600} fontSize="h6.fontSize" m={1}>
-            Match {props.index}
+            {data.title}
           </Box>
           <Box style={{ fontStyle: 'oblique' }} fontFamily="Monospace" m={1}>
-            01/01/2000
+            {data.date}
           </Box>
         </Typography>
       </div>
-      { matchPicture?
+      { matchPicture ?
         <CardMedia
           className={classes.cardMedia}
           component="img"
           alt="Match Picture"
-          src={"https://i.ytimg.com/vi/ZbofJucjkSU/maxresdefault.jpg"}
+          src={matchPicture}
           title="Match Picture"
         />:
         <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
@@ -109,35 +110,36 @@ export default function MatchCard(props) {
       <CardContent>
         <Typography gutterBottom component="div" style={{ display: 'flex' }}>
           <LocationOnIcon className={classes.locationIcon}/>
-          <Box style={{ flex: 1, marginLeft: 8, marginTop: 4 }}>
-            Location
+          <Box style={{ flex: 1, marginLeft: 8, marginTop: 4, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', }}>
+            {data.location}
           </Box>
         </Typography>
         <Typography variant="body2" color="textSecondary" component="p">
-          Match detail ==> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-          Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+          {data.detail}
         </Typography>
       </CardContent>
       <CardActions style={{ float: 'right'}}>
-        <Button size="small"
-          classes={{
-            root: classes.learnMore,
-          }}
-          >
-          Learn More
-        </Button>
+        <Link to={`/match/${data.matchid}`} style={{ textDecoration: 'none'}}>
+          <Button size="small"
+            classes={{
+              root: classes.learnMore,
+            }}
+            >
+            Learn More
+          </Button>
+        </Link>
       </CardActions>
     </Card>
   );
   const renderMobileCard = (
     <Card className={classes.cardMobile}>
-      { matchPicture?
+      { matchPicture ?
         <CardMedia
           className={classes.cardMobileMedia}
           component="img"
-          alt="Match Picture"
-          src={"https://i.ytimg.com/vi/ZbofJucjkSU/maxresdefault.jpg"}
-          title="Match Picture"
+          alt={data.title}
+          src={matchPicture}
+          title={data.title}
         />:
         <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
       }
@@ -145,18 +147,20 @@ export default function MatchCard(props) {
           <Typography
             className={classes.cardMobileTitle} component="div">
             <Box fontWeight={600} fontSize="h6.fontSize">
-              Match {props.index}
+              {data.title}
             </Box>
           </Typography>
         </CardContent>
       <CardActions>
-        <Button size="small"
-          classes={{
-            root: classes.learnMore,
-          }}
-          >
-          Learn More
-        </Button>
+        <Link to={`/match/${data.matchid}`} style={{ textDecoration: 'none'}}>
+          <Button size="small"
+            classes={{
+              root: classes.learnMore,
+            }}
+            >
+            Learn More
+          </Button>
+        </Link>
         <IconButton
           className={classes.expandIcon}
           style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
@@ -171,18 +175,17 @@ export default function MatchCard(props) {
         <CardContent style={{ paddingTop: 0 }}>
           <Typography component="div">
             <Box style={{ fontStyle: 'oblique', paddingBottom: 8 }} fontFamily="Monospace">
-              01/01/2000
+              {data.date}
             </Box>
           </Typography>
           <Typography gutterBottom component="div" style={{ display: 'flex' }}>
             <LocationOnIcon className={classes.locationIcon}/>
-            <Box style={{ flex: 1, marginLeft: 8, marginTop: 4 }}>
-              Location
+            <Box style={{ flex: 1, marginLeft: 8, marginTop: 4, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', }}>
+              {data.location}
             </Box>
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            Match detail ==> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+            {data.detail}
           </Typography>
         </CardContent>
       </Collapse>

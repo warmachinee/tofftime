@@ -1,0 +1,21 @@
+{
+  "logger": {
+    "title": "Remote Sync"
+  },
+  "transport": "scp",
+  "hostname": "pds.in.th",
+  "port": "22",
+  "username": "caviz",
+  "keyfile": "./golfdevnginx.pem",
+  "target": "/home/caviz/notebook/test/frontend/",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "watch": [
+    "/dist"
+  ],
+  "uploadOnSave": true,
+  "useAtomicWrites": false,
+  "deleteLocal": false
+}

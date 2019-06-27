@@ -1,5 +1,9 @@
 const urlLink = {
-  jsonPlaceholder: 'https://jsonplaceholder.typicode.com/todos/1'
+  jsonPlaceholder: 'https://jsonplaceholder.typicode.com/todos/1',
+  main: 'https://thai-pga.com',
+  loadmatchsystem: 'https://thai-pga.com/main/loadmatchsystem',
+  login: 'https://thai-pga.com/users/login',
+
 }
 async function fetchUrl(url){
   if(typeof(url) !== 'string'){ console.error('url is required string'); }
@@ -20,53 +24,41 @@ async function fetchPost({ url, obj }){
     if(typeof(obj) !== 'object'){ console.error('obj is required object'); }
   }
 }
-function xhrGet(func){
-  /*--------------------USEAGE--------------------
-  const [ csrfToken, setCSRFToken ] = React.useState(null)
-  .
-  .
-  .
-  API.xhrGet(function(csrf){
-    setCSRFToken(csrf)  // set New token
-  })
-
-  --------------------------------------------------*/
+async function xhrGet(url){
   var req = new XMLHttpRequest();
-  req.open('GET', 'https://thai-pga.com', false);
+  req.open('GET', urlLink[url], false);
   req.send(null);
-  func(req.getResponseHeader('csrf-token'))
+  return req.getResponseHeader('csrf-token')
 }
-function xhrPost(token, func){
+async function xhrPost(token, url, obj, func){
   /*--------------------USEAGE--------------------
   const [ csrfToken, setCSRFToken ] = React.useState(null)
   const [ dataSomeThing, setSomeThing ] = React.useState(null)
   .
   .
   .
-  API.xhrPost( TOKEN, function(csrf, d){
+  API.xhrPost( TOKEN, 'url', obj, function(csrf, d){
     setCSRFToken(csrf)  // set New token
     setSomeThing(d)     // set data from response
   })
 
   --------------------------------------------------*/
   var req = new XMLHttpRequest();
-  req.open("POST", 'https://thai-pga.com/users/login', true);
+  req.open("POST", urlLink[url], true);
   req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
   req.setRequestHeader("Cache-Control", "no-cache")
   req.onreadystatechange = function() {
     if (req.readyState !== 4) return;
     if (req.status >= 200 && req.status < 300) {
-      console.log("JSON: ",JSON.parse(req.responseText));
       func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
     }else{
-      console.log('Invalid Token !!!');
+      console.log('Invalid !!!');
     }
   }
-  req.send(JSON.stringify({
-    username: 'sp2@pds.com',
-    password: '1234',
+  const returnedObj = Object.assign({
     _csrf: token
-  }));
+  }, obj)
+  req.send(JSON.stringify(returnedObj));
 }
 
 export {

@@ -60,8 +60,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './templateHTML.html',
-      meta: { charset: 'utf-8',viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no' },
-        favicon: './public/favicon.ico'
+      meta: {
+        charset: 'utf-8',
+        viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
+      },
+      favicon: './public/favicon.ico'
     })
   ]
 };

@@ -41,10 +41,10 @@ export default function FolderList() {
   return (
     <List className={classes.root}>
       {[0,1,2,3,4].map( d=>
-        <React.Fragment key={d}>
+        <div key={d}>
           <NewsListItem />
           <Divider />
-        </React.Fragment>
+        </div>
       )}
     </List>
   );
