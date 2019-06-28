@@ -1,9 +1,14 @@
 const urlLink = {
-  jsonPlaceholder: 'https://jsonplaceholder.typicode.com/todos/1',
+  //--------------------Main Page--------------------
   main: 'https://thai-pga.com',
   loadmatchsystem: 'https://thai-pga.com/main/loadmatchsystem',
+  //--------------------Account--------------------
   login: 'https://thai-pga.com/users/login',
-
+  facebooklogin: 'https://thai-pga.com/session/auth/facebook',
+  googlelogin: 'https://thai-pga.com/session/auth/google',
+  register: 'https://thai-pga.com/users/register',
+  //--------------------Dashboard--------------------
+  adminloadmatch: 'https://thai-pga.com/admin/loadmatch'
 }
 async function fetchUrl(url){
   if(typeof(url) !== 'string'){ console.error('url is required string'); }

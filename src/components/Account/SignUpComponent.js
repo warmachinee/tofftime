@@ -13,6 +13,8 @@ import Divider from '@material-ui/core/Divider';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
@@ -32,6 +34,12 @@ const useStyles = makeStyles(theme => ({
       margin: theme.spacing(1),
     },
   },
+  space: {
+    width: 8,
+    [theme.breakpoints.up(500)]: {
+      width: theme.spacing(2),
+    },
+  },
   divider: {
     margin: "24px 0",
   },
@@ -44,6 +52,7 @@ const useStyles = makeStyles(theme => ({
   },
   accountCircle: {
     fontSize: '5rem',
+    color: teal[900],
     [theme.breakpoints.up(500)]: {
       fontSize: '10rem',
     },
@@ -65,7 +74,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SignInButton = withStyles(theme => ({
+const SignUpButton = withStyles(theme => ({
   root: {
     color: theme.palette.getContrastText(teal[500]),
     backgroundColor: teal[700],
@@ -74,12 +83,6 @@ const SignInButton = withStyles(theme => ({
     },
   },
 }))(Button);
-
-const datePicker = createMuiTheme({
-  palette: {
-    primary: teal,
-  },
-});
 
 const theme = createMuiTheme({
   palette: {
@@ -104,25 +107,42 @@ function TextMaskCustom(props) {
 
 export default function SignUpComponent(props){
   const classes = useStyles();
-  const { setUsername, setPassword, handleSignIn } = props
-  const [ selectedDate, setSelectedDate ] = React.useState(new Date());
+  const { handleSignUp } = props
+  const [ username, setUsername ] = React.useState('')
+  const [ password, setPassword ] = React.useState('')
   const [ phoneNumber, setPhoneNumber ] = React.useState('');
-  const [ labelWidth, setLabelWidth ] = React.useState(0);
-  const labelRef = React.useRef(null);
+  const [ fullname, setFullName ] = React.useState('')
+  const [ lastname, setLastName ] = React.useState('')
+  const [ gender, setGender ] = React.useState('')
+  const [ selectedDate, setSelectedDate ] = React.useState(new Date());
+
+  const [ phoneWidth, setPhoneWidth ] = React.useState(0);
+  const [ genderWidth, setGenderWidth ] = React.useState(0);
+
+  const phoneRef = React.useRef(null);
+  const genderRef = React.useRef(null);
 
   function handlePhoneNumber(num){
     setPhoneNumber( num.substring(1,4) + num.substring(6,9) + num.substring(12,16) )
   }
   function handleDateChange(d){
-    const day = (d.getDate() > 9) ? d.getDate():'0' + d.getDate()
-    const month = (d.getMonth() + 1 > 9) ? d.getMonth() + 1:'0' + ( d.getMonth() + 1 )
-    const dateStr = day + '/' + month + '/' + d.getFullYear()
-    console.log(dateStr);
+    //console.log(handleConvertDate(d));
     setSelectedDate(d)
+  }
+  function handleConvertDate(d){
+    const day = (selectedDate.getDate() > 9) ? selectedDate.getDate():'0' + selectedDate.getDate()
+    const month = (selectedDate.getMonth() + 1 > 9) ? selectedDate.getMonth() + 1:'0' + ( selectedDate.getMonth() + 1 )
+    const dateStr = selectedDate.getFullYear() + '-' + month + '-' + day
+    //const dateSp = dateStr.split('/')
+    //const dateConvert = dateSp[1] + '/' + dateSp[0] + '/' + dateSp[2]
+
+    //setSelectedDate(new Date(dateConvert))
+    return dateStr
   }
 
   React.useEffect(()=>{
-    setLabelWidth(labelRef.current.offsetWidth);
+    setPhoneWidth(phoneRef.current.offsetWidth);
+    setGenderWidth(genderRef.current.offsetWidth);
   },[ ])
 
   return(
@@ -142,15 +162,9 @@ export default function SignUpComponent(props){
           <TextField
             required
             className={classes.margin}
-            label="Email"
-            variant="outlined"
-          />
-          <TextField
-            required
-            className={classes.margin}
             label="Username"
             variant="outlined"
-            type="email"
+            onChange={e => setUsername(e.target.value)}
           />
           <TextField
             required
@@ -158,20 +172,47 @@ export default function SignUpComponent(props){
             label="Password"
             variant="outlined"
             type="password"
+            onChange={e => setPassword(e.target.value)}
           />
-          <FormControl className={classes.margin} variant="outlined">
-            <InputLabel ref={labelRef} htmlFor="component-outlined">
-              Phone number
-            </InputLabel>
-            <OutlinedInput
-              labelWidth={labelWidth}
-              inputComponent={TextMaskCustom}
-              onChange={e =>handlePhoneNumber(e.target.value)}
-            />
-          </FormControl>
-        </ThemeProvider>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <ThemeProvider theme={datePicker}>
+          <TextField
+            required
+            className={classes.margin}
+            label="First name"
+            variant="outlined"
+            onChange={e => setFullName(e.target.value)}
+          />
+          <TextField
+            required
+            className={classes.margin}
+            label="Last name"
+            variant="outlined"
+            onChange={e => setLastName(e.target.value)}
+          />
+          <div style={{ display: 'flex' }} className={classes.margin}>
+            <FormControl style={{ width: '40%' }} variant="outlined">
+              <InputLabel ref={genderRef} htmlFor="age-customized-select">Gender</InputLabel>
+              <Select
+                value={gender}
+                onChange={e =>setGender(e.target.value)}
+                input={<OutlinedInput labelWidth={genderWidth}/>}
+              >
+                <MenuItem value='male'>Male</MenuItem>
+                <MenuItem value='female'>Female</MenuItem>
+              </Select>
+            </FormControl>
+            <div className={classes.space}></div>
+            <FormControl style={{ width: '60%' }} variant="outlined">
+              <InputLabel ref={phoneRef} htmlFor="component-outlined">
+                { ( window.innerWidth >= 500 )? "Phone number" : "Phone" }
+              </InputLabel>
+              <OutlinedInput
+                labelWidth={phoneWidth}
+                inputComponent={TextMaskCustom}
+                onChange={e =>handlePhoneNumber(e.target.value)}
+              />
+            </FormControl>
+          </div>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
               clearable
               disableFuture
@@ -183,12 +224,20 @@ export default function SignUpComponent(props){
               value={selectedDate}
               onChange={date => handleDateChange(date)}
             />
-          </ThemeProvider>
-        </MuiPickersUtilsProvider>
-        <SignInButton variant="contained" color="primary" className={classes.button}
-          onClick={handleSignIn}>
-          Sign in
-        </SignInButton>
+          </MuiPickersUtilsProvider>
+        </ThemeProvider>
+        <SignUpButton variant="contained" color="primary" className={classes.button}
+          onClick={()=>handleSignUp({
+            username: username,
+            password: password,
+            tel: phoneNumber,
+            fullname: fullname,
+            lastname: lastname,
+            gender: gender,
+            birthdate: handleConvertDate(selectedDate)
+          })}>
+          Confirm
+        </SignUpButton>
       </div>
     </div>
   );

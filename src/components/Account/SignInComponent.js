@@ -21,9 +21,9 @@ import ic_google_16 from '../img/google16px.png'
 const useStyles = makeStyles(theme => ({
   margin: {
     width: '100%',
-    margin: 4,
+    margin: '4px 0',
     [theme.breakpoints.up(500)]: {
-      margin: theme.spacing(1),
+      margin: theme.spacing(1,0),
     },
   },
   divider: {
@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
   },
   accountCircle: {
     fontSize: '5rem',
+    color: teal[900],
     [theme.breakpoints.up(500)]: {
       fontSize: '10rem',
     },
@@ -50,7 +51,7 @@ const useStyles = makeStyles(theme => ({
   button: {
     width: '100%',
     padding: 8,
-    margin: theme.spacing(1),
+    margin: theme.spacing(1,0),
     [theme.breakpoints.up(500)]: {
       padding: 16,
     },
@@ -103,8 +104,9 @@ const theme = createMuiTheme({
 
 export default function SignInComponent(props){
   const classes = useStyles();
-  const { setUsername, setPassword, handleSignIn, response } = props
-  const status = response?response.status:null
+  const [ username, setUsername ] = React.useState('')
+  const [ password, setPassword ] = React.useState('')
+  const { handleSignIn, handleSignInWith, setPageState,  } = props
   return(
     <div>
       <Typography component="div">
@@ -141,7 +143,10 @@ export default function SignInComponent(props){
           />
         </ThemeProvider>
         <SignInButton variant="contained" color="primary" className={classes.button}
-          onClick={handleSignIn}>
+          onClick={()=>handleSignIn({
+            username: username,
+            password: password
+          })}>
           Sign in
         </SignInButton>
         <div style={{ position: 'relative' }}>
@@ -150,16 +155,18 @@ export default function SignInComponent(props){
             <div style={{ width: 50, backgroundColor: 'white', color: grey[500], textAlign: 'center', margin: 'auto', fontSize: 18, fontWeight: 600 }}>Or</div>
           </div>
         </div>
-        <Facebook variant="contained" color="primary" className={classes.button}>
+        <Facebook variant="contained" color="primary" className={classes.button}
+          onClick={()=>handleSignInWith('facebooklogin')}>
           <img src={ (window.innerWidth >= 500)?ic_facebook:ic_facebook_16} className={classes.loginWith}/>
           Log in with Facebook
         </Facebook>
-        <Google variant="contained" color="primary" className={classes.button}>
+        <Google variant="contained" color="primary" className={classes.button}
+          onClick={()=>handleSignInWith('googlelogin')}>
           <img src={ (window.innerWidth >= 500)?ic_google:ic_google_16} className={classes.loginWith}/>
           Log in with Google
         </Google>
         <div style={{ display: 'flex' }}>
-          <Button color="primary" className={classes.textButton}>
+          <Button color="primary" className={classes.textButton} onClick={()=>setPageState('signup')}>
             Join us?
           </Button>
           <div style={{ flexGrow: 1 }}></div>

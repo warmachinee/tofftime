@@ -1,6 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-router-dom";
 import * as API from './api'
 
 import TestSocket from './TestSocket'
@@ -54,6 +54,23 @@ const RouteMatchDetail = Loadable.Map({
   loading: () => null
 });
 
+const RouteDashboard = Loadable.Map({
+  loader: {
+    Dashboard: () => import(/* webpackChunkName: "Dashboard" */'./components/Dashboard/Dashboard'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Dashboard.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const NoMatch = Loadable({
   loader: () => import(/* webpackChunkName: "NoMatch" */'./components/loading/NoMatch'),
   loading: () => null
@@ -69,14 +86,17 @@ const SnackBarAlert = Loadable({
   loading: () => null
 });
 
+//import Dashboard from './components/Dashboard/Dashboard'
+
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
-  const [ snackBar, setSnackBar ] = React.useState({
+  const [ snackBar, handleSnackBar ] = React.useState({
     state: false,
     message: null,
     variant: null
   })
   const [ open, setOpen ] = React.useState(false);
+  const [ response, setResponse ] = React.useState(null)
 
   const handleOpen = () => {
     setOpen(true);
@@ -90,36 +110,46 @@ function App() {
     const token = await API.xhrGet('main')
     setCSRFToken(token)
   }
+
   React.useEffect(()=>{
     handleGetToken()
   },[ ])
+
   return (
     <div style={{ backgroundColor: blueGrey[50], minHeight: window.innerHeight }}>
       <Header handleOpen={handleOpen}/>
-    {/*
-      <TestSocket /><MatchDetail />
-      <Link to="/">Home</Link>
-      <Link to="/nomatasdasdch">test</Link>
-      <Link to="/match/12">match</Link>
-  */}
+      <Link to='/user'>User</Link>
+
       <Switch>
         <RouteMain exact path="/" token={csrfToken} />
         <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}/>
+        <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}/>
         <Route component={NoMatch} />
       </Switch>
-      <Dialog open={!open} handleClose={handleClose}
+
+
+      {/*
+
+        <Route path='/user' component={Dashboard} />
+      */}
+      <Dialog open={open} handleClose={handleClose}
         token={csrfToken} setCSRFToken={setCSRFToken}
-        handleSnack={setSnackBar}/>
+        setResponse={setResponse}
+        handleSnackBar={handleSnackBar}/>
       <SnackBarAlert
         variant={snackBar.variant}
         autoHideDuration={2000}
         open={snackBar.state}
-        onClose={()=>setSnackBar({
+        onClose={()=>handleSnackBar({
           state: false,
           message: snackBar.message,
           variant: snackBar.variant
         })}
         message={snackBar.message}/>
+      { !response &&
+        !( response && response.status === 'success' ) &&
+        <Redirect to='/' />
+      }
     </div>
   );
 }

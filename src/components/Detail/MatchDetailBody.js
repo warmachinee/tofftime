@@ -152,7 +152,7 @@ function MatchDetailBody(props) {
   }
 
   return (
-    <Paper  className={classes.root}>
+    <Paper className={classes.root}>
       <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
         <ArrowBackIcon classes={{ root: classes.backIcon }}/>
       </IconButton>
