@@ -9,6 +9,8 @@ import Button from '@material-ui/core/Button';
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
 
+import { LDCircular } from '../loading/LDCircular'
+
 const RouteMatch = Loadable.Map({
   loader: {
     Match: () => import(/* webpackChunkName: "Match" */'./Match'),
@@ -23,7 +25,7 @@ const RouteMatch = Loadable.Map({
         )}/>
     )
   },
-  loading: () => null
+  loading: () => <LDCircular />
 });
 
 const useStyles = makeStyles(theme => ({
@@ -65,7 +67,7 @@ const StyledButton = withStyles(theme => ({
 
 export default function Dashboard(props){
   const classes = useStyles();
-  const { token, setCSRFToken } = props
+  const { token, setCSRFToken, handleSnackBar } = props
 
   function SystemComponent(){
     return(
@@ -96,7 +98,7 @@ export default function Dashboard(props){
   return(
     <Paper className={classes.root}>
       <Route exact path='/user' component={SystemComponent} />
-      <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken}/>
+      <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
     </Paper>
   );
 }

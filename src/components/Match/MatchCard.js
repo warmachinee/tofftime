@@ -16,6 +16,7 @@ import IconButton from '@material-ui/core/IconButton';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 
 import teal from '@material-ui/core/colors/teal';
 
@@ -27,7 +28,7 @@ const useStyles = makeStyles((theme) =>({
   },
   learnMore: {
     color: teal[500],
-    fontWeight: '900',
+    fontWeight: 900,
     '&:hover': {
       backgroundColor: teal[100],
     },
@@ -95,6 +96,12 @@ export default function MatchCard(props) {
           <Box style={{ fontStyle: 'oblique' }} fontFamily="Monospace" m={1}>
             {data.date}
           </Box>
+          <div style={{ display: 'flex' }}>
+            <RemoveRedEyeIcon style={{ marginRight: 4 }}/>
+            <Box style={{ fontStyle: 'oblique', paddingTop: 2 }} fontFamily="Monospace">
+              {data.views}
+            </Box>
+          </div>
         </Typography>
       </div>
       { matchPicture ?
@@ -173,10 +180,17 @@ export default function MatchCard(props) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent style={{ paddingTop: 0 }}>
-          <Typography component="div">
+          <Typography component="div" style={{ display: 'flex' }}>
             <Box style={{ fontStyle: 'oblique', paddingBottom: 8 }} fontFamily="Monospace">
               {data.date}
             </Box>
+            <div style={{ flex:1 }}></div>
+            <div style={{ display: 'flex' }}>
+              <RemoveRedEyeIcon style={{ marginRight: 4 }}/>
+              <Box style={{ fontStyle: 'oblique', paddingTop: 2 }} fontFamily="Monospace">
+                {data.views}
+              </Box>
+            </div>
           </Typography>
           <Typography gutterBottom component="div" style={{ display: 'flex' }}>
             <LocationOnIcon className={classes.locationIcon}/>

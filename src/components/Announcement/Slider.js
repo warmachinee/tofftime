@@ -85,8 +85,8 @@ const styles = {
 function Slider() {
   const classes = useStyles();
   const [ index, setIndex ] = React.useState(0)
-  const data = [0,1,2,3,4]
-  const matchPicture = 'null'
+  const data = [0]
+  const matchPicture = null
 
   function handleChangeIndex(index) {
     setIndex(index)

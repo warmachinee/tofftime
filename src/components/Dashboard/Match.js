@@ -2,6 +2,8 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { Route, Redirect } from "react-router-dom";
 
+import { LDCircular } from '../loading/LDCircular'
+
 const RouteMatchBody = Loadable.Map({
   loader: {
     MatchBody: () => import(/* webpackChunkName: "MatchBody" */'./MatchBody'),
@@ -16,7 +18,7 @@ const RouteMatchBody = Loadable.Map({
         )}/>
     )
   },
-  loading: () => null
+  loading: () => <LDCircular />
 });
 
 const RouteMatchEditor = Loadable.Map({
@@ -33,20 +35,20 @@ const RouteMatchEditor = Loadable.Map({
         )}/>
     )
   },
-  loading: () => null
+  loading: () => <LDCircular />
 });
 
 export default function Match(props){
-  const { token, setCSRFToken } = props
+  const { token, setCSRFToken, handleSnackBar } = props
   const [ selected, handleSelected ] = React.useState(null)
 
   return(
     <React.Fragment>
 
       <RouteMatchBody exact path='/user/match' token={token} setCSRFToken={setCSRFToken}
-        handleSelected={handleSelected} selected={selected}/>
+        handleSnackBar={handleSnackBar} handleSelected={handleSelected} selected={selected}/>
       <RouteMatchEditor path='/user/match/editor' token={token} setCSRFToken={setCSRFToken}
-        handleSelected={handleSelected} selected={selected}/>
+        handleSnackBar={handleSnackBar} handleSelected={handleSelected} selected={selected}/>
     </React.Fragment>
   );
 }

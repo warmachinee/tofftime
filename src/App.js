@@ -3,7 +3,6 @@ import Loadable from 'react-loadable';
 import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-router-dom";
 import * as API from './api'
 
-import TestSocket from './TestSocket'
 import { LDTopnav } from './components/loading/LDTopnav';
 
 import blueGrey from '@material-ui/core/colors/blueGrey';
@@ -86,7 +85,13 @@ const SnackBarAlert = Loadable({
   loading: () => null
 });
 
-//import Dashboard from './components/Dashboard/Dashboard'
+const SnackBarLong = Loadable({
+  loader: () => import(/* webpackChunkName: "SnackBarLong" */'./components/SnackBarLong'),
+  loading: () => null
+});
+
+import MatchEditor from './components/Dashboard/MatchEditor'
+import MatchBody from './components/Dashboard/MatchBody'
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
@@ -95,8 +100,18 @@ function App() {
     message: null,
     variant: null
   })
+  const [ snackBarL, handleSnackBarL ] = React.useState({
+    state: false,
+    sFULLNAME: '',
+    sLASTNAME: '',
+    sOUT: 0,
+    sIN: 0,
+    sTOTAL: 0,
+    sPAR: 0
+  })
   const [ open, setOpen ] = React.useState(false);
   const [ response, setResponse ] = React.useState(null)
+  const [ sess, handleSess ] = React.useState([])
 
   const handleOpen = () => {
     setOpen(true);
@@ -107,31 +122,54 @@ function App() {
   };
 
   async function handleGetToken(){
-    const token = await API.xhrGet('main')
-    setCSRFToken(token)
+    const res = await API.xhrGet('getcsrf')
+    setCSRFToken(res.token)
+  }
+
+  async function handleGetToken(){
+    const res = await API.xhrGet('getcsrf')
+    setCSRFToken(res.token)
+    await handleGetUserinfo()
+  }
+
+  async function handleGetUserinfo(){
+    const res = await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      res.token,
+      'userinfo', {
+
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSess(d)
+    })
   }
 
   React.useEffect(()=>{
-    handleGetToken()
+    //handleGetToken()
+    handleGetUserinfo()
   },[ ])
 
   return (
     <div style={{ backgroundColor: blueGrey[50], minHeight: window.innerHeight }}>
-      <Header handleOpen={handleOpen}/>
-      <Link to='/user'>User</Link>
+      <Header
+        sess={sess}
+        response={response}
+        setResponse={setResponse}
+        handleOpen={handleOpen}/>
+      { true ?
+        <Switch>
+          <RouteMain exact path="/" token={csrfToken} />
+          <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
+            handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL}/>
+          <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+          <Route component={NoMatch} />
+        </Switch>
+        :
+        <MatchEditor />
 
-      <Switch>
-        <RouteMain exact path="/" token={csrfToken} />
-        <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}/>
-        <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}/>
-        <Route component={NoMatch} />
-      </Switch>
 
-
-      {/*
-
-        <Route path='/user' component={Dashboard} />
-      */}
+        //<MatchBody /><MatchEditor />
+      }
       <Dialog open={open} handleClose={handleClose}
         token={csrfToken} setCSRFToken={setCSRFToken}
         setResponse={setResponse}
@@ -146,10 +184,28 @@ function App() {
           variant: snackBar.variant
         })}
         message={snackBar.message}/>
-      { !response &&
-        !( response && response.status === 'success' ) &&
-        <Redirect to='/' />
+      { response && response.status === 'success' &&
+        <Redirect to='/user' />
       }
+      <SnackBarLong
+        autoHideDuration={5000}
+        open={snackBarL.state}
+        onClose={()=>handleSnackBarL({
+          state: false,
+          sFULLNAME: '',
+          sLASTNAME: '',
+          sOUT: 0,
+          sIN: 0,
+          sTOTAL: 0,
+          sPAR: 0
+        })}
+        sFULLNAME={snackBarL.sFULLNAME}
+        sLASTNAME={snackBarL.sLASTNAME}
+        sOUT={snackBarL.sOUT}
+        sIN={snackBarL.sIN}
+        sTOTAL={snackBarL.sTOTAL}
+        sPAR={snackBarL.sPAR}
+        />
     </div>
   );
 }

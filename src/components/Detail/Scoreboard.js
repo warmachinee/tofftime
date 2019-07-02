@@ -5,7 +5,6 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
-import Collapse from '@material-ui/core/Collapse';
 
 import teal from '@material-ui/core/colors/teal';
 
@@ -21,8 +20,8 @@ const useStyles = makeStyles(theme => ({
 
 function TabContainer(props) {
   const classes = useStyles()
-  const { data, matchClass } = props
-  return <ScoreTable data={data} matchClass={matchClass}/>
+  const { data, userscore, matchClass } = props
+  return <ScoreTable data={data} userscore={userscore} matchClass={matchClass}/>
 }
 
 const StyledTabs = withStyles({
@@ -60,8 +59,8 @@ const StyledTab = withStyles(theme => ({
 
 export default function Scoreboard(props) {
   const classes = useStyles();
-  const { data, matchClass } = props
-  const [value, setValue] = React.useState(0);
+  const { data, userscore, matchClass } = props
+  const [ value, setValue ] = React.useState(0);
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -76,14 +75,18 @@ export default function Scoreboard(props) {
           variant="scrollable"
           scrollButtons="on"
         >
-          {matchClass.map( d=>
-            <StyledTab key={d.classname} label={d.classname} />
-          )}
+          { matchClass &&
+            matchClass.map( d=>
+              <StyledTab key={d.classname} label={d.classname} />
+            )
+          }
         </StyledTabs>
       </Paper>
-      {matchClass.map((d,i)=>
-        value === i && <TabContainer key={d.classname} data={data} matchClass={d}></TabContainer>
-      )}
+      { matchClass &&
+        matchClass.map((d,i)=>
+          value === i && <TabContainer key={d.classname} data={data} userscore={userscore} matchClass={d}></TabContainer>
+        )
+      }
     </div>
   );
 }

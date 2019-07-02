@@ -1,22 +1,15 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import { Route } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import socketIOClient from 'socket.io-client'
 import * as API from '../../api'
 
-import { LDMatchDetail } from '../loading/LDMatchDetail'
+import { LDCircular } from '../loading/LDCircular'
 
-const MatchDetailBody = Loadable.Map({
-  loader: {
-    MatchDetail: () => import(/* webpackChunkName: "MatchDetailBody" */'./MatchDetailBody'),
-  },
-  render(loaded, props) {
-    let Component = loaded.MatchDetail.default;
-    return (
-      <Component {...props} />
-    )
-  },
-  loading: () => <LDMatchDetail />
+const MatchDetailBody = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchDetailBody" */'./MatchDetailBody'),
+  loading: () => <LDCircular />
 });
 
 class MatchDetail extends React.Component{
@@ -25,27 +18,50 @@ class MatchDetail extends React.Component{
     this.state = {
       endpoint: "https://thai-pga.com",
       csrfToken: null,
-      data: null
+      data: null,
+      userscore: null
     }
   }
   handleFetch = async () =>{
-    const token = await this.props.token? this.props.token : API.xhrGet('main')
+    const res = await this.props.token? this.props.token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      this.props.token? this.props.token : token,
+      this.props.token? this.props.token : res.token,
       'loadmatchsystem', {
         action: 'userscore',
         matchid: parseInt(this.props.computedMatch.params.matchparam)
     }, (csrf, d) =>{
       this.props.setCSRFToken(csrf)
-      this.setState({ data: d })
+      this.setState({
+        data: d,
+        userscore: d.userscore
+      })
     })
   }
 
   response = () => {
-    const { endpoint, data } = this.state
+    const { endpoint, userscore } = this.state
     const socket = socketIOClient(endpoint)
     socket.on('server-message', (messageNew) => {
-      this.setState({ data: messageNew })
+      if(messageNew && messageNew.status === 'success'){
+        if(messageNew.hostdetail){
+          this.props.handleSnackBarL({
+            state: true,
+            sFULLNAME: messageNew.hostdetail.fullname,
+            sLASTNAME: messageNew.hostdetail.lastname,
+            sOUT: messageNew.hostdetail.sout,
+            sIN: messageNew.hostdetail.sin,
+            sTOTAL: messageNew.hostdetail.gross,
+            sPAR: messageNew.hostdetail.par
+          })
+        }
+        this.setState({ userscore: messageNew.result })
+        /*
+        this.props.handleSnackBar({
+          state: true,
+          message: messageNew.status,
+          variant: messageNew.status === 'success' ? 'success' : 'error'
+        })*/
+      }
     })
   }
 
@@ -55,14 +71,10 @@ class MatchDetail extends React.Component{
   }
 
   render(){
-    const { message, data } = this.state
+    const { message, data, userscore } = this.state
 
     const style = { marginTop: 20, paddingLeft: 50 }
-    if(data){
-      return <MatchDetailBody data={data} />;
-    }else{
-      return <LDMatchDetail />;
-    }
+    return <MatchDetailBody data={data} userscore={userscore}/>;
   }
 }
 export default MatchDetail;

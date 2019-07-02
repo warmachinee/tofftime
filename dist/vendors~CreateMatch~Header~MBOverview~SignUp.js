@@ -1,4 +1,4 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["vendors~Header~SignUp"],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["vendors~CreateMatch~Header~MBOverview~SignUp"],{
 
 /***/ "./node_modules/@material-ui/core/esm/CssBaseline/CssBaseline.js":
 /*!***********************************************************************!*\

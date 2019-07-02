@@ -203,7 +203,7 @@ function ScoreRow(props){
 
 export default function ScoreTable(props) {
   const classes = useStyles();
-  const { data, matchClass } = props
+  const { data, userscore, matchClass } = props
   const inputEl = React.useRef(null);
   const [ op, setOp ] = React.useState(true)
   const [ widthEl, setWidthEl ] = React.useState(0)
@@ -323,7 +323,7 @@ export default function ScoreTable(props) {
       </Zoom>
       {/*--------------------End Table Head--------------------*/}
       <Paper className={classes.root}>
-        {data.userscore.filter((d)=>{
+        {userscore.filter((d)=>{
           return d.classno === matchClass.classno
         }).map(row => (
           <ScoreRow key={row.userid} row={row} data={data} fieldData={fieldData}/>

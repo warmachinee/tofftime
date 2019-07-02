@@ -12,7 +12,7 @@ const ColorCircularProgress = withStyles({
   },
 })(CircularProgress);
 
-export function LDAccountDialog() {
+export function LDCircular() {
   let wd = window.innerWidth
 
   const grid = {

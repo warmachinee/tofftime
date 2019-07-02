@@ -143,7 +143,7 @@ const useStyles = makeStyles(theme => ({
 
 function MatchDetailBody(props) {
   const classes = useStyles();
-  const { data } = props
+  const { data, userscore } = props
   const [ expanded, setExpanded ] = React.useState(false)
   const matchPicture = data?('https://thai-pga.com' + data.picture):null
   const imageEl = React.useRef(null)
@@ -213,8 +213,8 @@ function MatchDetailBody(props) {
           </ListItem>
 
           <Collapse in={expanded} timeout="auto" unmountOnExit>
-            {data?
-              <Scoreboard data={data} matchClass={data.class}/>:null
+            { data && userscore &&
+              <Scoreboard data={data} userscore={userscore} matchClass={data && data.class}/>
             }
           </Collapse>
         </React.Fragment>

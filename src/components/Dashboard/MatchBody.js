@@ -19,6 +19,13 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import teal from '@material-ui/core/colors/teal';
 
+import { LDCircular } from '../loading/LDCircular'
+
+const CreateMatch = Loadable({
+  loader: () => import(/* webpackChunkName: "CreateMatch" */'./CreateMatch'),
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -51,14 +58,20 @@ const useStyles = makeStyles(theme => ({
     },
   },
   tableHead: {
+    minWidth: 650,
     backgroundColor: 'black',
     borderRadius: 4
   },
   tableRow: {
     //border: '1px solid'
+    minWidth: 650,
   },
   tableDate: {
     width: 120,
+  },
+  tableView: {
+    width: 60,
+    textAlign: 'center'
   },
   tableDateText: {
     fontStyle: 'oblique',
@@ -86,18 +99,18 @@ const StyledText = withStyles(theme => ({
 
 export default function MatchBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSelected, selected } = props
+  const { token, setCSRFToken, handleSnackBar, handleSelected, selected } = props
   const [ data, setData ] = React.useState([])
 
 
   async function handleFetch(){
-    const newToken = await token? token : API.xhrGet('main')
+    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : newToken,
+      token? token : res.token,
       'adminloadmatch', {
         action: 'list',
     }, (csrf, d) =>{
-      console.log(d);
+      //console.log(d);
       setCSRFToken(csrf)
       setData(d)
     })
@@ -108,19 +121,21 @@ export default function MatchBody(props){
   },[ ])
   return(
     <div className={classes.root}>
-      <IconButton className={classes.back} >
-        <ArrowBackIcon classes={{ root: classes.backIcon }} onClick={()=>window.history.go(-1)}/>
+      <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+        <ArrowBackIcon classes={{ root: classes.backIcon }} />
       </IconButton>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Match
         </Box>
       </Typography>
-      <List>
+      <CreateMatch MBSetData={setData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      <List style={{ overflow: 'auto' }}>
         <ListItem key="Table Head" className={classes.tableHead}>
-          <StyledText inset primary="Date" className={classes.tableDate}/>
-          <StyledText inset primary="Title" className={classes.tableTitle}/>
-          <StyledText inset primary="Location" className={classes.tableLocation}/>
+          <StyledText primary="Date" className={classes.tableDate}/>
+          <StyledText primary="Views" className={classes.tableView}/>
+          <StyledText inset={ window.innerWidth > 600 } primary="Title" className={classes.tableTitle}/>
+          <StyledText inset={ window.innerWidth > 600 } primary="Location" className={classes.tableLocation}/>
         </ListItem>
 
         {data && !data.status &&
@@ -128,9 +143,10 @@ export default function MatchBody(props){
             <React.Fragment key={i}>
               <Link to='/user/match/editor' className={classes.linkElement}>
                 <ListItem key={d.matchid} button className={classes.tableRow} onClick={()=>handleSelected(d)}>
-                  <ListItemText inset primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
-                  <ListItemText inset primary={d.title} className={classes.tableTitle}/>
-                  <ListItemText inset primary={d.location} className={classes.tableLocation}/>
+                  <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
+                  <ListItemText primary={d.views} className={classes.tableView}/>
+                  <ListItemText inset={ window.innerWidth > 600 } primary={d.title} className={classes.tableTitle}/>
+                  <ListItemText inset={ window.innerWidth > 600 } primary={d.location} className={classes.tableLocation}/>
                 </ListItem>
               </Link>
               <Divider />

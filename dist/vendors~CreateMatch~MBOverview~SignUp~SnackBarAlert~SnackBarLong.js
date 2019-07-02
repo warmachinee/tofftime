@@ -1,4 +1,4 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["vendors~SignUp~SnackBarAlert"],{
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["vendors~CreateMatch~MBOverview~SignUp~SnackBarAlert~SnackBarLong"],{
 
 /***/ "./node_modules/@material-ui/core/esm/ClickAwayListener/ClickAwayListener.js":
 /*!***********************************************************************************!*\
@@ -69,6 +69,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _SnackbarContent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SnackbarContent */ \"./node_modules/@material-ui/core/esm/SnackbarContent/SnackbarContent.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return _SnackbarContent__WEBPACK_IMPORTED_MODULE_0__[\"default\"]; });\n\n\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/esm/SnackbarContent/index.js?");
+
+/***/ }),
+
+/***/ "./node_modules/@material-ui/core/esm/transitions/utils.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/@material-ui/core/esm/transitions/utils.js ***!
+  \*****************************************************************/
+/*! exports provided: reflow, getTransitionProps */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"reflow\", function() { return reflow; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"getTransitionProps\", function() { return getTransitionProps; });\nvar reflow = function reflow(node) {\n  return node.scrollTop;\n};\nfunction getTransitionProps(props, options) {\n  var timeout = props.timeout,\n      _props$style = props.style,\n      style = _props$style === void 0 ? {} : _props$style;\n  return {\n    duration: style.transitionDuration || typeof timeout === 'number' ? timeout : timeout[options.mode],\n    delay: style.transitionDelay\n  };\n}\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/esm/transitions/utils.js?");
 
 /***/ })
 

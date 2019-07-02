@@ -1,16 +1,4 @@
-(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["vendors~Header~SignIn~SignUp"],{
-
-/***/ "./node_modules/@material-ui/core/esm/FormControl/FormControlContext.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/@material-ui/core/esm/FormControl/FormControlContext.js ***!
-  \******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n\n/**\n * @ignore - internal component.\n */\n\nvar FormControlContext = react__WEBPACK_IMPORTED_MODULE_0___default.a.createContext();\n/* harmony default export */ __webpack_exports__[\"default\"] = (FormControlContext);\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/esm/FormControl/FormControlContext.js?");
-
-/***/ }),
+(window["webpackJsonp"] = window["webpackJsonp"] || []).push([["vendors~CreateMatch~Header~MBOverview~MBPlayerBody~MBScoreEditorBody~SignIn~SignUp"],{
 
 /***/ "./node_modules/@material-ui/core/esm/FormControl/formControlState.js":
 /*!****************************************************************************!*\
@@ -153,30 +141,6 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Popover__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Popover */ \"./node_modules/@material-ui/core/esm/Popover/Popover.js\");\n/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return _Popover__WEBPACK_IMPORTED_MODULE_0__[\"default\"]; });\n\n\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/esm/Popover/index.js?");
-
-/***/ }),
-
-/***/ "./node_modules/@material-ui/core/esm/transitions/utils.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/@material-ui/core/esm/transitions/utils.js ***!
-  \*****************************************************************/
-/*! exports provided: reflow, getTransitionProps */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"reflow\", function() { return reflow; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"getTransitionProps\", function() { return getTransitionProps; });\nvar reflow = function reflow(node) {\n  return node.scrollTop;\n};\nfunction getTransitionProps(props, options) {\n  var timeout = props.timeout,\n      _props$style = props.style,\n      style = _props$style === void 0 ? {} : _props$style;\n  return {\n    duration: style.transitionDuration || typeof timeout === 'number' ? timeout : timeout[options.mode],\n    delay: style.transitionDelay\n  };\n}\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/esm/transitions/utils.js?");
-
-/***/ }),
-
-/***/ "./node_modules/@material-ui/icons/AccountCircle.js":
-/*!**********************************************************!*\
-  !*** ./node_modules/@material-ui/icons/AccountCircle.js ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-eval("\n\nvar _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ \"./node_modules/@babel/runtime/helpers/interopRequireDefault.js\");\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.default = void 0;\n\nvar _react = _interopRequireDefault(__webpack_require__(/*! react */ \"./node_modules/react/index.js\"));\n\nvar _createSvgIcon = _interopRequireDefault(__webpack_require__(/*! ./utils/createSvgIcon */ \"./node_modules/@material-ui/icons/utils/createSvgIcon.js\"));\n\nvar _default = (0, _createSvgIcon.default)(_react.default.createElement(_react.default.Fragment, null, _react.default.createElement(\"path\", {\n  d: \"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\"\n}), _react.default.createElement(\"path\", {\n  fill: \"none\",\n  d: \"M0 0h24v24H0z\"\n})), 'AccountCircle');\n\nexports.default = _default;\n\n//# sourceURL=webpack:///./node_modules/@material-ui/icons/AccountCircle.js?");
 
 /***/ }),
 

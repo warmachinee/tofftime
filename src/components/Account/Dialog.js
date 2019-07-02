@@ -3,7 +3,6 @@ import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
 import * as API from '../../api'
 
-import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import Portal from '@material-ui/core/Portal';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,16 +10,16 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { LDAccountDialog } from '../loading/LDAccountDialog'
+import { LDCircular } from '../loading/LDCircular'
 
 const SignInComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignIn" */'./SignInComponent'),
-  loading: () => <LDAccountDialog />
+  loading: () => <LDCircular />
 });
 
 const SignUpComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignUp" */'./SignUpComponent'),
-  loading: () => <LDAccountDialog />
+  loading: () => <LDCircular />
 });
 
 function getModalStyle() {
@@ -90,19 +89,25 @@ export default function Dialog(props) {
         username: d.username,
         password: d.password
     }, (csrf, d) =>{
-      console.log(d);
       props.setCSRFToken(csrf)
       props.handleSnackBar({
         state: true,
         message: d.status,
         variant: d.status === 'success'?'success':'error'
       })
+      if(d.status === 'success'){
+        handleClose()
+      }
       setResponse(d)
     })
   }
 
   async function handleSignInWith(d){
     //const token = await API.xhrGet(d)
+    const res = await API.xhrGet(d)
+    console.log(res);
+    /*
+    setCSRFToken(token)
     await API.xhrPost(
       props.token,
       d, {}, (csrf, d) =>{
@@ -113,8 +118,11 @@ export default function Dialog(props) {
         message: d.status,
         variant: d.status === 'success'?'success':'error'
       })
+      if(d.status === 'success'){
+        handleClose()
+      }
       setResponse(d)
-    })
+    })*/
   }
 
   async function handleSignUp(d){

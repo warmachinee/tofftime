@@ -6,10 +6,31 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import teal from '@material-ui/core/colors/teal';
+
+import { LDCircular } from '../loading/LDCircular'
+
+const MBOverview = Loadable({
+  loader: () => import(/* webpackChunkName: "MBOverview" */'./MBOverview'),
+  loading: () => <LDCircular />
+});
+
+const MBPlayer = Loadable({
+  loader: () => import(/* webpackChunkName: "MBPlayer" */'./MBPlayer'),
+  loading: () => <LDCircular />
+});
+
+const MBPlayoff = Loadable({
+  loader: () => import(/* webpackChunkName: "MBPlayoff" */'./MBPlayoff'),
+  loading: () => <LDCircular />
+});
+
+const MBScoreEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "MBScoreEditor" */'./MBScoreEditor'),
+  loading: () => <LDCircular />
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,11 +59,12 @@ const useStyles = makeStyles(theme => ({
       fontSize: '2.5rem',
     },
   },
+
 }))
 
 export default function MatchEditor(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSelected, selected } = props
+  const { token, setCSRFToken, handleSelected, selected, handleSnackBar } = props
 
   function handleBack(){
     window.history.go(-1)
@@ -59,6 +81,10 @@ export default function MatchEditor(props){
           {selected && selected.title}({selected && selected.matchid})
         </Box>
       </Typography>
+      <MBOverview token={token} setCSRFToken={setCSRFToken} selected={selected} handleSnackBar={handleSnackBar}/>
+      <MBPlayer token={token} setCSRFToken={setCSRFToken} matchid={selected && selected.matchid} handleSnackBar={handleSnackBar}/>
+      <MBPlayoff token={token} setCSRFToken={setCSRFToken} matchid={selected && selected.matchid} handleSnackBar={handleSnackBar}/>
+      <MBScoreEditor token={token} setCSRFToken={setCSRFToken} matchid={selected && selected.matchid} handleSnackBar={handleSnackBar}/>
     </div>
   );
 }

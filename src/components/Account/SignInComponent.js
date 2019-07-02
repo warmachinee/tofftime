@@ -107,6 +107,15 @@ export default function SignInComponent(props){
   const [ username, setUsername ] = React.useState('')
   const [ password, setPassword ] = React.useState('')
   const { handleSignIn, handleSignInWith, setPageState,  } = props
+
+  function handleKeyPress(e){
+    if(e.key === 'Enter'){
+      handleSignIn({
+        username: username,
+        password: password
+      })
+    }
+  }
   return(
     <div>
       <Typography component="div">
@@ -122,6 +131,7 @@ export default function SignInComponent(props){
       <div>
         <ThemeProvider theme={theme}>
           <TextField
+            autoFocus
             error={status === 'wrong email'}
             className={classes.margin}
             label="Username or Email"
@@ -130,6 +140,7 @@ export default function SignInComponent(props){
             type="email"
             autoComplete="email"
             onChange={(e)=>setUsername(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
           />
           <TextField
             error={status === 'wrong password'}
@@ -140,6 +151,7 @@ export default function SignInComponent(props){
             type="password"
             autoComplete="current-password"
             onChange={(e)=>setPassword(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
           />
         </ThemeProvider>
         <SignInButton variant="contained" color="primary" className={classes.button}

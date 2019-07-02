@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import { fade, makeStyles } from '@material-ui/core/styles';
+import * as API from '../api'
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -141,9 +142,18 @@ HideOnScroll.propTypes = {
 
 function Header(props) {
   const classes = useStyles();
+  const { response, sess } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const container = React.useRef(null);
-  const auth = null
+  const auth = response && response.status
+
+  async function handleLogout(){
+    const res = await API.xhrGet('logout')
+    console.log(res);
+    /*
+    setCSRFToken(res.token)
+    menuCloseHandler()*/
+  }
 
   function menuOpenHandler(event) {
     setAnchorEl(event.currentTarget);
@@ -152,6 +162,10 @@ function Header(props) {
   function menuCloseHandler() {
     setAnchorEl(null);
   }
+
+  React.useEffect(()=>{
+
+  }, [ window.location.pathname ])
 
   return (
     <React.Fragment>
@@ -187,7 +201,9 @@ function Header(props) {
             </div>
             <div className={classes.grow} />
 
-            { auth &&
+            { (
+              ( auth === 'success' ) || sess || sess.status === 1
+              ) &&
               <React.Fragment>
                 <div className={classes.moreIcon}>
                   <IconButton
@@ -201,20 +217,21 @@ function Header(props) {
                   </IconButton>
                 </div>
                 <div className={classes.afterLoginIcon}>
-                  <IconButton
+                  {/*<IconButton
                     color="inherit"
                   >
                     <NotificationsIcon />
-                  </IconButton>
+                  </IconButton>*/}
                   <IconButton
                     color="inherit"
+                    onClick={menuOpenHandler}
                   >
                     <AccountIcon />
                   </IconButton>
                 </div>
               </React.Fragment>
             }
-            { !auth &&
+            { !( auth === 'success' || sess && sess.status === 1 ) &&
               <Button className={classes.loginBtn} color="inherit"
                 onClick={props.handleOpen}>Login</Button>
             }
@@ -229,9 +246,17 @@ function Header(props) {
           open={Boolean(anchorEl)}
           onClose={menuCloseHandler}
         >
-          <MenuItem onClick={menuCloseHandler}>Menu1</MenuItem>
-          <MenuItem onClick={menuCloseHandler}>Menu2</MenuItem>
-          <MenuItem onClick={menuCloseHandler}>Menu3</MenuItem>
+          { ( window.location.pathname === '/user' ) && sess && ( sess.status === 1 ) &&
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
+            </Link>
+          }
+          { ( window.location.pathname === '/' ) && sess && ( sess.status === 1 ) &&
+            <Link to="/user" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <MenuItem onClick={menuCloseHandler}>User</MenuItem>
+            </Link>
+          }
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
       </Portal>
       <div ref={container} />
