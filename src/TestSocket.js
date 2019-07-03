@@ -8,7 +8,7 @@ class TestSocket extends Component {
     this.state = {
       input: '',
       message: [],
-      endpoint: "https://thai-pga.com"
+      endpoint: "https://tofftime.com"
     }
   }
 

@@ -116,8 +116,12 @@ function ScoreRow(props){
         onClick={()=>setExpanded(!expanded)}>
         <div className={classes.tableRank} style={tableCell}>{row.rank}</div>
         <div
-          style={{ width: '100%' }}
-          className={classes.tableHead}>{row.firstname}{row.lastname}</div>
+          style={{ width: '100%', display: 'flex' }}
+          className={classes.tableHead}>
+          {row.firstname}
+          <div style={{ width: 10 }}></div>
+          {row.lastname}
+        </div>
 
         { (wd >= 450) &&
           <React.Fragment>

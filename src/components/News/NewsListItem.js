@@ -15,7 +15,7 @@ export default function FolderList() {
   const classes = useStyles();
 
   return (
-    <ListItem button>
+    <ListItem>
       <ListItemAvatar>
         <Avatar>
           <ImageIcon />

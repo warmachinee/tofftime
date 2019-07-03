@@ -24,7 +24,7 @@ const RouteMain = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component token={props.token}/>
+          <Component {...props}/>
         )}/>
     )
   },
@@ -90,8 +90,15 @@ const SnackBarLong = Loadable({
   loading: () => null
 });
 
-import MatchEditor from './components/Dashboard/MatchEditor'
-import MatchBody from './components/Dashboard/MatchBody'
+const Footer = Loadable({
+  loader: () => import(/* webpackChunkName: "Footer" */'./components/Footer'),
+  loading: () => null
+});
+
+import MatchEditor from './components/Dashboard/Match/MatchEditor'
+import MatchBody from './components/Dashboard/Match/MatchBody'
+import MatchDetail from './components/Detail/MatchDetail'
+import MatchListB from './components/Dashboard/MatchList/MatchList'
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
@@ -120,11 +127,6 @@ function App() {
   const handleClose = () => {
     setOpen(false);
   };
-
-  async function handleGetToken(){
-    const res = await API.xhrGet('getcsrf')
-    setCSRFToken(res.token)
-  }
 
   async function handleGetToken(){
     const res = await API.xhrGet('getcsrf')
@@ -158,7 +160,7 @@ function App() {
         handleOpen={handleOpen}/>
       { true ?
         <Switch>
-          <RouteMain exact path="/" token={csrfToken} />
+          <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
           <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
             handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL}/>
           <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
@@ -168,7 +170,7 @@ function App() {
         <MatchEditor />
 
 
-        //<MatchBody /><MatchEditor />
+        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchList />
       }
       <Dialog open={open} handleClose={handleClose}
         token={csrfToken} setCSRFToken={setCSRFToken}
@@ -206,6 +208,7 @@ function App() {
         sTOTAL={snackBarL.sTOTAL}
         sPAR={snackBarL.sPAR}
         />
+      <Footer />
     </div>
   );
 }

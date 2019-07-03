@@ -16,16 +16,17 @@ class MatchDetail extends React.Component{
   constructor(props) {
     super(props)
     this.state = {
-      endpoint: "https://thai-pga.com",
+      endpoint: "https://tofftime.com",
       csrfToken: null,
       data: null,
       userscore: null
     }
   }
+
   handleFetch = async () =>{
-    const res = await this.props.token? this.props.token : API.xhrGet('getcsrf')
+    const res = await API.xhrGet('getcsrf')
     await API.xhrPost(
-      this.props.token? this.props.token : res.token,
+      res.token,
       'loadmatchsystem', {
         action: 'userscore',
         matchid: parseInt(this.props.computedMatch.params.matchparam)
@@ -71,10 +72,13 @@ class MatchDetail extends React.Component{
   }
 
   render(){
+    const { token, setCSRFToken } = this.props
     const { message, data, userscore } = this.state
 
-    const style = { marginTop: 20, paddingLeft: 50 }
-    return <MatchDetailBody data={data} userscore={userscore}/>;
+    return(
+      <MatchDetailBody data={data} userscore={userscore} matchid={parseInt(this.props.computedMatch.params.matchparam)}
+        token={token} setCSRFToken={setCSRFToken} />
+    );
   }
 }
 export default MatchDetail;

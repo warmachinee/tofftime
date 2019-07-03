@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import * as API from '../../api'
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -9,6 +10,8 @@ import Paper from '@material-ui/core/Paper';
 import teal from '@material-ui/core/colors/teal';
 
 import ScoreTable from './ScoreTable'
+import PrintPDF from '../PrintPDF'
+import RewardPDF from '../RewardPDF'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,8 +23,21 @@ const useStyles = makeStyles(theme => ({
 
 function TabContainer(props) {
   const classes = useStyles()
-  const { data, userscore, matchClass } = props
-  return <ScoreTable data={data} userscore={userscore} matchClass={matchClass}/>
+  const { data, userscore, matchClass, matchid, reward } = props
+
+  const rewardSelected = !reward.status && reward.status !== 'reward not create' && reward.status !== 'need to login admin account' && reward.filter( item =>{
+    return item.classno === matchClass.classno
+  })
+  return (
+    <React.Fragment>
+      <div style={{ display: 'flex' }}>
+        <div style={{ flex: 1 }}></div>
+        <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} />
+        <PrintPDF data={data} userscore={userscore} matchClass={matchClass}/>
+      </div>
+      <ScoreTable data={data} userscore={userscore} matchClass={matchClass}/>
+    </React.Fragment>
+  )
 }
 
 const StyledTabs = withStyles({
@@ -59,13 +75,30 @@ const StyledTab = withStyles(theme => ({
 
 export default function Scoreboard(props) {
   const classes = useStyles();
-  const { data, userscore, matchClass } = props
+  const { data, userscore, matchClass, matchid, token, setCSRFToken } = props
   const [ value, setValue ] = React.useState(0);
+  const [ reward, setReward ] = React.useState(null)
 
   function handleChange(event, newValue) {
     setValue(newValue);
   }
 
+  async function handleFetch(){
+    await API.xhrPost(
+      props.token,
+      'loadmatch', {
+        action: 'reward',
+        matchid: matchid
+    }, (csrf, d) =>{
+      console.log(d);
+      setCSRFToken(csrf)
+      setReward(d)
+    })
+  }
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ ])
   return (
     <div className={classes.root}>
       <Paper elevation={1} style={{ backgroundColor: teal[100], padding: '8px 0' }}>
@@ -82,10 +115,17 @@ export default function Scoreboard(props) {
           }
         </StyledTabs>
       </Paper>
-      { matchClass &&
-        matchClass.map((d,i)=>
-          value === i && <TabContainer key={d.classname} data={data} userscore={userscore} matchClass={d}></TabContainer>
-        )
+      { matchClass && reward &&
+        matchClass.map((d,i)=>{
+            return(
+              <React.Fragment key={i}>
+                {
+                  value === i &&
+                  <TabContainer key={d.classname} data={data} userscore={userscore} matchClass={d} reward={reward}></TabContainer>
+                }
+              </React.Fragment>
+            );
+        })
       }
     </div>
   );

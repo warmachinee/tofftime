@@ -1,25 +1,28 @@
 const urlLink = {
   //--------------------Main Page--------------------
-  main: 'https://thai-pga.com',
-  getcsrf: 'https://thai-pga.com/getcsrf',
-  loadmatchsystem: 'https://thai-pga.com/main/loadmatchsystem',
-  userinfo: 'https://thai-pga.com/session/userinfo',
-  views: 'https://thai-pga.com/session/views',
+  main: 'https://tofftime.com',
+  getcsrf: 'https://tofftime.com/getcsrf',
+  loadmatchsystem: 'https://tofftime.com/main/loadmatchsystem',
+  userinfo: 'https://tofftime.com/session/userinfo',
+  views: 'https://tofftime.com/session/views',
   //--------------------Account--------------------
-  login: 'https://thai-pga.com/users/login',
-  facebooklogin: 'https://thai-pga.com/session/auth/facebook',
-  googlelogin: 'https://thai-pga.com/session/auth/google',
-  register: 'https://thai-pga.com/users/register',
-  logout: 'https://thai-pga.com/logout',
+  login: 'https://tofftime.com/users/login',
+  facebooklogin: 'https://tofftime.com/session/auth/facebook',
+  googlelogin: 'https://tofftime.com/session/auth/google',
+  register: 'https://tofftime.com/users/register',
+  logout: 'https://tofftime.com/logout',
   //--------------------Dashboard--------------------
-  adminloadmatch: 'https://thai-pga.com/admin/loadmatch',
-  adminloaduser: 'https://thai-pga.com/admin/loaduser',
-  adminmatchsystem: 'https://thai-pga.com/admin/matchsystem',
-  adminloadfield: 'https://thai-pga.com/admin/loadfield',
-  adminfieldsystem: 'https://thai-pga.com/admin/fieldsystem',
-  adminmatchsection: 'https://thai-pga.com/admin/matchsection',
-  adminmatchmember: 'https://thai-pga.com/admin/matchmember',
-  admindisplaymatchsystem: 'https://thai-pga.com/admin/displaymatchsystem'
+  loadmatch: 'https://tofftime.com/admin/loadmatch',
+  loaduser: 'https://tofftime.com/admin/loaduser',
+  matchsystem: 'https://tofftime.com/admin/matchsystem',
+  loadfield: 'https://tofftime.com/admin/loadfield',
+  fieldsystem: 'https://tofftime.com/admin/fieldsystem',
+  matchsection: 'https://tofftime.com/admin/matchsection',
+  matchmember: 'https://tofftime.com/admin/matchmember',
+  displaymatchsystem: 'https://tofftime.com/admin/displaymatchsystem',
+  rewardsystem: 'https://tofftime.com/admin/rewardsystem',
+  loadmainpage: 'https://tofftime.com/admin/loadmainpage',
+  matchmain: 'https://tofftime.com/admin/matchmain',
 }
 async function xhrGet(url){
   var req = new XMLHttpRequest();

@@ -10,13 +10,12 @@ const MatchList = Loadable({
 });
 
 function MainPage(props) {
-  const [ csrfToken, setCSRFToken ] = React.useState(null)
-
+  const { token, setCSRFToken, handleSnackBar } = props
 
   return (
     <div>
-      <AnnouncementNewsGrid />
-      <MatchList token={props.token} />
+      <AnnouncementNewsGrid token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      <MatchList token={token} />
     </div>
   );
 }

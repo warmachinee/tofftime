@@ -28,13 +28,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function FolderList() {
+export default function AnnouncementNewsGrid(props) {
   const classes = useStyles();
+  const { token, setCSRFToken, handleSnackBar } = props
 
   return (
     <div className={classes.root}>
       <Slider />
-      <News />
+      <News token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
     </div>
   );
 }

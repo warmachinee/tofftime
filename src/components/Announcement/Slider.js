@@ -12,6 +12,8 @@ import teal from '@material-ui/core/colors/teal';
 
 import Pagination from './Pagination';
 
+import ic_face from '../img/golffield.jpg'
+
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 const useStyles = makeStyles( theme =>({
@@ -85,8 +87,8 @@ const styles = {
 function Slider() {
   const classes = useStyles();
   const [ index, setIndex ] = React.useState(0)
-  const data = [0]
-  const matchPicture = null
+  const data = [ic_face, ic_face]
+  const matchPicture = 'null'
 
   function handleChangeIndex(index) {
     setIndex(index)
@@ -112,8 +114,8 @@ function Slider() {
         interval={10000}
         enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
       {matchPicture?
-        data.map( d=>
-          <img src="https://i.ytimg.com/vi/ZbofJucjkSU/maxresdefault.jpg" className={classes.slide} key={d} />
+        data.map( (d, i)=>
+          <img src={d} className={classes.slide} key={i} />
         )
       :
         data.map( d=>

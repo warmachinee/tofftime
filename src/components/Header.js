@@ -251,7 +251,7 @@ function Header(props) {
               <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
             </Link>
           }
-          { ( window.location.pathname === '/' ) && sess && ( sess.status === 1 ) &&
+          { ( window.location.pathname !== '/user' ) && sess && ( sess.status === 1 ) &&
             <Link to="/user" style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>User</MenuItem>
             </Link>

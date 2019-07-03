@@ -11,9 +11,26 @@ import grey from '@material-ui/core/colors/grey';
 
 import { LDCircular } from '../loading/LDCircular'
 
+const RouteMatchList = Loadable.Map({
+  loader: {
+    MatchList: () => import(/* webpackChunkName: "MatchList" */'./MatchList/MatchList'),
+  },
+  render(loaded, props) {
+    let Component = loaded.MatchList.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => <LDCircular />
+});
+
 const RouteMatch = Loadable.Map({
   loader: {
-    Match: () => import(/* webpackChunkName: "Match" */'./Match'),
+    Match: () => import(/* webpackChunkName: "Match" */'./Match/Match'),
   },
   render(loaded, props) {
     let Component = loaded.Match.default;
@@ -27,6 +44,7 @@ const RouteMatch = Loadable.Map({
   },
   loading: () => <LDCircular />
 });
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,32 +90,52 @@ export default function Dashboard(props){
   function SystemComponent(){
     return(
       <div>
-        <Link to='/user/match' className={classes.linkElement}>
-          <StyledButton variant="contained" color="primary" className={classes.button}>
-            Match
-          </StyledButton>
-        </Link>
-        <Link to='/user/course' className={classes.linkElement}>
-          <StyledButton variant="contained" color="primary" className={classes.button}>
-            Course
-          </StyledButton>
-        </Link>
-        <Link to='/user/user' className={classes.linkElement}>
-          <StyledButton variant="contained" color="primary" className={classes.button}>
-            User
-          </StyledButton>
-        </Link>
-        <Link to='/user/page' className={classes.linkElement}>
-          <StyledButton variant="contained" color="primary" className={classes.button}>
-            Page
-          </StyledButton>
-        </Link>
+        <div style={{ marginTop: 36 }}>
+          <Link to='/user/announcement' className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              Announcement
+            </StyledButton>
+          </Link>
+          <Link to='/user/news' className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              News
+            </StyledButton>
+          </Link>
+          <Link to='/user/matchlist' className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              Match List
+            </StyledButton>
+          </Link>
+        </div>
+        <div style={{ marginTop: 36 }}>
+          <Link to='/user/match' className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              Match
+            </StyledButton>
+          </Link>
+          <Link to='/user/course' className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              Course
+            </StyledButton>
+          </Link>
+          <Link to='/user/user' className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              User
+            </StyledButton>
+          </Link>
+          <Link to='/user/page' className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              Page
+            </StyledButton>
+          </Link>
+        </div>
       </div>
     )
   }
   return(
     <Paper className={classes.root}>
       <Route exact path='/user' component={SystemComponent} />
+      <RouteMatchList path='/user/matchlist' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
       <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
     </Paper>
   );

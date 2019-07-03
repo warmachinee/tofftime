@@ -143,9 +143,9 @@ const useStyles = makeStyles(theme => ({
 
 function MatchDetailBody(props) {
   const classes = useStyles();
-  const { data, userscore } = props
+  const { data, userscore, matchid, token, setCSRFToken } = props
   const [ expanded, setExpanded ] = React.useState(false)
-  const matchPicture = data?('https://thai-pga.com' + data.picture):null
+  const matchPicture = data?('https://tofftime.com/' + data.picture):null
   const imageEl = React.useRef(null)
   function expandHandler(){
     setExpanded(!expanded)
@@ -178,7 +178,7 @@ function MatchDetailBody(props) {
           </Typography>
           <div>
             {matchPicture?
-              <img ref={imageEl} src="https://i.ytimg.com/vi/ZbofJucjkSU/maxresdefault.jpg" align="left" className={classes.image} />
+              <img ref={imageEl} src={matchPicture} align="left" className={classes.image} />
             :
               <div align="left" className={classes.imageLD}>
                 <div style={{ flex: 1 }}></div>
@@ -214,7 +214,9 @@ function MatchDetailBody(props) {
 
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             { data && userscore &&
-              <Scoreboard data={data} userscore={userscore} matchClass={data && data.class}/>
+              <Scoreboard token={token} setCSRFToken={setCSRFToken}
+                data={data} userscore={userscore} matchClass={data && data.class} matchid={matchid}/>
+
             }
           </Collapse>
         </React.Fragment>
