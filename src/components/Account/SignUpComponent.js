@@ -21,11 +21,6 @@ import grey from '@material-ui/core/colors/grey';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-import ic_facebook from '../img/facebook.png'
-import ic_facebook_16 from '../img/facebook16px.png'
-import ic_google from '../img/google.png'
-import ic_google_16 from '../img/google16px.png'
-
 const useStyles = makeStyles(theme => ({
   margin: {
     width: '100%',
@@ -90,6 +85,29 @@ const theme = createMuiTheme({
   },
 });
 
+const datePickers = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+  overrides: {
+    MuiDialog: {
+      paperScrollPaper: {
+        maxHeight: 'calc(100% - 24px)'
+      }
+    },
+    MuiPickersToolbar: {
+      toolbar: {
+        display: window.innerHeight >= 520? 'flex' : 'none',
+      }
+    },
+    MuiPickersModal: {
+      dialog: {
+        overflow: 'auto'
+      }
+    }
+  },
+});
+
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
 
@@ -140,6 +158,20 @@ export default function SignUpComponent(props){
     return dateStr
   }
 
+  function handleKeyPress(e){
+    if(e.key === 'Enter'){
+      handleSignUp({
+        username: username,
+        password: password,
+        tel: phoneNumber,
+        fullname: fullname,
+        lastname: lastname,
+        gender: gender,
+        birthdate: handleConvertDate(selectedDate)
+      })
+    }
+  }
+
   React.useEffect(()=>{
     setPhoneWidth(phoneRef.current.offsetWidth);
     setGenderWidth(genderRef.current.offsetWidth);
@@ -154,7 +186,9 @@ export default function SignUpComponent(props){
       </Typography>
       <div style={{ display: 'flex', marginBottom: 16 }}>
         <div style={{ flexGrow: 1 }}></div>
-        <AccountCircleIcon classes={{ root: classes.accountCircle }} />
+        { window.innerHeight >= 500 &&
+          <AccountCircleIcon classes={{ root: classes.accountCircle }} />
+        }
         <div style={{ flexGrow: 1 }}></div>
       </div>
       <div>
@@ -162,9 +196,10 @@ export default function SignUpComponent(props){
           <TextField
             required
             className={classes.margin}
-            label="Username"
+            label="Email"
             variant="outlined"
             onChange={e => setUsername(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
           />
           <TextField
             required
@@ -173,6 +208,7 @@ export default function SignUpComponent(props){
             variant="outlined"
             type="password"
             onChange={e => setPassword(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
           />
           <TextField
             required
@@ -180,6 +216,7 @@ export default function SignUpComponent(props){
             label="First name"
             variant="outlined"
             onChange={e => setFullName(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
           />
           <TextField
             required
@@ -187,6 +224,7 @@ export default function SignUpComponent(props){
             label="Last name"
             variant="outlined"
             onChange={e => setLastName(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
           />
           <div style={{ display: 'flex' }} className={classes.margin}>
             <FormControl style={{ width: '40%' }} variant="outlined">
@@ -209,9 +247,12 @@ export default function SignUpComponent(props){
                 labelWidth={phoneWidth}
                 inputComponent={TextMaskCustom}
                 onChange={e =>handlePhoneNumber(e.target.value)}
+                onKeyPress={e =>handleKeyPress(e)}
               />
             </FormControl>
           </div>
+        </ThemeProvider>
+        <ThemeProvider theme={datePickers}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <KeyboardDatePicker
               clearable
@@ -223,6 +264,7 @@ export default function SignUpComponent(props){
               format="dd/MM/yyyy"
               value={selectedDate}
               onChange={date => handleDateChange(date)}
+              onKeyPress={e =>handleKeyPress(e)}
             />
           </MuiPickersUtilsProvider>
         </ThemeProvider>

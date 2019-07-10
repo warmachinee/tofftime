@@ -46,10 +46,12 @@ const useStyles = makeStyles(theme => ({
     overflow: 'auto',
     overflowScrolling: 'touch',
     WebkitOverflowScrolling: 'touch',
+    height: 'auto',
+    maxHeight: '100%',
     [theme.breakpoints.up(500)]: {
-      height: 'auto',
       maxWidth: 450,
     },
+
   },
   back: {
     position: 'absolute',
@@ -97,15 +99,15 @@ export default function Dialog(props) {
       })
       if(d.status === 'success'){
         handleClose()
+        setResponse('logged in')
       }
-      setResponse(d)
     })
   }
 
   async function handleSignInWith(d){
-    //const token = await API.xhrGet(d)
     const res = await API.xhrGet(d)
     console.log(res);
+    setCSRFToken(res.token)
     /*
     setCSRFToken(token)
     await API.xhrPost(
@@ -121,7 +123,6 @@ export default function Dialog(props) {
       if(d.status === 'success'){
         handleClose()
       }
-      setResponse(d)
     })*/
   }
 
@@ -137,14 +138,12 @@ export default function Dialog(props) {
         gender: d.gender,
         birthdate: d.birthdate
     }, (csrf, d) =>{
-      console.log(d);
       props.setCSRFToken(csrf)
       props.handleSnackBar({
         state: true,
         message: d.status,
         variant: d.status === 'success'?'success':'error'
       })
-      setResponse(d)
     })
   }
 

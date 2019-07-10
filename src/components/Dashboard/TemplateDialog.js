@@ -40,6 +40,7 @@ const useStyles = makeStyles(theme => ({
       height: 'auto',
       maxWidth: 600,
     },
+    maxHeight: window.innerHeight * .8 , height: '100%'
   },
   close: {
     position: 'absolute',

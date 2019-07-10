@@ -133,14 +133,14 @@ function MBScoreEditorContainer(props){
       <List>
         { data && !data.status &&
           data.filter((item)=>{
-
-              return (
-                (item.firstname.search(searchUser) !== -1) ||
-                (item.firstname.toLowerCase().search(searchUser.toLowerCase()) !== -1) ||
-                (item.lastname.search(searchUser) !== -1) ||
-                (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
-              )
-            }).slice(0, dataSliced).map( value =>
+            return item && (
+              (item.firstname.search(searchUser) !== -1) ||
+              (item.firstname.toLowerCase().search(searchUser.toLowerCase()) !== -1) ||
+              (item.lastname.search(searchUser) !== -1) ||
+              (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
+            )
+          }).slice(0, dataSliced).map( value =>
+            value &&
             <ListItem key={value.userid} button onClick={()=>handleSelectPlayer(value)}>
               <ListItemText className={classes.listText} primary={value.firstname} />
               <ListItemText className={classes.listText} primary={value.lastname} />
@@ -151,6 +151,7 @@ function MBScoreEditorContainer(props){
                   matchDetail.class.filter( d =>{
                     return d.classno === value.classno
                   }).map( d =>
+                    d &&
                     <ListItemText key={d.classname + `(${value.userid})`} className={classes.listClass} primary={d.classname} />
                   )
                 )
@@ -179,7 +180,7 @@ export default function MBScoreEditorBody(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar } = props
   const tempArr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
-  const [ data, setData ] = React.useState([])
+  const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ selected, setSelected ] = React.useState(null)
@@ -225,8 +226,8 @@ export default function MBScoreEditorBody(props){
   }
 
   function handleUpdateScore(){
-
-    const socket = socketIOClient('https://tofftime.com')
+    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+    const socket = socketIOClient( hd + API.webURL() )
     socket.emit('client-message', {
       action: "scorebysystemadmin",
       matchid: matchid,
@@ -297,7 +298,7 @@ export default function MBScoreEditorBody(props){
               key={d}
               className={classes.textfield}
               label={d + 1}
-              value={arrScore[d]}
+              value={arrScore[d] || ''}
               onChange={e =>handleChange(e.target.value, d)}
               onFocus={e => e.target.select()}
               onKeyPress={e =>handleKeyPress(e)}
@@ -312,7 +313,7 @@ export default function MBScoreEditorBody(props){
               key={d}
               className={classes.textfield}
               label={d + 1}
-              value={arrScore[d]}
+              value={arrScore[d] || ''}
               onChange={e =>handleChange(e.target.value, d)}
               onFocus={e => e.target.select()}
               onKeyPress={e =>handleKeyPress(e)}

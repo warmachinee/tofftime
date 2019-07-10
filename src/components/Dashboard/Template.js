@@ -1,6 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { makeStyles, fade } from '@material-ui/core/styles';
+import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
+import * as API from '../../../api'
 
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
@@ -23,9 +24,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   back: {
-    position: 'absolute',
-    top: -12,
-    left: 8,
     backgroundColor: 'white',
     '&:hover': {
       backgroundColor: fade(teal[600], 0.25),
@@ -38,21 +36,52 @@ const useStyles = makeStyles(theme => ({
       fontSize: '2.5rem',
     },
   },
+
 }))
+
 
 export default function Match(props){
   const classes = useStyles();
+  const { token, setCSRFToken, handleSnackBar } = props
+  const [ data, setData ] = React.useState(null)
+
+
+  async function handleFetch(){
+    const res = await token? token : API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : res.token,
+      'loadmainpage', {
+        action: 'match',
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+      /*
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? 'success' : 'error'
+      })
+      */
+    })
+  }
+
+  React.useEffect(()=>{
+    //handleFetch()
+  },[ ])
 
   return(
     <div className={classes.root}>
-      <IconButton className={classes.back} >
-        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-      </IconButton>
+      <div style={{ width: '100%' }}>
+        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+        </IconButton>
+      </div>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Match
+          News
         </Box>
       </Typography>
+
     </div>
   );
 }

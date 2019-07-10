@@ -130,7 +130,8 @@ function MatchListBody(props) {
            style={{ padding: '0 30px' }}
            slideStyle={{ padding: '0 10px', width: gridRes.width }}
           >
-          {data.map( d =>
+          {data && data.map( d =>
+            d &&
             <MatchCard key={d.matchid} data={d}/>
           )}
         </SwipeableViews>

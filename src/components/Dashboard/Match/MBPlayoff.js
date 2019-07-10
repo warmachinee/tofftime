@@ -55,7 +55,7 @@ export default function MBPlayoff(props){
     setExpanded(!expanded)
   }
   return(
-    <Paper className={classes.root} onClick={()=>!expanded ? expandHandler():console.log()}>
+    <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Playoff

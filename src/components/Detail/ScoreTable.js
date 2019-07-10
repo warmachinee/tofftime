@@ -101,7 +101,7 @@ const StyledTableCell = withStyles(theme => ({
 
 function ScoreRow(props){
   const classes = useStyles();
-  const [ expanded, setExpanded ] = React.useState(null)
+  const [ expanded, setExpanded ] = React.useState(false)
   const { row, data, fieldData } = props
   const wd = window.innerWidth
 
@@ -161,13 +161,15 @@ function ScoreRow(props){
             <div style={{ display: 'flex', margin: 'auto' }}>
               <div style={{ backgroundColor: teal[800], color: teal[50],
                 padding: '8px 4px', width: 64, textAlign: 'right', fontWeight: 800 }}>PAR</div>
-              {data.fieldscore.slice(0,9).map( (d,i)=>
+              { data && data.fieldscore &&
+                data.fieldscore.slice(0,9).map( (d,i)=>
                 <div key={i} style={{ backgroundColor: teal[800], color: teal[100],
                   padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
               )}
               <div style={{ backgroundColor: teal[800], color: teal[50],
                 padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.out}</div>
-              {data.fieldscore.slice(9,18).map( (d,i)=>
+              { data && data.fieldscore &&
+                data.fieldscore.slice(9,18).map( (d,i)=>
                 <div key={i} style={{ backgroundColor: teal[800], color: teal[100],
                   padding: '8px 4px', width: 32, textAlign: 'center'}}>{d}</div>
               )}
@@ -181,13 +183,15 @@ function ScoreRow(props){
             <div style={{ display: 'flex', margin: 'auto' }}>
               <div style={{ backgroundColor: blueGrey[100],
                 padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '0 0 0 4px', fontWeight: 800 }}>SCORE</div>
-              {row.score.slice(0,9).map( (d,i)=>
+              { row && row.score &&
+                row.score.slice(0,9).map( (d,i)=>
                 <div key={i} style={{ backgroundColor: blueGrey[100],
                   padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
               )}
               <div style={{ backgroundColor: blueGrey[100],
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.out}</div>
-              {row.score.slice(9,18).map( (d,i)=>
+                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.out}
+              </div>
+              { row && row.score && row.score.slice(9,18).map( (d,i)=>
                 <div key={i} style={{ backgroundColor: blueGrey[100],
                   padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
               )}
@@ -327,9 +331,10 @@ export default function ScoreTable(props) {
       </Zoom>
       {/*--------------------End Table Head--------------------*/}
       <Paper className={classes.root}>
-        {userscore.filter((d)=>{
-          return d.classno === matchClass.classno
+        { userscore && userscore.filter((d)=>{
+          return ( d && d.classno === matchClass.classno )
         }).map(row => (
+          row &&
           <ScoreRow key={row.userid} row={row} data={data} fieldData={fieldData}/>
         ))}
       </Paper>

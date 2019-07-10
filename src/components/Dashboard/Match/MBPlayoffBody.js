@@ -109,7 +109,9 @@ function PlayoffContainer(props){
   }
 
   function handleUpdatePlayoff(selected){
-    const socket = socketIOClient('https://tofftime.com')
+
+    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+    const socket = socketIOClient( hd + API.webURL() )
     socket.emit('client-message', {
       action: "updateplayoff",
       matchid: matchid,
@@ -170,7 +172,7 @@ function PlayoffContainer(props){
 export default function MBPlayoffBody(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar } = props
-  const [ data, setData ] = React.useState([])
+  const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ value, setValue ] = React.useState(0);
 
@@ -229,6 +231,7 @@ export default function MBPlayoffBody(props){
         >
           { matchDetail && matchDetail.class &&
             matchDetail.class.map( d=>
+              d &&
               <StyledTab key={d.classname} label={d.classname} />
             )
           }
@@ -237,13 +240,14 @@ export default function MBPlayoffBody(props){
       <div className={classes.list}>
         { matchDetail && matchDetail.class &&
           matchDetail.class.map( (c, i) =>{
-            const filtered = data.filter( item =>{
-              return item.classno === c.classno
+            const filtered = c && data.filter( item =>{
+              return ( item && item.classno === c.classno )
             })
             return(
               <React.Fragment key={i}>
                 { value === i && filtered && filtered.length > 1 &&
                   filtered.map( d =>
+                    d &&
                     <PlayoffContainer key={d.userid} data={d} token={token} setCSRFToken={setCSRFToken}
                       matchid={matchid} handleSnackBar={handleSnackBar}
                       setData={setData} setMatchDetail={setMatchDetail}/>

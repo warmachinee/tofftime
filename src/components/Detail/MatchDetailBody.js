@@ -1,6 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, fade } from '@material-ui/core/styles';
+import * as API from '../../api'
 
 import Scoreboard from './Scoreboard'
 
@@ -144,18 +145,21 @@ const useStyles = makeStyles(theme => ({
 function MatchDetailBody(props) {
   const classes = useStyles();
   const { data, userscore, matchid, token, setCSRFToken } = props
-  const [ expanded, setExpanded ] = React.useState(false)
-  const matchPicture = data?('https://tofftime.com/' + data.picture):null
-  const imageEl = React.useRef(null)
+  const [ expanded, setExpanded ] = React.useState(true)
+  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const matchPicture = data?( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture ):null
+  const imageEl = React.useRef(null)//
   function expandHandler(){
     setExpanded(!expanded)
   }
 
   return (
     <Paper className={classes.root}>
-      <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-      </IconButton>
+      <div style={{ width: '100%' }}>
+        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+        </IconButton>
+      </div>
       {/*--------------------Content--------------------*/}
       <div className={classes.content}>
         {/*--------------------Match Attribute--------------------*/}
@@ -187,9 +191,15 @@ function MatchDetailBody(props) {
               </div>
             }
           </div>
-          <p className={classes.detail}>
-            Match detail
-          </p>
+          {/*
+            <p className={classes.detail}>
+              { data?
+                data.date + data.location
+                :
+                'Match Detail'
+              }
+            </p>*/
+          }
           {/*--------------------End Match Attribute--------------------*/}
         </React.Fragment>
         {/*--------------------End Match Attribute--------------------*/}

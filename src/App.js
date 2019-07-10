@@ -36,6 +36,23 @@ const MatchList = Loadable({
   loading: () => null
 });
 
+const RouteDetail = Loadable.Map({
+  loader: {
+    GeneralDetail: () => import(/* webpackChunkName: "GeneralDetail" */'./components/Detail/GeneralDetail'),
+  },
+  render(loaded, props) {
+    let Component = loaded.GeneralDetail.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteMatchDetail = Loadable.Map({
   loader: {
     MatchDetail: () => import(/* webpackChunkName: "MatchDetail" */'./components/Detail/MatchDetail'),
@@ -95,10 +112,13 @@ const Footer = Loadable({
   loading: () => null
 });
 
+
 import MatchEditor from './components/Dashboard/Match/MatchEditor'
 import MatchBody from './components/Dashboard/Match/MatchBody'
 import MatchDetail from './components/Detail/MatchDetail'
 import MatchListB from './components/Dashboard/MatchList/MatchList'
+import Dashboard from './components/Dashboard/Dashboard'
+
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
@@ -119,6 +139,7 @@ function App() {
   const [ open, setOpen ] = React.useState(false);
   const [ response, setResponse ] = React.useState(null)
   const [ sess, handleSess ] = React.useState([])
+  const [ urlHeader, handleURLHeader ] = React.useState(null)
 
   const handleOpen = () => {
     setOpen(true);
@@ -136,6 +157,7 @@ function App() {
 
   async function handleGetUserinfo(){
     const res = await API.xhrGet('getcsrf')
+    handleURLHeader(res.header)
     await API.xhrPost(
       res.token,
       'userinfo', {
@@ -157,10 +179,13 @@ function App() {
         sess={sess}
         response={response}
         setResponse={setResponse}
-        handleOpen={handleOpen}/>
+        handleOpen={handleOpen}
+        setCSRFToken={setCSRFToken}/>
+
       { true ?
         <Switch>
           <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+          <RouteDetail path="/detail/:detailparam" />
           <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
             handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL}/>
           <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
@@ -170,7 +195,7 @@ function App() {
         <MatchEditor />
 
 
-        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchList />
+        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchList /><Dashboard />
       }
       <Dialog open={open} handleClose={handleClose}
         token={csrfToken} setCSRFToken={setCSRFToken}
@@ -186,11 +211,14 @@ function App() {
           variant: snackBar.variant
         })}
         message={snackBar.message}/>
-      { response && response.status === 'success' &&
+      { response === 'logged in' &&
         <Redirect to='/user' />
       }
+      { response === 'logged out' &&
+        <Redirect to='/' />
+      }
       <SnackBarLong
-        autoHideDuration={5000}
+        autoHideDuration={15000}
         open={snackBarL.state}
         onClose={()=>handleSnackBarL({
           state: false,
@@ -209,6 +237,7 @@ function App() {
         sPAR={snackBarL.sPAR}
         />
       <Footer />
+
     </div>
   );
 }

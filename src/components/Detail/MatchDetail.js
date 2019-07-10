@@ -16,7 +16,7 @@ class MatchDetail extends React.Component{
   constructor(props) {
     super(props)
     this.state = {
-      endpoint: "https://tofftime.com",
+      endpoint: API.webURL(),
       csrfToken: null,
       data: null,
       userscore: null
@@ -41,7 +41,8 @@ class MatchDetail extends React.Component{
 
   response = () => {
     const { endpoint, userscore } = this.state
-    const socket = socketIOClient(endpoint)
+    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+    const socket = socketIOClient( hd + endpoint )
     socket.on('server-message', (messageNew) => {
       if(messageNew && messageNew.status === 'success'){
         if(messageNew.hostdetail){

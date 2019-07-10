@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    [theme.breakpoints.up(750)]: {
+    [theme.breakpoints.up(900)]: {
       flexDirection: 'row',
       marginTop: 16
     },

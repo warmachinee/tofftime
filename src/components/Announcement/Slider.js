@@ -2,6 +2,7 @@ import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import { makeStyles, fade } from '@material-ui/core/styles';
+import { Link } from "react-router-dom";
 
 import IconButton from '@material-ui/core/IconButton';
 
@@ -9,10 +10,11 @@ import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import teal from '@material-ui/core/colors/teal';
+import grey from '@material-ui/core/colors/grey'
 
 import Pagination from './Pagination';
-
-import ic_face from '../img/golffield.jpg'
+import ic_slide1 from '../img/slide1.png'
+import ic_slide2 from '../img/slide2.jpg'
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -27,10 +29,13 @@ const useStyles = makeStyles( theme =>({
     height: 200,
     width: '100%',
     color: 'black',
+    display: 'block',
     backgroundColor: '#ccc',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
+    objectFit: 'cover',
+    cursor: 'pointer',
     [theme.breakpoints.up(400)]: {
       height: 250,
     },
@@ -41,13 +46,13 @@ const useStyles = makeStyles( theme =>({
       height: 350,
     },
     [theme.breakpoints.up(750)]: {
-      height: 300,
-    },
-    [theme.breakpoints.up(900)]: {
       height: 350,
     },
-    [theme.breakpoints.up(1000)]: {
+    [theme.breakpoints.up(900)]: {
       height: 400,
+    },
+    [theme.breakpoints.up(1000)]: {
+      height: 450,
     },
   },
   arrow: {
@@ -78,6 +83,16 @@ const useStyles = makeStyles( theme =>({
       opacity: 1,
     },
   },
+  label: {
+    position: 'absolute', bottom: 0, width: '100%', color: teal[900],
+    backgroundColor: grey[50], opacity: .8,
+    fontSize: 16, fontWeight: 500, cursor: 'pointer',
+    fontFamily: 'monospace', textAlign: 'center', padding: '8px 16px',
+    '&:hover': {
+      backgroundColor: grey[300],
+    },
+  },
+
 }))
 const styles = {
 
@@ -87,9 +102,18 @@ const styles = {
 function Slider() {
   const classes = useStyles();
   const [ index, setIndex ] = React.useState(0)
-  const data = [ic_face, ic_face]
-  const matchPicture = 'null'
-
+  const data = [
+    {
+      id: 1,
+      label: ['ผู้ชนะ SNT 4-2019 วันที่ 4 กรกฎาคม 2562','ณ Watermill Golf Club & Resort'],
+      picture: ic_slide2
+    },
+    {
+      id: 2,
+      label: ['SNT ระเบิดศึกดวลสวิงอาชีพอาวุโส วันที่ 4 กรกฎาคม 2562','ณ Watermill Golf Club & Resort'],
+      picture: ic_slide1
+    },
+  ]
   function handleChangeIndex(index) {
     setIndex(index)
   };
@@ -113,15 +137,22 @@ function Slider() {
       <AutoPlaySwipeableViews
         interval={10000}
         enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
-      {matchPicture?
-        data.map( (d, i)=>
-          <img src={d} className={classes.slide} key={i} />
-        )
-      :
-        data.map( d=>
-          <div className={classes.slide} key={d}>Match {d}</div>
+      {
+        data.map( d =>
+          d &&
+          <div key={d.id}>
+            <Link to={`/detail/${d.id}`} style={{ textDecoration: 'none'}}>
+              <img src={d.picture} className={classes.slide} />
+            </Link>
+            <Link to={`/detail/${data.id}`} style={{ textDecoration: 'none'}}>
+              <div className={classes.label}>{
+                  d.label.map(text=><React.Fragment key={text}>{text}<br /></React.Fragment>)
+                }</div>
+            </Link>
+          </div>
         )
       }
+
       </AutoPlaySwipeableViews>
       <Pagination dots={data.length} index={index} onChangeIndex={handleChangeIndex} />
       {

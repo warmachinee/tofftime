@@ -27,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24
+    marginTop: 24,
+    maxHeight: window.innerHeight * .8 , height: '100%'
   },
   margin: {
     margin: theme.spacing(1),
@@ -43,9 +44,11 @@ export default function AddPlayerModal(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar, setMBData, setMBMatchDetail } = props
 
-  const [ data, setData ] = React.useState([])
+  const [ data, setData ] = React.useState(null)
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
+  const [ fullname, setFullname ] = React.useState('')
+  const [ lastname, setLastname ] = React.useState('')
 
   function handleMore(){
     if(data){
@@ -65,6 +68,30 @@ export default function AddPlayerModal(props){
         setDataSliced( data.length )
       }
     }
+  }
+
+  async function handleCreatePlayer(){
+    const res = await token? token : API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : res.token,
+      'usersystem', {
+        action: 'create',
+        fullname: fullname,
+        lastname: lastname
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? 'success' : 'error'
+      })
+      try {
+        handleFetchUserList()
+      }
+      catch(err) {
+        console.log(err.message);
+      }
+    })
   }
 
   async function handleLoadUser(){
@@ -145,6 +172,33 @@ export default function AddPlayerModal(props){
 
   return(
     <div style={{ maxHeight: window.innerHeight * .8 , height: '100%'}}>
+      <div style={{ marginBottom: 24 }}>
+        <FormControl className={classes.margin} style={{ marginTop: 24 }}>
+          <InputLabel>Full name</InputLabel>
+          <Input
+            value={fullname}
+            onChange={e =>setFullname(e.target.value)}
+            endAdornment={
+              <InputAdornment position="end">
+                <SearchIcon />
+              </InputAdornment>
+            }
+          />
+        </FormControl>
+        <FormControl className={classes.margin} style={{ marginTop: 24 }}>
+          <InputLabel>Last name</InputLabel>
+          <Input
+            value={lastname}
+            onChange={e =>setLastname(e.target.value)}
+            endAdornment={
+              <InputAdornment position="end">
+                <SearchIcon />
+              </InputAdornment>
+            }
+          />
+        </FormControl>
+        <Button onClick={handleCreatePlayer}>Create player</Button>
+      </div>
       <FormControl className={classes.margin} style={{ marginTop: 24 }}>
         <InputLabel>Search player</InputLabel>
         <Input
@@ -167,18 +221,19 @@ export default function AddPlayerModal(props){
                 (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
               )
             }).slice(0, dataSliced).map(value => {
-            return (
-              <ListItem key={value.firstname + `(${value.userid})`} role={undefined} dense button
-                onClick={()=>handleAddUser(value)}>
-                <ListItemIcon>
-                  <IconButton>
-                    <AddCircleIcon />
-                  </IconButton>
-                </ListItemIcon>
-                <ListItemText className={classes.listText} primary={value.fullname} />
-                <ListItemText className={classes.listText} primary={value.lastname} />
-              </ListItem>
-            );
+
+              return value && (
+                <ListItem key={value.firstname + `(${value.userid})`} role={undefined} dense button
+                  onClick={()=>handleAddUser(value)}>
+                  <ListItemIcon>
+                    <IconButton>
+                      <AddCircleIcon />
+                    </IconButton>
+                  </ListItemIcon>
+                  <ListItemText className={classes.listText} primary={value.fullname} />
+                  <ListItemText className={classes.listText} primary={value.lastname} />
+                </ListItem>
+              );
           })
         }
         <ListItem key="More button" role={undefined} dense style={{ display: 'flex' }}>

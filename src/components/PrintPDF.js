@@ -21,7 +21,6 @@ import Button from '@material-ui/core/Button';
 
 export default function PrintPDF(props){
   const { data, userscore, matchClass } = props
-
   const userData = userscore.filter((d)=>{
     return d.classno === matchClass.classno
   })

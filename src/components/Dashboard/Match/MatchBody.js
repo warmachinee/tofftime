@@ -43,9 +43,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   back: {
-    position: 'absolute',
-    top: -12,
-    left: 8,
     backgroundColor: 'white',
     '&:hover': {
       backgroundColor: fade(teal[600], 0.25),
@@ -100,8 +97,8 @@ const StyledText = withStyles(theme => ({
 
 export default function MatchBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, handleSelected, selected } = props
-  const [ data, setData ] = React.useState([])
+  const { token, setCSRFToken, handleSnackBar } = props
+  const [ data, setData ] = React.useState(null)
   const [ editting, setEditting ] = React.useState(false)
 
   async function handleSetDisplay(d){
@@ -144,9 +141,11 @@ export default function MatchBody(props){
   },[ ])
   return(
     <div className={classes.root}>
-      <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-        <ArrowBackIcon classes={{ root: classes.backIcon }} />
-      </IconButton>
+      <div style={{ width: '100%' }}>
+        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+        </IconButton>
+      </div>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Match
@@ -179,6 +178,7 @@ export default function MatchBody(props){
         {data && !data.status &&
           data.map( (d, i) =>
             editting?
+              (d &&
               <React.Fragment key={i}>
                 <ListItem key={d.matchid} button className={classes.tableRow} onClick={()=>handleSetDisplay(d)}>
                   <ListItemIcon>
@@ -192,10 +192,11 @@ export default function MatchBody(props){
                 </ListItem>
                 <Divider />
               </React.Fragment>
-              :
+              ):
+              (d &&
               <React.Fragment key={i}>
-                <Link to='/user/match/editor' className={classes.linkElement}>
-                  <ListItem key={d.matchid} button className={classes.tableRow} onClick={()=>handleSelected(d)}>
+                <Link to={`/user/match/${d.matchid}`} className={classes.linkElement}>
+                  <ListItem key={d.matchid} button className={classes.tableRow}>
                     <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
                     <ListItemText primary={d.views} className={classes.tableView}/>
                     <ListItemText inset={ window.innerWidth > 600 } primary={d.title} className={classes.tableTitle}/>
@@ -204,7 +205,7 @@ export default function MatchBody(props){
                 </Link>
                 <Divider />
               </React.Fragment>
-          )
+          ))
         }
       </List>
     </div>

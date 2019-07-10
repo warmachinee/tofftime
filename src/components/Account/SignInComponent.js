@@ -125,7 +125,9 @@ export default function SignInComponent(props){
       </Typography>
       <div style={{ display: 'flex', marginBottom: 16 }}>
         <div style={{ flexGrow: 1 }}></div>
-        <AccountCircleIcon classes={{ root: classes.accountCircle }} />
+        { window.innerHeight >= 500 &&
+          <AccountCircleIcon classes={{ root: classes.accountCircle }} />
+        }
         <div style={{ flexGrow: 1 }}></div>
       </div>
       <div>

@@ -59,7 +59,7 @@ export default function CreateLocation(props){
         <TextField
           fullWidth
           label="Location name"
-          value={location}
+          value={location || ''}
           onChange={e =>setLocation(e.target.value)}
           variant="outlined"
         />

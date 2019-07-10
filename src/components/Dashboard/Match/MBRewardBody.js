@@ -187,11 +187,11 @@ function RewardContainer(props){
             onChange={e =>handleChange(e.target.value)}
             onFocus={e => e.target.select()}
             onKeyPress={e =>handleKeyPress(e)}
-            value={edittingData}
+            value={edittingData || ''}
             className={classes.prizeText}
             type="number"
           />
-        <Button color="primary" variant="contained" onClick={handleSave}>Save</Button>
+          <Button color="primary" variant="contained" onClick={handleSave}>Save</Button>
         </div>
         :
         <ListItemText className={classes.listPrize} primary={data.prize} />
@@ -203,7 +203,7 @@ function RewardContainer(props){
 export default function MBRewardBody(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar } = props
-  const [ data, setData ] = React.useState([])
+  const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ value, setValue ] = React.useState(0);
   const [ editting, setEditting ] = React.useState(false);
@@ -366,6 +366,7 @@ export default function MBRewardBody(props){
         >
           { matchDetail && matchDetail.class &&
             matchDetail.class.map( d=>
+              d &&
               <StyledTab key={d.classname} label={d.classname} />
             )
           }
@@ -373,7 +374,7 @@ export default function MBRewardBody(props){
       </Paper>
       <div className={classes.list}>
         <div style={{ display: 'flex' }}>
-          { data.status && data.status === 'reward not create' &&
+          { data && data.status &&
             <Button style={{ marginRight: 8 }} color='primary' onClick={handleCreate}>Create</Button>
           }
           <Button style={{ marginRight: 8 }} color='primary' onClick={handleReset}>Reset</Button>
@@ -406,26 +407,28 @@ export default function MBRewardBody(props){
           </ListItem>
           {matchDetail && matchDetail.class &&
             matchDetail.class.map( (c, i) =>
-              value === i &&
-              !data.status && data.status !== 'reward not create' &&
+              value === i && c &&
+              data && !data.status &&
               data.filter( item =>{
                 return item.classno === c.classno
-              }).map( (d, i) =>
-                <RewardContainer key={d.userid}
-                  token={token}
-                  setCSRFToken={setCSRFToken}
-                  matchid={matchid}
-                  handleSnackBar={handleSnackBar}
-                  data={d}
-                  setData={setData}
-                  setMatchDetail={setMatchDetail}
-                  editting={editting}/>
-              )
+              }).map( (d, i) =>{
+                return d && (
+                  <RewardContainer key={d.userid}
+                    token={token}
+                    setCSRFToken={setCSRFToken}
+                    matchid={matchid}
+                    handleSnackBar={handleSnackBar}
+                    data={d}
+                    setData={setData}
+                    setMatchDetail={setMatchDetail}
+                    editting={editting}/>
+                );
+              })
             )
           }
-          { data.status && data.status === 'reward not create' &&
+          { data && data.status &&
             <ListItem>
-              <ListItemText className={classes.listText} primary='Please create reward' />
+              <ListItemText className={classes.listText} primary={data.status} />
             </ListItem>
           }
         </List>

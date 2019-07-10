@@ -24,14 +24,14 @@ const useStyles = makeStyles(theme => ({
 function TabContainer(props) {
   const classes = useStyles()
   const { data, userscore, matchClass, matchid, reward } = props
-
   const rewardSelected = !reward.status && reward.status !== 'reward not create' && reward.status !== 'need to login admin account' && reward.filter( item =>{
-    return item.classno === matchClass.classno
+    return (item.classno === matchClass.classno && item)
   })
   return (
     <React.Fragment>
       <div style={{ display: 'flex' }}>
         <div style={{ flex: 1 }}></div>
+        {/**/}
         <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} />
         <PrintPDF data={data} userscore={userscore} matchClass={matchClass}/>
       </div>
@@ -90,7 +90,6 @@ export default function Scoreboard(props) {
         action: 'reward',
         matchid: matchid
     }, (csrf, d) =>{
-      console.log(d);
       setCSRFToken(csrf)
       setReward(d)
     })
@@ -110,6 +109,7 @@ export default function Scoreboard(props) {
         >
           { matchClass &&
             matchClass.map( d=>
+              d &&
               <StyledTab key={d.classname} label={d.classname} />
             )
           }
@@ -117,14 +117,14 @@ export default function Scoreboard(props) {
       </Paper>
       { matchClass && reward &&
         matchClass.map((d,i)=>{
-            return(
-              <React.Fragment key={i}>
-                {
-                  value === i &&
-                  <TabContainer key={d.classname} data={data} userscore={userscore} matchClass={d} reward={reward}></TabContainer>
-                }
-              </React.Fragment>
-            );
+          return d && (
+            <React.Fragment key={i}>
+              {
+                value === i &&
+                <TabContainer key={d.classname} data={data} userscore={userscore} matchClass={d} reward={reward}></TabContainer>
+              }
+            </React.Fragment>
+          );
         })
       }
     </div>

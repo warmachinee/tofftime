@@ -186,13 +186,13 @@ export default function MatchClass(props) {
       <List className={classes.root}>
         { lists &&
           lists.map( (d, i) =>{
-            return(
+            return d && (
               <ListItem key={i}>
                 { classAction === 'edit' ?
                   <ThemeProvider theme={theme}>
                     <TextField
                       autoFocus
-                      value={arrEdit[i]}
+                      value={arrEdit[i] || ''}
                       onChange={e =>handleEditClass(d, e, i)}
                     />
                   </ThemeProvider>
@@ -221,7 +221,7 @@ export default function MatchClass(props) {
             <ThemeProvider theme={theme}>
               <TextField
                 autoFocus
-                value={text}
+                value={text || ''}
                 onChange={e =>setText(e.target.value)}
                 onKeyPress={e =>handleKeyPress(e.key)}
               />

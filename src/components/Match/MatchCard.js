@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
+import * as API from '../../api'
 
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) =>({
     },
   },
   cardMedia: {
-    maxHeight: 200,
+    maxHeight: 140,
     minHeight: 140
   },
   cardMobile: {
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme) =>({
     maxWidth: 345,
   },
   cardMobileMedia: {
-    maxHeight: 180,
+    maxHeight: 140,
     minHeight: 140
   },
   cardMobileAction: {
@@ -81,14 +82,15 @@ export default function MatchCard(props) {
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false)
   const { data } = props
-  const matchPicture = data.picture?('https://tofftime.com/' + data.picture):null
+  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const matchPicture = data.picture?(hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture):null
 
   function expandHandler(){
     setExpanded(!expanded)
   }
   const renderCard = (
     <Card className={classes.card}>
-      <div style={{ padding: 8, paddingBottom: 0, paddingLeft: 16, height: 150 }}>
+      <div style={{ padding: 8, paddingBottom: 0, paddingLeft: 16, height: 180 }}>
         <Typography component="div">
           <Box fontWeight={600} fontSize="h6.fontSize" m={1}>
             {data.title}

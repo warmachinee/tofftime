@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 import { fade, makeStyles } from '@material-ui/core/styles';
 import * as API from '../api'
@@ -122,10 +121,11 @@ const useStyles = makeStyles(theme => ({
       },
     },
   },
+
 }));
 
 function HideOnScroll(props) {
-  const { children, window } = props;
+  const { children, window, setCSRFToken } = props;
   const trigger = useScrollTrigger({ target: window ? window() : undefined });
 
   return (
@@ -135,25 +135,13 @@ function HideOnScroll(props) {
   );
 }
 
-HideOnScroll.propTypes = {
-  children: PropTypes.node.isRequired,
-  window: PropTypes.func,
-};
-
 function Header(props) {
   const classes = useStyles();
-  const { response, sess } = props
+  const { setResponse, response, sess, setCSRFToken } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const container = React.useRef(null);
-  const auth = response && response.status
+  const auth = response
 
-  async function handleLogout(){
-    const res = await API.xhrGet('logout')
-    console.log(res);
-    /*
-    setCSRFToken(res.token)
-    menuCloseHandler()*/
-  }
 
   function menuOpenHandler(event) {
     setAnchorEl(event.currentTarget);
@@ -161,6 +149,36 @@ function Header(props) {
 
   function menuCloseHandler() {
     setAnchorEl(null);
+  }
+
+  function handleLogin(){
+    if(anchorEl){
+      menuCloseHandler()
+      props.handleOpen()
+    }else{
+      props.handleOpen()
+    }
+  }
+
+  async function handleGetToken(){
+    const res = await API.xhrGet('getcsrf')
+    setCSRFToken(res.token)
+    try {
+      setResponse('logged out')
+      menuCloseHandler()
+    }
+    catch(err) {
+      console.log(err.message);
+    }
+  }
+
+  async function handleLogout(){
+    const data = await API.xhrGet('logout')
+    if( data && data.response.status === 'success' ){
+      await handleGetToken()
+    }else{
+      console.log(data);
+    }
   }
 
   React.useEffect(()=>{
@@ -200,22 +218,19 @@ function Header(props) {
               />
             </div>
             <div className={classes.grow} />
-
-            { (
-              ( auth === 'success' ) || sess || sess.status === 1
-              ) &&
+            <div className={classes.moreIcon}>
+              <IconButton
+                edge="end"
+                aria-label="Show more"
+                aria-haspopup="true"
+                color="inherit"
+                onClick={menuOpenHandler}
+              >
+                <MoreIcon />
+              </IconButton>
+            </div>
+            { ( auth === 'logged in' || sess && sess.status === 1 ) &&
               <React.Fragment>
-                <div className={classes.moreIcon}>
-                  <IconButton
-                    edge="end"
-                    aria-label="Show more"
-                    aria-haspopup="true"
-                    color="inherit"
-                    onClick={menuOpenHandler}
-                  >
-                    <MoreIcon />
-                  </IconButton>
-                </div>
                 <div className={classes.afterLoginIcon}>
                   {/*<IconButton
                     color="inherit"
@@ -231,9 +246,9 @@ function Header(props) {
                 </div>
               </React.Fragment>
             }
-            { !( auth === 'success' || sess && sess.status === 1 ) &&
+            { !( auth === 'logged in' || sess && sess.status === 1 ) && window.innerWidth > 600 &&
               <Button className={classes.loginBtn} color="inherit"
-                onClick={props.handleOpen}>Login</Button>
+                onClick={handleLogin}>Login</Button>
             }
           </Toolbar>
         </AppBar>
@@ -246,17 +261,24 @@ function Header(props) {
           open={Boolean(anchorEl)}
           onClose={menuCloseHandler}
         >
-          { ( window.location.pathname === '/user' ) && sess && ( sess.status === 1 ) &&
+          { window.location.pathname === '/user' && (auth === 'logged in' || sess && sess.status === 1) &&
             <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
             </Link>
           }
-          { ( window.location.pathname !== '/user' ) && sess && ( sess.status === 1 ) &&
+          { window.location.pathname === '/' && (auth === 'logged in' || sess && sess.status === 1) &&
             <Link to="/user" style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>User</MenuItem>
             </Link>
           }
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          { ( auth === 'logged in' || sess && sess.status === 1 ) &&
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          }
+
+          { !( auth === 'logged in' || sess && sess.status === 1 ) &&
+            <MenuItem onClick={handleLogin}>Login</MenuItem>
+          }
+          <div></div>
         </Menu>
       </Portal>
       <div ref={container} />

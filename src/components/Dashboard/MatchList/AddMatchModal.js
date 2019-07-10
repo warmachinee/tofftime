@@ -143,7 +143,7 @@ export default function AddMatchModal(props){
                 (item.title.toLowerCase().search(searchUser.toLowerCase()) !== -1)
               )
             }).slice(0, dataSliced).map(value => {
-            return (
+            return value && (
               <ListItem key={value.title + `(${value.matchid})`} role={undefined} dense button
                 onClick={()=>handleAddMatch(value)}>
                 <ListItemIcon>

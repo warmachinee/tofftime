@@ -45,9 +45,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   back: {
-    position: 'absolute',
-    top: -12,
-    left: 8,
     backgroundColor: 'white',
     '&:hover': {
       backgroundColor: fade(teal[600], 0.25),
@@ -93,7 +90,7 @@ const StyledText = withStyles(theme => ({
 export default function Match(props){
   const classes = useStyles();
   const { token, setCSRFToken, handleSnackBar } = props
-  const [ data, setData ] = React.useState([])
+  const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ editting, setEditting ] = React.useState(false)
 
@@ -146,9 +143,11 @@ export default function Match(props){
 
   return(
     <div className={classes.root}>
-      <IconButton className={classes.back} >
-        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-      </IconButton>
+      <div style={{ width: '100%' }}>
+        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+        </IconButton>
+      </div>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Match List
@@ -175,6 +174,7 @@ export default function Match(props){
         </ListItem>
         { data &&
           data.map( d =>
+            d &&
             <React.Fragment key={d.matchid}>
               <ListItem className={classes.tableRow}>
                 <ListItemText inset={ window.innerWidth > 600 } primary={d.title} className={classes.tableTitle}/>

@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: 8,
   },
   snackbarContent: {
-    backgroundColor: green[500],
+    backgroundColor: 'black',
   },
   closeIcon: {
     fontSize: 20,

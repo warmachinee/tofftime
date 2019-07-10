@@ -374,6 +374,7 @@ export default function MBPlayerBody(props){
                 matchDetail.class.filter( item =>{
                   return item.classno === selectedClass
                 }).map( d =>
+                  d &&
                   <div key={d.classname} style={{ color: '#3f51b5', fontWeight: 600, padding: 12, marginTop: 'auto' }}>{d.classname}</div>
                 )
                 : <div style={{ color: '#3f51b5', fontWeight: 600, padding: 12, marginTop: 'auto' }}>Class</div>
@@ -420,7 +421,7 @@ export default function MBPlayerBody(props){
                 (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
               )
             }).slice(0, dataSliced).map(value => {
-            return (
+            return value && (
               <ListItem key={value.userid} role={undefined} button onClick={()=>
                   ( editting || edittingClass )?
                   handleToggle(value):
@@ -457,6 +458,7 @@ export default function MBPlayerBody(props){
                     matchDetail.class.filter( d =>{
                       return d.classno === value.classno
                     }).map( d =>
+                      d &&
                       <ListItemText key={d.classname + `(${value.userid})`} className={classes.listClass} primary={d.classname} />
                     )
                   )
@@ -503,6 +505,7 @@ export default function MBPlayerBody(props){
         <MenuItem onClick={()=>handleSelectedClass(0)}>{"-"}</MenuItem>
         { matchDetail && matchDetail.class &&
           matchDetail.class.map( (d, i) =>
+            d &&
             <MenuItem key={"i : " + i + " data: " + d} onClick={()=>handleSelectedClass(d)}>{d.classname}</MenuItem>
           )
         }

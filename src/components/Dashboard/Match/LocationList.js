@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 export default function LocationList(props){
   const classes = useStyles();
   const { token, setCSRFToken, setSelectedField, handleSnackBar } = props
-  const [ data, setData ] = React.useState([])
+  const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ editting, setEditting ] = React.useState(false)
   const [ selected, setSelected ] = React.useState('')
@@ -81,18 +81,20 @@ export default function LocationList(props){
       </div>
       <List>
         { data &&
-          data.map( d =>
-            <ListItem key={d.fieldid} button onClick={()=>setSelectedField(d)}>
-              <ListItemText primary={d.fieldname}/>
-              { editting &&
-                <ListItemSecondaryAction>
-                  <IconButton onClick={()=>handleOpen(d)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              }
-            </ListItem>
-          )
+          data.map( d =>{
+            return d && (
+              <ListItem key={d.fieldid} button onClick={()=>setSelectedField(d)}>
+                <ListItemText primary={d.fieldname}/>
+                { editting &&
+                  <ListItemSecondaryAction>
+                    <IconButton onClick={()=>handleOpen(d)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                }
+              </ListItem>
+            );
+          })
         }
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>

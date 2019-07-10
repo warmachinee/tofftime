@@ -17,9 +17,11 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 import Input from '@material-ui/core/Input';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
@@ -52,18 +54,76 @@ const useStyles = makeStyles(theme => ({
   },
   margin: {
     width: '100%',
-    margin: 4,
-    [theme.breakpoints.up(500)]: {
-      margin: theme.spacing(1),
+    marginTop: 8
+  },
+  grid: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    [theme.breakpoints.up(650)]: {
+      flexDirection: 'row'
+    },
+  },
+  gridChild1: {
+    width: '100%',
+    [theme.breakpoints.up(650)]: {
+      width: '60%',
+    },
+  },
+  gridChild2: {
+    position: 'relative',
+    width: '100%',
+    [theme.breakpoints.up(650)]: {
+      width: '40%',
+      margin: '64px 0 0 16px'
     },
   },
   title: {
     color: teal[900],
     fontSize: 18
   },
+  textMatchname: {
+    width: '100%',
+    marginTop: 8,
+  },
+  matchImg: {
+    width: '100%',
+    display: 'block',
+    backgroundColor: '#ccc',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
+  },
+  matchImgTemp: {
+    width: '100%',
+    display: 'flex',
+    backgroundColor: grey[400],
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
+  },
+  matchFile: {
+    position: 'relative',
+    overflow: 'hidden',
+    display: 'inline-block',
+  },
+  inputFile: {
+    cursor: 'pointer',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    opacity: 0,
+    display: 'inline-block',
+    zIndex: 1,
+    width: '100%',
+    height: '100%'
+  },
   normal: {
     color: teal[900],
-    marginTop: 16
+    paddingTop: 20,
+    paddingBottom: 4
   },
   expandIcon: {
     position: 'absolute',
@@ -77,7 +137,8 @@ const useStyles = makeStyles(theme => ({
   editButton: {
     position: 'absolute',
     right: 16,
-    top: 8,
+    top: 80,
+    zIndex: 1
   },
   buttonControl: {
     display: 'flex',
@@ -85,9 +146,11 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     flex: 1,
-    margin: 4,
-    padding: 8
+    marginTop: 16,
+    padding: 16,
+    width: '100%'
   }
+
 }))
 
 const StyledTextButton = withStyles(theme => ({
@@ -110,6 +173,16 @@ const StyledButton = withStyles(theme => ({
   },
 }))(Button);
 
+const StyledIconButton = withStyles(theme => ({
+  root: {
+    backgroundColor: grey[400],
+    '&:hover': {
+      backgroundColor: grey[100],
+    },
+  },
+}))(IconButton);
+
+
 const GreenRadio = withStyles({
   root: {
     color: teal[400],
@@ -126,20 +199,46 @@ const theme = createMuiTheme({
   },
 });
 
+const datePickers = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+  overrides: {
+    MuiDialog: {
+      paperScrollPaper: {
+        maxHeight: 'calc(100% - 24px)'
+      }
+    },
+    MuiPickersToolbar: {
+      toolbar: {
+        display: window.innerHeight >= 520? 'flex' : 'none',
+      }
+    },
+    MuiPickersModal: {
+      dialog: {
+        overflow: 'auto'
+      }
+    }
+  },
+});
+
 function MBOverviewBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, selected, handleSnackBar } = props
-  const [ data, setData ] = React.useState([])
+  const { token, setCSRFToken, setData, data, matchid, handleSnackBar } = props
   const [ editting, handleEditting ] = React.useState(false)
   const [ open, setOpen ] = React.useState(false);
   const [ modalType, setModalType ] = React.useState('');
+  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const matchPicture = data?(data.picture && ( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture )):null
+  const imgRef = React.useRef(null)
+  const [ fileHover, handleFileHover ] = React.useState(false);
 
-  const [ matchName, setMatchName ] = React.useState('');
+  const [ selectedMatchName, setSelectedMatchName ] = React.useState('');
   const [ selectedField, setSelectedField ] = React.useState({});
-  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState(/*data.matchtype.toString()*/'1');
-  const [ selectedMatchType, setSelectedMatchType ] = React.useState(/*data.scorematch.toString()*/'1');
+  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('0');
+  const [ selectedMatchType, setSelectedMatchType ] = React.useState('');
   const [ selectedDate, setSelectedDate ] = React.useState(new Date());
-
+  const [ selectedFile, setSelectedFile ] = React.useState('');
 
   const handleOpen = (d) => {
     setOpen(true);
@@ -151,12 +250,10 @@ function MBOverviewBody(props){
   };
 
   function handlePrivacy(event) {
-    console.log(event.target.value);
     setSelectedPrivacy(event.target.value);
   }
 
   function handleMatchType(event) {
-    console.log(event.target.value);
     setSelectedMatchType(event.target.value);
   }
 
@@ -180,16 +277,9 @@ function MBOverviewBody(props){
     }
   }
 
-  function handleSave(d){
-    console.log(d);
-    handleEditting(false)
-  }
-
   function handlePicture(e){
-    const fd = new FormData()
-    console.log(e.target.files[0]);
-    fd.append('image',e.target.files[0],e.target.files[0].name)
-    console.log(fd);
+    const file = event.target.files
+    setSelectedFile(file[0])
   }
 
   async function handleEditMatch(){
@@ -198,9 +288,13 @@ function MBOverviewBody(props){
       token? token : res.token,
       'matchsystem', {
         action: 'edit',
-        matchid: selected.matchid,
+        matchid: matchid,
         fieldid: selectedField.fieldid,
-        matchname: matchName,
+        matchname: selectedMatchName,
+        privacy: parseInt(selectedPrivacy),
+        scorematch: parseInt(selectedMatchType),
+        photopath: selectedFile && true,
+        matchimage: selectedFile,
         matchdate: handleConvertDate(selectedDate),
     }, (csrf, d) =>{
       handleSnackBar({
@@ -209,18 +303,23 @@ function MBOverviewBody(props){
         variant: d.status === 'success' ? d.status : 'error'
       })
       setCSRFToken(csrf)
-      setData(d)
+      try {
+        handleFetch()
+      }
+      catch(err) {
+        console.log(err.message);
+      }
     })
   }
 
   async function handleFetch(){
     const res = await token? token : API.xhrGet('getcsrf')
-    if(selected){
+    if(matchid){
       await API.xhrPost(
         token? token : res.token,
         'loadmatch', {
           action: 'detail',
-          matchid: selected.matchid
+          matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         setData(d)
@@ -233,78 +332,158 @@ function MBOverviewBody(props){
   },[ ])
 
   return(
-    <div style={{ padding: 8, position: 'relative' }}>
+    <div style={{ padding: 8, marginTop: 24, marginLeft: 'auto', marginRight: 'auto', maxWidth: 900 }}>
       <StyledTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>Edit</StyledTextButton>
-      <div style={{ marginTop: 24 }}>
-        <ThemeProvider theme={theme}>
-          {editting?
-            <TextField
-              className={classes.margin}
-              label="Match name"
-              value={ data && ( matchName ? matchName : data.title ) }
-              onChange={e =>setMatchName(e.target.value)}
-            />
-            :
-            <Typography component="div" className={classes.margin}>
-              <Box className={classes.normal}>
-                { data && ( matchName ? matchName : data.title ) }
-              </Box>
-            </Typography>
-          }
-          <FormControl component="fieldset" className={classes.margin}
-            disabled={!editting}>
-            <RadioGroup value={selectedPrivacy} onChange={handlePrivacy} row>
-              <FormControlLabel
-                value={'0'}
-                control={<GreenRadio />}
-                label="Public"
-                labelPlacement="end"
+      <div className={classes.grid}>
+        <div className={classes.gridChild1}>
+          <ThemeProvider theme={theme}>
+            {editting?
+              <TextField
+                className={classes.textMatchname}
+                label="Match name"
+                value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || 'Match name' }
+                onChange={e =>setSelectedMatchName(e.target.value)}
               />
-              <FormControlLabel
-                value={'1'}
-                control={<GreenRadio />}
-                label="Private"
-                labelPlacement="end"
-              />
-            </RadioGroup>
-          </FormControl>
-          <FormControl component="fieldset" className={classes.margin}
-            disabled={!editting}>
-            <RadioGroup value={selectedMatchType} onChange={handleMatchType} row>
-              <FormControlLabel
-                value={'0'}
-                control={<GreenRadio />}
-                label="Amateur"
-                labelPlacement="end"
-              />
-              <FormControlLabel
-                value={'1'}
-                control={<GreenRadio />}
-                label="Pro"
-                labelPlacement="end"
-              />
-            </RadioGroup>
-          </FormControl>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              clearable
+              :
+              <Typography component="div" className={classes.textMatchname}>
+                <Box className={classes.normal}>
+                  { data && ( selectedMatchName ? selectedMatchName : data.title ) || 'Match name' }
+                </Box>
+              </Typography>
+            }
+          </ThemeProvider>
+          <div style={{ display: 'flex', marginTop: 16 }}>
+            <ThemeProvider theme={datePickers}>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                  clearable
+                  disabled={!editting}
+                  className={classes.margin}
+                  label="Date"
+                  inputVariant="outlined"
+                  format="dd/MM/yyyy"
+                  value={ data?( selectedDate ? selectedDate : new Date(handleStringToDate(data.date)) ):new Date() }
+                  onChange={date => handleDateChange(date)}
+                />
+              </MuiPickersUtilsProvider>
+            </ThemeProvider>
+            <StyledTextButton
               disabled={!editting}
-              className={classes.margin}
-              label="Date"
-              inputVariant="outlined"
-              format="dd/MM/yyyy"
-              value={ data && ( selectedDate ? selectedDate : new Date(handleStringToDate(data.date)) ) }
-              onChange={date => handleDateChange(date)}
-            />
-          </MuiPickersUtilsProvider>
-          <StyledTextButton disabled={!editting} onClick={()=>handleOpen('location')} className={classes.button}>
-            {selectedField && ( selectedField.fieldname ? selectedField.fieldname : 'Location') }
-          </StyledTextButton>
-          <StyledTextButton disabled={!editting} onClick={()=>handleOpen('class')} className={classes.button}>Class</StyledTextButton>
-          {/*<Input type="file" onChange={handlePicture} />*/}
-        </ThemeProvider>
+              variant="outlined"
+              style={{ height: 56, width: 108, marginTop: 'auto', marginLeft: 16 }}
+              onClick={()=>handleOpen('class')}>
+              { data?( data.class && !data.class.status &&
+                ( data.class.length >= 2 ? ( data.class.length + ' Classes' ):( data.class.length + ' Class' ) )):'Class'
+              }
+            </StyledTextButton>
+          </div>
+          { ( selectedFile || matchPicture )?
+            <div style={{ position: 'relative', marginTop: 16 }}
+              onMouseEnter={()=>handleFileHover(true)}
+              onMouseLeave={()=>handleFileHover(false)}>
+              <img ref={imgRef}
+                style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
+                className={classes.matchImg} src={ selectedFile ? URL.createObjectURL(selectedFile) : matchPicture } />
+              { editting && imgRef.current &&
+                <div
+                  style={{
+                    display: 'flex',
+                    position: 'absolute',
+                    height: imgRef.current.offsetHeight,
+                    width: imgRef.current.offsetWidth,
+                    top: 0, left: 0,
+                  }}>
+                  <div style={{ flex: 1 }}></div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ flex: 1 }}></div>
+                    <StyledIconButton className={classes.matchFile}>
+                      <input className={classes.inputFile} type="file" onChange={handlePicture} />
+                      <CloudUploadIcon fontSize="large" style={{ color: teal[400] }}/>
+                    </StyledIconButton>
+                    <div style={{ flex: 1 }}></div>
+                  </div>
+                  <div style={{ flex: 1 }}></div>
+                </div>
+              }
+            </div>
+            :
+            <div style={{ position: 'relative', marginTop: 16 }}>
+              <div className={classes.matchImgTemp}
+                style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
+                <div style={{ flex: 1 }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ flex: 1 }}></div>
+                  { editting &&
+                    <StyledIconButton className={classes.matchFile}>
+                      <input className={classes.inputFile} type="file" onChange={handlePicture} />
+                      <CloudUploadIcon fontSize="large" style={{ color: teal[500] }}/>
+                    </StyledIconButton>
+                  }
+                  <div style={{ flex: 1 }}></div>
+                </div>
+                <div style={{ flex: 1 }}></div>
+              </div>
+            </div>
+          }
+        </div>
+        <div className={classes.gridChild2}>
+          <ThemeProvider theme={theme}>
+            <StyledTextButton disabled={!editting}
+              variant="outlined"
+              className={classes.button}
+              onClick={()=>handleOpen('location')}>
+              { data?( selectedField && ( selectedField.fieldname ? selectedField.fieldname : data.location ) ):'Location' }
+            </StyledTextButton>
+            <FormControl component="fieldset" className={classes.margin}
+              style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
+              disabled={!editting}>
+              <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
+              <RadioGroup
+                value={
+                  data?( selectedPrivacy ? selectedPrivacy : ( data.matchtype && data.matchtype.toString()) ):'0'
+                }
+                onChange={handlePrivacy} row>
+                <FormControlLabel
+                  value={'0'}
+                  control={<GreenRadio />}
+                  label="Public"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  value={'1'}
+                  control={<GreenRadio />}
+                  label="Private"
+                  labelPlacement="end"
+                />
+              </RadioGroup>
+            </FormControl>
+            <FormControl component="fieldset" className={classes.margin}
+              style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
+              disabled={!editting}>
+              <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
+              <RadioGroup
+                value={
+                  data?( selectedMatchType ? selectedMatchType : ( data.scorematch && data.scorematch.toString()) ):'0'
+                }
+                onChange={handleMatchType} row>
+                <FormControlLabel
+                  value={'1'}
+                  control={<GreenRadio />}
+                  label="Pro"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  value={'0'}
+                  control={<GreenRadio />}
+                  label="Amateur"
+                  labelPlacement="end"
+                />
+              </RadioGroup>
+            </FormControl>
+          </ThemeProvider>
+        </div>
       </div>
-      { editting &&
+      { editting?
         <div className={classes.buttonControl}>
           <div style={{ flex: 2 }}></div>
           <StyledTextButton className={classes.button}
@@ -312,15 +491,17 @@ function MBOverviewBody(props){
           <StyledButton className={classes.button}
             onClick={handleEditMatch}>Save</StyledButton>
         </div>
+        :
+        <div style={{ height: 88 }}></div>
       }
       <TemplateDialog open={open} handleClose={handleClose}>
         {(modalType && modalType === 'location')?
           <Location token={token} setCSRFToken={setCSRFToken} selectedField={selectedField} setSelectedField={setSelectedField}
             handleSnackBar={handleSnackBar}/>
           :
-          <MatchClass token={token} setCSRFToken={setCSRFToken} data={data.status !== 'class database error' && data.class}
+          <MatchClass token={token} setCSRFToken={setCSRFToken} data={data && data.status !== 'class database error' && data.class}
             handleSnackBar={handleSnackBar}
-            matchid={selected?selected.matchid:null} setData={setData}/>
+            matchid={matchid} setData={setData}/>
         }
       </TemplateDialog>
     </div>
@@ -329,14 +510,14 @@ function MBOverviewBody(props){
 
 export default function MBOverview(props){
   const classes = useStyles();
-  const { token, setCSRFToken, selected, handleSnackBar } = props
-  const [ expanded, setExpanded ] = React.useState(false)
+  const { token, setCSRFToken, handleSnackBar, setData, data, matchid } = props
+  const [ expanded, setExpanded ] = React.useState(true)
 
   function expandHandler(){
     setExpanded(!expanded)
   }
   return(
-    <Paper className={classes.root} onClick={()=>!expanded ? expandHandler():console.log()}>
+    <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Overview
@@ -350,7 +531,13 @@ export default function MBOverview(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <MBOverviewBody token={token} setCSRFToken={setCSRFToken} selected={selected} handleSnackBar={handleSnackBar}/>
+        <MBOverviewBody
+          token={token}
+          setCSRFToken={setCSRFToken}
+          data={data}
+          setData={setData}
+          matchid={matchid}
+          handleSnackBar={handleSnackBar}/>
       </Collapse>
     </Paper>
   );

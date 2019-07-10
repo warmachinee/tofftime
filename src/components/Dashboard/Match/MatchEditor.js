@@ -1,6 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, fade } from '@material-ui/core/styles';
+import * as API from '../../../api'
 
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
@@ -49,9 +50,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   back: {
-    position: 'absolute',
-    top: -12,
-    left: 8,
     backgroundColor: 'white',
     '&:hover': {
       backgroundColor: fade(teal[600], 0.25),
@@ -69,28 +67,48 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchEditor(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSelected, selected, handleSnackBar } = props
+  const { token, setCSRFToken, handleSnackBar } = props
+  const matchid = props.computedMatch && props.computedMatch.params.matchparam
+  const [ data, setData ] = React.useState(null)
 
   function handleBack(){
     window.history.go(-1)
-    handleSelected(null)
   }
+
+  async function handleFetch(){
+    const res = await token? token : API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : res.token,
+      'loadmatch', {
+        action: 'detail',
+        matchid: matchid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+    })
+  }
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ ])
 
   return(
     <div className={classes.root}>
-      <IconButton className={classes.back} onClick={handleBack}>
-        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-      </IconButton>
+      <div style={{ width: '100%' }}>
+        <IconButton className={classes.back} onClick={handleBack}>
+          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+        </IconButton>
+      </div>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          {selected && selected.title}({selected && selected.matchid})
+          {data && data.title}
         </Box>
       </Typography>
-      <MBOverview token={token} setCSRFToken={setCSRFToken} selected={selected} handleSnackBar={handleSnackBar}/>
-      <MBPlayer token={token} setCSRFToken={setCSRFToken} matchid={selected && selected.matchid} handleSnackBar={handleSnackBar}/>
-      <MBPlayoff token={token} setCSRFToken={setCSRFToken} matchid={selected && selected.matchid} handleSnackBar={handleSnackBar}/>
-      <MBScoreEditor token={token} setCSRFToken={setCSRFToken} matchid={selected && selected.matchid} handleSnackBar={handleSnackBar}/>
-      <MBReward token={token} setCSRFToken={setCSRFToken} matchid={selected && selected.matchid} handleSnackBar={handleSnackBar}/>
+      <MBOverview token={token} setCSRFToken={setCSRFToken} setData={setData} data={data} matchid={matchid} handleSnackBar={handleSnackBar}/>
+      <MBPlayer token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
+      <MBPlayoff token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
+      <MBScoreEditor token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
+      <MBReward token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
     </div>
   );
 }

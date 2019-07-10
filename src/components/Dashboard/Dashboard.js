@@ -11,6 +11,23 @@ import grey from '@material-ui/core/colors/grey';
 
 import { LDCircular } from '../loading/LDCircular'
 
+const RouteNews = Loadable.Map({
+  loader: {
+    News: () => import(/* webpackChunkName: "MatchList" */'./News/News'),
+  },
+  render(loaded, props) {
+    let Component = loaded.News.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => <LDCircular />
+});
+
 const RouteMatchList = Loadable.Map({
   loader: {
     MatchList: () => import(/* webpackChunkName: "MatchList" */'./MatchList/MatchList'),
@@ -135,6 +152,7 @@ export default function Dashboard(props){
   return(
     <Paper className={classes.root}>
       <Route exact path='/user' component={SystemComponent} />
+      <RouteNews path='/user/news' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
       <RouteMatchList path='/user/matchlist' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
       <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
     </Paper>
