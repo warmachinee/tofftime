@@ -26,7 +26,7 @@ const useStyles = makeStyles( theme =>({
     margin: 'auto',
   },
   slide: {
-    height: 200,
+    maxHeight: 450,
     width: '100%',
     color: 'black',
     display: 'block',
@@ -36,24 +36,6 @@ const useStyles = makeStyles( theme =>({
     backgroundPosition: 'center',
     objectFit: 'cover',
     cursor: 'pointer',
-    [theme.breakpoints.up(400)]: {
-      height: 250,
-    },
-    [theme.breakpoints.up(500)]: {
-      height: 300,
-    },
-    [theme.breakpoints.up(600)]: {
-      height: 350,
-    },
-    [theme.breakpoints.up(750)]: {
-      height: 350,
-    },
-    [theme.breakpoints.up(900)]: {
-      height: 400,
-    },
-    [theme.breakpoints.up(1000)]: {
-      height: 450,
-    },
   },
   arrow: {
     fontSize: '2.75rem',
@@ -131,7 +113,17 @@ function Slider() {
       setIndex(index + 1)
     }
   }
+  const [ ,updateState ] = React.useState()
+  function handleResize(){
+    updateState({})
+  }
 
+  React.useEffect(()=>{
+    window.addEventListener('resize', handleResize)
+    return()=>{
+      window.removeEventListener('resize', handleResize)
+    }
+  },[ window.innerWidth ])
   return (
     <div className={classes.root}>
       <AutoPlaySwipeableViews
@@ -142,9 +134,9 @@ function Slider() {
           d &&
           <div key={d.id}>
             <Link to={`/detail/${d.id}`} style={{ textDecoration: 'none'}}>
-              <img src={d.picture} className={classes.slide} />
+              <img src={d.picture} className={classes.slide} style={{ height: window.innerWidth * .45 }} />
             </Link>
-            <Link to={`/detail/${data.id}`} style={{ textDecoration: 'none'}}>
+            <Link to={`/detail/${d.id}`} style={{ textDecoration: 'none'}}>
               <div className={classes.label}>{
                   d.label.map(text=><React.Fragment key={text}>{text}<br /></React.Fragment>)
                 }</div>

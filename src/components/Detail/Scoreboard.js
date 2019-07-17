@@ -91,7 +91,22 @@ export default function Scoreboard(props) {
         matchid: matchid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setReward(d)
+      if(
+        d.status !== 'no reward' ||
+        d.status !== 'reward not create' ||
+        d.status !== 'wrong matchid' ||
+        d.status !== 'wrong action' ||
+        d.status !== 'wrong params'
+      ){
+        setReward(d)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
     })
   }
 

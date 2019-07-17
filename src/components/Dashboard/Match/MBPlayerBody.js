@@ -1,6 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import * as API from '../../../api'
 
 import Paper from '@material-ui/core/Paper';
@@ -15,23 +16,23 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Slide from '@material-ui/core/Slide';
 
 import DeleteIcon from '@material-ui/icons/Delete';
+import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ClassIcon from '@material-ui/icons/Class';
 import DesktopMacIcon from '@material-ui/icons/DesktopMac';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
+import red from '@material-ui/core/colors/red';
 
 import { LDCircular } from '../../loading/LDCircular'
 
@@ -47,12 +48,17 @@ const AddPlayerModal = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
+    padding: 8,
+    position: 'relative'
+  },
+  listRoot: {
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24
+    marginTop: 24,
+    overflow: 'auto',
   },
   listText:{
     width: '100%',
@@ -65,6 +71,91 @@ const useStyles = makeStyles(theme => ({
   margin: {
     margin: theme.spacing(1),
   },
+  controls: {
+    position: 'relative',
+    cursor: 'auto',
+    display: 'block',
+    [theme.breakpoints.up(700)]: {
+      display: 'flex',
+    },
+  },
+  addPlayerButton: {
+    marginTop: 'auto',
+    padding: '8px 16px 8px 0',
+    width: '100%',
+    color: theme.palette.getContrastText(red[600]),
+    backgroundColor: red[600],
+    '&:hover': {
+      backgroundColor: red[800],
+    },
+    [theme.breakpoints.up(700)]: {
+      width: 'auto'
+    },
+  },
+  controlsEdit: {
+    marginTop: 16,
+    borderRadius: 4,
+    border: `2px solid ${teal[600]}`,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    [theme.breakpoints.up(500)]: {
+      marginTop: 16,
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'row',
+    },
+    [theme.breakpoints.up(700)]: {
+      marginTop: 0,
+      width: 'auto',
+      display: 'block',
+    },
+  },
+  controlsEditButton: {
+    marginTop: 'auto',
+    padding: 16,
+    [theme.breakpoints.up(500)]: {
+      padding: '8px 16px',
+    },
+  },
+  controlsEditButton2: {
+    marginTop: 2,
+    marginBottom: 2,
+    padding: 16,
+    [theme.breakpoints.up(500)]: {
+      padding: '8px 36px',
+    },
+  },
+  controlsEditButtonIcon: {
+    position: 'absolute',
+    [theme.breakpoints.up(500)]: {
+      position: 'relative',
+      marginRight: 8,
+    },
+  },
+  controlsSecondary: {
+    cursor: 'auto',
+    justifyContent: 'flex-end',
+    paddingTop: 0,
+    paddingBottom: 0
+  },
+  selectedClassText: {
+    color: '#3f51b5',
+    fontWeight: 600,
+    paddingLeft: 12,
+    paddingBottom: 8,
+    marginTop: 'auto'
+  },
+  searchBox: {
+    width: '100%',
+    [theme.breakpoints.up(600)]: {
+      width: 'auto'
+    },
+  },
+  arrowUpward: {
+    color: 'white',
+  }
 
 }))
 
@@ -78,9 +169,24 @@ const GreenButton = withStyles(theme => ({
   },
 }))(Button);
 
+const GreenTextButton = withStyles(theme => ({
+  root: {
+    color: teal[600],
+    '&:hover': {
+      backgroundColor: teal[100],
+    },
+  },
+}))(Button);
+
+const theme = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+});
+
 export default function MBPlayerBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar } = props
+  const { token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ editting, setEditting ] = React.useState(false);
   const [ edittingClass, setEdittingClass ] = React.useState(false);
   const [ edittingDisplay, setEdittingDisplay ] = React.useState(false);
@@ -195,14 +301,12 @@ export default function MBPlayerBody(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error'
+          variant: d.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         try {
           handleFetch()
-        }
-        catch(err) {
-          console.log(err.message);
-        }
+        }catch(err) { console.log(err.message) }
       })
     }
   }
@@ -222,15 +326,13 @@ export default function MBPlayerBody(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error'
+          variant: d.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         setChecked([])
         try {
           handleFetch()
-        }
-        catch(err) {
-          console.log(err.message);
-        }
+        }catch(err) { console.log(err.message) }
       })
     }
   }
@@ -257,15 +359,13 @@ export default function MBPlayerBody(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'remove member success' ? 'success' : 'error'
+          variant: d.status === 'remove member success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         setChecked([])
         try {
           handleFetch()
-        }
-        catch(err) {
-          console.log(err.message);
-        }
+        }catch(err) { console.log(err.message) }
       })
     }
   }
@@ -280,12 +380,22 @@ export default function MBPlayerBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setData(d)
-        try {
-          handleFetchMatchDetail()
-        }
-        catch(err) {
-          console.log(err.message);
+        if(
+          d.status !== 'no data' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setData(d)
+          try {
+            handleFetchMatchDetail()
+          }catch(err) { console.log(err.message) }
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
         }
       })
     }
@@ -301,7 +411,21 @@ export default function MBPlayerBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setMatchDetail(d)
+        if(
+          d.status !== 'class database error' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setMatchDetail(d)
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
       })
     }
   }
@@ -310,185 +434,242 @@ export default function MBPlayerBody(props){
     handleFetch()
   },[ ])
 
+  const [ ,updateState ] = React.useState(null)
+  function resizeHandler(){
+    updateState({})
+  }
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  }, [ window.innerWidth ])
+
   return(
-    <div style={{ padding: 8, position: 'relative' }}>
-      <List className={classes.root}>
-        <ListItem style={{ cursor: 'auto' }}>
-          <Button style={{ marginTop: 'auto', padding: '6px 8px' }} variant="contained" color="secondary"
+    <div className={classes.root}>
+      <List className={classes.listRoot}>
+        <ListItem className={classes.controls}>
+          <Button className={classes.addPlayerButton} variant="contained"
+            style={{ zIndex: 1300 }}
             onClick={handleOpen}>
-            <AddCircleIcon style={{ marginRight: 8 }}/>
+            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
             Add player
           </Button>
           <div style={{ flex: 1 }}></div>
-          { !editting && !edittingClass &&
-            (
-              edittingDisplay?
-              <Button style={{ marginLeft: 8 }} onClick={handleDoneEdittingDisplay}>Done</Button>
-              :
-              <Tooltip title="Display" placement="top">
-                <IconButton color="primary" style={{ marginTop: 'auto' }} onClick={handleEdittingDisplay}>
-                  <DesktopMacIcon />
-                </IconButton>
-              </Tooltip>
-            )
-          }
-          { !editting && !edittingDisplay &&
-            (
-              edittingClass?
-              <React.Fragment>
-                <GreenButton onClick={handleSave}>Save</GreenButton>
-                <Button style={{ marginLeft: 8 }} onClick={handleDoneEdittingClass}>Done</Button>
-              </React.Fragment>
-              :
-              <Button onClick={()=>setEdittingClass(!edittingClass)}>Edit Class</Button>
-            )
-          }
-          { !edittingClass && !edittingDisplay &&
-            (
-              editting?
-              <Button style={{ marginLeft: 8 }} onClick={handleDoneEditting}>Done</Button>
-              :
-              <Button onClick={()=>setEditting(!editting)}>Edit</Button>
-            )
-          }
-
+          <div
+            className={classes.controlsEdit}
+            style={{
+              border: edittingClass && '0 solid',
+              justifyContent: (editting || edittingClass || edittingDisplay)? 'flex-end' : 'space-around',
+            }}>
+            { !editting && !edittingClass &&
+              (
+                edittingDisplay?
+                <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>Done</GreenTextButton>
+                :
+                <GreenTextButton className={classes.controlsEditButton} onClick={handleEdittingDisplay}>
+                  <DesktopMacIcon
+                    style={{ left:
+                      window.innerWidth > 500? 0 :
+                      window.innerWidth > 450? '20%':'10%'
+                    }}
+                    className={classes.controlsEditButtonIcon}/>
+                  Display
+                </GreenTextButton>
+              )
+            }
+            { !editting && !edittingDisplay && /*style={{ padding: '8px 36px', margin: '2px 0' }}*/
+              (
+                edittingClass?
+                <React.Fragment>
+                  <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
+                  <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
+                </React.Fragment>
+                :
+                <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingClass(!edittingClass)}>
+                  <ClassIcon
+                    style={{ left:
+                      window.innerWidth > 500? 0 :
+                      window.innerWidth > 450? '20%':'10%'
+                    }}
+                    className={classes.controlsEditButtonIcon}/>
+                  Class
+                </GreenTextButton>
+              )
+            }
+            { !edittingClass && !edittingDisplay &&
+              (
+                editting?
+                <GreenButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
+                  onClick={handleDoneEditting}>Done</GreenButton>
+                :
+                <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
+                  <DeleteIcon
+                    style={{ left:
+                      window.innerWidth > 500? 0 :
+                      window.innerWidth > 450? '20%':'10%'
+                    }}
+                    className={classes.controlsEditButtonIcon}/>
+                  Remove
+                </GreenTextButton>
+              )
+            }
+          </div>
         </ListItem>
-        <ListItem style={{ cursor: 'auto' }}>
-          <FormControl className={classes.margin}>
-            <InputLabel>Search player</InputLabel>
-            <Input
-              value={searchUser}
-              onChange={e =>setSearchUser(e.target.value)}
-              endAdornment={
-                <InputAdornment position="end">
-                  <SearchIcon />
-                </InputAdornment>
-              }
-            />
-          </FormControl>
-          <div style={{ flex: 1 }}></div>
+        <ListItem className={classes.controlsSecondary}>
           { edittingClass &&
             <React.Fragment>
-              { selectedClass !== 0 ?
-                matchDetail && matchDetail.class &&
-                matchDetail.class.filter( item =>{
-                  return item.classno === selectedClass
-                }).map( d =>
-                  d &&
-                  <div key={d.classname} style={{ color: '#3f51b5', fontWeight: 600, padding: 12, marginTop: 'auto' }}>{d.classname}</div>
-                )
-                : <div style={{ color: '#3f51b5', fontWeight: 600, padding: 12, marginTop: 'auto' }}>Class</div>
-              }
-              <Tooltip title="Class" placement="top" style={{ marginTop: 'auto' }}>
-                <IconButton color="primary" onClick={handleMenuClick}>
-                  <ClassIcon />
-                </IconButton>
-              </Tooltip>
+              <div style={{ display: 'flex' }}>
+                <ClassIcon style={{ color: teal[600], marginRight: 4 }}/>
+                <div style={{ color: teal[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedClass !== 0 ? 'Selected Class : ' : 'Select Class :' }</div>
+              </div>
+              <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
+                { selectedClass !== 0?
+                  matchDetail && matchDetail.class &&
+                  matchDetail.class.filter( item =>{
+                    return item.classno === selectedClass
+                  }).map( d =>
+                    d &&
+                    <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
+                  )
+                  : <React.Fragment>No class selected</React.Fragment>
+                }
+              </GreenTextButton>
             </React.Fragment>
           }
           { editting &&
-            <React.Fragment>
-
-              <Tooltip title="Delete" placement="top" style={{ marginTop: 'auto' }}>
-                <IconButton color="primary" onClick={handleRemovePlayer}>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </React.Fragment>
+            <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
+              <DeleteIcon />
+              Remove
+            </GreenTextButton>
+          }
+          { !( editting || edittingClass) &&
+            <div style={{ height: 42 }}></div>
           }
         </ListItem>
-        <ListItem role={undefined} dense
-          style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4, cursor: 'auto' }}>
-          <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText} primary="First name" />
-          <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText} primary="Last name" />
-          <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listClass} primary="Class" />
-          <ListItemSecondaryAction>
-            { editting?
-              <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                <DeleteIcon />
-              </IconButton>
-              :
-              <div style={{ height: 42, width: 42 }}></div>
+        <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
+          <ThemeProvider theme={theme}>
+            <TextField
+              className={classes.searchBox}
+              variant="outlined"
+              placeholder={ !searchUser && "Search player" }
+              value={searchUser}
+              onChange={e =>setSearchUser(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="primary"/>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    { searchUser?
+                      <IconButton onClick={()=>setSearchUser('')}>
+                        <ClearIcon color="inherit" fontSize="small"/>
+                      </IconButton>
+                      :
+                      <div style={{ width: 44 }}></div>
+                    }
+                  </InputAdornment>
+                )
+              }}
+            />
+          </ThemeProvider>
+        </ListItem>
+        <div style={{ overflow: 'auto', position: 'relative' }}>
+          <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
+            <ListItem role={undefined}
+              style={{
+                display: 'flex', backgroundColor: 'black', borderRadius: 4, cursor: 'auto', minWidth: 600,
+              }}>
+              <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText} primary="First name" />
+              <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText} primary="Last name" />
+              <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listClass} primary="Class" />
+              <ListItemIcon style={{ justifyContent: 'flex-end', width: 64, marginRight: 16 }}>
+                <div style={{ height: 42, width: 42 }}></div>
+              </ListItemIcon>
+            </ListItem>
+            { data && !data.status &&
+              data.filter((item)=>{
+                  return (
+                    (item.firstname.search(searchUser) !== -1) ||
+                    (item.firstname.toLowerCase().search(searchUser.toLowerCase()) !== -1)||
+                    (item.lastname.search(searchUser) !== -1) ||
+                    (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
+                  )
+                }).slice(0, dataSliced).map(value => {
+                return value && (
+                  <ListItem key={value.userid} role={undefined} button
+                    style={{ minWidth: 600 }}
+                    onClick={()=>
+                      ( editting || edittingClass )?
+                      handleToggle(value):
+                      ( edittingDisplay?
+                        handleSetDisplay(value.userid)
+                        :
+                        console.log()
+                      )
+                    }>
+                    <ListItemIcon>
+                      { ( editting || edittingClass )?
+                        <Checkbox
+                          edge="start"
+                          checked={checked.indexOf(value) !== -1}
+                          tabIndex={-1}
+                          disableRipple />
+                        :
+                        (edittingDisplay ?
+                          <Checkbox
+                            edge="start"
+                            checked={value.display === 1}
+                            tabIndex={-1}
+                            disableRipple />
+                        :
+                          <div style={{ height: 42, width: 42 }}></div>)
+                      }
+                    </ListItemIcon>
+                    <ListItemText className={classes.listText} primary={value.firstname} />
+                    <ListItemText className={classes.listText} primary={value.lastname} />
+                    { matchDetail && matchDetail.class &&
+                      ( value.classno === 0 ?
+                        <ListItemText className={classes.listClass} primary={"-"} />
+                        :
+                        matchDetail.class.filter( d =>{
+                          return d.classno === value.classno
+                        }).map( d =>
+                          d &&
+                          <ListItemText key={d.classname + `(${value.userid})`} className={classes.listClass} primary={d.classname} />
+                        )
+                      )
+                    }
+                    <ListItemIcon style={{ justifyContent: 'flex-end', width: 64, marginRight: 16 }}>
+                      { editting ?
+                        <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
+                          <DeleteIcon />
+                        </IconButton>
+                        :
+                        <div style={{ height: 42, width: 42 }}></div>
+                      }
+                    </ListItemIcon>
+                  </ListItem>
+                );
+              })
             }
-          </ListItemSecondaryAction>
-        </ListItem>
-        { data && !data.status &&
-          data.filter((item)=>{
-              return (
-                (item.firstname.search(searchUser) !== -1) ||
-                (item.firstname.toLowerCase().search(searchUser.toLowerCase()) !== -1)||
-                (item.lastname.search(searchUser) !== -1) ||
-                (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
-              )
-            }).slice(0, dataSliced).map(value => {
-            return value && (
-              <ListItem key={value.userid} role={undefined} button onClick={()=>
-                  ( editting || edittingClass )?
-                  handleToggle(value):
-                  ( edittingDisplay?
-                    handleSetDisplay(value.userid)
-                    :
-                    console.log()
-                  )
-                }>
-                <ListItemIcon>
-                  { ( editting || edittingClass )?
-                    <Checkbox
-                      edge="start"
-                      checked={checked.indexOf(value) !== -1}
-                      tabIndex={-1}
-                      disableRipple />
-                    :
-                    (edittingDisplay ?
-                      <Checkbox
-                        edge="start"
-                        checked={value.display === 1}
-                        tabIndex={-1}
-                        disableRipple />
-                    :
-                      <div style={{ height: 42, width: 42 }}></div>)
+            <ListItem role={undefined} dense style={{ display: 'flex' }}>
+              { data && data.length > 10 &&
+                <React.Fragment>
+                  <Button fullWidth onClick={handleMore}>
+                    { dataSliced >= data.length ? 'Collapse':'More' }
+                  </Button>
+                  { data && dataSliced < data.length &&
+                    <Button fullWidth onClick={handleMoreAll}>More All</Button>
                   }
-                </ListItemIcon>
-                <ListItemText className={classes.listText} primary={value.firstname} />
-                <ListItemText className={classes.listText} primary={value.lastname} />
-                { matchDetail && matchDetail.class &&
-                  ( value.classno === 0 ?
-                    <ListItemText className={classes.listClass} primary={"-"} />
-                    :
-                    matchDetail.class.filter( d =>{
-                      return d.classno === value.classno
-                    }).map( d =>
-                      d &&
-                      <ListItemText key={d.classname + `(${value.userid})`} className={classes.listClass} primary={d.classname} />
-                    )
-                  )
-                }
-                <ListItemSecondaryAction>
-                  { editting ?
-                    <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                      <DeleteIcon />
-                    </IconButton>
-                    :
-                    <div style={{ height: 42, width: 42 }}></div>
-                  }
-                </ListItemSecondaryAction>
-              </ListItem>
-            );
-          })
-        }
-        <ListItem role={undefined} dense style={{ display: 'flex' }}>
-          { data && data.length > 10 &&
-            <React.Fragment>
-              <Button fullWidth onClick={handleMore}>
-                { dataSliced >= data.length ? 'Collapse':'More' }
-              </Button>
-              { data && dataSliced < data.length &&
-                <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                </React.Fragment>
               }
-            </React.Fragment>
-          }
 
-        </ListItem>
+            </ListItem>
+          </div>
+        </div>
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
         <AddPlayerModal

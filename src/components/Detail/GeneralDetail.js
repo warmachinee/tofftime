@@ -358,7 +358,8 @@ export default function GeneralDetail(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? 'success' : 'error'
+        variant: d.status === 'success' ? 'success' : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       */
     })

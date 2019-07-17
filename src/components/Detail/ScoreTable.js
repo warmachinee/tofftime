@@ -131,7 +131,8 @@ function ScoreRow(props){
           </React.Fragment>
         }
         <div className={classes.tableCell} style={tableCell}>{
-            (row.par === 0)?'E':row.par
+            row.par > 0? '+' + row.par:
+            row.par === 0?'E':row.par
           }</div>
       </ListItem>
       {!expanded && <Divider />}

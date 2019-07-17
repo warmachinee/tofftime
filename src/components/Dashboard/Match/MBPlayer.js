@@ -58,7 +58,7 @@ export default function MBPlayer(props){
     <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Player
+          Player editor
         </Box>
       </Typography>
       <IconButton
@@ -69,7 +69,8 @@ export default function MBPlayer(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <MBPlayerBody token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
+        <MBPlayerBody token={token} setCSRFToken={setCSRFToken} matchid={matchid}
+          handleSnackBar={handleSnackBar}/>
       </Collapse>
     </Paper>
   );

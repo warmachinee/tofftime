@@ -81,25 +81,44 @@ export default function Dialog(props) {
   const classes = useStyles();
   const [ modalStyle ] = React.useState(getModalStyle);
   const [ pageState, setPageState ] = React.useState('signin')
-  const { open, handleClose, setResponse } = props
+  const [ username, setUsername ] = React.useState('')
+  const [ password, setPassword ] = React.useState('')
+  const [ actionStatus, handleActionStatus ] = React.useState(null)
+  const { open, handleClose, handleSess, setCSRFToken, handleSnackBar } = props
   const container = React.useRef(null);
 
-  async function handleSignIn(d){
+  async function handleGetUserinfo(){
+    const res = await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      res.token,
+      'userinfo', {
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSess(d)
+    })
+  }
+
+  async function handleSignIn(){
     await API.xhrPost(
       props.token,
       'login', {
-        username: d.username,
-        password: d.password
+        username: username,
+        password: password
     }, (csrf, d) =>{
-      props.setCSRFToken(csrf)
-      props.handleSnackBar({
+      setCSRFToken(csrf)
+      handleActionStatus(d.status)
+      handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success'?'success':'error'
+        variant: d.status === 'success'?'success':'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       if(d.status === 'success'){
-        handleClose()
-        setResponse('logged in')
+        try {
+          handleGetUserinfo()
+          handleClose()
+          handleActionStatus(null)
+        }catch(err) { console.log(err.message) }
       }
     })
   }
@@ -127,6 +146,8 @@ export default function Dialog(props) {
   }
 
   async function handleSignUp(d){
+    const tempUsername = d.username
+    const tempPassword = d.password
     await API.xhrPost(
       props.token,
       'register', {
@@ -138,13 +159,27 @@ export default function Dialog(props) {
         gender: d.gender,
         birthdate: d.birthdate
     }, (csrf, d) =>{
-      props.setCSRFToken(csrf)
-      props.handleSnackBar({
+      setCSRFToken(csrf)
+      handleActionStatus(d.status)
+      handleSnackBar({
         state: true,
-        message: d.status,
-        variant: d.status === 'success'?'success':'error'
+        message: d.log,
+        variant: d.log === 'success'?'success':'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
+      if(d.status === 'success'){
+        try {
+          setUsername(tempUsername)
+          setPassword(tempPassword)
+          handleActionStatus(null)
+          setPageState('signin')
+        }catch(err) { console.log(err.message) }
+      }
     })
+  }
+
+  function setTest(){
+
   }
 
   return (
@@ -165,14 +200,20 @@ export default function Dialog(props) {
             </IconButton>
             { pageState === 'signin' &&
               <SignInComponent
+                setTest={setTest}
+                username={username}
+                password={password}
+                setUsername={setUsername}
+                setPassword={setPassword}
+                actionStatus={actionStatus}
                 handleSignIn={handleSignIn}
                 handleSignInWith={handleSignInWith}
                 setPageState={setPageState}/>
             }
             { pageState === 'signup' &&
               <SignUpComponent
-                handleSignUp={handleSignUp}
-                setPageState={setPageState}/>
+                actionStatus={actionStatus}
+                handleSignUp={handleSignUp}/>
             }
           </div>
         </Modal>

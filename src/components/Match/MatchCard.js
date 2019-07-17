@@ -35,8 +35,13 @@ const useStyles = makeStyles((theme) =>({
     },
   },
   cardMedia: {
+    width: '100%',
     maxHeight: 140,
-    minHeight: 140
+    minHeight: 140,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
   },
   cardMobile: {
     maxWidth: 345,
@@ -56,8 +61,13 @@ const useStyles = makeStyles((theme) =>({
     maxWidth: 345,
   },
   cardMobileMedia: {
+    width: '100%',
     maxHeight: 140,
-    minHeight: 140
+    minHeight: 140,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
   },
   cardMobileAction: {
     display: 'flex',
@@ -80,8 +90,8 @@ const useStyles = makeStyles((theme) =>({
 
 export default function MatchCard(props) {
   const classes = useStyles();
+  const { data, isSupportWebp } = props
   const [ expanded, setExpanded ] = React.useState(false)
-  const { data } = props
   const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
   const matchPicture = data.picture?(hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture):null
 
@@ -107,13 +117,20 @@ export default function MatchCard(props) {
         </Typography>
       </div>
       { matchPicture ?
+        (isSupportWebp?
+          <img className={classes.cardMedia} src={matchPicture + '.webp'} />
+          :
+          <img className={classes.cardMedia} src={matchPicture + '.jpg'} />
+        )
+        /*
         <CardMedia
-          className={classes.cardMedia}
           component="img"
           alt="Match Picture"
           src={matchPicture}
           title="Match Picture"
-        />:
+        />
+        */
+        :
         <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
       }
       <CardContent>
@@ -143,13 +160,21 @@ export default function MatchCard(props) {
   const renderMobileCard = (
     <Card className={classes.cardMobile}>
       { matchPicture ?
+        (isSupportWebp?
+          <img className={classes.cardMobileMedia} src={matchPicture + '.webp'} />
+          :
+          <img className={classes.cardMobileMedia} src={matchPicture + '.jpg'} />
+        )
+        /*
         <CardMedia
           className={classes.cardMobileMedia}
           component="img"
           alt={data.title}
           src={matchPicture}
           title={data.title}
-        />:
+        />
+        */
+        :
         <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
       }
         <CardContent className={classes.cardMobileContent}>

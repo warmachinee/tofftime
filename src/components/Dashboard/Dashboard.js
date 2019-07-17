@@ -154,7 +154,8 @@ export default function Dashboard(props){
       <Route exact path='/user' component={SystemComponent} />
       <RouteNews path='/user/news' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
       <RouteMatchList path='/user/matchlist' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
-      <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken}
+        handleSnackBar={handleSnackBar}/>
     </Paper>
   );
 }

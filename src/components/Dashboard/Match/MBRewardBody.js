@@ -127,14 +127,12 @@ function RewardContainer(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error'
+          variant: d.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         try {
           handleFetch()
-        }
-        catch(err) {
-          console.log(err.message);
-        }
+        }catch(err) { console.log(err.message) }
       })
     }
   }
@@ -149,12 +147,24 @@ function RewardContainer(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setData(d)
-        try {
-          handleFetchMatchDetail()
-        }
-        catch(err) {
-          console.log(err.message);
+        if(
+          d.status !== 'no reward' ||
+          d.status !== 'reward not create' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setData(d)
+          try {
+            handleFetchMatchDetail()
+          }catch(err) { console.log(err.message) }
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
         }
       })
     }
@@ -170,7 +180,21 @@ function RewardContainer(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setMatchDetail(d)
+        if(
+          d.status !== 'class database error' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setMatchDetail(d)
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
       })
     }
   }
@@ -240,14 +264,12 @@ export default function MBRewardBody(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error'
+          variant: d.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         try {
           handleFetch()
-        }
-        catch(err) {
-          console.log(err.message);
-        }
+        }catch(err) { console.log(err.message) }
       })
     }
   }
@@ -272,15 +294,13 @@ export default function MBRewardBody(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error'
+          variant: d.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         setRewardEdit(0)
         try {
           handleFetch()
-        }
-        catch(err) {
-          console.log(err.message);
-        }
+        }catch(err) { console.log(err.message) }
       })
     }
   }
@@ -303,14 +323,12 @@ export default function MBRewardBody(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error'
+          variant: d.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         try {
           handleFetch()
-        }
-        catch(err) {
-          console.log(err.message);
-        }
+        }catch(err) { console.log(err.message) }
       })
     }
   }
@@ -325,12 +343,24 @@ export default function MBRewardBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setData(d)
-        try {
-          handleFetchMatchDetail()
-        }
-        catch(err) {
-          console.log(err.message);
+        if(
+          d.status !== 'no reward' ||
+          d.status !== 'reward not create' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setData(d)
+          try {
+            handleFetchMatchDetail()
+          }catch(err) { console.log(err.message) }
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
         }
       })
     }
@@ -346,7 +376,21 @@ export default function MBRewardBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setMatchDetail(d)
+        if(
+          d.status !== 'class database error' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setMatchDetail(d)
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
       })
     }
   }

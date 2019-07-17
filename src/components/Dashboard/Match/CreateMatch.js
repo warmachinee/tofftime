@@ -189,6 +189,30 @@ const theme = createMuiTheme({
   },
 });
 
+const datePickers = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+  overrides: {
+    MuiDialog: {
+      paperScrollPaper: {
+        maxHeight: 'calc(100% - 24px)'
+      }
+    },
+    MuiPickersToolbar: {
+      toolbar: {
+        display: window.innerHeight >= 520? 'flex' : 'none',
+      }
+    },
+    MuiPickersModal: {
+      dialog: {
+        overflow: 'auto'
+      }
+    }
+  },
+});
+
+
 function CreateMatchBody(props){
   const classes = useStyles();
   const { MBSetData, token, setCSRFToken, handleSnackBar } = props
@@ -244,8 +268,27 @@ function CreateMatchBody(props){
   }
 
   function handlePicture(e){
-    const file = event.target.files
-    setSelectedFile(file[0])
+    const file = event.target.files[0]
+    const fileSize = file.size
+    if( fileSize > 5000000 ){
+      handleSnackBar({
+        state: true,
+        message: `File size(${fileSize} B) is too large. Maximun 5 MB`,
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+    }else{
+      if( file.type === 'image/jpeg' || file.type === 'image/png'){
+        setSelectedFile(file)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: 'Invalid file type. Only JPEG or PNG',
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
+    }
   }
 
   async function handleCreate(){
@@ -262,7 +305,8 @@ function CreateMatchBody(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? d.status : 'error'
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       setCSRFToken(csrf)
       setData(d)
@@ -293,7 +337,9 @@ function CreateMatchBody(props){
               value={matchName || ''}
               onChange={e =>setMatchName(e.target.value)}
             />
-            <div style={{ display: 'flex' }}>
+          </ThemeProvider>
+          <div style={{ display: 'flex' }}>
+            <ThemeProvider theme={datePickers}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                   clearable
@@ -306,6 +352,8 @@ function CreateMatchBody(props){
                   onChange={date => handleDateChange(date)}
                 />
               </MuiPickersUtilsProvider>
+            </ThemeProvider>
+            <ThemeProvider theme={theme}>
               <TextField
                 style={{ width: 108, marginTop: 'auto', marginLeft: 16 }}
                 label="Class"
@@ -315,8 +363,8 @@ function CreateMatchBody(props){
                 onChange={e =>setMatchClass(parseInt(e.target.value))}
                 onFocus={e => e.target.select()}
               />
-            </div>
-          </ThemeProvider>
+            </ThemeProvider>
+          </div>
           { selectedFile?
             <div style={{ position: 'relative', marginTop: 16 }}
               onMouseEnter={()=>handleFileHover(true)}
@@ -337,7 +385,7 @@ function CreateMatchBody(props){
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div style={{ flex: 1 }}></div>
                     <StyledIconButton className={classes.matchFile}>
-                      <input className={classes.inputFile} type="file" onChange={handlePicture} />
+                      <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                       <CloudUploadIcon fontSize="large" style={{ color: teal[400] }}/>
                     </StyledIconButton>
                     <div style={{ flex: 1 }}></div>
@@ -354,7 +402,7 @@ function CreateMatchBody(props){
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div style={{ flex: 1 }}></div>
                   <StyledIconButton className={classes.matchFile}>
-                    <input className={classes.inputFile} type="file" onChange={handlePicture} />
+                    <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                     <CloudUploadIcon fontSize="large" style={{ color: teal[500] }}/>
                   </StyledIconButton>
                   <div style={{ flex: 1 }}></div>

@@ -39,7 +39,7 @@ const RouteMatchEditor = Loadable.Map({
 });
 
 export default function Match(props){
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { token, setCSRFToken, handleSnackBar, } = props
   return(
     <Switch>
 

@@ -83,14 +83,12 @@ export default function AddPlayerModal(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? 'success' : 'error'
+        variant: d.status === 'success' ? 'success' : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       try {
         handleFetchUserList()
-      }
-      catch(err) {
-        console.log(err.message);
-      }
+      }catch(err) { console.log(err.message) }
     })
   }
 
@@ -119,14 +117,12 @@ export default function AddPlayerModal(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'add member success' ? 'success' : 'error'
+        variant: d.status === 'add member success' ? 'success' : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       try {
         handleFetchUserList()
-      }
-      catch(err) {
-        console.log(err.message);
-      }
+      }catch(err) { console.log(err.message) }
     })
   }
 
@@ -140,12 +136,22 @@ export default function AddPlayerModal(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setMBData(d)
-        try {
-          handleFetchMatchDetail()
-        }
-        catch(err) {
-          console.log(err.message);
+        if(
+          d.status !== 'no data' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setMBData(d)
+          try {
+            handleFetchMatchDetail()
+          }catch(err) { console.log(err.message) }
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
         }
       })
     }
@@ -161,7 +167,21 @@ export default function AddPlayerModal(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setMBMatchDetail(d)
+        if(
+          d.status !== 'class database error' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setMBMatchDetail(d)
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
       })
     }
   }

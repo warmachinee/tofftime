@@ -112,20 +112,21 @@ const Footer = Loadable({
   loading: () => null
 });
 
-
+/*
 import MatchEditor from './components/Dashboard/Match/MatchEditor'
 import MatchBody from './components/Dashboard/Match/MatchBody'
 import MatchDetail from './components/Detail/MatchDetail'
 import MatchListB from './components/Dashboard/MatchList/MatchList'
 import Dashboard from './components/Dashboard/Dashboard'
-
+*/
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
   const [ snackBar, handleSnackBar ] = React.useState({
     state: false,
     message: null,
-    variant: null
+    variant: null,
+    autoHideDuration: 2000
   })
   const [ snackBarL, handleSnackBarL ] = React.useState({
     state: false,
@@ -137,9 +138,7 @@ function App() {
     sPAR: 0
   })
   const [ open, setOpen ] = React.useState(false);
-  const [ response, setResponse ] = React.useState(null)
   const [ sess, handleSess ] = React.useState([])
-  const [ urlHeader, handleURLHeader ] = React.useState(null)
 
   const handleOpen = () => {
     setOpen(true);
@@ -157,11 +156,9 @@ function App() {
 
   async function handleGetUserinfo(){
     const res = await API.xhrGet('getcsrf')
-    handleURLHeader(res.header)
     await API.xhrPost(
       res.token,
       'userinfo', {
-
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSess(d)
@@ -177,46 +174,61 @@ function App() {
     <div style={{ backgroundColor: blueGrey[50], minHeight: window.innerHeight }}>
       <Header
         sess={sess}
-        response={response}
-        setResponse={setResponse}
         handleOpen={handleOpen}
+        handleSess={handleSess}
         setCSRFToken={setCSRFToken}/>
-
-      { true ?
+      <Switch>
+        <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+        <RouteDetail path="/detail/:detailparam" />
+        <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
+          handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL}/>
+        <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}
+          handleSnackBar={handleSnackBar} />
+        <Route component={NoMatch} />
+      </Switch>
+      {/* !true ?
         <Switch>
           <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
           <RouteDetail path="/detail/:detailparam" />
           <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
             handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL}/>
-          <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+          <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}
+            handleSnackBar={handleSnackBar} />
           <Route component={NoMatch} />
         </Switch>
         :
-        <MatchEditor />
+        <MatchEditor handleSnackBar={handleSnackBar} />*/
 
 
         //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchList /><Dashboard />
       }
+
+      {/* sess && sess.status === 1 && sess.typeid === 'admin' &&
+        <Redirect to='/user' />
+        */
+      }
+      { /*sess && sess.status !== 1 && sess.typeid !== 'admin' && window.location === '/user' &&
+        <Redirect to='/' />
+        */
+      }
+
       <Dialog open={open} handleClose={handleClose}
         token={csrfToken} setCSRFToken={setCSRFToken}
-        setResponse={setResponse}
+        handleSess={handleSess}
         handleSnackBar={handleSnackBar}/>
+
       <SnackBarAlert
         variant={snackBar.variant}
-        autoHideDuration={2000}
+        autoHideDuration={snackBar.autoHideDuration}
         open={snackBar.state}
         onClose={()=>handleSnackBar({
           state: false,
-          message: snackBar.message,
-          variant: snackBar.variant
+          message: '',
+          variant: 'error',
+          autoHideDuration: 2000
         })}
         message={snackBar.message}/>
-      { response === 'logged in' &&
-        <Redirect to='/user' />
-      }
-      { response === 'logged out' &&
-        <Redirect to='/' />
-      }
+
       <SnackBarLong
         autoHideDuration={15000}
         open={snackBarL.state}

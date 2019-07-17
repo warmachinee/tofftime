@@ -32,10 +32,19 @@ class MatchDetail extends React.Component{
         matchid: parseInt(this.props.computedMatch.params.matchparam)
     }, (csrf, d) =>{
       this.props.setCSRFToken(csrf)
-      this.setState({
-        data: d,
-        userscore: d.userscore
-      })
+      if(d.status === 'wrong params'){
+        this.props.handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }else{
+        this.setState({
+          data: d,
+          userscore: d.userscore
+        })
+      }
     })
   }
 
@@ -61,7 +70,8 @@ class MatchDetail extends React.Component{
         this.props.handleSnackBar({
           state: true,
           message: messageNew.status,
-          variant: messageNew.status === 'success' ? 'success' : 'error'
+          variant: messageNew.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })*/
       }
     })

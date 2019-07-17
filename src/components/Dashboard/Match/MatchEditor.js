@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchEditor(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { token, setCSRFToken, handleSnackBar, } = props
   const matchid = props.computedMatch && props.computedMatch.params.matchparam
   const [ data, setData ] = React.useState(null)
 
@@ -84,7 +84,21 @@ export default function MatchEditor(props){
         matchid: matchid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setData(d)
+      if(
+        d.status !== 'class database error' ||
+        d.status !== 'wrong matchid' ||
+        d.status !== 'wrong action' ||
+        d.status !== 'wrong params'
+      ){
+        setData(d)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
     })
   }
 
@@ -105,9 +119,9 @@ export default function MatchEditor(props){
         </Box>
       </Typography>
       <MBOverview token={token} setCSRFToken={setCSRFToken} setData={setData} data={data} matchid={matchid} handleSnackBar={handleSnackBar}/>
-      <MBPlayer token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
-      <MBPlayoff token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
+      <MBPlayer token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar} />
       <MBScoreEditor token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
+      <MBPlayoff token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
       <MBReward token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
     </div>
   );

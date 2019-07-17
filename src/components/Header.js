@@ -137,10 +137,9 @@ function HideOnScroll(props) {
 
 function Header(props) {
   const classes = useStyles();
-  const { setResponse, response, sess, setCSRFToken } = props
+  const { setResponse, sess, handleSess, setCSRFToken } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const container = React.useRef(null);
-  const auth = response
 
 
   function menuOpenHandler(event) {
@@ -160,22 +159,24 @@ function Header(props) {
     }
   }
 
-  async function handleGetToken(){
+  async function handleGetUserinfo(){
     const res = await API.xhrGet('getcsrf')
-    setCSRFToken(res.token)
-    try {
-      setResponse('logged out')
-      menuCloseHandler()
-    }
-    catch(err) {
-      console.log(err.message);
-    }
+    await API.xhrPost(
+      res.token,
+      'userinfo', {
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSess(d)
+    })
   }
 
   async function handleLogout(){
     const data = await API.xhrGet('logout')
     if( data && data.response.status === 'success' ){
-      await handleGetToken()
+      try {
+        handleGetUserinfo()
+        menuCloseHandler()
+      }catch(err) { console.log(err.message) }
     }else{
       console.log(data);
     }
@@ -229,7 +230,7 @@ function Header(props) {
                 <MoreIcon />
               </IconButton>
             </div>
-            { ( auth === 'logged in' || sess && sess.status === 1 ) &&
+            { ( sess && sess.status === 1 ) &&
               <React.Fragment>
                 <div className={classes.afterLoginIcon}>
                   {/*<IconButton
@@ -246,7 +247,7 @@ function Header(props) {
                 </div>
               </React.Fragment>
             }
-            { !( auth === 'logged in' || sess && sess.status === 1 ) && window.innerWidth > 600 &&
+            { !( sess && sess.status === 1 ) && window.innerWidth > 600 &&
               <Button className={classes.loginBtn} color="inherit"
                 onClick={handleLogin}>Login</Button>
             }
@@ -261,21 +262,21 @@ function Header(props) {
           open={Boolean(anchorEl)}
           onClose={menuCloseHandler}
         >
-          { window.location.pathname === '/user' && (auth === 'logged in' || sess && sess.status === 1) &&
+          { window.location.pathname === '/user' && ( sess && sess.status === 1) &&
             <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
             </Link>
           }
-          { window.location.pathname === '/' && (auth === 'logged in' || sess && sess.status === 1) &&
+          { window.location.pathname !== '/user' && ( sess && sess.status === 1 && sess.typeid === 'admin' ) &&
             <Link to="/user" style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>User</MenuItem>
             </Link>
           }
-          { ( auth === 'logged in' || sess && sess.status === 1 ) &&
+          { ( sess && sess.status === 1 ) &&
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           }
 
-          { !( auth === 'logged in' || sess && sess.status === 1 ) &&
+          { !( sess && sess.status === 1 ) &&
             <MenuItem onClick={handleLogin}>Login</MenuItem>
           }
           <div></div>

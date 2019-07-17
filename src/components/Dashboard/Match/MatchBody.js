@@ -112,15 +112,13 @@ export default function MatchBody(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? 'success' : 'error'
+        variant: d.status === 'success' ? 'success' : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       setCSRFToken(csrf)
       try {
         handleFetch()
-      }
-      catch(err) {
-        console.log(err.message);
-      }
+      }catch(err) { console.log(err.message) }
     })
   }
 

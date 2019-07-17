@@ -24,7 +24,7 @@ export function LDNews() {
     transitionProperty: 'all',
     transitionDuration: '.5s',
     transitionTimingFuction: 'ease-in',
-    opacity: opacity
+    opacity: opacity,
   }
 
   useInterval(() => {

@@ -125,7 +125,7 @@ function TextMaskCustom(props) {
 
 export default function SignUpComponent(props){
   const classes = useStyles();
-  const { handleSignUp } = props
+  const { handleSignUp, actionStatus } = props
   const [ username, setUsername ] = React.useState('')
   const [ password, setPassword ] = React.useState('')
   const [ phoneNumber, setPhoneNumber ] = React.useState('');
@@ -195,8 +195,15 @@ export default function SignUpComponent(props){
         <ThemeProvider theme={theme}>
           <TextField
             required
+            error={actionStatus === 'email is used' || actionStatus === 'invalid email'}
             className={classes.margin}
             label="Email"
+            helperText={
+              ( actionStatus === 'email is used' || actionStatus === 'invalid email' )?
+              ( actionStatus === 'email is used'? 'Email is used' : 'Invalid email' )
+              :
+              null
+            }
             variant="outlined"
             onChange={e => setUsername(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}

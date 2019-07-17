@@ -104,18 +104,17 @@ const theme = createMuiTheme({
 
 export default function SignInComponent(props){
   const classes = useStyles();
-  const [ username, setUsername ] = React.useState('')
-  const [ password, setPassword ] = React.useState('')
-  const { handleSignIn, handleSignInWith, setPageState,  } = props
+  const {
+    handleSignIn, handleSignInWith, setPageState, actionStatus,
+    username, password, setUsername, setPassword
+  } = props
 
   function handleKeyPress(e){
     if(e.key === 'Enter'){
-      handleSignIn({
-        username: username,
-        password: password
-      })
+      handleSignIn()
     }
   }
+
   return(
     <div>
       <Typography component="div">
@@ -134,33 +133,32 @@ export default function SignInComponent(props){
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
-            error={status === 'wrong email'}
+            error={actionStatus === 'wrong email'}
             className={classes.margin}
             label="Username or Email"
-            helperText={status === 'wrong email'?status:null}
+            helperText={actionStatus === 'wrong email'? 'Wrong email' : null}
             variant="outlined"
             type="email"
             autoComplete="email"
+            value={username}
             onChange={(e)=>setUsername(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
           />
           <TextField
-            error={status === 'wrong password'}
+            error={actionStatus === 'wrong password'}
             className={classes.margin}
             label="Password"
-            helperText={status === 'wrong password'?status:null}
+            helperText={actionStatus === 'wrong password'? 'Wrong password' : null}
             variant="outlined"
             type="password"
             autoComplete="current-password"
+            value={password}
             onChange={(e)=>setPassword(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
           />
         </ThemeProvider>
         <SignInButton variant="contained" color="primary" className={classes.button}
-          onClick={()=>handleSignIn({
-            username: username,
-            password: password
-          })}>
+          onClick={handleSignIn}>
           Sign in
         </SignInButton>
         <div style={{ position: 'relative' }}>

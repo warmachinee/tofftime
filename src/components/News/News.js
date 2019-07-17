@@ -83,7 +83,8 @@ export default function News(props) {
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? d.status : 'error'
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })*/
       setCSRFToken(csrf)
       setData(d)

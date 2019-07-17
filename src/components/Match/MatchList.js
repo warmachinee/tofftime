@@ -13,7 +13,12 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import teal from '@material-ui/core/colors/teal';
 
-import MatchCard from './MatchCard'
+import { LDMatchCard } from '../loading/LDMatchCard'
+
+const MatchCard = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchCard" */'./MatchCard'),
+  loading: () => <LDMatchCard />
+});
 
 const useStyles = makeStyles({
   root: {
@@ -61,25 +66,9 @@ const useStyles = makeStyles({
   },
 });
 
-function MatchList(props){
-  const [ csrfToken, setCSRFToken ] = React.useState(null)
-  const [ data, setData ] = React.useState(null)
-  async function handleFetch(){
-    await API.xhrPost( props.token, 'loadmatchsystem', {
-      action: 'matchlist'
-    }, function(csrf, d){
-      setCSRFToken(csrf)
-      setData(d)
-    })
-  }
-  React.useEffect(()=>{
-    handleFetch()
-  },[ ])
-  return <MatchListBody data={data?data:[]}/>
-}
-
 function MatchListBody(props) {
   const classes = useStyles();
+  const { isSupportWebp } = props
   const [ gridRes, setGridRes ] = React.useState(
     window.innerWidth >= 1080? { width: '33.333333%', indicator: 3 }:
     window.innerWidth >= 850? { width: '50%', indicator: 2 }:{ width: '100%', indicator: 1 }
@@ -88,10 +77,12 @@ function MatchListBody(props) {
   const data = props.data
 
   function nextHandler(){
-    if( (sliderIndex + 1) * gridRes.indicator < data.length ){
-      setSliderIndex(sliderIndex + 1)
-    }else{
-      setSliderIndex(data.length/gridRes.indicator)
+    if(data){
+      if( (sliderIndex + 1) * gridRes.indicator < data.length ){
+        setSliderIndex(sliderIndex + 1)
+      }else{
+        setSliderIndex(data.length/gridRes.indicator)
+      }
     }
   }
   function backHandler(){
@@ -120,6 +111,7 @@ function MatchListBody(props) {
       window.removeEventListener('resize',resizeHandler)
     }
   },[ window.innerWidth ])
+
   return (
     <div className={classes.root}>
       <Typography classes={{ root: classes.title }} variant="h4">
@@ -130,10 +122,16 @@ function MatchListBody(props) {
            style={{ padding: '0 30px' }}
            slideStyle={{ padding: '0 10px', width: gridRes.width }}
           >
-          {data && data.map( d =>
-            d &&
-            <MatchCard key={d.matchid} data={d}/>
-          )}
+          { data ?
+            data.map( d =>
+              d &&
+              <MatchCard key={d.matchid} data={d} isSupportWebp={isSupportWebp}/>
+            )
+            :
+            [0,1,2,3].map( d =>
+              <LDMatchCard key={d}/>
+            )
+          }
         </SwipeableViews>
       </div>
       {
@@ -143,7 +141,7 @@ function MatchListBody(props) {
           <KeyboardArrowLeftIcon classes={{ root: classes.arrow }}/>
         </IconButton>
       }
-      {
+      { data &&
         (sliderIndex + 1) * gridRes.indicator < data.length &&
         window.innerWidth > 500 &&
         <IconButton classes={{ root: classes.iconButton }} className={classes.rightArrow} onClick={nextHandler}>
@@ -152,6 +150,44 @@ function MatchListBody(props) {
       }
     </div>
   );
+}
+
+function MatchList(props){
+  const [ csrfToken, setCSRFToken ] = React.useState(null)
+  const [ data, setData ] = React.useState(null)
+  const [ isSupportWebp, handleSupportWebp ] = React.useState(false)
+
+  async function handleFetch(){
+    const res = await API.xhrGet('getcsrf')
+    await API.xhrPost( res.token, 'loadmatchsystem', {
+      action: 'matchlist'
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+      setData(d)
+    })
+    await detectWebp()
+  }
+  async function supportsWebp(){
+    if (!self.createImageBitmap) return false;
+
+    const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
+    const blob = await fetch(webpData).then(r => r.blob());
+    return createImageBitmap(blob).then(() => true, () => false);
+  }
+
+  async function detectWebp(){
+    if(await supportsWebp()) {
+      handleSupportWebp(true)
+    }
+    else {
+      handleSupportWebp(false)
+    }
+  }
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ ])
+  return <MatchListBody data={data} isSupportWebp={isSupportWebp}/>
 }
 
 export default MatchList;

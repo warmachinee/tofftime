@@ -10,8 +10,6 @@ import IconButton from '@material-ui/core/IconButton';
 
 import CloseIcon from '@material-ui/icons/Close';
 
-import { LDCircular } from '../loading/LDCircular'
-
 function getModalStyle() {
   const top = 50
   const left = 50
@@ -26,21 +24,17 @@ function getModalStyle() {
 const useStyles = makeStyles(theme => ({
   paper: {
     position: 'absolute',
-    width: '100%',
-    maxWidth: '100%',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(4),
     outline: 'none',
-    height: '100%',
     overflow: 'auto',
     overflowScrolling: 'touch',
     WebkitOverflowScrolling: 'touch',
-    [theme.breakpoints.up(500)]: {
-      height: 'auto',
-      maxWidth: 600,
-    },
-    maxHeight: window.innerHeight * .8 , height: '100%'
+    width: '100%',
+    maxWidth: '100%',
+    height: 'auto',
+    maxHeight: window.innerHeight * .9 ,
   },
   close: {
     position: 'absolute',
@@ -65,7 +59,7 @@ export default function TemplateDialog(props) {
           open={open}
           onClose={handleClose}
         >
-          <div style={modalStyle} className={classes.paper}>
+          <div style={{ ...modalStyle, maxWidth: props.maxWidth? props.maxWidth : 600, }} className={classes.paper}>
             <IconButton className={classes.close} onClick={handleClose}>
               <CloseIcon classes={{ root: classes.closeIcon }}/>
             </IconButton>

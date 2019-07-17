@@ -18,7 +18,6 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
-import Input from '@material-ui/core/Input';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
@@ -182,7 +181,6 @@ const StyledIconButton = withStyles(theme => ({
   },
 }))(IconButton);
 
-
 const GreenRadio = withStyles({
   root: {
     color: teal[400],
@@ -234,11 +232,11 @@ function MBOverviewBody(props){
   const [ fileHover, handleFileHover ] = React.useState(false);
 
   const [ selectedMatchName, setSelectedMatchName ] = React.useState('');
-  const [ selectedField, setSelectedField ] = React.useState({});
-  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('0');
-  const [ selectedMatchType, setSelectedMatchType ] = React.useState('');
-  const [ selectedDate, setSelectedDate ] = React.useState(new Date());
-  const [ selectedFile, setSelectedFile ] = React.useState('');
+  const [ selectedField, setSelectedField ] = React.useState(null);
+  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState(null);
+  const [ selectedMatchType, setSelectedMatchType ] = React.useState(null);
+  const [ selectedDate, setSelectedDate ] = React.useState(null);
+  const [ selectedFile, setSelectedFile ] = React.useState(null);
 
   const handleOpen = (d) => {
     setOpen(true);
@@ -278,38 +276,80 @@ function MBOverviewBody(props){
   }
 
   function handlePicture(e){
-    const file = event.target.files
-    setSelectedFile(file[0])
+    const file = event.target.files[0]
+    const fileSize = file.size
+    if( fileSize > 5000000 ){
+      handleSnackBar({
+        state: true,
+        message: `File size(${fileSize} B) is too large. Maximun 5 MB`,
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+    }else{
+      if( file.type === 'image/jpeg' || file.type === 'image/png'){
+        setSelectedFile(file)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: 'Invalid file type. Only JPEG or PNG',
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
+    }
   }
 
   async function handleEditMatch(){
-    const res = await token? token : API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : res.token,
-      'matchsystem', {
-        action: 'edit',
-        matchid: matchid,
-        fieldid: selectedField.fieldid,
-        matchname: selectedMatchName,
-        privacy: parseInt(selectedPrivacy),
-        scorematch: parseInt(selectedMatchType),
-        photopath: selectedFile && true,
-        matchimage: selectedFile,
-        matchdate: handleConvertDate(selectedDate),
-    }, (csrf, d) =>{
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: d.status === 'success' ? d.status : 'error'
-      })
-      setCSRFToken(csrf)
-      try {
-        handleFetch()
-      }
-      catch(err) {
-        console.log(err.message);
-      }
+    const res = await API.xhrGet('getcsrf')
+    const formData = new FormData()
+    const sendObj = {
+      action: 'edit',
+      matchid: parseInt(matchid)
+    };
+
+    if(selectedFile){
+      formData.append('matchimage', selectedFile)
+      Object.assign(sendObj, {
+        photopath: true,
+        matchimage: formData
+      });
+    }
+
+    if(selectedDate){
+      Object.assign(sendObj, { matchdate: handleConvertDate(selectedDate) });
+    }
+
+    if(selectedField){
+      Object.assign(sendObj, { fieldid: selectedField.fieldid });
+    }
+
+    if(selectedMatchName.length){
+      Object.assign(sendObj, { matchname: selectedMatchName });
+    }
+
+    if(selectedPrivacy){
+      Object.assign(sendObj, { privacy: parseInt(selectedPrivacy) });
+    }
+
+    if(selectedMatchType){
+      Object.assign(sendObj, { scorematch: parseInt(selectedMatchType) });
+    }
+
+    const d = await API.fetchPostFile('matchsystem',`?_csrf=${res.token}`, sendObj, formData)
+    const res2 = await API.xhrGet('getcsrf')
+    handleSnackBar({
+      state: true,
+      message: d.status,
+      variant: d.status === 'success' ? d.status : 'error',
+      autoHideDuration: d.status === 'success'? 2000 : 5000
     })
+    setCSRFToken(res2)
+    try {
+      handleFetch()
+      if(d.status === 'success'){
+        handleEditting(false)
+      }
+    }catch(err) { console.log(err.message) }
   }
 
   async function handleFetch(){
@@ -322,18 +362,38 @@ function MBOverviewBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setData(d)
+        if(
+          d.status !== 'class database error' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setData(d)
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
       })
     }
   }
 
   React.useEffect(()=>{
     handleFetch()
+    /*
+    var json = '{"title":"SNT 4-2019","date":"04/07/2019","picture":"/matchs/16725831/16725831","location":"Watermill GOLF&GARDENS","locationid":631932,"createdate":"04/07/2019","scorematch":1,"matchtype":0,"display":1,"status":1,"class":[{"classno":1,"classname":"S"},{"classno":2,"classname":"SS"},{"classno":3,"classname":"GS"}],"team":[],"playoff":[383134,686853,0]}';
+    var obj = JSON.parse(json);
+    setData(obj)*/
   },[ ])
 
   return(
     <div style={{ padding: 8, marginTop: 24, marginLeft: 'auto', marginRight: 'auto', maxWidth: 900 }}>
-      <StyledTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>Edit</StyledTextButton>
+      { !editting &&
+        <StyledTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>Edit</StyledTextButton>
+      }
       <div className={classes.grid}>
         <div className={classes.gridChild1}>
           <ThemeProvider theme={theme}>
@@ -379,11 +439,11 @@ function MBOverviewBody(props){
           </div>
           { ( selectedFile || matchPicture )?
             <div style={{ position: 'relative', marginTop: 16 }}
-              onMouseEnter={()=>handleFileHover(true)}
-              onMouseLeave={()=>handleFileHover(false)}>
+              onMouseEnter={()=>editting?handleFileHover(true):console.log()}
+              onMouseLeave={()=>editting?handleFileHover(false):console.log()}>
               <img ref={imgRef}
                 style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
-                className={classes.matchImg} src={ selectedFile ? URL.createObjectURL(selectedFile) : matchPicture } />
+                className={classes.matchImg} src={ selectedFile ? URL.createObjectURL(selectedFile) : matchPicture + '.webp' } />
               { editting && imgRef.current &&
                 <div
                   style={{
@@ -397,7 +457,7 @@ function MBOverviewBody(props){
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div style={{ flex: 1 }}></div>
                     <StyledIconButton className={classes.matchFile}>
-                      <input className={classes.inputFile} type="file" onChange={handlePicture} />
+                      <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                       <CloudUploadIcon fontSize="large" style={{ color: teal[400] }}/>
                     </StyledIconButton>
                     <div style={{ flex: 1 }}></div>
@@ -415,7 +475,7 @@ function MBOverviewBody(props){
                   <div style={{ flex: 1 }}></div>
                   { editting &&
                     <StyledIconButton className={classes.matchFile}>
-                      <input className={classes.inputFile} type="file" onChange={handlePicture} />
+                      <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                       <CloudUploadIcon fontSize="large" style={{ color: teal[500] }}/>
                     </StyledIconButton>
                   }
@@ -432,7 +492,7 @@ function MBOverviewBody(props){
               variant="outlined"
               className={classes.button}
               onClick={()=>handleOpen('location')}>
-              { data?( selectedField && ( selectedField.fieldname ? selectedField.fieldname : data.location ) ):'Location' }
+              { data?( selectedField? selectedField.fieldname : data.location ):'Location' }
             </StyledTextButton>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
@@ -440,7 +500,7 @@ function MBOverviewBody(props){
               <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
               <RadioGroup
                 value={
-                  data?( selectedPrivacy ? selectedPrivacy : ( data.matchtype && data.matchtype.toString()) ):'0'
+                  data?( selectedPrivacy? selectedPrivacy : data.matchtype.toString() ):'0'
                 }
                 onChange={handlePrivacy} row>
                 <FormControlLabel
@@ -463,7 +523,7 @@ function MBOverviewBody(props){
               <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
               <RadioGroup
                 value={
-                  data?( selectedMatchType ? selectedMatchType : ( data.scorematch && data.scorematch.toString()) ):'0'
+                  data?( selectedMatchType? selectedMatchType : data.scorematch.toString() ):'1'
                 }
                 onChange={handleMatchType} row>
                 <FormControlLabel
@@ -494,16 +554,18 @@ function MBOverviewBody(props){
         :
         <div style={{ height: 88 }}></div>
       }
-      <TemplateDialog open={open} handleClose={handleClose}>
-        {(modalType && modalType === 'location')?
+      { ( modalType && modalType === 'location' )?
+        <TemplateDialog open={open} handleClose={handleClose}>
           <Location token={token} setCSRFToken={setCSRFToken} selectedField={selectedField} setSelectedField={setSelectedField}
             handleSnackBar={handleSnackBar}/>
-          :
+        </TemplateDialog>
+        :
+        <TemplateDialog open={open} handleClose={handleClose} maxWidth={500}>
           <MatchClass token={token} setCSRFToken={setCSRFToken} data={data && data.status !== 'class database error' && data.class}
             handleSnackBar={handleSnackBar}
             matchid={matchid} setData={setData}/>
-        }
-      </TemplateDialog>
+        </TemplateDialog>
+      }
     </div>
   );
 }

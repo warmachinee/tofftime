@@ -89,22 +89,27 @@ async function fetchUrl(url){
   }
 }
 
-async function fetchPost({ url, obj }){
-  if(
-    typeof(url) === 'string'&&
-    typeof(obj) === 'object'
-  ){
-    console.log('yay');
-  }else{
-    if(typeof(url) !== 'string'){ console.error('url is required string'); }
-    if(typeof(obj) !== 'object'){ console.error('obj is required object'); }
+async function fetchPostFile(url, extendURL, obj, formData){
+  var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
+  var req = new XMLHttpRequest();
+  var sendUrl = hd + urlLink[url] + extendURL
+
+  const options = {
+    method: 'post',
+    body: formData,
+    headers: obj
   }
+
+  const res = await fetch(sendUrl, options)
+  const json = await res.json()
+  return json
 }
+
 
 export {
   webURL,
   fetchUrl,
-  fetchPost,
+  fetchPostFile,
   xhrGet,
   xhrPost
 }

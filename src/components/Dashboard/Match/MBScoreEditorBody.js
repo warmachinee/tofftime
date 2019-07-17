@@ -246,12 +246,22 @@ export default function MBScoreEditorBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setData(d)
-        try {
-          handleFetchMatchDetail()
-        }
-        catch(err) {
-          console.log(err.message);
+        if(
+          d.status !== 'no data' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setData(d)
+          try {
+            handleFetchMatchDetail()
+          }catch(err) { console.log(err.message) }
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
         }
       })
     }
@@ -267,7 +277,21 @@ export default function MBScoreEditorBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setMatchDetail(d)
+        if(
+          d.status !== 'class database error' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setMatchDetail(d)
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
       })
     }
   }

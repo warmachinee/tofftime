@@ -2,7 +2,6 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
 import { LDSlider } from './loading/LDSlider';
-import { LDNews } from './loading/LDNews';
 
 const Slider = Loadable({
   loader: () => import(/* webpackChunkName: "Slider" */'./Announcement/Slider'),
@@ -11,7 +10,7 @@ const Slider = Loadable({
 
 const News = Loadable({
   loader: () => import(/* webpackChunkName: "News" */'./News/News'),
-  loading: () => <LDNews />
+  loading: () => null
 });
 
 const useStyles = makeStyles(theme => ({
@@ -31,6 +30,17 @@ const useStyles = makeStyles(theme => ({
 export default function AnnouncementNewsGrid(props) {
   const classes = useStyles();
   const { token, setCSRFToken, handleSnackBar } = props
+
+  const [ ,updateState ] = React.useState(null)
+  function resize(){
+    updateState({})
+  }
+  React.useEffect(()=>{
+    window.addEventListener('resize', resize)
+    return ()=>{
+      window.removeEventListener('resize', resize)
+    }
+  },[ window.innerWidth ])
 
   return (
     <div className={classes.root}>
