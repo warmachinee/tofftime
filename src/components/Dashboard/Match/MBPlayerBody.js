@@ -155,6 +155,9 @@ const useStyles = makeStyles(theme => ({
   },
   arrowUpward: {
     color: 'white',
+  },
+  deleteIcon: {
+    color: teal[600]
   }
 
 }))
@@ -177,6 +180,15 @@ const GreenTextButton = withStyles(theme => ({
     },
   },
 }))(Button);
+
+const GreenCheckbox = withStyles({
+  root: {
+    color: teal[400],
+    '&$checked': {
+      color: teal[600],
+    },
+  },
+})(props => <Checkbox color="default" {...props} />);
 
 const theme = createMuiTheme({
   palette: {
@@ -435,15 +447,17 @@ export default function MBPlayerBody(props){
   },[ ])
 
   const [ ,updateState ] = React.useState(null)
+
   function resizeHandler(){
     updateState({})
   }
+
   React.useEffect(()=>{
     window.addEventListener('resize', resizeHandler)
     return ()=>{
       window.removeEventListener('resize', resizeHandler)
     }
-  }, [ window.innerWidth ])
+  },[ window.innerWidth ])
 
   return(
     <div className={classes.root}>
@@ -552,7 +566,7 @@ export default function MBPlayerBody(props){
             <TextField
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser && "Search player" }
+              placeholder={ !searchUser? "Search player" : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -612,14 +626,14 @@ export default function MBPlayerBody(props){
                     }>
                     <ListItemIcon>
                       { ( editting || edittingClass )?
-                        <Checkbox
+                        <GreenCheckbox
                           edge="start"
                           checked={checked.indexOf(value) !== -1}
                           tabIndex={-1}
                           disableRipple />
                         :
                         (edittingDisplay ?
-                          <Checkbox
+                          <GreenCheckbox
                             edge="start"
                             checked={value.display === 1}
                             tabIndex={-1}
@@ -645,7 +659,7 @@ export default function MBPlayerBody(props){
                     <ListItemIcon style={{ justifyContent: 'flex-end', width: 64, marginRight: 16 }}>
                       { editting ?
                         <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                          <DeleteIcon />
+                          <DeleteIcon classes={{ root: classes.deleteIcon}}/>
                         </IconButton>
                         :
                         <div style={{ height: 42, width: 42 }}></div>

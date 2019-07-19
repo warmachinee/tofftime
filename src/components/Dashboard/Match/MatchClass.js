@@ -47,7 +47,9 @@ const useStyles = makeStyles(theme => ({
     },
   },
   confirmSubtitle: {
-    color: grey[600]
+    fontFamily: 'monospace',
+    color: grey[600],
+    fontWeight: 600,
   },
   confirmButton: {
     padding: theme.spacing(1, 4.5)
@@ -158,7 +160,6 @@ const GreenTextButton = withStyles(theme => ({
     },
   },
 }))(Button);
-
 
 export default function MatchClass(props) {
   const classes = useStyles();
@@ -444,7 +445,7 @@ export default function MatchClass(props) {
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure to delete?
+            Are you sure you want to delete?
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( Class : { selectedDeleteItem && selectedDeleteItem.classname } )

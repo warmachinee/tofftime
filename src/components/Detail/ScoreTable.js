@@ -247,6 +247,7 @@ export default function ScoreTable(props) {
       setOp(false)
     }
   }
+  
   React.useEffect(()=>{
     let tempIn = 0
     let tempOut = 0
@@ -263,6 +264,7 @@ export default function ScoreTable(props) {
       gross: tempOut + tempIn
     })
   },[ ])
+
   React.useEffect(()=>{
     window.addEventListener('scroll',onScrollHandler)
     return ()=>{

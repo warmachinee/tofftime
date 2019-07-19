@@ -182,9 +182,18 @@ function Header(props) {
     }
   }
 
-  React.useEffect(()=>{
+  const [ ,updateState ] = React.useState(null)
 
-  }, [ window.location.pathname ])
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
 
   return (
     <React.Fragment>

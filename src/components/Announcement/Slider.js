@@ -113,17 +113,20 @@ function Slider() {
       setIndex(index + 1)
     }
   }
-  const [ ,updateState ] = React.useState()
-  function handleResize(){
+  
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
     updateState({})
   }
 
   React.useEffect(()=>{
-    window.addEventListener('resize', handleResize)
-    return()=>{
-      window.removeEventListener('resize', handleResize)
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
     }
   },[ window.innerWidth ])
+
   return (
     <div className={classes.root}>
       <AutoPlaySwipeableViews

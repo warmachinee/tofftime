@@ -414,7 +414,10 @@ function CreateMatchBody(props){
         </div>
         <div className={classes.gridChild2}>
           <ThemeProvider theme={theme}>
-            <StyledTextButton variant="outlined" onClick={handleOpen} className={classes.button}>
+            <StyledTextButton variant="outlined"
+              onClick={handleOpen}
+              className={classes.button}
+              style={{ textTransform: 'none' }}>
               { selectedField ? selectedField.fieldname : 'Select Location' }
             </StyledTextButton>
             {/*

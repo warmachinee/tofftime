@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     maxWidth: '100%',
     height: 'auto',
-    maxHeight: window.innerHeight * .9 ,
+    maxHeight: 'calc(100% - 16px)'
   },
   close: {
     position: 'absolute',
@@ -51,6 +51,19 @@ export default function TemplateDialog(props) {
   const [ modalStyle ] = React.useState(getModalStyle);
   const { open, handleClose } = props
   const container = React.useRef(null);
+
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
 
   return (
     <div>

@@ -62,7 +62,6 @@ const RouteMatch = Loadable.Map({
   loading: () => <LDCircular />
 });
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,

@@ -186,7 +186,7 @@ function App() {
           handleSnackBar={handleSnackBar} />
         <Route component={NoMatch} />
       </Switch>
-      {/* !true ?
+      {/* true ?
         <Switch>
           <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
           <RouteDetail path="/detail/:detailparam" />

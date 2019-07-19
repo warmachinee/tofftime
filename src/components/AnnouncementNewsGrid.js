@@ -32,13 +32,15 @@ export default function AnnouncementNewsGrid(props) {
   const { token, setCSRFToken, handleSnackBar } = props
 
   const [ ,updateState ] = React.useState(null)
-  function resize(){
+
+  function resizeHandler(){
     updateState({})
   }
+
   React.useEffect(()=>{
-    window.addEventListener('resize', resize)
+    window.addEventListener('resize', resizeHandler)
     return ()=>{
-      window.removeEventListener('resize', resize)
+      window.removeEventListener('resize', resizeHandler)
     }
   },[ window.innerWidth ])
 

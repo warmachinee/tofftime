@@ -236,6 +236,7 @@ export default function MatchCard(props) {
   const [ isMobile, setIsMobile ] = React.useState(
     window.innerWidth >= 500? false:true
   )
+
   function resizeHandler(){
     let wd = window.innerWidth
     if( wd >= 500 ){
@@ -247,9 +248,9 @@ export default function MatchCard(props) {
   }
 
   React.useEffect(()=>{
-    window.addEventListener('resize',resizeHandler)
+    window.addEventListener('resize', resizeHandler)
     return ()=>{
-      window.removeEventListener('resize',resizeHandler)
+      window.removeEventListener('resize', resizeHandler)
     }
   },[ window.innerWidth ])
 

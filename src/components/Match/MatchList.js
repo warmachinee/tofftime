@@ -106,9 +106,9 @@ function MatchListBody(props) {
     setSliderIndex(0)
   }
   React.useEffect(()=>{
-    window.addEventListener('resize',resizeHandler)
+    window.addEventListener('resize', resizeHandler)
     return ()=>{
-      window.removeEventListener('resize',resizeHandler)
+      window.removeEventListener('resize', resizeHandler)
     }
   },[ window.innerWidth ])
 

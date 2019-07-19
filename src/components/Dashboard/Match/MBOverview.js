@@ -152,7 +152,7 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-const StyledTextButton = withStyles(theme => ({
+const GreenTextButton = withStyles(theme => ({
   root: {
     color: teal[500],
     fontWeight: 900,
@@ -162,7 +162,7 @@ const StyledTextButton = withStyles(theme => ({
   },
 }))(Button);
 
-const StyledButton = withStyles(theme => ({
+const GreenButton = withStyles(theme => ({
   root: {
     color: theme.palette.getContrastText(teal[500]),
     backgroundColor: teal[700],
@@ -311,7 +311,6 @@ function MBOverviewBody(props){
       formData.append('matchimage', selectedFile)
       Object.assign(sendObj, {
         photopath: true,
-        matchimage: formData
       });
     }
 
@@ -343,7 +342,7 @@ function MBOverviewBody(props){
       variant: d.status === 'success' ? d.status : 'error',
       autoHideDuration: d.status === 'success'? 2000 : 5000
     })
-    setCSRFToken(res2)
+    setCSRFToken(res2.token)
     try {
       handleFetch()
       if(d.status === 'success'){
@@ -383,16 +382,12 @@ function MBOverviewBody(props){
 
   React.useEffect(()=>{
     handleFetch()
-    /*
-    var json = '{"title":"SNT 4-2019","date":"04/07/2019","picture":"/matchs/16725831/16725831","location":"Watermill GOLF&GARDENS","locationid":631932,"createdate":"04/07/2019","scorematch":1,"matchtype":0,"display":1,"status":1,"class":[{"classno":1,"classname":"S"},{"classno":2,"classname":"SS"},{"classno":3,"classname":"GS"}],"team":[],"playoff":[383134,686853,0]}';
-    var obj = JSON.parse(json);
-    setData(obj)*/
   },[ ])
 
   return(
     <div style={{ padding: 8, marginTop: 24, marginLeft: 'auto', marginRight: 'auto', maxWidth: 900 }}>
       { !editting &&
-        <StyledTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>Edit</StyledTextButton>
+        <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>Edit</GreenTextButton>
       }
       <div className={classes.grid}>
         <div className={classes.gridChild1}>
@@ -427,7 +422,7 @@ function MBOverviewBody(props){
                 />
               </MuiPickersUtilsProvider>
             </ThemeProvider>
-            <StyledTextButton
+            <GreenTextButton
               disabled={!editting}
               variant="outlined"
               style={{ height: 56, width: 108, marginTop: 'auto', marginLeft: 16 }}
@@ -435,7 +430,7 @@ function MBOverviewBody(props){
               { data?( data.class && !data.class.status &&
                 ( data.class.length >= 2 ? ( data.class.length + ' Classes' ):( data.class.length + ' Class' ) )):'Class'
               }
-            </StyledTextButton>
+            </GreenTextButton>
           </div>
           { ( selectedFile || matchPicture )?
             <div style={{ position: 'relative', marginTop: 16 }}
@@ -488,12 +483,13 @@ function MBOverviewBody(props){
         </div>
         <div className={classes.gridChild2}>
           <ThemeProvider theme={theme}>
-            <StyledTextButton disabled={!editting}
+            <GreenTextButton disabled={!editting}
               variant="outlined"
               className={classes.button}
+              style={{ textTransform: 'none' }}
               onClick={()=>handleOpen('location')}>
               { data?( selectedField? selectedField.fieldname : data.location ):'Location' }
-            </StyledTextButton>
+            </GreenTextButton>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
               disabled={!editting}>
@@ -546,18 +542,19 @@ function MBOverviewBody(props){
       { editting?
         <div className={classes.buttonControl}>
           <div style={{ flex: 2 }}></div>
-          <StyledTextButton className={classes.button}
-            onClick={()=>handleEditting(false)}>Cancel</StyledTextButton>
-          <StyledButton className={classes.button}
-            onClick={handleEditMatch}>Save</StyledButton>
+          <GreenTextButton className={classes.button}
+            onClick={()=>handleEditting(false)}>Cancel</GreenTextButton>
+          <GreenButton className={classes.button}
+            onClick={handleEditMatch}>Save</GreenButton>
         </div>
         :
         <div style={{ height: 88 }}></div>
       }
       { ( modalType && modalType === 'location' )?
-        <TemplateDialog open={open} handleClose={handleClose}>
+        <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
           <Location token={token} setCSRFToken={setCSRFToken} selectedField={selectedField} setSelectedField={setSelectedField}
-            handleSnackBar={handleSnackBar}/>
+            handleClose={handleClose}
+            handleSnackBar={handleSnackBar} />
         </TemplateDialog>
         :
         <TemplateDialog open={open} handleClose={handleClose} maxWidth={500}>
