@@ -49,7 +49,8 @@ const useStyles = makeStyles(theme => ({
   },
   prizeText: {
     height: 24,
-  }
+  },
+
 }))
 
 const StyledTabs = withStyles({
@@ -199,7 +200,6 @@ function RewardContainer(props){
     }
   }
 
-
   return(
     <ListItem>
       <ListItemText className={classes.listText} primary={data.fullname} />
@@ -305,7 +305,6 @@ export default function MBRewardBody(props){
     }
   }
 
-
   async function handleReset(){
     let classno = []
 
@@ -396,7 +395,14 @@ export default function MBRewardBody(props){
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    //handleFetch()
+    var json = '[{"userid":383134,"fullname":"สีไพร","lastname":"อภิสนธิ์","classno":1,"prize":0,"par":1},{"userid":175937,"fullname":"ประทีป","lastname":"ค้ายาดี","classno":1,"prize":0,"par":1},{"userid":422094,"fullname":"อธิวัฒน์","lastname":"แย้มเรืองรัตน์","classno":1,"prize":0,"par":1},{"userid":380855,"fullname":"ประสิทธิ","lastname":"คำภูแสน","classno":1,"prize":0,"par":3},{"userid":859661,"fullname":"พงศ์ภูมินทร์","lastname":"กล้าหาญ","classno":1,"prize":0,"par":3},{"userid":375128,"fullname":"วิชยะ","lastname":"ศรีนาคาร์","classno":1,"prize":0,"par":3},{"userid":825953,"fullname":"สัมพันธ์","lastname":"เรศมณเฑียร","classno":1,"prize":0,"par":4},{"userid":560646,"fullname":"พูลลาภ","lastname":"เยือกเย็น","classno":1,"prize":0,"par":4},{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":1,"prize":0,"par":5},{"userid":726183,"fullname":"ทินพันธ์","lastname":"พิลึก","classno":1,"prize":0,"par":7},{"userid":686853,"fullname":"ภัศดา","lastname":"บุรณศิริ","classno":2,"prize":0,"par":-5},{"userid":298863,"fullname":"พรชัย","lastname":"เนียมหมื่นไวย์","classno":2,"prize":0,"par":-5},{"userid":290370,"fullname":"ดุสิต","lastname":"สมศักดิ์","classno":2,"prize":0,"par":0},{"userid":243286,"fullname":"พัสกร  ","lastname":"ยุพาวัฒนะ","classno":2,"prize":0,"par":1},{"userid":127642,"fullname":"ธงชัย","lastname":"แตงอ่อน","classno":2,"prize":0,"par":2},{"userid":584981,"fullname":"มนัส ","lastname":"สุขเย็น","classno":2,"prize":0,"par":3},{"userid":121302,"fullname":"อานนท์ ","lastname":"โพธิ์ทอง","classno":2,"prize":0,"par":3},{"userid":158541,"fullname":"Mike","lastname":"Missler","classno":2,"prize":0,"par":3},{"userid":349921,"fullname":"สนอง ","lastname":"ช้างเนียม","classno":3,"prize":0,"par":5},{"userid":344566,"fullname":"ประทีป ","lastname":"แก้ววงษา ","classno":3,"prize":0,"par":5},{"userid":570929,"fullname":"สมนัส","lastname":"จันทนะ","classno":3,"prize":0,"par":5},{"userid":362257,"fullname":"ทวีโชค ","lastname":"พุทธชน","classno":3,"prize":0,"par":14}]';
+    var obj = JSON.parse(json);
+    var json1 = '{"title":"SNT 4-2019","date":"04/07/2019","picture":"/matchs/16725831/16725831","location":"Watermill GOLF&GARDENS","locationid":631932,"createdate":"04/07/2019","scorematch":1,"matchtype":0,"display":1,"status":1,"class":[{"classno":1,"classname":"S"},{"classno":2,"classname":"SS"},{"classno":3,"classname":"GS"}],"team":[],"playoff":[383134,686853,0]}';
+    var obj1 = JSON.parse(json1);
+
+    setData(obj)
+    setMatchDetail(obj1)
   },[ ])
 
   return(
@@ -449,7 +455,9 @@ export default function MBRewardBody(props){
             <ListItemText style={{ color: 'white' }} className={classes.listText} primary='Last name' />
             <ListItemText style={{ color: 'white' }} className={classes.listPrize} primary='Prize' />
           </ListItem>
-          {matchDetail && matchDetail.class &&
+        </List>
+        <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .5 }}>
+          { matchDetail && matchDetail.class &&
             matchDetail.class.map( (c, i) =>
               value === i && c &&
               data && !data.status &&

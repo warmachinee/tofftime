@@ -49,11 +49,11 @@ const useStyles = makeStyles(theme => ({
 export default function MBReward(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar } = props
-  const [ expanded, setExpanded ] = React.useState(false)
+  const [ expanded, setExpanded ] = React.useState(!false)
 
   function expandHandler(){
     setExpanded(!expanded)
-  }//
+  }
   return(
     <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">

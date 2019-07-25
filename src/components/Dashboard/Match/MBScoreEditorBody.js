@@ -1,7 +1,9 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import Fuse from 'fuse.js';
 import socketIOClient from 'socket.io-client'
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import * as API from '../../../api'
 
 import Button from '@material-ui/core/Button';
@@ -15,23 +17,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
+import Collapse from '@material-ui/core/Collapse';
+import Divider from '@material-ui/core/Divider';
 
 import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
 
 import { LDCircular } from '../../loading/LDCircular'
-
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
-  loading: () => <LDCircular />
-});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -40,10 +38,26 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'auto',
-    marginTop: 24
+    marginTop: 24,
+    maxHeight: '100%'
   },
-  margin: {
-    margin: theme.spacing(1),
+  searchBoxGrid: {
+    marginTop: 16,
+    marginBottom: 8
+  },
+  searchBox: {
+    width: '100%',
+    [theme.breakpoints.up(500)]: {
+      width: 'auto'
+    },
+  },
+  controls: {
+    display: 'flex',
+    justifyContent: 'flex-end' ,
+    margin: theme.spacing(2, 0)
+  },
+  button: {
+    padding: theme.spacing(1, 3)
   },
   indicator: {
     backgroundColor: teal[600],
@@ -57,19 +71,27 @@ const useStyles = makeStyles(theme => ({
     marginTop: 36
   },
   listText:{
-    width: '100%',
-    textAlign: 'left'
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    width: '40%',
+    textAlign: 'left',
+    [theme.breakpoints.up(500)]: {
+      width: '100%',
+    },
   },
   listClass: {
-    width: '30%',
-    textAlign: 'left'
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    width: '15%',
+    textAlign: 'left',
+    [theme.breakpoints.up(500)]: {
+      width: '30%',
+    },
   },
   textfield: {
     margin: 8,
   },
   textfieldGrid: {
     display: 'flex',
-    minWidth: 600
+    minWidth: 700
   },
   text: {
     color: teal[600],
@@ -77,7 +99,27 @@ const useStyles = makeStyles(theme => ({
   textHighlight: {
     color: teal[900],
     fontWeight: 800
-  }
+  },
+  notice: {
+    fontFamily: 'monospace',
+    color: grey[600],
+    fontWeight: 600,
+  },
+  expandIcon: {
+    marginRight: 8,
+    marginLeft: 12
+  },
+  selectPlayerButton: {
+    textTransform: 'none',
+    marginTop: 'auto',
+    marginBottom: 16,
+    padding: '8px 16px 8px 0',
+    width: '100%',
+    [theme.breakpoints.up(500)]: {
+      width: 'auto'
+    },
+  },
+
 }))
 
 const GreenButton = withStyles(theme => ({
@@ -90,89 +132,257 @@ const GreenButton = withStyles(theme => ({
   },
 }))(Button);
 
+const GreenTextButton = withStyles(theme => ({
+  root: {
+    color: teal[600],
+    '&:hover': {
+      backgroundColor: teal[100],
+    },
+  },
+}))(Button);
+
+const theme = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+});
+
 function MBScoreEditorContainer(props){
   const classes = useStyles();
-  const { data, matchDetail, handleSelectPlayer } = props
+  const { data, matchDetail, selected, handleSelectPlayer } = props
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
+  const [ expanded, setExpanded ] = React.useState(true)
+
+  function expandHandler(){
+    setExpanded(!expanded)
+  }
 
   function handleMore(){
     if(data){
-      if( dataSliced >= data.length ){
-        setDataSliced( 10 )
+      if(searchUser){
+        if( dataSliced >= handleSearch().length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( dataSliced + 10 )
+        }
       }else{
-        setDataSliced( dataSliced + 10 )
+        if( dataSliced >= data.length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( dataSliced + 10 )
+        }
       }
     }
   }
 
   function handleMoreAll(){
     if(data){
-      if( dataSliced >= data.length ){
-        setDataSliced( 10 )
+      if(searchUser){
+        if( dataSliced >= handleSearch().length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( handleSearch().length )
+        }
       }else{
-        setDataSliced( data.length )
+        if( dataSliced >= data.length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( data.length )
+        }
       }
     }
   }
 
+  function handleListClick(value){
+    handleSelectPlayer(value)
+    setExpanded(false)
+  }
+
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  function handleSearch(){
+    if(data){
+      var options = {
+        shouldSort: true,
+        caseSensitive: true,
+        minMatchCharLength: 2,
+        keys: [
+          "firstname",
+          "lastname",
+          "classname",
+          "classno"
+        ]
+      }
+      var fuse = new Fuse(data, options)
+      var result = fuse.search(searchUser)
+      return result
+    }
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
+
   return(
-    <React.Fragment>
-      <FormControl className={classes.margin}>
-        <InputLabel>Search player</InputLabel>
-        <Input
-          value={searchUser}
-          onChange={e =>setSearchUser(e.target.value)}
-          endAdornment={
-            <InputAdornment position="end">
-              <SearchIcon />
-            </InputAdornment>
-          }
-        />
-      </FormControl>
-      <List>
-        { data && !data.status &&
-          data.filter((item)=>{
-            return item && (
-              (item.firstname.search(searchUser) !== -1) ||
-              (item.firstname.toLowerCase().search(searchUser.toLowerCase()) !== -1) ||
-              (item.lastname.search(searchUser) !== -1) ||
-              (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
-            )
-          }).slice(0, dataSliced).map( value =>
-            value &&
-            <ListItem key={value.userid} button onClick={()=>handleSelectPlayer(value)}>
-              <ListItemText className={classes.listText} primary={value.firstname} />
-              <ListItemText className={classes.listText} primary={value.lastname} />
-              { matchDetail && matchDetail.class &&
-                ( value.classno === 0 ?
-                  <ListItemText className={classes.listClass} primary={"-"} />
-                  :
-                  matchDetail.class.filter( d =>{
-                    return d.classno === value.classno
-                  }).map( d =>
-                    d &&
-                    <ListItemText key={d.classname + `(${value.userid})`} className={classes.listClass} primary={d.classname} />
-                  )
+    <div>
+      <GreenTextButton
+        className={classes.selectPlayerButton}
+        variant="outlined"
+        onClick={expandHandler}>
+        <ExpandMoreIcon
+          className={classes.expandIcon}
+          style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }} />
+        { selected? selected.firstname + " " + selected.lastname : 'Select Player'}
+      </GreenTextButton>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <div className={classes.searchBox}>
+          <ThemeProvider theme={theme}>
+            <TextField
+              autoFocus={expanded}
+              className={classes.searchBox}
+              variant="outlined"
+              placeholder={ !searchUser? "Search player" : '' }
+              value={searchUser}
+              onChange={e =>setSearchUser(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="primary"/>
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    { searchUser?
+                      <IconButton onClick={()=>setSearchUser('')}>
+                        <ClearIcon color="inherit" fontSize="small"/>
+                      </IconButton>
+                      :
+                      <div style={{ width: 44 }}></div>
+                    }
+                  </InputAdornment>
                 )
-              }
-            </ListItem>
-          )
-        }
-        <ListItem role={undefined} dense style={{ display: 'flex' }}>
-          { data && data.length > 10 &&
-            <React.Fragment>
-              <Button fullWidth onClick={handleMore}>
-                { dataSliced >= data.length ? 'Collapse':'More' }
-              </Button>
-              { data && dataSliced < data.length &&
-                <Button fullWidth onClick={handleMoreAll}>More All</Button>
-              }
-            </React.Fragment>
+              }}
+            />
+          </ThemeProvider>
+        </div>
+        <Typography component="div">
+          <Box className={classes.notice} m={1}>
+            Please select player in the list.
+          </Box>
+        </Typography>
+        <List>
+          <ListItem style={{ backgroundColor:  grey[900] }}>
+            <ListItemText style={{ color: 'white' }} className={classes.listText}
+              primary={ window.innerWidth < 450? "Player" : "First name" } />
+            <ListItemText style={{ color: 'white' }} className={classes.listText}
+              primary={ window.innerWidth < 450? "" : "Last name" } />
+            { window.innerWidth > 450 &&
+              <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass} primary="Class" />
+            }
+
+          </ListItem>
+        </List>
+        <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .4 }}>
+          { data && !data.status &&
+            [
+              ...searchUser? handleSearch() : data
+            ].slice(0, dataSliced).map( value =>
+              value &&
+              <React.Fragment key={value.userid}>
+                <ListItem
+                  button
+                  style={{ ...(selected && selected.userid === value.userid) && { backgroundColor:  grey[400] } }}
+                  onClick={()=>handleListClick(value)}>
+                  <ListItemText className={classes.listText}
+                    primary={
+                      ( window.innerWidth < 450 )?
+                      <div style={{ display: 'flex' }}>
+                        { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
+                      </div>
+                      : value.firstname
+                    }
+                    secondary={
+                      matchDetail && matchDetail.class && window.innerWidth < 450 &&
+                      ( value.classno === 0 ?
+                        <React.Fragment>
+                          <br></br>
+                          "-"
+                        </React.Fragment>
+                        :
+                        matchDetail.class.filter( d =>{
+                          return d.classno === value.classno
+                        }).map((d, i) =>
+                          d &&
+                          <React.Fragment key={i}>
+                            <br></br>
+                            {d.classname}
+                          </React.Fragment>
+                        )
+                      )
+                    } />
+                  { window.innerWidth > 450 &&
+                    <ListItemText className={classes.listText}
+                      primary={value.lastname}/>
+                  }
+                  { matchDetail && matchDetail.class && window.innerWidth > 450 &&
+                    ( value.classno === 0 ?
+                      <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
+                      :
+                      matchDetail.class.filter( d =>{
+                        return d.classno === value.classno
+                      }).map( d =>
+                        d &&
+                        <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.classname} />
+                      )
+                    )
+                  }
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            )
           }
-        </ListItem>
-      </List>
-    </React.Fragment>
+          <ListItem role={undefined} dense style={{ display: 'flex' }}>
+            { data && data.length > 10 && !searchUser &&
+              <React.Fragment>
+                <Button fullWidth onClick={handleMore}>
+                  { dataSliced >= data.length ? 'Collapse':'More' }
+                </Button>
+                { data && dataSliced < data.length &&
+                  <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                }
+              </React.Fragment>
+            }
+            { data && handleSearch().length > 10 && searchUser &&
+              <React.Fragment>
+                <Button fullWidth onClick={handleMore}>
+                  { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                </Button>
+                { data && dataSliced < handleSearch().length &&
+                  <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                }
+              </React.Fragment>
+            }
+          </ListItem>
+          { searchUser && handleSearch().length === 0 &&
+            <ListItem>
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+                  No Reult
+                </Box>
+              </Typography>
+            </ListItem>
+          }
+        </List>
+      </Collapse>
+    </div>
   );
 }
 
@@ -181,23 +391,13 @@ export default function MBScoreEditorBody(props){
   const { token, setCSRFToken, matchid, handleSnackBar } = props
   const tempArr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
   const [ data, setData ] = React.useState(null)
-  const [ open, setOpen ] = React.useState(false);
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ selected, setSelected ] = React.useState(null)
   const [ arrScore, setArrScore ] = React.useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
   function handleSelectPlayer(d){
     setSelected(d)
-    handleClose()
   }
-
-  function handleOpen(){
-    setOpen(true);
-  };
-
-  function handleClose(){
-    setOpen(false);
-  };
 
   function handleChange(value, index){
     const tempArr = [...arrScore]
@@ -234,6 +434,11 @@ export default function MBScoreEditorBody(props){
       userid: selected.userid,
       userscore: arrScore,
     })
+  }
+
+  function handleReset(){
+    setArrScore([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    setSelected(null)
   }
 
   async function handleFetch(){
@@ -307,46 +512,43 @@ export default function MBScoreEditorBody(props){
 
   return(
     <div className={classes.root}>
-      <div style={{ display: 'flex' }}>
-        <Button onClick={handleOpen}>
-          { selected ? selected.firstname + " " + selected.lastname: 'Select User' }
-        </Button>
-        <div style={{ flex: 1 }}></div>
-        <Button onClick={()=>setArrScore([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])}>Reset</Button>
-        <GreenButton onClick={handleUpdateScore} variant="contained" color="primary">Save</GreenButton>
-      </div>
-      <div style={{ overflow: 'auto', marginTop: 24, marginBottom: 24 }}>
-        <div className={classes.textfieldGrid}>
-          {tempArr.slice(0, 9).map( d =>
-            <TextField
-              key={d}
-              className={classes.textfield}
-              label={d + 1}
-              value={arrScore[d] || ''}
-              onChange={e =>handleChange(e.target.value, d)}
-              onFocus={e => e.target.select()}
-              onKeyPress={e =>handleKeyPress(e)}
-              variant="outlined"
-              type="number"
-            />
-          )}
+      <MBScoreEditorContainer data={data} matchDetail={matchDetail} selected={selected} handleSelectPlayer={handleSelectPlayer}/>
+      <ThemeProvider theme={theme}>
+        <div style={{ overflow: 'auto', marginTop: 24, marginBottom: 24 }}>
+          <div className={classes.textfieldGrid}>
+            {tempArr.slice(0, 9).map( d =>
+              <TextField
+                key={d}
+                className={classes.textfield}
+                label={d + 1}
+                value={arrScore[d] || 0}
+                onChange={e =>handleChange(e.target.value, d)}
+                onFocus={e => e.target.select()}
+                onKeyPress={e =>handleKeyPress(e)}
+                variant="outlined"
+                type="number"
+                min={0}
+              />
+            )}
+          </div>
+          <div className={classes.textfieldGrid}>
+            {tempArr.slice(9, 18).map( d =>
+              <TextField
+                key={d}
+                className={classes.textfield}
+                label={d + 1}
+                value={arrScore[d] || 0}
+                onChange={e =>handleChange(e.target.value, d)}
+                onFocus={e => e.target.select()}
+                onKeyPress={e =>handleKeyPress(e)}
+                variant="outlined"
+                type="number"
+                min={0}
+              />
+            )}
+          </div>
         </div>
-        <div className={classes.textfieldGrid}>
-          {tempArr.slice(9, 18).map( d =>
-            <TextField
-              key={d}
-              className={classes.textfield}
-              label={d + 1}
-              value={arrScore[d] || ''}
-              onChange={e =>handleChange(e.target.value, d)}
-              onFocus={e => e.target.select()}
-              onKeyPress={e =>handleKeyPress(e)}
-              variant="outlined"
-              type="number"
-            />
-          )}
-        </div>
-      </div>
+      </ThemeProvider>
       <Typography component="div" style={{ display: 'flex' }}>
         <Box className={classes.text} m={1}>
           OUT = {handleSum(arrScore, 'out')}
@@ -359,9 +561,12 @@ export default function MBScoreEditorBody(props){
           Total = {handleSum(arrScore, 'out') + handleSum(arrScore, 'in')}
         </Box>
       </Typography>
-      <TemplateDialog open={open} handleClose={handleClose}>
-        <MBScoreEditorContainer data={data} matchDetail={matchDetail} handleSelectPlayer={handleSelectPlayer}/>
-      </TemplateDialog>
+      <div className={classes.controls}>
+        <Button className={classes.button} onClick={handleReset}>Reset</Button>
+        <GreenButton
+          variant="contained" color="primary"
+          className={classes.button} onClick={handleUpdateScore}>Save</GreenButton>
+      </div>
     </div>
   );
 }

@@ -11,6 +11,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
@@ -20,11 +24,14 @@ import { LDCircular } from '../../loading/LDCircular'
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
-    padding: theme.spacing(1, 2),
+    padding: 0,
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24
+    marginTop: 24,
+    [theme.breakpoints.up(500)]: {
+      padding: theme.spacing(1, 2),
+    }
   },
   indicator: {
     backgroundColor: teal[600],
@@ -34,13 +41,32 @@ const useStyles = makeStyles(theme => ({
     color: teal[900],
     width: 50,
   },
+  notice: {
+    fontFamily: 'monospace',
+    color: grey[600],
+    fontWeight: 600,
+  },
   list: {
-    marginTop: 36
+    padding: 0
+  },
+  listItem: {
+    backgroundColor: grey[900]
   },
   listText:{
-    width: '100%',
-    textAlign: 'left'
+    width: '40%',
+    textAlign: 'left',
+    [theme.breakpoints.up(500)]: {
+      width: '100%',
+    }
   },
+  listStatus: {
+    width: '10%',
+    justifyContent: 'center',
+  },
+  checkCircle: {
+    color: teal[600]
+  },
+
 }))
 
 const StyledTabs = withStyles({
@@ -107,7 +133,6 @@ function PlayoffContainer(props){
   }
 
   function handleUpdatePlayoff(selected){
-
     var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
     const socket = socketIOClient( hd + API.webURL() )
     socket.emit('client-message', {
@@ -178,16 +203,20 @@ function PlayoffContainer(props){
   }
 
   return(
-    <List>
-      <ListItem
-        button
-        onClick={()=>handleSetPlayoff(data)}
-      >
-        <ListItemText className={classes.listText} primary={data.fullname} />
-        <ListItemText className={classes.listText} primary={data.lastname} />
-        <ListItemText className={classes.listText} primary={data.status} />
-      </ListItem>
-    </List>
+    <ListItem
+      button
+      onClick={()=>handleSetPlayoff(data)}
+    >
+      <ListItemText className={classes.listText} primary={data.fullname} />
+      <ListItemText className={classes.listText} primary={data.lastname} />
+      <ListItemIcon className={classes.listStatus}>
+        { data.status === 'playoff'?
+          <CheckCircleIcon classes={{ root: classes.checkCircle }}/>
+          :
+          <div style={{ width: 20, textAlign: 'center', fontSize: 20, fontWeight: 600 }}>-</div>
+        }
+    </ListItemIcon>
+    </ListItem>
   );
 }
 
@@ -264,10 +293,24 @@ export default function MBPlayoffBody(props){
 
   React.useEffect(()=>{
     handleFetch()
+    /*
+    var json = '[{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":1,"status":"not set"},{"userid":380855,"fullname":"ประสิทธิ","lastname":"คำภูแสน","classno":1,"status":"not set"},{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":2,"status":"not set"},{"userid":380855,"fullname":"ประสิทธิ","lastname":"คำภูแสน","classno":2,"status":"not set"}]';
+    var obj = JSON.parse(json);
+    var json1 = '{"title":"Match 1539","date":"12/07/2019","picture":"/matchs/29204611/29204611","location":"testC","locationid":669528,"createdate":"03/07/2019","scorematch":1,"matchtype":0,"display":-1,"status":1,"class":[{"classno":1,"classname":"S1"},{"classno":2,"classname":"S2"},{"classno":3,"classname":"S3"},{"classno":4,"classname":"S4"}],"team":[],"playoff":[0,0,0,0]}';
+    var obj1 = JSON.parse(json1);
+
+    setData(obj)
+    setMatchDetail(obj1)*/
+
   },[ ])
 
   return(
     <div className={classes.root}>
+      <Typography component="div">
+        <Box className={classes.notice} m={1}>
+          Select class
+        </Box>
+      </Typography>
       <Paper elevation={1} style={{ backgroundColor: teal[100], padding: '8px 0' }}>
         <StyledTabs
           value={value}
@@ -284,25 +327,46 @@ export default function MBPlayoffBody(props){
         </StyledTabs>
       </Paper>
       <div className={classes.list}>
-        { matchDetail && matchDetail.class &&
-          matchDetail.class.map( (c, i) =>{
-            const filtered = c && data.filter( item =>{
-              return ( item && item.classno === c.classno )
+        <List>
+          <ListItem className={classes.listItem}>
+            <ListItemText style={{ color: 'white' }} className={classes.listText} primary="First name" />
+            <ListItemText style={{ color: 'white' }} className={classes.listText} primary="Last name" />
+            <ListItemIcon className={classes.listStatus}>
+              <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>Playoff</div>
+            </ListItemIcon>
+          </ListItem>
+          { matchDetail && matchDetail.class &&
+            matchDetail.class.map( (c, i) =>{
+              const filtered = c && data.filter( item =>{
+                return ( item && item.classno === c.classno )
+              })
+              return (
+                <React.Fragment key={i}>
+                  { value === i && filtered &&
+                    <React.Fragment>
+                      { filtered.length > 1 &&
+                        filtered.map( d =>
+                          <PlayoffContainer key={d.userid} data={d} token={token} setCSRFToken={setCSRFToken}
+                            matchid={matchid} handleSnackBar={handleSnackBar}
+                            setData={setData} setMatchDetail={setMatchDetail}/>
+                        )
+                      }
+                      { filtered.length <= 1 &&
+                        <ListItem>
+                          <Typography component="div" style={{ width: '100%' }}>
+                            <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+                              No playoff player
+                            </Box>
+                          </Typography>
+                        </ListItem>
+                      }
+                    </React.Fragment>
+                  }
+                </React.Fragment>
+              );
             })
-            return(
-              <React.Fragment key={i}>
-                { value === i && filtered && filtered.length > 1 &&
-                  filtered.map( d =>
-                    d &&
-                    <PlayoffContainer key={d.userid} data={d} token={token} setCSRFToken={setCSRFToken}
-                      matchid={matchid} handleSnackBar={handleSnackBar}
-                      setData={setData} setMatchDetail={setMatchDetail}/>
-                  )
-                }
-              </React.Fragment>
-            );
-          })
-        }
+          }
+        </List>
       </div>
     </div>
   );

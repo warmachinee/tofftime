@@ -112,13 +112,13 @@ const Footer = Loadable({
   loading: () => null
 });
 
-/*
+
 import MatchEditor from './components/Dashboard/Match/MatchEditor'
 import MatchBody from './components/Dashboard/Match/MatchBody'
 import MatchDetail from './components/Detail/MatchDetail'
 import MatchListB from './components/Dashboard/MatchList/MatchList'
 import Dashboard from './components/Dashboard/Dashboard'
-*/
+
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
@@ -177,16 +177,7 @@ function App() {
         handleOpen={handleOpen}
         handleSess={handleSess}
         setCSRFToken={setCSRFToken}/>
-      <Switch>
-        <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
-        <RouteDetail path="/detail/:detailparam" />
-        <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
-          handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL}/>
-        <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}
-          handleSnackBar={handleSnackBar} />
-        <Route component={NoMatch} />
-      </Switch>
-      {/* true ?
+      { true ?
         <Switch>
           <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
           <RouteDetail path="/detail/:detailparam" />
@@ -197,7 +188,7 @@ function App() {
           <Route component={NoMatch} />
         </Switch>
         :
-        <MatchEditor handleSnackBar={handleSnackBar} />*/
+        <MatchEditor handleSnackBar={handleSnackBar} />
 
 
         //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchList /><Dashboard />

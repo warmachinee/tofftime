@@ -1,5 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import Fuse from 'fuse.js';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from '../../../api'
@@ -21,6 +22,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Slide from '@material-ui/core/Slide';
+import Divider from '@material-ui/core/Divider';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -61,12 +63,14 @@ const useStyles = makeStyles(theme => ({
     overflow: 'auto',
   },
   listText:{
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
     width: '100%',
     textAlign: 'left'
   },
   listClass: {
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
     width: '30%',
-    textAlign: 'left'
+    textAlign: 'left',
   },
   margin: {
     margin: theme.spacing(1),
@@ -114,7 +118,6 @@ const useStyles = makeStyles(theme => ({
   },
   controlsEditButton: {
     marginTop: 'auto',
-    padding: 16,
     [theme.breakpoints.up(500)]: {
       padding: '8px 16px',
     },
@@ -122,7 +125,6 @@ const useStyles = makeStyles(theme => ({
   controlsEditButton2: {
     marginTop: 2,
     marginBottom: 2,
-    padding: 16,
     [theme.breakpoints.up(500)]: {
       padding: '8px 36px',
     },
@@ -158,7 +160,12 @@ const useStyles = makeStyles(theme => ({
   },
   deleteIcon: {
     color: teal[600]
-  }
+  },
+  notice: {
+    fontFamily: 'monospace',
+    color: grey[600],
+    fontWeight: 600,
+  },
 
 }))
 
@@ -221,20 +228,36 @@ export default function MBPlayerBody(props){
 
   function handleMore(){
     if(data){
-      if( dataSliced >= data.length ){
-        setDataSliced( 10 )
+      if(searchUser){
+        if( dataSliced >= handleSearch().length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( dataSliced + 10 )
+        }
       }else{
-        setDataSliced( dataSliced + 10 )
+        if( dataSliced >= data.length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( dataSliced + 10 )
+        }
       }
     }
   }
 
   function handleMoreAll(){
     if(data){
-      if( dataSliced >= data.length ){
-        setDataSliced( 10 )
+      if(searchUser){
+        if( dataSliced >= handleSearch().length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( handleSearch().length )
+        }
       }else{
-        setDataSliced( data.length )
+        if( dataSliced >= data.length ){
+          setDataSliced( 10 )
+        }else{
+          setDataSliced( data.length )
+        }
       }
     }
   }
@@ -297,6 +320,25 @@ export default function MBPlayerBody(props){
       setSelectedClass(d.classno)
     }
     handleMenuClose()
+  }
+
+  function handleSearch(){
+    if(data){
+      var options = {
+        shouldSort: true,
+        caseSensitive: true,
+        minMatchCharLength: 2,
+        keys: [
+          "firstname",
+          "lastname",
+          "classname",
+          "classno"
+        ]
+      }
+      var fuse = new Fuse(data, options)
+      var result = fuse.search(searchUser)
+      return result
+    }
   }
 
   async function handleSetDisplay(d){
@@ -464,7 +506,6 @@ export default function MBPlayerBody(props){
       <List className={classes.listRoot}>
         <ListItem className={classes.controls}>
           <Button className={classes.addPlayerButton} variant="contained"
-            style={{ zIndex: 1300 }}
             onClick={handleOpen}>
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
             Add player
@@ -514,8 +555,8 @@ export default function MBPlayerBody(props){
             { !edittingClass && !edittingDisplay &&
               (
                 editting?
-                <GreenButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
-                  onClick={handleDoneEditting}>Done</GreenButton>
+                <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
+                  onClick={handleDoneEditting}>Done</GreenTextButton>
                 :
                 <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
                   <DeleteIcon
@@ -591,86 +632,138 @@ export default function MBPlayerBody(props){
           </ThemeProvider>
         </ListItem>
         <div style={{ overflow: 'auto', position: 'relative' }}>
+          { ( editting || edittingClass || edittingDisplay ) &&
+            <Typography component="div">
+              <Box className={classes.notice} m={1}>
+                { edittingDisplay && 'Click the list to toggle the player display.'}
+                { edittingClass && 'Select class and player to change player class.'}
+                { editting && 'Select the list to delete multiple or Hit the icon on the right to delete single.'}
+              </Box>
+            </Typography>
+          }
+          <ListItem role={undefined}
+            style={{
+              display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
+            }}>
+            <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
+              primary={ window.innerWidth < 600? "Player" : "First name" } />
+            { window.innerWidth >= 600 &&
+              <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
+                primary="Last name" />
+            }
+            { window.innerWidth > 600 &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }} primary="Class" />
+            }
+            <ListItemIcon style={{ justifyContent: 'flex-start' }}>
+              <div style={{ height: 42, width: 42 }}></div>
+            </ListItemIcon>
+          </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
-            <ListItem role={undefined}
-              style={{
-                display: 'flex', backgroundColor: 'black', borderRadius: 4, cursor: 'auto', minWidth: 600,
-              }}>
-              <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText} primary="First name" />
-              <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText} primary="Last name" />
-              <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listClass} primary="Class" />
-              <ListItemIcon style={{ justifyContent: 'flex-end', width: 64, marginRight: 16 }}>
-                <div style={{ height: 42, width: 42 }}></div>
-              </ListItemIcon>
-            </ListItem>
             { data && !data.status &&
-              data.filter((item)=>{
-                  return (
-                    (item.firstname.search(searchUser) !== -1) ||
-                    (item.firstname.toLowerCase().search(searchUser.toLowerCase()) !== -1)||
-                    (item.lastname.search(searchUser) !== -1) ||
-                    (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
-                  )
-                }).slice(0, dataSliced).map(value => {
+              [
+                ...searchUser? handleSearch() : data
+              ].slice(0, dataSliced).map(value => {
                 return value && (
-                  <ListItem key={value.userid} role={undefined} button
-                    style={{ minWidth: 600 }}
-                    onClick={()=>
-                      ( editting || edittingClass )?
-                      handleToggle(value):
-                      ( edittingDisplay?
-                        handleSetDisplay(value.userid)
-                        :
-                        console.log()
-                      )
-                    }>
-                    <ListItemIcon>
-                      { ( editting || edittingClass )?
-                        <GreenCheckbox
-                          edge="start"
-                          checked={checked.indexOf(value) !== -1}
-                          tabIndex={-1}
-                          disableRipple />
-                        :
-                        (edittingDisplay ?
+                  <React.Fragment key={value.userid}>
+                    <ListItem role={undefined} button
+                      onClick={()=>
+                        ( editting || edittingClass )?
+                        handleToggle(value):
+                        ( edittingDisplay?
+                          handleSetDisplay(value.userid)
+                          :
+                          console.log()
+                        )
+                      }>
+                      <ListItemIcon>
+                        { ( editting || edittingClass )?
                           <GreenCheckbox
                             edge="start"
-                            checked={value.display === 1}
+                            checked={checked.indexOf(value) !== -1}
                             tabIndex={-1}
                             disableRipple />
-                        :
-                          <div style={{ height: 42, width: 42 }}></div>)
+                          :
+                          (edittingDisplay ?
+                            <GreenCheckbox
+                              edge="start"
+                              checked={value.display === 1}
+                              tabIndex={-1}
+                              disableRipple />
+                          :
+                            <div style={{ height: 42, width: 42 }}></div>)
+                        }
+                      </ListItemIcon>
+                      <ListItemText className={classes.listText}
+                        primary={
+                          ( window.innerWidth >= 450 && window.innerWidth < 600 )?
+                          <div style={{ display: 'flex' }}>
+                            { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
+                          </div>
+                          : value.firstname }
+                        secondary={
+                          <React.Fragment>
+                            { window.innerWidth < 450 &&
+                              <Typography
+                                component="span"
+                                variant="body1"
+                                color="textPrimary"
+                              >
+                                {value.lastname}
+                              </Typography>
+                            }
+                            { matchDetail && matchDetail.class && window.innerWidth < 600 &&
+                              ( value.classno === 0 ?
+                                <React.Fragment>
+                                  <br></br>
+                                  "-"
+                                </React.Fragment>
+                                :
+                                matchDetail.class.filter( d =>{
+                                  return d.classno === value.classno
+                                }).map((d, i) =>
+                                  d &&
+                                  <React.Fragment key={i}>
+                                    <br></br>
+                                    {d.classname}
+                                  </React.Fragment>
+                                )
+                              )
+                            }
+                          </React.Fragment>
+                        } />
+                      { window.innerWidth >= 600 &&
+                        <ListItemText className={classes.listText}
+                          primary={value.lastname}/>
                       }
-                    </ListItemIcon>
-                    <ListItemText className={classes.listText} primary={value.firstname} />
-                    <ListItemText className={classes.listText} primary={value.lastname} />
-                    { matchDetail && matchDetail.class &&
-                      ( value.classno === 0 ?
-                        <ListItemText className={classes.listClass} primary={"-"} />
-                        :
-                        matchDetail.class.filter( d =>{
-                          return d.classno === value.classno
-                        }).map( d =>
-                          d &&
-                          <ListItemText key={d.classname + `(${value.userid})`} className={classes.listClass} primary={d.classname} />
+                      { matchDetail && matchDetail.class && window.innerWidth > 600 &&
+                        ( value.classno === 0 ?
+                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
+                          :
+                          matchDetail.class.filter( d =>{
+                            return d.classno === value.classno
+                          }).map( d =>
+                            d &&
+                            <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.classname} />
+                          )
                         )
-                      )
-                    }
-                    <ListItemIcon style={{ justifyContent: 'flex-end', width: 64, marginRight: 16 }}>
-                      { editting ?
-                        <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                          <DeleteIcon classes={{ root: classes.deleteIcon}}/>
-                        </IconButton>
-                        :
-                        <div style={{ height: 42, width: 42 }}></div>
                       }
-                    </ListItemIcon>
-                  </ListItem>
+                      <ListItemIcon style={{ justifyContent: 'flex-end' }}>
+                        { editting ?
+                          <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
+                            <DeleteIcon classes={{ root: classes.deleteIcon}}/>
+                          </IconButton>
+                          :
+                          <div style={{ height: 42, width: 42 }}></div>
+                        }
+                      </ListItemIcon>
+                    </ListItem>
+                    <Divider />
+                  </React.Fragment>
                 );
               })
             }
             <ListItem role={undefined} dense style={{ display: 'flex' }}>
-              { data && data.length > 10 &&
+              { data && data.length > 10 && !searchUser &&
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
                     { dataSliced >= data.length ? 'Collapse':'More' }
@@ -680,8 +773,26 @@ export default function MBPlayerBody(props){
                   }
                 </React.Fragment>
               }
-
+              { data && handleSearch().length > 10 && searchUser &&
+                <React.Fragment>
+                  <Button fullWidth onClick={handleMore}>
+                    { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                  </Button>
+                  { data && dataSliced < handleSearch().length &&
+                    <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                  }
+                </React.Fragment>
+              }
             </ListItem>
+            { searchUser && handleSearch().length === 0 &&
+              <ListItem>
+                <Typography component="div" style={{ width: '100%' }}>
+                  <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+                    No Reult
+                  </Box>
+                </Typography>
+              </ListItem>
+            }
           </div>
         </div>
       </List>

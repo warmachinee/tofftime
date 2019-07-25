@@ -53,7 +53,7 @@ export default function MBScoreEditor(props){
 
   function expandHandler(){
     setExpanded(!expanded)
-  } //
+  }
   return(
     <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">

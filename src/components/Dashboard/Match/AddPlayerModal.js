@@ -1,6 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { makeStyles } from '@material-ui/core/styles';
+import Fuse from 'fuse.js';
+import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import * as API from '../../../api'
 
 import IconButton from '@material-ui/core/IconButton';
@@ -9,26 +11,28 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import Collapse from '@material-ui/core/Collapse';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SearchIcon from '@material-ui/icons/Search';
+import ClearIcon from '@material-ui/icons/Clear';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
+import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
-    padding: theme.spacing(1, 2),
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 24,
-    maxHeight: window.innerHeight * .8 , height: '100%'
+    maxHeight: '100%'
   },
   margin: {
     margin: theme.spacing(1),
@@ -38,35 +42,113 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     textAlign: 'left'
   },
+  createGrid: {
+    display: 'flex',
+    flexDirection: 'flex-end',
+    marginBottom: 24
+  },
+  createButton: {
+    marginTop: 'auto',
+    padding: '8px 16px 8px 0',
+    width: '100%',
+    [theme.breakpoints.up(500)]: {
+      width: 'auto'
+    },
+  },
+  expandIcon: {
+    marginRight: 8,
+    marginLeft: 12
+  },
+  textFieldGrid: {
+    padding: 16,
+    marginBottom: 24,
+    borderRadius: 4,
+    border: `1.5px solid ${teal[600]}`,
+  },
+  buttonGrid: {
+    display: 'flex',
+  },
+  confirmButton: {
+    width: '100%',
+    marginTop: 16,
+    padding: theme.spacing(1, 3),
+    [theme.breakpoints.up(500)]: {
+      width: 'auto'
+    },
+  },
+  textField: {
+    width: '100%',
+    margin: theme.spacing(1, 0)
+  },
+  searchBox: {
+    width: '100%',
+    [theme.breakpoints.up(500)]: {
+      width: 'auto'
+    },
+  },
+  notice: {
+    fontFamily: 'monospace',
+    color: grey[600],
+    fontWeight: 600,
+  },
+  listItemIcon: {
+    margin: theme.spacing(2, 0)
+  },
+  addCircleIcon: {
+    color: teal[600]
+  },
+  blank: {}
 }))
+
+const GreenButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(teal[500]),
+    backgroundColor: teal[500],
+    '&:hover': {
+      backgroundColor: teal[700],
+    },
+  },
+}))(Button);
+
+const GreenTextButton = withStyles(theme => ({
+  root: {
+    color: teal[600],
+    '&:hover': {
+      backgroundColor: teal[100],
+    },
+  },
+}))(Button);
+
+const theme = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+});
 
 export default function AddPlayerModal(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar, setMBData, setMBMatchDetail } = props
 
   const [ data, setData ] = React.useState(null)
+  const [ createState, setCreateState ] = React.useState(false)
   const [ searchUser, setSearchUser ] = React.useState('')
-  const [ dataSliced, setDataSliced ] = React.useState(10)
   const [ fullname, setFullname ] = React.useState('')
   const [ lastname, setLastname ] = React.useState('')
 
-  function handleMore(){
+  function handleSearch(){
     if(data){
-      if( dataSliced >= data.length ){
-        setDataSliced( 10 )
-      }else{
-        setDataSliced( dataSliced + 10 )
+      var options = {
+        shouldSort: true,
+        caseSensitive: true,
+        minMatchCharLength: 2,
+        keys: [
+          "fullname",
+          "lastname"
+        ]
       }
-    }
-  }
-
-  function handleMoreAll(){
-    if(data){
-      if( dataSliced >= data.length ){
-        setDataSliced( 10 )
-      }else{
-        setDataSliced( data.length )
-      }
+      var fuse = new Fuse(data, options)
+      var result = fuse.search(searchUser)
+      return result
     }
   }
 
@@ -191,64 +273,82 @@ export default function AddPlayerModal(props){
   },[ props.data ])
 
   return(
-    <div style={{ maxHeight: window.innerHeight * .8 , height: '100%'}}>
-      <div style={{ marginBottom: 24 }}>
-        <FormControl className={classes.margin} style={{ marginTop: 24 }}>
-          <InputLabel>Full name</InputLabel>
-          <Input
-            value={fullname}
-            onChange={e =>setFullname(e.target.value)}
-            endAdornment={
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        <FormControl className={classes.margin} style={{ marginTop: 24 }}>
-          <InputLabel>Last name</InputLabel>
-          <Input
-            value={lastname}
-            onChange={e =>setLastname(e.target.value)}
-            endAdornment={
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        <Button onClick={handleCreatePlayer}>Create player</Button>
+    <div className={classes.root}>
+      <div className={classes.createGrid}>
+        <GreenTextButton
+          variant="outlined"
+          className={classes.createButton}
+          onClick={()=>setCreateState(!createState)}>
+          <ExpandMoreIcon
+            className={classes.expandIcon}
+            style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
+          Create Player
+        </GreenTextButton>
       </div>
-      <FormControl className={classes.margin} style={{ marginTop: 24 }}>
-        <InputLabel>Search player</InputLabel>
-        <Input
+      <Collapse in={createState} timeout="auto" unmountOnExit>
+        <div className={classes.textFieldGrid}>
+          <ThemeProvider theme={theme}>
+            <TextField
+              className={classes.textField}
+              variant="outlined"
+              label="Full name"
+              value={fullname}
+              onChange={e =>setFullname(e.target.value)}
+              />
+            <TextField
+              className={classes.textField}
+              variant="outlined"
+              label="Last name"
+              value={lastname}
+              onChange={e =>setLastname(e.target.value)}
+              />
+          </ThemeProvider>
+          <div className={classes.buttonGrid}>
+            <Typography component="div">
+              <Box className={classes.notice} m={1}>
+                Fill the form and click confirm <br></br>to create a new player.
+              </Box>
+            </Typography>
+            <div style={{ flex: 1 }}></div>
+            <GreenButton className={classes.confirmButton} onClick={handleCreatePlayer}>Confirm</GreenButton>
+          </div>
+        </div>
+      </Collapse>
+      <ThemeProvider theme={theme}>
+        <TextField
+          className={classes.searchBox}
+          variant="outlined"
+          placeholder={ !searchUser? "Search player" : '' }
           value={searchUser}
           onChange={e =>setSearchUser(e.target.value)}
-          endAdornment={
-            <InputAdornment position="end">
-              <SearchIcon />
-            </InputAdornment>
-          }
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="primary"/>
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="end">
+                { searchUser?
+                  <IconButton onClick={()=>setSearchUser('')}>
+                    <ClearIcon color="inherit" fontSize="small"/>
+                  </IconButton>
+                  :
+                  <div style={{ width: 44 }}></div>
+                }
+              </InputAdornment>
+            )
+          }}
         />
-      </FormControl>
+      </ThemeProvider>
       <List className={classes.root}>
         { data && !data.status &&
-          data.filter((item)=>{
-              return (
-                (item.fullname.search(searchUser) !== -1) ||
-                (item.fullname.toLowerCase().search(searchUser.toLowerCase()) !== -1)||
-                (item.lastname.search(searchUser) !== -1) ||
-                (item.lastname.toLowerCase().search(searchUser.toLowerCase()) !== -1)
-              )
-            }).slice(0, dataSliced).map(value => {
-
+          handleSearch().map(value => {
               return value && (
                 <ListItem key={value.firstname + `(${value.userid})`} role={undefined} dense button
                   onClick={()=>handleAddUser(value)}>
-                  <ListItemIcon>
-                    <IconButton>
-                      <AddCircleIcon />
-                    </IconButton>
+                  <ListItemIcon className={classes.listItemIcon}>
+                    <AddCircleIcon classes={{ root: classes.addCircleIcon }}/>
                   </ListItemIcon>
                   <ListItemText className={classes.listText} primary={value.fullname} />
                   <ListItemText className={classes.listText} primary={value.lastname} />
@@ -256,18 +356,15 @@ export default function AddPlayerModal(props){
               );
           })
         }
-        <ListItem key="More button" role={undefined} dense style={{ display: 'flex' }}>
-          { data && data.length > 10 &&
-            <React.Fragment>
-              <Button fullWidth onClick={handleMore}>
-                { data && dataSliced >= data.length ? 'Collapse':'More' }
-              </Button>
-              { data && dataSliced < data.length &&
-                <Button fullWidth onClick={handleMoreAll}>More All</Button>
-              }
-            </React.Fragment>
-          }
-        </ListItem>
+        { searchUser && handleSearch().length === 0 &&
+          <ListItem>
+            <Typography component="div" style={{ width: '100%' }}>
+              <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+                No Reult
+              </Box>
+            </Typography>
+          </ListItem>
+        }
       </List>
     </div>
   );

@@ -1,41 +1,5 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["AddMatchModal"],{
 
-/***/ "./node_modules/@material-ui/core/colors/grey.js":
-/*!*******************************************************!*\
-  !*** ./node_modules/@material-ui/core/colors/grey.js ***!
-  \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.default = void 0;\nvar grey = {\n  50: '#fafafa',\n  100: '#f5f5f5',\n  200: '#eeeeee',\n  300: '#e0e0e0',\n  400: '#bdbdbd',\n  500: '#9e9e9e',\n  600: '#757575',\n  700: '#616161',\n  800: '#424242',\n  900: '#212121',\n  A100: '#d5d5d5',\n  A200: '#aaaaaa',\n  A400: '#303030',\n  A700: '#616161'\n};\nvar _default = grey;\nexports.default = _default;\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/colors/grey.js?");
-
-/***/ }),
-
-/***/ "./node_modules/@material-ui/core/esm/FormControl/FormControlContext.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/@material-ui/core/esm/FormControl/FormControlContext.js ***!
-  \******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);\n\n/**\n * @ignore - internal component.\n */\n\nvar FormControlContext = react__WEBPACK_IMPORTED_MODULE_0___default.a.createContext();\n/* harmony default export */ __webpack_exports__[\"default\"] = (FormControlContext);\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/esm/FormControl/FormControlContext.js?");
-
-/***/ }),
-
-/***/ "./node_modules/@material-ui/core/esm/FormControl/withFormControlContext.js":
-/*!**********************************************************************************!*\
-  !*** ./node_modules/@material-ui/core/esm/FormControl/withFormControlContext.js ***!
-  \**********************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return withFormControlContext; });\n/* harmony import */ var _babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/extends */ \"./node_modules/@babel/runtime/helpers/extends.js\");\n/* harmony import */ var _babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! hoist-non-react-statics */ \"./node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js\");\n/* harmony import */ var hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _FormControlContext__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FormControlContext */ \"./node_modules/@material-ui/core/esm/FormControl/FormControlContext.js\");\n/* harmony import */ var _material_ui_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/utils */ \"./node_modules/@material-ui/utils/esm/index.js\");\n\n\n\n\n\nfunction withFormControlContext(Component) {\n  var EnhancedComponent = react__WEBPACK_IMPORTED_MODULE_1___default.a.forwardRef(function (props, ref) {\n    return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_FormControlContext__WEBPACK_IMPORTED_MODULE_3__[\"default\"].Consumer, null, function (context) {\n      return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(Component, _babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0___default()({\n        muiFormControl: context,\n        ref: ref\n      }, props));\n    });\n  });\n\n  if (true) {\n    EnhancedComponent.displayName = \"WithFormControlContext(\".concat(Object(_material_ui_utils__WEBPACK_IMPORTED_MODULE_4__[\"getDisplayName\"])(Component), \")\");\n  }\n\n  hoist_non_react_statics__WEBPACK_IMPORTED_MODULE_2___default()(EnhancedComponent, Component);\n  return EnhancedComponent;\n}\n\n//# sourceURL=webpack:///./node_modules/@material-ui/core/esm/FormControl/withFormControlContext.js?");
-
-/***/ }),
-
 /***/ "./node_modules/@material-ui/core/esm/InputAdornment/InputAdornment.js":
 /*!*****************************************************************************!*\
   !*** ./node_modules/@material-ui/core/esm/InputAdornment/InputAdornment.js ***!

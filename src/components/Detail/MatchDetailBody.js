@@ -160,6 +160,7 @@ function MatchDetailBody(props) {
           <ArrowBackIcon classes={{ root: classes.backIcon }}/>
         </IconButton>
       </div>
+
       {/*--------------------Content--------------------*/}
       <div className={classes.content}>
         {/*--------------------Match Attribute--------------------*/}

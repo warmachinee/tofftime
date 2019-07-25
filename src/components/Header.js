@@ -177,8 +177,6 @@ function Header(props) {
         handleGetUserinfo()
         menuCloseHandler()
       }catch(err) { console.log(err.message) }
-    }else{
-      console.log(data);
     }
   }
 
