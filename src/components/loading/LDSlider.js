@@ -4,7 +4,6 @@ export function LDSlider() {
   const [ count, setCount ] = React.useState(0);
   const [ delay, setDelay ] = React.useState(1000);
   const [ opacity, setOpacity ] = React.useState(0.01)
-  const [ width, setWidth ] = React.useState(0)
 
   let wd = window.innerWidth
 
@@ -24,7 +23,7 @@ export function LDSlider() {
     transitionProperty: 'all',
     transitionDuration: '.3s',
     transitionTimingFuction: 'ease-in',
-    width: width,
+    width: '100%',
     opacity: opacity
   }
 
@@ -67,10 +66,8 @@ export function LDSlider() {
   useInterval(() => {
     if(count % 2 === 0){
       setOpacity(1)
-      setWidth('100%')
     }else{
       setOpacity(0.01)
-      setWidth(0)
     }
     setCount(count + 1);
   }, delay);

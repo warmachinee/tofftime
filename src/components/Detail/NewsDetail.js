@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactHtmlParser from 'react-html-parser';
 import Loadable from 'react-loadable';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import * as API from '../../api'
@@ -13,11 +14,6 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import teal from '@material-ui/core/colors/teal';
 
-import ic_slide1 from '../img/slide1.png'
-import ic_sw from '../img/sw.jpg'
-import ic_ssw from '../img/ssw.jpg'
-import ic_gsw from '../img/gsw.jpg'
-
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
@@ -25,51 +21,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
-  },
-  title: {
-    textAlign: 'center', color: teal[900],
-    fontSize: 28,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 32,
-    },
-  },
-  detailDate: {
-    textAlign: 'left', color: teal[600],
-    fontSize: 16, fontStyle: 'oblique', fontFamily: 'monospace'
-  },
-  detailLocation: {
-    textAlign: 'left', color: teal[800],
-    fontSize: 18,
-  },
-  detailHead: {
-    textAlign: 'left', color: teal[800],
-    fontSize: 18,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 20,
-    },
-  },
-  detailText: {
-    textAlign: 'left', color: teal[800],
-    fontSize: 18,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 20,
-    },
-  },
-  detailCredit: {
-    textAlign: 'right',
-    fontSize: 16,
-    margin: 0
-  },
-  link: {
-    marginTop: 'auto',
-    marginLeft: 8,
-    fontSize: 16,
-    fontStyle: 'oblique',
-  },
-  detailBox: {
-    maxWidth: 800,
-    marginLeft: 'auto',
-    marginRight: 'auto'
   },
   back: {
     backgroundColor: 'white',
@@ -92,27 +43,23 @@ const useStyles = makeStyles(theme => ({
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
   },
-
 }))
 
-export default function GeneralDetail(props){
+export default function NewsDetail(props){
   const classes = useStyles();
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const [ data, setData ] = React.useState(null)
+  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const currentWebURL = hd + API.webURL()
 
   async function handleFetch(){
-    const newsid = props.computedMatch.params.detailparam
-    console.log(props.computedMatch);
-    /*
+    const newsid = parseInt(props.computedMatch.params.detailparam)
     const res = await token? token : API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : res.token,
-      'loadgeneral', {
-        action: 'newsdetail',
-        newsid:
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setData(d)
-    })
-    */
+    const d = await API.xhrGet('loadgeneral',
+    `?_csrf=${res}&action=newsdetail&newsid=${newsid}`
+    )
+    setCSRFToken(d.token)
+    setData(d.response)
   }
 
   React.useEffect(()=>{
@@ -126,6 +73,19 @@ export default function GeneralDetail(props){
           <ArrowBackIcon classes={{ root: classes.backIcon }}/>
         </IconButton>
       </div>
+      { data &&
+        data.map( d =>
+          <React.Fragment key={d.title}>
+            <Typography variant="h2">
+              {d.title}
+            </Typography>
+            <Typography variant="h5">
+              {d.subtitle}
+            </Typography>
+            <img className={classes.img} src={isSupportWebp? currentWebURL + d.picture + '.webp' : currentWebURL + d.picture + '.jpg'} />
+            { ReactHtmlParser(d.newsdetail) }
+          </React.Fragment>
+      )}
     </Paper>
   );
 }

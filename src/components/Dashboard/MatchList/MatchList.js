@@ -11,15 +11,15 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
 
 import DeleteIcon from '@material-ui/icons/Delete';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 import teal from '@material-ui/core/colors/teal';
+import grey from '@material-ui/core/colors/grey';
+import red from '@material-ui/core/colors/red';
 
 import { LDCircular } from '../../loading/LDCircular'
 
@@ -30,6 +30,11 @@ const TemplateDialog = Loadable({
 
 const AddMatchModal = Loadable({
   loader: () => import(/* webpackChunkName: "AddMatchModal" */'./AddMatchModal'),
+  loading: () => <LDCircular />
+});
+
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'../../GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -44,39 +49,34 @@ const useStyles = makeStyles(theme => ({
       fontSize: 32,
     },
   },
-  back: {
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
-    },
-  },
-  backIcon: {
-    fontSize: '2rem',
-    color: teal[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '2.5rem',
-    },
-  },
   tableHead: {
-    minWidth: 650,
-    backgroundColor: 'black',
-    borderRadius: 4
+    backgroundColor: grey[900],
+  },
+  tableDate: {
+    width: 120,
+  },
+  tableDateText: {
+    fontStyle: 'oblique',
+    fontFamily: 'monospace'
   },
   tableTitle: {
-    width: '50%',
+    width: '100%',
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    [theme.breakpoints.up(700)]: {
+      width: '50%',
+    },
   },
   tableLocation: {
     width: '40%',
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
   tableAction: {
-    width: '5%',
+    width: '10%',
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    justifyContent: 'center'
   },
-  tableRow: {
-    //border: '1px solid'
-    minWidth: 650,
+  deleteIcon: {
+    color: teal[600]
   },
 
 }))
@@ -86,6 +86,35 @@ const StyledText = withStyles(theme => ({
     color: 'white',
   },
 }))(ListItemText);
+
+const RedButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(red[600]),
+    backgroundColor: red[600],
+    '&:hover': {
+      backgroundColor: red[800],
+    },
+  },
+}))(Button);
+
+const GreenButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(teal[500]),
+    backgroundColor: teal[500],
+    '&:hover': {
+      backgroundColor: teal[700],
+    },
+  },
+}))(Button);
+
+const GreenTextButton = withStyles(theme => ({
+  root: {
+    color: teal[600],
+    '&:hover': {
+      backgroundColor: teal[100],
+    },
+  },
+}))(Button);
 
 export default function Match(props){
   const classes = useStyles();
@@ -141,51 +170,96 @@ export default function Match(props){
     handleFetch()
   },[ ])
 
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
+
   return(
     <div className={classes.root}>
-      <div style={{ width: '100%' }}>
-        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      </div>
+      <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Match List
         </Box>
       </Typography>
       <div style={{ display: 'flex', margin: '24px 16px 0 16px' }}>
-        <Button variant="contained" color="secondary"
+        <RedButton variant="contained" color="secondary"
           onClick={handleOpen}>
           <AddCircleIcon style={{ marginRight: 8 }}/>
           Add match
-        </Button>
-        <div style={{ flex: 1 }}></div>
-        <Button color="primary" onClick={()=>setEditting(!editting)}>
-          { editting? 'Done':'Edit' }
-        </Button>
+        </RedButton>
+        <div style={{ flex: 1 }} />
+        <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>
+          { editting? 'Done':'Remove from list' }
+        </GreenTextButton>
       </div>
       <List>
         <ListItem className={classes.tableHead}>
-          <StyledText inset={ window.innerWidth > 600 } primary="Title" className={classes.tableTitle}/>
-          <StyledText inset={ window.innerWidth > 600 } primary="Location" className={classes.tableLocation}/>
-          <ListItemSecondaryAction className={classes.tableAction}>
-            <div style={{ width: 48 }}></div>
-          </ListItemSecondaryAction>
+          { window.innerWidth >= 500 &&
+            <StyledText primary="Date" className={classes.tableDate}/>
+          }
+          <StyledText inset={window.innerWidth < 700 && window.innerWidth >=450} primary="Title" className={classes.tableTitle}/>
+          { window.innerWidth >= 700 &&
+            <StyledText inset primary="Location" className={classes.tableLocation}/>
+          }
+          <ListItemIcon className={classes.tableAction}>
+            <IconButton disabled edge="end">
+              <div style={{ width: 24 }}></div>
+            </IconButton>
+          </ListItemIcon>
         </ListItem>
         { data &&
           data.map( d =>
             d &&
             <React.Fragment key={d.matchid}>
-              <ListItem className={classes.tableRow}>
-                <ListItemText inset={ window.innerWidth > 600 } primary={d.title} className={classes.tableTitle}/>
-                <ListItemText inset={ window.innerWidth > 600 } primary={d.location} className={classes.tableLocation}/>
-                <ListItemSecondaryAction className={classes.tableAction}>
-                  { editting &&
-                    <IconButton edge="end" onClick={()=>handleRemove(d)}>
-                      <DeleteIcon />
+              <ListItem>
+                { window.innerWidth >= 500 &&
+                  <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
+                }
+                <ListItemText inset={window.innerWidth < 700 && window.innerWidth >=450} primary={d.title} className={classes.tableTitle}
+                  secondary={
+                    window.innerWidth < 700 &&
+                    (
+                      window.innerWidth >= 500?
+                      d.location
+                      :
+                      <React.Fragment>
+                        <Typography
+                          style={{ fontStyle: 'oblique' }}
+                          component="span"
+                          variant="caption"
+                          color="textPrimary"
+                        >
+                          {d.date}
+                        </Typography>
+                        <br></br>
+                        {d.location}
+                      </React.Fragment>
+                    )
+                  }/>
+                { window.innerWidth >= 700 &&
+                  <ListItemText inset primary={d.location} className={classes.tableLocation}/>
+                }
+                <ListItemIcon className={classes.tableAction}>
+                  { editting?
+                    <IconButton style={{ padding: 0 }} edge="end" onClick={()=>handleRemove(d)}>
+                      <DeleteIcon classes={{ root: classes.deleteIcon }}/>
+                    </IconButton>
+                    :
+                    <IconButton disabled edge="end">
+                      <div style={{ width: 24 }}></div>
                     </IconButton>
                   }
-                </ListItemSecondaryAction>
+                </ListItemIcon>
               </ListItem>
               <Divider />
             </React.Fragment>
@@ -193,7 +267,7 @@ export default function Match(props){
         }
 
       </List>
-      <TemplateDialog open={open} handleClose={handleClose}>
+      <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
         <AddMatchModal token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar} setData={setData}/>
       </TemplateDialog>
     </div>

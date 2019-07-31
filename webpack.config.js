@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { styles } = require( '@ckeditor/ckeditor5-dev-utils' );
 
 module.exports = {
   mode: 'development',
@@ -37,6 +38,30 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/,
+        use: [ 'raw-loader' ]
+      },
+      {
+        test: /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/,
+        use: [
+          {
+            loader: 'style-loader',
+            options: {
+              singleton: true
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: styles.getPostCssConfig( {
+              themeImporter: {
+                themePath: require.resolve( '@ckeditor/ckeditor5-theme-lark' )
+              },
+              minify: true
+            } )
+          }
+        ]
       },
       {
         test: /\.svg$/,

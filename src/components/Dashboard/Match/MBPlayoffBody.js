@@ -293,15 +293,6 @@ export default function MBPlayoffBody(props){
 
   React.useEffect(()=>{
     handleFetch()
-    /*
-    var json = '[{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":1,"status":"not set"},{"userid":380855,"fullname":"ประสิทธิ","lastname":"คำภูแสน","classno":1,"status":"not set"},{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":2,"status":"not set"},{"userid":380855,"fullname":"ประสิทธิ","lastname":"คำภูแสน","classno":2,"status":"not set"}]';
-    var obj = JSON.parse(json);
-    var json1 = '{"title":"Match 1539","date":"12/07/2019","picture":"/matchs/29204611/29204611","location":"testC","locationid":669528,"createdate":"03/07/2019","scorematch":1,"matchtype":0,"display":-1,"status":1,"class":[{"classno":1,"classname":"S1"},{"classno":2,"classname":"S2"},{"classno":3,"classname":"S3"},{"classno":4,"classname":"S4"}],"team":[],"playoff":[0,0,0,0]}';
-    var obj1 = JSON.parse(json1);
-
-    setData(obj)
-    setMatchDetail(obj1)*/
-
   },[ ])
 
   return(

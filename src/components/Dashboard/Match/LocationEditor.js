@@ -249,27 +249,34 @@ export default function LocationEditor(props){
   }
 
   async function handleCreate(){
-    const res = await API.xhrGet('getcsrf')
+    let res = await API.xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
-      action: 'createcustom',
+      //action: 'createcustom',
     };
+
+    formData.append('action', 'createcustom')
     if(selectedFile){
       formData.append('fieldimage', selectedFile)
+      formData.append('photopath', true)
+      /*
       Object.assign(sendObj, {
         photopath: true,
       });
+      */
     }
 
     if(location){
-      Object.assign(sendObj, { fieldname: location });
+      formData.append('fieldname', location)
+      //Object.assign(sendObj, { fieldname: location });
     }
 
     if(holeScore.length){
       const checkScoreArr = holeScore.every( d =>{ return !( isNaN(d) || d === '' ) })
       if(checkScoreArr){
         setTextScoreErr(false)
-        Object.assign(sendObj, { fieldscore: holeScore, });
+        formData.append('fieldscore', holeScore)
+        //Object.assign(sendObj, { fieldscore: holeScore, });
       }else{
         setTextScoreErr(true)
       }
@@ -279,7 +286,8 @@ export default function LocationEditor(props){
       const checkHCPArr = hcpScore.every( d =>{ return !( isNaN(d) || d === '' ) })
       if(checkHCPArr){
         setTextHCPErr(false)
-        Object.assign(sendObj, { hcfieldscore: hcpScore, });
+        formData.append('hcfieldscore', hcpScore)
+        //Object.assign(sendObj, { hcfieldscore: hcpScore, });
       }else{
         setTextHCPErr(true)
       }
@@ -293,7 +301,7 @@ export default function LocationEditor(props){
       hcpScore.every( d =>{ return !( isNaN(d) || d === '' ) })
     ){
       const d = await API.fetchPostFile('fieldsystem',`?_csrf=${res.token}`, sendObj, formData)
-      const res2 = await API.xhrGet('getcsrf')
+      res = await API.xhrGet('getcsrf')
       console.log(d);
       handleSnackBar({
         state: true,
@@ -301,7 +309,7 @@ export default function LocationEditor(props){
         variant: d.status === 'success' ? d.status : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-      setCSRFToken(res2.token)
+      setCSRFToken(res.token)
       try {
         setPageState('select')
       }catch(err) { console.log(err.message) }
@@ -309,7 +317,7 @@ export default function LocationEditor(props){
   }
 
   async function handleEdit(){
-    const res = await API.xhrGet('getcsrf')
+    let res = await API.xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'editscore',
@@ -355,7 +363,7 @@ export default function LocationEditor(props){
       hcpScore.every( d =>{ return !( isNaN(d) || d === '' ) })
     ){
       const d = await API.fetchPostFile('fieldsystem',`?_csrf=${res.token}`, sendObj, formData)
-      const res2 = await API.xhrGet('getcsrf')
+      res = await API.xhrGet('getcsrf')
       console.log(d);
       handleSnackBar({
         state: true,
@@ -363,7 +371,7 @@ export default function LocationEditor(props){
         variant: d.status === 'success' ? d.status : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-      setCSRFToken(res2.token)
+      setCSRFToken(res.token)
       try {
         //setPageState('select')
       }catch(err) { console.log(err.message) }

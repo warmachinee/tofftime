@@ -2,6 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
 import { LDSlider } from './loading/LDSlider';
+import { LDNews } from './loading/LDNews';
 
 const Slider = Loadable({
   loader: () => import(/* webpackChunkName: "Slider" */'./Announcement/Slider'),
@@ -10,7 +11,7 @@ const Slider = Loadable({
 
 const News = Loadable({
   loader: () => import(/* webpackChunkName: "News" */'./News/News'),
-  loading: () => null
+  loading: () => <LDNews />
 });
 
 const useStyles = makeStyles(theme => ({
@@ -22,14 +23,15 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     [theme.breakpoints.up(900)]: {
       flexDirection: 'row',
-      marginTop: 16
+      marginTop: 16,
+      maxHeight: 450
     },
   },
 }));
 
 export default function AnnouncementNewsGrid(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
 
   const [ ,updateState ] = React.useState(null)
 
@@ -46,8 +48,8 @@ export default function AnnouncementNewsGrid(props) {
 
   return (
     <div className={classes.root}>
-      <Slider />
-      <News token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      <Slider isSupportWebp={isSupportWebp}/>
+      <News token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
     </div>
   );
 }

@@ -53,7 +53,7 @@ export function LDMatchCard() {
       </div>
       <div style={{ display: 'flex', padding: 8 }}>
         <div style={{ ...style, height: 24, width: '30%', margin: 8 , transitionDelay: '.2s' }}></div>
-        <div style={{ flex: 1 }}></div>
+        <div style={{ flex: 1 }} />
         <div style={{ ...style, height: 24, width: 24, borderRadius: 12, margin: 12 , transitionDelay: '.3s' }}></div>
       </div>
     </div>

@@ -42,6 +42,11 @@ const MatchClass = Loadable({
   loading: () => <LDCircular />
 });
 
+const MatchTeam = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchTeam" */'./MatchTeam'),
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -148,7 +153,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: 16,
     padding: 16,
     width: '100%'
-  }
+  },
 
 }))
 
@@ -222,7 +227,7 @@ const datePickers = createMuiTheme({
 
 function MBOverviewBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, setData, data, matchid, handleSnackBar } = props
+  const { token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
   const [ editting, handleEditting ] = React.useState(false)
   const [ open, setOpen ] = React.useState(false);
   const [ modalType, setModalType ] = React.useState('');
@@ -300,7 +305,7 @@ function MBOverviewBody(props){
   }
 
   async function handleEditMatch(){
-    const res = await API.xhrGet('getcsrf')
+    let res = await API.xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'edit',
@@ -335,14 +340,14 @@ function MBOverviewBody(props){
     }
 
     const d = await API.fetchPostFile('matchsystem',`?_csrf=${res.token}`, sendObj, formData)
-    const res2 = await API.xhrGet('getcsrf')
+    res = await API.xhrGet('getcsrf')
     handleSnackBar({
       state: true,
       message: d.status,
       variant: d.status === 'success' ? d.status : 'error',
       autoHideDuration: d.status === 'success'? 2000 : 5000
     })
-    setCSRFToken(res2.token)
+    setCSRFToken(res.token)
     try {
       handleFetch()
       if(d.status === 'success'){
@@ -422,15 +427,6 @@ function MBOverviewBody(props){
                 />
               </MuiPickersUtilsProvider>
             </ThemeProvider>
-            <GreenTextButton
-              disabled={!editting}
-              variant="outlined"
-              style={{ height: 56, width: 108, marginTop: 'auto', marginLeft: 16 }}
-              onClick={()=>handleOpen('class')}>
-              { data?( data.class && !data.class.status &&
-                ( data.class.length >= 2 ? ( data.class.length + ' Classes' ):( data.class.length + ' Class' ) )):'Class'
-              }
-            </GreenTextButton>
           </div>
           { ( selectedFile || matchPicture )?
             <div style={{ position: 'relative', marginTop: 16 }}
@@ -438,7 +434,13 @@ function MBOverviewBody(props){
               onMouseLeave={()=>editting?handleFileHover(false):console.log()}>
               <img ref={imgRef}
                 style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
-                className={classes.matchImg} src={ selectedFile ? URL.createObjectURL(selectedFile) : matchPicture + '.webp' } />
+                className={classes.matchImg}
+                src={
+                  selectedFile ?
+                  URL.createObjectURL(selectedFile)
+                  :
+                  ( isSupportWebp? matchPicture + '.webp': matchPicture + '.jpg' )
+                }/>
               { editting && imgRef.current &&
                 <div
                   style={{
@@ -448,16 +450,16 @@ function MBOverviewBody(props){
                     width: imgRef.current.offsetWidth,
                     top: 0, left: 0,
                   }}>
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ flex: 1 }}></div>
+                    <div style={{ flex: 1 }} />
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                       <CloudUploadIcon fontSize="large" style={{ color: teal[400] }}/>
                     </StyledIconButton>
-                    <div style={{ flex: 1 }}></div>
+                    <div style={{ flex: 1 }} />
                   </div>
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                 </div>
               }
             </div>
@@ -465,31 +467,53 @@ function MBOverviewBody(props){
             <div style={{ position: 'relative', marginTop: 16 }}>
               <div className={classes.matchImgTemp}
                 style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
-                <div style={{ flex: 1 }}></div>
+                <div style={{ flex: 1 }} />
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                   { editting &&
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                       <CloudUploadIcon fontSize="large" style={{ color: teal[500] }}/>
                     </StyledIconButton>
                   }
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                 </div>
-                <div style={{ flex: 1 }}></div>
+                <div style={{ flex: 1 }} />
               </div>
             </div>
           }
         </div>
         <div className={classes.gridChild2}>
           <ThemeProvider theme={theme}>
-            <GreenTextButton disabled={!editting}
+            <GreenTextButton
+              disabled={!editting}
               variant="outlined"
               className={classes.button}
               style={{ textTransform: 'none' }}
               onClick={()=>handleOpen('location')}>
               { data?( selectedField? selectedField.fieldname : data.location ):'Location' }
             </GreenTextButton>
+            <div style={{ display: 'flex' }}>
+              <GreenTextButton
+                disabled={!editting}
+                className={classes.button}
+                variant="outlined"
+                onClick={()=>handleOpen('class')}>
+                { data?( data.class && !data.class.status &&
+                  ( data.class.length >= 2 ? ( data.class.length + ' Classes' ):( data.class.length + ' Class' ) )):'Class'
+                }
+              </GreenTextButton>
+              <div style={{ width: 8 }} />
+              <GreenTextButton
+                disabled={!editting}
+                className={classes.button}
+                variant="outlined"
+                onClick={()=>handleOpen('team')}>
+                { data?( data.team && !data.team.status &&
+                  ( data.team.length >= 2 ? ( data.team.length + ' Teams' ):( data.team.length + ' Team' ) )):'Team'
+                }
+              </GreenTextButton>
+            </div>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
               disabled={!editting}>
@@ -550,15 +574,23 @@ function MBOverviewBody(props){
         :
         <div style={{ height: 88 }}></div>
       }
-      { ( modalType && modalType === 'location' )?
+      { modalType && modalType === 'location' &&
         <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
           <Location token={token} setCSRFToken={setCSRFToken} selectedField={selectedField} setSelectedField={setSelectedField}
             handleClose={handleClose}
             handleSnackBar={handleSnackBar} />
         </TemplateDialog>
-        :
+      }
+      { modalType && modalType === 'class' &&
         <TemplateDialog open={open} handleClose={handleClose} maxWidth={500}>
           <MatchClass token={token} setCSRFToken={setCSRFToken} data={data && data.status !== 'class database error' && data.class}
+            handleSnackBar={handleSnackBar}
+            matchid={matchid} setData={setData}/>
+        </TemplateDialog>
+      }
+      { (modalType && modalType === 'team') &&
+        <TemplateDialog open={open} handleClose={handleClose} maxWidth={500}>
+          <MatchTeam token={token} setCSRFToken={setCSRFToken} data={data && data.team}
             handleSnackBar={handleSnackBar}
             matchid={matchid} setData={setData}/>
         </TemplateDialog>

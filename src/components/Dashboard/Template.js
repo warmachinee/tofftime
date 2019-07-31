@@ -4,13 +4,15 @@ import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import * as API from '../../../api'
 
 import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
 import teal from '@material-ui/core/colors/teal';
+
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'../../GoBack'),
+  loading: () => <LDCircular />
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,19 +23,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
-    },
-  },
-  back: {
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
-    },
-  },
-  backIcon: {
-    fontSize: '2rem',
-    color: teal[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '2.5rem',
     },
   },
 
@@ -72,11 +61,7 @@ export default function Match(props){
 
   return(
     <div className={classes.root}>
-      <div style={{ width: '100%' }}>
-        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      </div>
+      <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           News

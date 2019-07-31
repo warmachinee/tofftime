@@ -10,6 +10,7 @@ const urlLink = {
   loadmatchsystem: webURL() + 'main/loadmatchsystem',
   userinfo: webURL() + 'session/userinfo',
   views: webURL() + 'session/views',
+  loadgeneral: webURL() + 'main/loadgeneral',
   //--------------------Account--------------------
   login: webURL() + 'users/login',
   facebooklogin: webURL() + 'session/auth/facebook',
@@ -29,18 +30,21 @@ const urlLink = {
   loadmainpage: webURL() + 'admin/loadmainpage',
   matchmain: webURL() + 'admin/matchmain',
   usersystem: webURL() + 'admin/usersystem',
+  newsmain: webURL() + 'admin/newsmain',
+  announcemain: webURL() + 'admin/announcemain',
 }
 const urlHeader = [ 'https://www.', 'https://' ]
 
-async function xhrGet(url){
+async function xhrGet(url, params){
   var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
   var req = new XMLHttpRequest();
   var sendUrl = hd + urlLink[url]
-
+  if(params){
+    sendUrl = sendUrl + params
+  }
   req.open('GET', sendUrl, false);
   req.send(null);
   //var org = ( req.getResponseHeader('Origin') === 'https://www.thai-pga.com' )? urlHeader[0]:urlHeader[1]
-
   return {
     token: req.getResponseHeader('csrf-token'),
     response: JSON.parse(req.responseText),
@@ -91,25 +95,95 @@ async function fetchUrl(url){
 
 async function fetchPostFile(url, extendURL, obj, formData){
   var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
-  var req = new XMLHttpRequest();
   var sendUrl = hd + urlLink[url] + extendURL
 
   const options = {
+    async: true,
+    crossDomain: true,
     method: 'post',
+    headers: obj,
     body: formData,
-    headers: obj
   }
-
   const res = await fetch(sendUrl, options)
   const json = await res.json()
   return json
 }
 
+function handleSortArray(data){
+  if(data){
+    var obj = data
+    obj.sort( (a, b) =>{
+      const da = new Date(a.createdate)
+      const db = new Date(b.createdate)
+      if (da < db) return 1;
+      if (da > db) return -1;
+      return a.title.localeCompare(b.title);
+    })
+    return obj
+  }else{
+    return null
+  }
+}
+
+function handleGetPostTime(time){
+  const today = new Date()
+  const cdate = new Date(time)
+  var diff = (today - cdate)/(1000) //millisecond
+  var str = ''
+  if(diff < 60){
+    str = 'just now'
+    return str
+  }else{
+    if(diff >= 60 && diff < 60*60){
+      diff = diff / 60
+      if(Math.floor(diff) > 1){
+        str = ' mins'
+      }else{
+        str = ' min'
+      }
+    }
+    if(diff>=60*60 && diff < 60*60*24){
+      diff = diff / ( 60*60 )
+      if(Math.floor(diff) > 1){
+        str = ' hrs'
+      }else{
+        str = ' hr'
+      }
+    }
+    if(diff>=60*60*24 && diff < 60*60*24*30){
+      diff = diff / ( 60*60*24 )
+      if(Math.floor(diff) > 1){
+        str = ' days'
+      }else{
+        str = ' day'
+      }
+    }
+    if(diff>=60*60*24*30 && diff < 60*60*24*30*12){
+      diff = diff / ( 60*60*24*30 )
+      if(Math.floor(diff) > 1){
+        str = ' months'
+      }else{
+        str = ' month'
+      }
+    }
+    if(diff>=60*60*24*30*12){
+      diff = diff / ( 60*60*24*30*12 )
+      if(Math.floor(diff) > 1){
+        str = ' years'
+      }else{
+        str = ' year'
+      }
+    }
+    return Math.floor(diff) + str
+  }
+}
 
 export {
   webURL,
   fetchUrl,
   fetchPostFile,
   xhrGet,
-  xhrPost
+  xhrPost,
+  handleSortArray,
+  handleGetPostTime,
 }

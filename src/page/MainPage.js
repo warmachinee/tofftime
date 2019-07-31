@@ -10,12 +10,12 @@ const MatchList = Loadable({
 });
 
 function MainPage(props) {
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
 
   return (
     <div>
-      <AnnouncementNewsGrid token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
-      <MatchList token={token} />
+      <AnnouncementNewsGrid token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
+      <MatchList token={token} isSupportWebp={isSupportWebp}/>
     </div>
   );
 }

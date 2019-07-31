@@ -19,7 +19,7 @@ export default function Footer(props) {
     <div className={classes.root}>
       <div style={{ margin: '24px 5% 0 5%', color: 'white', fontSize: 18, fontWeight: 600 }}>Contact</div>
       <div style={{ margin: '24px 5% 0 5%', color: 'white', fontWeight: 600 }}>Email : support@tofftime.com</div>
-      <div style={{ flex: 1 }}></div>
+      <div style={{ flex: 1 }} />
       <div style={{ color: 'white', fontFamily: 'monospace',
         fontWeight: 600, width: '100%', textAlign: 'center', marginBottom: 24
       }}>PDS Co.,Ltd.</div>

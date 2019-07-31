@@ -4,10 +4,8 @@ import { makeStyles, fade } from '@material-ui/core/styles';
 import * as API from '../../../api'
 
 import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import teal from '@material-ui/core/colors/teal';
 
@@ -38,6 +36,11 @@ const MBReward = Loadable({
   loading: () => <LDCircular />
 });
 
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'../../GoBack'),
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -49,31 +52,14 @@ const useStyles = makeStyles(theme => ({
       fontSize: 32,
     },
   },
-  back: {
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
-    },
-  },
-  backIcon: {
-    fontSize: '2rem',
-    color: teal[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '2.5rem',
-    },
-  },
 
 }))
 
 export default function MatchEditor(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, } = props
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const matchid = props.computedMatch && props.computedMatch.params.matchparam
   const [ data, setData ] = React.useState(null)
-
-  function handleBack(){
-    window.history.go(-1)
-  }
 
   async function handleFetch(){
     const res = await token? token : API.xhrGet('getcsrf')
@@ -108,17 +94,14 @@ export default function MatchEditor(props){
 
   return(
     <div className={classes.root}>
-      <div style={{ width: '100%' }}>
-        <IconButton className={classes.back} onClick={handleBack}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      </div>
+      <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           {data && data.title}
         </Box>
       </Typography>
-      <MBOverview token={token} setCSRFToken={setCSRFToken} setData={setData} data={data} matchid={matchid} handleSnackBar={handleSnackBar}/>
+      <MBOverview token={token} setCSRFToken={setCSRFToken} setData={setData} data={data} matchid={matchid}
+        isSupportWebp={isSupportWebp} handleSnackBar={handleSnackBar}/>
       <MBPlayer token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar} />
       <MBScoreEditor token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
       <MBPlayoff token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>

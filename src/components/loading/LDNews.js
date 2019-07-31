@@ -7,19 +7,11 @@ export function LDNews() {
   let wd = window.innerWidth
 
   const body = {
-    width: '100%',
     padding: 0,
     marginLeft: 'auto',
     marginRight: 'auto',
-    maxWidth:
-    (wd >= 900)?300:
-    (wd >= 750)?240:null,
-    marginTop:
-    (wd >= 750)?0:16,
-    height:
-    (wd >= 1000)?400:
-    (wd >= 900)?350:
-    (wd >= 750)?300:250,
+    width: (wd >= 900)?'45%':'100%',
+    maxHeight: 450,
     background: '#ccc',
     transitionProperty: 'all',
     transitionDuration: '.5s',

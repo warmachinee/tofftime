@@ -83,12 +83,12 @@ class MatchDetail extends React.Component{
   }
 
   render(){
-    const { token, setCSRFToken } = this.props
+    const { token, setCSRFToken, isSupportWebp } = this.props
     const { message, data, userscore } = this.state
 
     return(
       <MatchDetailBody data={data} userscore={userscore} matchid={parseInt(this.props.computedMatch.params.matchparam)}
-        token={token} setCSRFToken={setCSRFToken} />
+        token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp}/>
     );
   }
 }

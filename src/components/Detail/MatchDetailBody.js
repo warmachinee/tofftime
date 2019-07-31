@@ -16,10 +16,16 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 import teal from '@material-ui/core/colors/teal';
+
+import { LDCircular } from '../loading/LDCircular'
+
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'../GoBack'),
+  loading: () => <LDCircular />
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,19 +34,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
-  },
-  back: {
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
-    },
-  },
-  backIcon: {
-    fontSize: '2rem',
-    color: teal[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '2.5rem',
-    },
   },
   content: {
     margin: '0 5%',
@@ -144,22 +137,23 @@ const useStyles = makeStyles(theme => ({
 
 function MatchDetailBody(props) {
   const classes = useStyles();
-  const { data, userscore, matchid, token, setCSRFToken } = props
+  const { data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
   const [ expanded, setExpanded ] = React.useState(true)
   const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
   const matchPicture = data?( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture ):null
-  const imageEl = React.useRef(null)//
+  const imageEl = React.useRef(null)
+
   function expandHandler(){
     setExpanded(!expanded)
   }
 
+  React.useEffect(()=>{
+    window.scrollTo(0, 0)
+  },[ ])
+
   return (
     <Paper className={classes.root}>
-      <div style={{ width: '100%' }}>
-        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      </div>
+      <GoBack goBackDetail/>
 
       {/*--------------------Content--------------------*/}
       <div className={classes.content}>
@@ -183,12 +177,16 @@ function MatchDetailBody(props) {
           </Typography>
           <div>
             {matchPicture?
-              <img ref={imageEl} src={matchPicture} align="left" className={classes.image} />
+              (isSupportWebp?
+                <img ref={imageEl} src={matchPicture + '.webp'} align="left" className={classes.image} />
+                :
+                <img ref={imageEl} src={matchPicture + '.jpg'} align="left" className={classes.image} />
+              )
             :
               <div align="left" className={classes.imageLD}>
-                <div style={{ flex: 1 }}></div>
+                <div style={{ flex: 1 }} />
                 <center style={{ fontSize: 24, fontWeight: 500 }}>No Image</center>
-                <div style={{ flex: 1 }}></div>
+                <div style={{ flex: 1 }} />
               </div>
             }
           </div>

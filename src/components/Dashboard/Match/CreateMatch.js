@@ -381,16 +381,16 @@ function CreateMatchBody(props){
                     width: imgRef.current.offsetWidth,
                     top: 0, left: 0,
                   }}>
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ flex: 1 }}></div>
+                    <div style={{ flex: 1 }} />
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                       <CloudUploadIcon fontSize="large" style={{ color: teal[400] }}/>
                     </StyledIconButton>
-                    <div style={{ flex: 1 }}></div>
+                    <div style={{ flex: 1 }} />
                   </div>
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                 </div>
               }
             </div>
@@ -398,16 +398,16 @@ function CreateMatchBody(props){
             <div style={{ position: 'relative', marginTop: 16 }}>
               <div className={classes.matchImgTemp}
                 style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
-                <div style={{ flex: 1 }}></div>
+                <div style={{ flex: 1 }} />
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                     <CloudUploadIcon fontSize="large" style={{ color: teal[500] }}/>
                   </StyledIconButton>
-                  <div style={{ flex: 1 }}></div>
+                  <div style={{ flex: 1 }} />
                 </div>
-                <div style={{ flex: 1 }}></div>
+                <div style={{ flex: 1 }} />
               </div>
             </div>
           }

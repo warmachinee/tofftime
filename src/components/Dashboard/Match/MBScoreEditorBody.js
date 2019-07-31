@@ -556,7 +556,7 @@ export default function MBScoreEditorBody(props){
         <Box className={classes.text} m={1}>
           IN = {handleSum(arrScore, 'in')}
         </Box>
-        <div style={{ flex: 1 }}></div>
+        <div style={{ flex: 1 }} />
         <Box className={classes.textHighlight} m={1}>
           Total = {handleSum(arrScore, 'out') + handleSum(arrScore, 'in')}
         </Box>

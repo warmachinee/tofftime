@@ -1,7 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import socketIOClient from 'socket.io-client'
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import * as API from '../../../api'
 
 import Tabs from '@material-ui/core/Tabs';
@@ -13,6 +14,10 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Typography from '@material-ui/core/Typography';
+
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
@@ -40,15 +45,21 @@ const useStyles = makeStyles(theme => ({
     marginTop: 36
   },
   listText:{
-    width: '100%',
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    width: '50%',
     textAlign: 'left'
   },
   listPrize:{
     width: '50%',
-    textAlign: 'left'
+    textAlign: 'left',
+    display: 'flex',
+    justifyContent: 'flex-start',
   },
   prizeText: {
-    height: 24,
+    marginRight: 8
+  },
+  buttonMargin: {
+    marginTop: 'auto'
   },
 
 }))
@@ -86,6 +97,31 @@ const StyledTab = withStyles(theme => ({
   selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
+const GreenButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(teal[500]),
+    backgroundColor: teal[500],
+    '&:hover': {
+      backgroundColor: teal[700],
+    },
+  },
+}))(Button);
+
+const GreenTextButton = withStyles(theme => ({
+  root: {
+    color: teal[600],
+    '&:hover': {
+      backgroundColor: teal[100],
+    },
+  },
+}))(Button);
+
+const theme = createMuiTheme({
+  palette: {
+    primary: teal,
+  },
+});
+
 function RewardContainer(props){
   const classes = useStyles();
   const { token, setCSRFToken,
@@ -113,7 +149,6 @@ function RewardContainer(props){
     let prize = []
     userid.push(data.userid)
     prize.push(parseInt(edittingData))
-
     const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
@@ -202,21 +237,69 @@ function RewardContainer(props){
 
   return(
     <ListItem>
-      <ListItemText className={classes.listText} primary={data.fullname} />
-      <ListItemText className={classes.listText} primary={data.lastname} />
+      <ListItemText className={classes.listText} primary={data.fullname}
+        primary={
+          ( window.innerWidth < 700 )?
+          <div style={{ display: 'flex' }}>
+            { data.fullname }<div style={{ width: 20 }}></div>{ data.lastname }
+          </div>
+          : data.fullname }
+        secondary={
+          editting && window.innerWidth < 550 &&
+          <Typography component="div" style={{ display: 'flex' }}>
+            <ThemeProvider theme={theme}>
+              <TextField
+                fullWidth
+                className={classes.prizeText}
+                value={edittingData || ''}
+                type="number"
+                helperText="Please input number only."
+                onChange={e =>handleChange(e.target.value)}
+                onFocus={e => e.target.select()}
+                onKeyPress={e =>handleKeyPress(e)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AttachMoneyIcon color="primary"/>
+                    </InputAdornment>
+                  )
+                }}
+                />
+            </ThemeProvider>
+            <Button style={{ height: 36 }} color="primary" variant="contained" onClick={handleSave}>Save</Button>
+          </Typography>
+        }/>
+        { window.innerWidth >= 700 &&
+          <ListItemText className={classes.listText} primary={data.lastname} />
+        }
       { editting?
-        <div style={{ display: 'flex', width: '50%' }}>
-          <TextField
-            fullWidth
-            onChange={e =>handleChange(e.target.value)}
-            onFocus={e => e.target.select()}
-            onKeyPress={e =>handleKeyPress(e)}
-            value={edittingData || ''}
-            className={classes.prizeText}
-            type="number"
-          />
-          <Button color="primary" variant="contained" onClick={handleSave}>Save</Button>
-        </div>
+        ( window.innerWidth >= 550 &&
+          <ListItemText className={classes.listPrize}
+            primary={
+              <div style={{ display: 'flex' }}>
+                <ThemeProvider theme={theme}>
+                  <TextField
+                    fullWidth
+                    className={classes.prizeText}
+                    value={edittingData || ''}
+                    type="number"
+                    helperText="Please input number only."
+                    onChange={e =>handleChange(e.target.value)}
+                    onFocus={e => e.target.select()}
+                    onKeyPress={e =>handleKeyPress(e)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AttachMoneyIcon color="primary"/>
+                        </InputAdornment>
+                      )
+                    }}
+                    />
+                </ThemeProvider>
+                <Button style={{ height: 36 }} color="primary" variant="contained" onClick={handleSave}>Save</Button>
+              </div>
+            } />
+        )
         :
         <ListItemText className={classes.listPrize} primary={data.prize} />
       }
@@ -395,16 +478,21 @@ export default function MBRewardBody(props){
   }
 
   React.useEffect(()=>{
-    //handleFetch()
-    var json = '[{"userid":383134,"fullname":"สีไพร","lastname":"อภิสนธิ์","classno":1,"prize":0,"par":1},{"userid":175937,"fullname":"ประทีป","lastname":"ค้ายาดี","classno":1,"prize":0,"par":1},{"userid":422094,"fullname":"อธิวัฒน์","lastname":"แย้มเรืองรัตน์","classno":1,"prize":0,"par":1},{"userid":380855,"fullname":"ประสิทธิ","lastname":"คำภูแสน","classno":1,"prize":0,"par":3},{"userid":859661,"fullname":"พงศ์ภูมินทร์","lastname":"กล้าหาญ","classno":1,"prize":0,"par":3},{"userid":375128,"fullname":"วิชยะ","lastname":"ศรีนาคาร์","classno":1,"prize":0,"par":3},{"userid":825953,"fullname":"สัมพันธ์","lastname":"เรศมณเฑียร","classno":1,"prize":0,"par":4},{"userid":560646,"fullname":"พูลลาภ","lastname":"เยือกเย็น","classno":1,"prize":0,"par":4},{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":1,"prize":0,"par":5},{"userid":726183,"fullname":"ทินพันธ์","lastname":"พิลึก","classno":1,"prize":0,"par":7},{"userid":686853,"fullname":"ภัศดา","lastname":"บุรณศิริ","classno":2,"prize":0,"par":-5},{"userid":298863,"fullname":"พรชัย","lastname":"เนียมหมื่นไวย์","classno":2,"prize":0,"par":-5},{"userid":290370,"fullname":"ดุสิต","lastname":"สมศักดิ์","classno":2,"prize":0,"par":0},{"userid":243286,"fullname":"พัสกร  ","lastname":"ยุพาวัฒนะ","classno":2,"prize":0,"par":1},{"userid":127642,"fullname":"ธงชัย","lastname":"แตงอ่อน","classno":2,"prize":0,"par":2},{"userid":584981,"fullname":"มนัส ","lastname":"สุขเย็น","classno":2,"prize":0,"par":3},{"userid":121302,"fullname":"อานนท์ ","lastname":"โพธิ์ทอง","classno":2,"prize":0,"par":3},{"userid":158541,"fullname":"Mike","lastname":"Missler","classno":2,"prize":0,"par":3},{"userid":349921,"fullname":"สนอง ","lastname":"ช้างเนียม","classno":3,"prize":0,"par":5},{"userid":344566,"fullname":"ประทีป ","lastname":"แก้ววงษา ","classno":3,"prize":0,"par":5},{"userid":570929,"fullname":"สมนัส","lastname":"จันทนะ","classno":3,"prize":0,"par":5},{"userid":362257,"fullname":"ทวีโชค ","lastname":"พุทธชน","classno":3,"prize":0,"par":14}]';
-    var obj = JSON.parse(json);
-    var json1 = '{"title":"SNT 4-2019","date":"04/07/2019","picture":"/matchs/16725831/16725831","location":"Watermill GOLF&GARDENS","locationid":631932,"createdate":"04/07/2019","scorematch":1,"matchtype":0,"display":1,"status":1,"class":[{"classno":1,"classname":"S"},{"classno":2,"classname":"SS"},{"classno":3,"classname":"GS"}],"team":[],"playoff":[383134,686853,0]}';
-    var obj1 = JSON.parse(json1);
-
-    setData(obj)
-    setMatchDetail(obj1)
+    handleFetch()
   },[ ])
 
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
   return(
     <div className={classes.root}>
       <Paper elevation={1} style={{ backgroundColor: teal[100], padding: '8px 0' }}>
@@ -423,37 +511,55 @@ export default function MBRewardBody(props){
         </StyledTabs>
       </Paper>
       <div className={classes.list}>
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', height: 56 }}>
           { data && data.status &&
-            <Button style={{ marginRight: 8 }} color='primary' onClick={handleCreate}>Create</Button>
+            <Button className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleCreate}>Create</Button>
           }
-          <Button style={{ marginRight: 8 }} color='primary' onClick={handleReset}>Reset</Button>
           { editting &&
             <React.Fragment>
-              <TextField
-                onChange={e =>handleRewardChange(e.target.value)}
-                onFocus={e => e.target.select()}
-                onKeyPress={e =>handleRewardKeyPress(e)}
-                placeholder="Edit sequence"
-                type="number"
-              />
-              <Button style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>Save</Button>
+              <ThemeProvider theme={theme}>
+                <TextField
+                  onChange={e =>handleRewardChange(e.target.value)}
+                  onFocus={e => e.target.select()}
+                  onKeyPress={e =>handleRewardKeyPress(e)}
+                  label="Edit sequence"
+                  type="number"
+                />
+              </ThemeProvider>
+            <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>Save</GreenButton>
             </React.Fragment>
           }
-          <div style={{ flex: 1 }}></div>
-          { editting?
-            <Button style={{ marginLeft: 8 }} color='primary' onClick={()=>setEditting(false)}>Cancel</Button>
-            :
-            <Button color='primary' onClick={()=>setEditting(!editting)}>Edit</Button>
+          <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>Reset</GreenTextButton>
+          <div style={{ flex: 1 }} />
+          { window.innerWidth >= 500 && editting &&
+            <GreenTextButton
+              className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
+              onClick={()=>setEditting(false)}>Done</GreenTextButton>
+          }
+          { !editting &&
+            <GreenButton
+              className={classes.buttonMargin} style={{ paddingLeft: 36, paddingRight: 36 }} color='primary' onClick={()=>setEditting(!editting)}>Edit</GreenButton>
+          }
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          { window.innerWidth < 500 && editting &&
+            <GreenTextButton
+              className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
+              onClick={()=>setEditting(false)}>Done</GreenTextButton>
           }
         </div>
         <List>
           <ListItem
             style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4, cursor: 'auto' }}
             >
-            <ListItemText style={{ color: 'white' }} className={classes.listText} primary='Full name' />
-            <ListItemText style={{ color: 'white' }} className={classes.listText} primary='Last name' />
-            <ListItemText style={{ color: 'white' }} className={classes.listPrize} primary='Prize' />
+            <ListItemText style={{ color: 'white' }} className={classes.listText}
+              primary={ window.innerWidth < 700? 'Player' : 'Full name' } />
+            { window.innerWidth >= 700 &&
+              <ListItemText style={{ color: 'white' }} className={classes.listText} primary='Last name' />
+            }
+            { !( editting && window.innerWidth < 550 ) &&
+              <ListItemText style={{ color: 'white' }} className={classes.listPrize} primary='Prize' />
+            }
           </ListItem>
         </List>
         <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .5 }}>

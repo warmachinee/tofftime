@@ -30,9 +30,11 @@ function TabContainer(props) {
   return (
     <React.Fragment>
       <div style={{ display: 'flex' }}>
-        <div style={{ flex: 1 }}></div>
-        {/**/}
-        <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} />
+        <div style={{ flex: 1 }} />
+        { !reward.status &&
+          <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} />
+        }
+
         <PrintPDF data={data} userscore={userscore} matchClass={matchClass}/>
       </div>
       <ScoreTable data={data} userscore={userscore} matchClass={matchClass}/>

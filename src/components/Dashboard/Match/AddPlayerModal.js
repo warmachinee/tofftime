@@ -16,6 +16,7 @@ import TextField from '@material-ui/core/TextField';
 import Collapse from '@material-ui/core/Collapse';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
 
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SearchIcon from '@material-ui/icons/Search';
@@ -31,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24,
+    marginTop: 36,
     maxHeight: '100%'
   },
   margin: {
@@ -97,7 +98,7 @@ const useStyles = makeStyles(theme => ({
   addCircleIcon: {
     color: teal[600]
   },
-  blank: {}
+
 }))
 
 const GreenButton = withStyles(theme => ({
@@ -309,7 +310,7 @@ export default function AddPlayerModal(props){
                 Fill the form and click confirm <br></br>to create a new player.
               </Box>
             </Typography>
-            <div style={{ flex: 1 }}></div>
+            <div style={{ flex: 1 }} />
             <GreenButton className={classes.confirmButton} onClick={handleCreatePlayer}>Confirm</GreenButton>
           </div>
         </div>
@@ -345,14 +346,17 @@ export default function AddPlayerModal(props){
         { data && !data.status &&
           handleSearch().map(value => {
               return value && (
-                <ListItem key={value.firstname + `(${value.userid})`} role={undefined} dense button
-                  onClick={()=>handleAddUser(value)}>
-                  <ListItemIcon className={classes.listItemIcon}>
-                    <AddCircleIcon classes={{ root: classes.addCircleIcon }}/>
-                  </ListItemIcon>
-                  <ListItemText className={classes.listText} primary={value.fullname} />
-                  <ListItemText className={classes.listText} primary={value.lastname} />
-                </ListItem>
+                <React.Fragment key={value.firstname + `(${value.userid})`}>
+                  <ListItem role={undefined} dense button
+                    onClick={()=>handleAddUser(value)}>
+                    <ListItemIcon className={classes.listItemIcon}>
+                      <AddCircleIcon classes={{ root: classes.addCircleIcon }}/>
+                    </ListItemIcon>
+                    <ListItemText className={classes.listText} primary={value.fullname} />
+                    <ListItemText className={classes.listText} primary={value.lastname} />
+                  </ListItem>
+                  <Divider />
+                </React.Fragment>
               );
           })
         }

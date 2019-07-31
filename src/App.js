@@ -36,12 +36,29 @@ const MatchList = Loadable({
   loading: () => null
 });
 
-const RouteDetail = Loadable.Map({
+const RouteAnnounceDetail = Loadable.Map({
   loader: {
     GeneralDetail: () => import(/* webpackChunkName: "GeneralDetail" */'./components/Detail/GeneralDetail'),
   },
   render(loaded, props) {
     let Component = loaded.GeneralDetail.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
+const RouteNewsDetail = Loadable.Map({
+  loader: {
+    NewsDetail: () => import(/* webpackChunkName: "NewsDetail" */'./components/Detail/NewsDetail'),
+  },
+  render(loaded, props) {
+    let Component = loaded.NewsDetail.default;
     return (
       <Route
         {...props}
@@ -117,6 +134,8 @@ import MatchEditor from './components/Dashboard/Match/MatchEditor'
 import MatchBody from './components/Dashboard/Match/MatchBody'
 import MatchDetail from './components/Detail/MatchDetail'
 import MatchListB from './components/Dashboard/MatchList/MatchList'
+import News from './components/Dashboard/News/News'
+import Announcement from './components/Dashboard/Announcement/Announcement'
 import Dashboard from './components/Dashboard/Dashboard'
 
 
@@ -139,6 +158,7 @@ function App() {
   })
   const [ open, setOpen ] = React.useState(false);
   const [ sess, handleSess ] = React.useState([])
+  const [ isSupportWebp, handleSupportWebp ] = React.useState(false)
 
   const handleOpen = () => {
     setOpen(true);
@@ -147,6 +167,23 @@ function App() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  async function supportsWebp(){
+    if (!self.createImageBitmap) return false;
+
+    const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
+    const blob = await fetch(webpData).then(r => r.blob());
+    return createImageBitmap(blob).then(() => true, () => false);
+  }
+
+  async function detectWebp(){
+    if(await supportsWebp()) {
+      handleSupportWebp(true)
+    }
+    else {
+      handleSupportWebp(false)
+    }
+  }
 
   async function handleGetToken(){
     const res = await API.xhrGet('getcsrf')
@@ -163,6 +200,7 @@ function App() {
       setCSRFToken(csrf)
       handleSess(d)
     })
+    await detectWebp()
   }
 
   React.useEffect(()=>{
@@ -179,19 +217,23 @@ function App() {
         setCSRFToken={setCSRFToken}/>
       { true ?
         <Switch>
-          <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
-          <RouteDetail path="/detail/:detailparam" />
+          <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}
+            isSupportWebp={isSupportWebp}/>
+          <RouteAnnounceDetail path="/announce/:detailparam"/>
+          <RouteNewsDetail path="/news/:detailparam" token={csrfToken} setCSRFToken={setCSRFToken}
+            handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
           <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
-            handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL}/>
+            handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL} isSupportWebp={isSupportWebp}/>
           <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}
+            isSupportWebp={isSupportWebp}
             handleSnackBar={handleSnackBar} />
           <Route component={NoMatch} />
         </Switch>
         :
-        <MatchEditor handleSnackBar={handleSnackBar} />
+        <News handleSnackBar={handleSnackBar} />
 
 
-        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchList /><Dashboard />
+        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchListB /><Dashboard />
       }
 
       {/* sess && sess.status === 1 && sess.typeid === 'admin' &&

@@ -153,9 +153,9 @@ function MatchListBody(props) {
 }
 
 function MatchList(props){
+  const { isSupportWebp } = props
   const [ csrfToken, setCSRFToken ] = React.useState(null)
   const [ data, setData ] = React.useState(null)
-  const [ isSupportWebp, handleSupportWebp ] = React.useState(false)
 
   async function handleFetch(){
     const res = await API.xhrGet('getcsrf')
@@ -165,23 +165,6 @@ function MatchList(props){
       setCSRFToken(csrf)
       setData(d)
     })
-    await detectWebp()
-  }
-  async function supportsWebp(){
-    if (!self.createImageBitmap) return false;
-
-    const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
-    const blob = await fetch(webpData).then(r => r.blob());
-    return createImageBitmap(blob).then(() => true, () => false);
-  }
-
-  async function detectWebp(){
-    if(await supportsWebp()) {
-      handleSupportWebp(true)
-    }
-    else {
-      handleSupportWebp(false)
-    }
   }
 
   React.useEffect(()=>{

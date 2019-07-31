@@ -510,7 +510,7 @@ export default function MBPlayerBody(props){
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
             Add player
           </Button>
-          <div style={{ flex: 1 }}></div>
+          <div style={{ flex: 1 }} />
           <div
             className={classes.controlsEdit}
             style={{

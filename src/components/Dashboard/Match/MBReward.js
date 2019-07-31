@@ -44,12 +44,13 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+
 }))
 
 export default function MBReward(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar } = props
-  const [ expanded, setExpanded ] = React.useState(!false)
+  const [ expanded, setExpanded ] = React.useState(false)
 
   function expandHandler(){
     setExpanded(!expanded)

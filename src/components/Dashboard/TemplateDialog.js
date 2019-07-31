@@ -18,6 +18,7 @@ function getModalStyle() {
     top: `${top}%`,
     left: `${left}%`,
     transform: `translate(-${top}%, -${left}%)`,
+    scrollBehavior: 'smooth'
   };
 }
 
@@ -29,6 +30,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(4),
     outline: 'none',
     overflow: 'auto',
+    overflowX: 'hidden',
     overflowScrolling: 'touch',
     WebkitOverflowScrolling: 'touch',
     width: '100%',
@@ -49,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 export default function TemplateDialog(props) {
   const classes = useStyles();
   const [ modalStyle ] = React.useState(getModalStyle);
-  const { open, handleClose } = props
+  const { open, handleClose, getRef } = props
   const container = React.useRef(null);
 
   const [ ,updateState ] = React.useState(null)
@@ -72,7 +74,7 @@ export default function TemplateDialog(props) {
           open={open}
           onClose={handleClose}
         >
-          <div style={{ ...modalStyle, maxWidth: props.maxWidth? props.maxWidth : 600, }} className={classes.paper}>
+          <div id="template-dialog" style={{ ...modalStyle, maxWidth: props.maxWidth? props.maxWidth : 600, }} className={classes.paper}>
             <IconButton className={classes.close} onClick={handleClose}>
               <CloseIcon classes={{ root: classes.closeIcon }}/>
             </IconButton>

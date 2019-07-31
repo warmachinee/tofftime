@@ -81,7 +81,7 @@ export default function SnackBarLong(props) {
                 <div className={classes.messageLabel}>IN</div>
                 <div className={classes.messageLabel}>{'='}</div>
                 <div className={classes.messageLabel}>Total</div>
-                <div style={{ flex: 1 }}></div>
+                <div style={{ flex: 1 }} />
                 <div className={classes.messageLabel} style={{ marginLeft: 48 }}>PAR</div>
               </div>
               <div className={classes.messageGridBottom}>

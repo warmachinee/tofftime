@@ -39,13 +39,14 @@ const RouteMatchEditor = Loadable.Map({
 });
 
 export default function Match(props){
-  const { token, setCSRFToken, handleSnackBar, } = props
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   return(
     <Switch>
 
       <RouteMatchBody exact path='/user/match' token={token} setCSRFToken={setCSRFToken}
         handleSnackBar={handleSnackBar} />
       <RouteMatchEditor path='/user/match/:matchparam' token={token} setCSRFToken={setCSRFToken}
+        isSupportWebp={isSupportWebp}
         handleSnackBar={handleSnackBar} />
     </Switch>
   );

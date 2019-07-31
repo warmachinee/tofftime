@@ -1,29 +1,33 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import * as API from '../../../api'
 
 import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Divider from '@material-ui/core/Divider';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
 import teal from '@material-ui/core/colors/teal';
+import grey from '@material-ui/core/colors/grey';
 
 import { LDCircular } from '../../loading/LDCircular'
 
 const CreateMatch = Loadable({
   loader: () => import(/* webpackChunkName: "CreateMatch" */'./CreateMatch'),
+  loading: () => <LDCircular />
+});
+
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'../../GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -42,27 +46,8 @@ const useStyles = makeStyles(theme => ({
       fontSize: 32,
     },
   },
-  back: {
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
-    },
-  },
-  backIcon: {
-    fontSize: '2rem',
-    color: teal[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '2.5rem',
-    },
-  },
   tableHead: {
-    minWidth: 650,
-    backgroundColor: 'black',
-    borderRadius: 4
-  },
-  tableRow: {
-    //border: '1px solid'
-    minWidth: 650,
+    backgroundColor: grey[900],
   },
   tableDate: {
     width: 120,
@@ -76,8 +61,11 @@ const useStyles = makeStyles(theme => ({
     fontFamily: 'monospace'
   },
   tableTitle: {
-    width: '60%',
+    width: '100%',
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    [theme.breakpoints.up(800)]: {
+      width: '60%',
+    },
   },
   tableLocation: {
     width: '40%',
@@ -86,7 +74,8 @@ const useStyles = makeStyles(theme => ({
   checkbox: {
     position: 'absolute',
     left: 8
-  }
+  },
+
 }))
 
 const StyledText = withStyles(theme => ({
@@ -95,10 +84,39 @@ const StyledText = withStyles(theme => ({
   },
 }))(ListItemText);
 
+const GreenButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(teal[500]),
+    backgroundColor: teal[500],
+    '&:hover': {
+      backgroundColor: teal[700],
+    },
+  },
+}))(Button);
+
+const GreenTextButton = withStyles(theme => ({
+  root: {
+    color: teal[600],
+    '&:hover': {
+      backgroundColor: teal[100],
+    },
+  },
+}))(Button);
+
+const GreenCheckbox = withStyles({
+  root: {
+    color: teal[400],
+    '&$checked': {
+      color: teal[600],
+    },
+  },
+})(props => <Checkbox color="default" {...props} />);
+
 export default function MatchBody(props){
   const classes = useStyles();
   const { token, setCSRFToken, handleSnackBar } = props
   const [ data, setData ] = React.useState(null)
+  const [ dataClassed, setDataClassed ] = React.useState(null)
   const [ editting, setEditting ] = React.useState(false)
 
   async function handleSetDisplay(d){
@@ -124,12 +142,26 @@ export default function MatchBody(props){
 
   async function handleFetch(){
     const res = await token? token : API.xhrGet('getcsrf')
+    var arrData = []
     await API.xhrPost(
       token? token : res.token,
       'loadmatch', {
         action: 'list',
     }, (csrf, d) =>{
       setCSRFToken(csrf)
+      if(!d.status){
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === 1
+          })
+        )
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === -1
+          })
+        )
+        setDataClassed(arrData)
+      }
       setData(d)
     })
   }
@@ -137,13 +169,10 @@ export default function MatchBody(props){
   React.useEffect(()=>{
     handleFetch()
   },[ ])
+
   return(
     <div className={classes.root}>
-      <div style={{ width: '100%' }}>
-        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      </div>
+      <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Match
@@ -151,10 +180,10 @@ export default function MatchBody(props){
       </Typography>
       <CreateMatch MBSetData={setData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
       <div style={{ display: 'flex', margin: '24px 16px 0 0' }}>
-        <div style={{ flex: 1 }}></div>
-        <Button color="primary" onClick={()=>setEditting(!editting)}>
+        <div style={{ flex: 1 }} />
+        <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>
           { editting? 'Done':'Edit Display'}
-        </Button>
+        </GreenTextButton>
       </div>
       <List style={{ overflow: 'auto' }}>
         { editting?
@@ -162,49 +191,92 @@ export default function MatchBody(props){
             <ListItemIcon>
               <div style={{ width: 42 }}></div>
             </ListItemIcon>
-            <StyledText inset={ window.innerWidth > 600 } primary="Title" className={classes.tableTitle}/>
+            <StyledText inset primary="Match" className={classes.tableTitle}/>
           </ListItem>
           :
           <ListItem key="Table Head" className={classes.tableHead}>
-            <StyledText primary="Date" className={classes.tableDate}/>
+            { window.innerWidth >= 600 &&
+              <StyledText primary="Date" className={classes.tableDate}/>
+            }
             <StyledText primary="Views" className={classes.tableView}/>
-            <StyledText inset={ window.innerWidth > 600 } primary="Title" className={classes.tableTitle}/>
-            <StyledText inset={ window.innerWidth > 600 } primary="Location" className={classes.tableLocation}/>
+            <StyledText inset primary="Match" className={classes.tableTitle}/>
+            { window.innerWidth >= 800 &&
+              <StyledText inset primary="Location" className={classes.tableLocation}/>
+            }
           </ListItem>
         }
 
-        {data && !data.status &&
+        {data && !data.status && !editting &&
           data.map( (d, i) =>
-            editting?
-              (d &&
-              <React.Fragment key={i}>
-                <ListItem key={d.matchid} button className={classes.tableRow} onClick={()=>handleSetDisplay(d)}>
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={d.display === 1}
-                      tabIndex={-1}
-                      disableRipple/>
-                  </ListItemIcon>
-                  <ListItemText inset={ window.innerWidth > 600 } primary={d.title} className={classes.tableTitle}/>
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-              ):
-              (d &&
-              <React.Fragment key={i}>
-                <Link to={`/user/match/${d.matchid}`} className={classes.linkElement}>
-                  <ListItem key={d.matchid} button className={classes.tableRow}>
+            d &&
+            <React.Fragment key={i}>
+              <Link to={`/user/match/${d.matchid}`} className={classes.linkElement}>
+                <ListItem key={d.matchid} button>
+                  { window.innerWidth >= 600 &&
                     <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
-                    <ListItemText primary={d.views} className={classes.tableView}/>
-                    <ListItemText inset={ window.innerWidth > 600 } primary={d.title} className={classes.tableTitle}/>
-                    <ListItemText inset={ window.innerWidth > 600 } primary={d.location} className={classes.tableLocation}/>
-                  </ListItem>
-                </Link>
-                <Divider />
-              </React.Fragment>
-          ))
-        }
+                  }
+                  <ListItemText primary={d.views} className={classes.tableView}/>
+                  <ListItemText inset className={classes.tableTitle}
+                    primary={d.title}
+                    secondary={
+                      window.innerWidth < 800 &&
+                      (
+                        window.innerWidth >= 600?
+                        d.location
+                        :
+                        <React.Fragment>
+                          <Typography
+                            style={{ fontStyle: 'oblique' }}
+                            component="span"
+                            variant="caption"
+                            color="textPrimary"
+                          >
+                            {d.date}
+                          </Typography>
+                          <br></br>
+                          {d.location}
+                        </React.Fragment>
+                      )
+                    }/>
+                  { window.innerWidth >= 800 &&
+                    <ListItemText inset primary={d.location} className={classes.tableLocation}/>
+                  }
+                </ListItem>
+              </Link>
+              <Divider />
+            </React.Fragment>
+        )}
+        { dataClassed && editting &&
+          dataClassed.map( (d, i) =>
+            d &&
+            <React.Fragment key={i}>
+              <ListItem key={d.matchid} style={{ ...d.display !== 1 && { opacity: .5 }}} button onClick={()=>handleSetDisplay(d)}>
+                <ListItemIcon>
+                  <GreenCheckbox
+                    edge="start"
+                    checked={d.display === 1}
+                    tabIndex={-1}
+                    disableRipple/>
+                </ListItemIcon>
+                <ListItemText className={classes.tableTitle}
+                  primary={d.title}
+                  secondary={d.location}/>
+                <ListItemText
+                  style={{ textAlign: 'right' }}
+                  primary={
+                    <Typography
+                      style={{ fontStyle: 'oblique' }}
+                      component="span"
+                      variant="caption"
+                      color="textPrimary"
+                    >
+                      {d.date}
+                    </Typography>
+                  }/>
+              </ListItem>
+              <Divider />
+            </React.Fragment>
+        )}
       </List>
     </div>
   )

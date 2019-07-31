@@ -11,6 +11,23 @@ import grey from '@material-ui/core/colors/grey';
 
 import { LDCircular } from '../loading/LDCircular'
 
+const RouteAnnouncement = Loadable.Map({
+  loader: {
+    Announcement: () => import(/* webpackChunkName: "Announcement" */'./Announcement/Announcement'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Announcement.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => <LDCircular />
+});
+
 const RouteNews = Loadable.Map({
   loader: {
     News: () => import(/* webpackChunkName: "MatchList" */'./News/News'),
@@ -101,13 +118,13 @@ const StyledButton = withStyles(theme => ({
 
 export default function Dashboard(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
 
   function SystemComponent(){
     return(
       <div>
         <div style={{ marginTop: 36 }}>
-          <Link to='/user/announcement' className={classes.linkElement}>
+          <Link to='/user/announce' className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Announcement
             </StyledButton>
@@ -151,9 +168,11 @@ export default function Dashboard(props){
   return(
     <Paper className={classes.root}>
       <Route exact path='/user' component={SystemComponent} />
-      <RouteNews path='/user/news' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      <RouteAnnouncement path='/user/announce' token={token} setCSRFToken={setCSRFToken}
+        isSupportWebp={isSupportWebp} handleSnackBar={handleSnackBar}/>
+      <RouteNews path='/user/news' token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp} handleSnackBar={handleSnackBar}/>
       <RouteMatchList path='/user/matchlist' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
-      <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken}
+      <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp}
         handleSnackBar={handleSnackBar}/>
     </Paper>
   );
