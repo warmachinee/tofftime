@@ -38,10 +38,10 @@ const MatchList = Loadable({
 
 const RouteAnnounceDetail = Loadable.Map({
   loader: {
-    GeneralDetail: () => import(/* webpackChunkName: "GeneralDetail" */'./components/Detail/GeneralDetail'),
+    AnnounceDetail: () => import(/* webpackChunkName: "AnnounceDetail" */'./components/Detail/AnnounceDetail'),
   },
   render(loaded, props) {
-    let Component = loaded.GeneralDetail.default;
+    let Component = loaded.AnnounceDetail.default;
     return (
       <Route
         {...props}
@@ -104,6 +104,23 @@ const RouteDashboard = Loadable.Map({
   loading: () => null
 });
 
+const RouteScoreDisplay = Loadable.Map({
+  loader: {
+    ScoreDisplay: () => import(/* webpackChunkName: "ScoreDisplay" */'./components/ScoreDisplay'),
+  },
+  render(loaded, props) {
+    let Component = loaded.ScoreDisplay.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const NoMatch = Loadable({
   loader: () => import(/* webpackChunkName: "NoMatch" */'./components/loading/NoMatch'),
   loading: () => null
@@ -129,15 +146,15 @@ const Footer = Loadable({
   loading: () => null
 });
 
-
 import MatchEditor from './components/Dashboard/Match/MatchEditor'
 import MatchBody from './components/Dashboard/Match/MatchBody'
 import MatchDetail from './components/Detail/MatchDetail'
 import MatchListB from './components/Dashboard/MatchList/MatchList'
 import News from './components/Dashboard/News/News'
+import NewsDetail from './components/Detail/NewsDetail'
 import Announcement from './components/Dashboard/Announcement/Announcement'
 import Dashboard from './components/Dashboard/Dashboard'
-
+import ScoreDisplay from './components/ScoreDisplay'
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
@@ -206,6 +223,9 @@ function App() {
   React.useEffect(()=>{
     //handleGetToken()
     handleGetUserinfo()
+    /*
+    const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    console.log(/iPad|iPhone|iPod/.test(navigator.userAgent));*/
   },[ ])
 
   return (
@@ -215,11 +235,13 @@ function App() {
         handleOpen={handleOpen}
         handleSess={handleSess}
         setCSRFToken={setCSRFToken}/>
-      { true ?
+
+      { !true ?
         <Switch>
           <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}
             isSupportWebp={isSupportWebp}/>
-          <RouteAnnounceDetail path="/announce/:detailparam"/>
+          <RouteAnnounceDetail path="/announce/:detailparam" token={csrfToken} setCSRFToken={setCSRFToken}
+            handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
           <RouteNewsDetail path="/news/:detailparam" token={csrfToken} setCSRFToken={setCSRFToken}
             handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
           <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
@@ -227,12 +249,12 @@ function App() {
           <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}
             isSupportWebp={isSupportWebp}
             handleSnackBar={handleSnackBar} />
+          <RouteScoreDisplay path="/display/:matchid/:userid" token={csrfToken} setCSRFToken={setCSRFToken}
+            handleSnackBar={handleSnackBar} />
           <Route component={NoMatch} />
         </Switch>
         :
-        <News handleSnackBar={handleSnackBar} />
-
-
+        <MatchBody handleSnackBar={handleSnackBar} />
         //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchListB /><Dashboard />
       }
 

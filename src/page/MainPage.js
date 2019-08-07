@@ -11,7 +11,7 @@ const MatchList = Loadable({
 
 function MainPage(props) {
   const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
-
+  
   return (
     <div>
       <AnnouncementNewsGrid token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>

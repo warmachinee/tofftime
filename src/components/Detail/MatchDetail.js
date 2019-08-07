@@ -52,7 +52,7 @@ class MatchDetail extends React.Component{
     const { endpoint, userscore } = this.state
     var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
     const socket = socketIOClient( hd + endpoint )
-    socket.on('server-message', (messageNew) => {
+    socket.on('admin-match-server-message', (messageNew) => {
       if(messageNew && messageNew.status === 'success'){
         if(messageNew.hostdetail){
           this.props.handleSnackBarL({
@@ -87,7 +87,11 @@ class MatchDetail extends React.Component{
     const { message, data, userscore } = this.state
 
     return(
+      /*
       <MatchDetailBody data={data} userscore={userscore} matchid={parseInt(this.props.computedMatch.params.matchparam)}
+        token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp}/>
+      */
+      <MatchDetailBody data={data} userscore={userscore}
         token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp}/>
     );
   }

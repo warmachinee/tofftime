@@ -178,7 +178,7 @@ export default function MatchBody(props){
           Match
         </Box>
       </Typography>
-      <CreateMatch MBSetData={setData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      <CreateMatch setData={setData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
       <div style={{ display: 'flex', margin: '24px 16px 0 0' }}>
         <div style={{ flex: 1 }} />
         <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>

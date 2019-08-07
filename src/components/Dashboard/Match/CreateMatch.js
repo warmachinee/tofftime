@@ -5,7 +5,7 @@ import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles
 import { ThemeProvider } from '@material-ui/styles';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
-import * as API from '../../../api'
+import * as API from './../../../api'
 
 import Paper from '@material-ui/core/Paper';
 import Collapse from '@material-ui/core/Collapse';
@@ -30,7 +30,7 @@ import grey from '@material-ui/core/colors/grey';
 import { LDCircular } from '../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -212,11 +212,9 @@ const datePickers = createMuiTheme({
   },
 });
 
-
 function CreateMatchBody(props){
   const classes = useStyles();
-  const { MBSetData, token, setCSRFToken, handleSnackBar } = props
-  const [ data, setData ] = React.useState(null)
+  const { setData, token, setCSRFToken, handleSnackBar, setExpanded } = props
   const [ open, setOpen ] = React.useState(false);
   const imgRef = React.useRef(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -246,15 +244,7 @@ function CreateMatchBody(props){
   }
 
   function handleDateChange(d){
-    //console.log(handleConvertDate(d));
     setSelectedDate(d)
-  }
-
-  function handleConvertDate(d){
-    const day = (selectedDate.getDate() > 9) ? selectedDate.getDate():'0' + selectedDate.getDate()
-    const month = (selectedDate.getMonth() + 1 > 9) ? selectedDate.getMonth() + 1:'0' + ( selectedDate.getMonth() + 1 )
-    const dateStr = selectedDate.getFullYear() + '-' + month + '-' + day
-    return dateStr
   }
 
   function handleReset(){
@@ -300,18 +290,43 @@ function CreateMatchBody(props){
         fieldid: selectedField.fieldid,
         scorematch: parseInt(selectedMatchType),
         class: matchClass,
-        matchdate: handleConvertDate(selectedDate),
+        matchdate: API.handleDateToString(selectedDate),
     }, (csrf, d) =>{
+      setCSRFToken(csrf)
       handleSnackBar({
         state: true,
         message: d.status,
         variant: d.status === 'success' ? d.status : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-      setCSRFToken(csrf)
-      setData(d)
-      handleFetch()
+      if(d.status === 'success'){
+        handleCreatePicture(csrf, d)
+      }
     })
+  }
+
+  async function handleCreatePicture(csrf, d){
+    var status = d.status
+    const formData = new FormData()
+    if(selectedFile){
+      formData.append('matchimage', selectedFile)
+      const response = await API.fetchPostFile('matchsystem',`?_csrf=${csrf}`, {
+        action: 'edit',
+        matchid: d.matchid,
+        photopath: true,
+      }, formData)
+      setCSRFToken( await API.xhrGet('getcsrf') )
+      status = response.status
+    }else{
+      setCSRFToken(csrf)
+    }
+    handleSnackBar({
+      state: true,
+      message: status,
+      variant: status === 'success' ? status : 'error',
+      autoHideDuration: status === 'success'? 2000 : 5000
+    })
+    await handleFetch()
   }
 
   async function handleFetch(){
@@ -322,7 +337,8 @@ function CreateMatchBody(props){
         action: 'list',
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      MBSetData(d)
+      setData(d)
+      setExpanded(false)
     })
   }
 
@@ -481,7 +497,7 @@ function CreateMatchBody(props){
 
 export default function CreateMatch(props){
   const classes = useStyles();
-  const { MBSetData, token, setCSRFToken, handleSnackBar } = props
+  const { setData, token, setCSRFToken, handleSnackBar } = props
   const [ expanded, setExpanded ] = React.useState(false)
 
   function expandHandler(){
@@ -502,7 +518,8 @@ export default function CreateMatch(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CreateMatchBody MBSetData={MBSetData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+        <CreateMatchBody token={token} setCSRFToken={setCSRFToken}
+          setData={setData} handleSnackBar={handleSnackBar} setExpanded={setExpanded}/>
       </Collapse>
     </Paper>
   );

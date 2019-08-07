@@ -29,7 +29,7 @@ import red from '@material-ui/core/colors/red';
 import { LDCircular } from '../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -191,6 +191,14 @@ export default function News(props){
 
   async function handleFetch(){
     const res = await token? token : API.xhrGet('getcsrf')
+    const d = await API.xhrGet('loadgeneral',
+    `?_csrf=${res}&action=newslist`
+    )
+    console.log(d);
+    setCSRFToken(d.token)
+    setData(d.response)
+    /*
+    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : res.token,
       'loadmainpage', {
@@ -199,6 +207,7 @@ export default function News(props){
       setCSRFToken(csrf)
       setData(d)
     })
+    */
   }
 
   React.useEffect(()=>{
@@ -236,7 +245,7 @@ export default function News(props){
       </List>
       <List className={classes.listRoot}>
         { data && !data.status &&
-          API.handleSortArray(data).map( d =>{
+          API.handleSortArray(data, 'createdate', 'title').map( d =>{
             return d &&
             <React.Fragment key={d.newsid}>
               <ListItem button>

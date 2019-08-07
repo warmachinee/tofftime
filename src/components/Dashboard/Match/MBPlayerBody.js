@@ -39,7 +39,7 @@ import red from '@material-ui/core/colors/red';
 import { LDCircular } from '../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
   loading: () => <LDCircular />
 });
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import Fuse from 'fuse.js';
 import socketIOClient from 'socket.io-client'
+import { Link } from "react-router-dom";
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from '../../../api'
@@ -28,8 +28,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../../loading/LDCircular'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -111,8 +109,6 @@ const useStyles = makeStyles(theme => ({
   },
   selectPlayerButton: {
     textTransform: 'none',
-    marginTop: 'auto',
-    marginBottom: 16,
     padding: '8px 16px 8px 0',
     width: '100%',
     [theme.breakpoints.up(500)]: {
@@ -149,7 +145,7 @@ const theme = createMuiTheme({
 
 function MBScoreEditorContainer(props){
   const classes = useStyles();
-  const { data, matchDetail, selected, handleSelectPlayer } = props
+  const { matchid, data, matchDetail, selected, handleSelectPlayer } = props
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
   const [ expanded, setExpanded ] = React.useState(true)
@@ -233,15 +229,22 @@ function MBScoreEditorContainer(props){
 
   return(
     <div>
-      <GreenTextButton
-        className={classes.selectPlayerButton}
-        variant="outlined"
-        onClick={expandHandler}>
-        <ExpandMoreIcon
-          className={classes.expandIcon}
-          style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }} />
-        { selected? selected.firstname + " " + selected.lastname : 'Select Player'}
-      </GreenTextButton>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto', marginBottom: 16 }}>
+        <GreenTextButton
+          className={classes.selectPlayerButton}
+          variant="outlined"
+          onClick={expandHandler}>
+          <ExpandMoreIcon
+            className={classes.expandIcon}
+            style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }} />
+          { selected? selected.firstname + " " + selected.lastname : 'Select Player'}
+        </GreenTextButton>
+        { selected &&
+          <Link to={`/display/${matchid}/${selected.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <GreenTextButton>Match Display</GreenTextButton>
+          </Link>
+        }
+      </div>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <div className={classes.searchBox}>
           <ThemeProvider theme={theme}>
@@ -393,20 +396,39 @@ export default function MBScoreEditorBody(props){
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ selected, setSelected ] = React.useState(null)
+  const [ oldSelected, setOldSelected ] = React.useState(null)
   const [ arrScore, setArrScore ] = React.useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-  function handleSelectPlayer(d){
-    setSelected(d)
+  async function handleSelectPlayer(newVal){
+    if(selected && oldSelected){
+      setOldSelected(selected)
+      setSelected(newVal)
+    }else{
+      setSelected(newVal)
+      setOldSelected(newVal)
+    }
   }
 
-  function handleChange(value, index){
-    const tempArr = [...arrScore]
-    if(value === ''){
-      tempArr[index] = parseInt(0)
-    }else{
-      tempArr[index] = parseInt(value)
-    }
-    setArrScore(tempArr)
+  async function handleChange(value, index){
+    await setScore(value, index)
+  }
+
+  function handleFocus(e){
+    e.target.select()
+    //handleScoreDisplay()
+  }
+
+  function setScore(value, index){
+    return new Promise(resolve => {
+      const tempArr = [...arrScore]
+      if(value === ''){
+        tempArr[index] = parseInt(0)
+      }else{
+        tempArr[index] = parseInt(value)
+      }
+      setArrScore(tempArr)
+      resolve();
+    });
   }
 
   function handleKeyPress(e){
@@ -415,25 +437,39 @@ export default function MBScoreEditorBody(props){
     }
   }
 
-  function handleSum(array, type){
-    let temp = 0
-    let start = (type === 'out')? 0 : 9
-    let end = (type === 'out')? 9 : 18
-    for(var i = start;i < end;i++){
-      temp += array[i]
-    }
-    return temp
+  function handleScoreDisplay(){
+    return new Promise(resolve => {
+      var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+      const socket = socketIOClient( hd + API.webURL() )
+      socket.emit('player-show-client-message', {
+        action: "showplayerscore",
+        matchid: matchid,
+        userid: oldSelected.userid,
+        newuserid: selected.userid,
+        holescore: arrScore,
+      })
+      resolve();
+    });
   }
 
+  React.useEffect(()=>{
+    if(oldSelected && selected){
+      handleScoreDisplay()
+    }
+  }, [ arrScore, oldSelected, selected ])
+
   function handleUpdateScore(){
+    console.log('userid : ', oldSelected.firstname, " : ", 'newuserid : ', selected.firstname);
+    /*
     var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
     const socket = socketIOClient( hd + API.webURL() )
-    socket.emit('client-message', {
+    socket.emit('admin-match-client-message', {
       action: "scorebysystemadmin",
       matchid: matchid,
       userid: selected.userid,
       userscore: arrScore,
     })
+    */
   }
 
   function handleReset(){
@@ -512,7 +548,7 @@ export default function MBScoreEditorBody(props){
 
   return(
     <div className={classes.root}>
-      <MBScoreEditorContainer data={data} matchDetail={matchDetail} selected={selected} handleSelectPlayer={handleSelectPlayer}/>
+      <MBScoreEditorContainer matchid={matchid} data={data} matchDetail={matchDetail} selected={selected} handleSelectPlayer={handleSelectPlayer}/>
       <ThemeProvider theme={theme}>
         <div style={{ overflow: 'auto', marginTop: 24, marginBottom: 24 }}>
           <div className={classes.textfieldGrid}>
@@ -523,7 +559,7 @@ export default function MBScoreEditorBody(props){
                 label={d + 1}
                 value={arrScore[d] || 0}
                 onChange={e =>handleChange(e.target.value, d)}
-                onFocus={e => e.target.select()}
+                onFocus={e => handleFocus(e)}
                 onKeyPress={e =>handleKeyPress(e)}
                 variant="outlined"
                 type="number"
@@ -539,7 +575,7 @@ export default function MBScoreEditorBody(props){
                 label={d + 1}
                 value={arrScore[d] || 0}
                 onChange={e =>handleChange(e.target.value, d)}
-                onFocus={e => e.target.select()}
+                onFocus={e => handleFocus(e)}
                 onKeyPress={e =>handleKeyPress(e)}
                 variant="outlined"
                 type="number"
@@ -551,14 +587,14 @@ export default function MBScoreEditorBody(props){
       </ThemeProvider>
       <Typography component="div" style={{ display: 'flex' }}>
         <Box className={classes.text} m={1}>
-          OUT = {handleSum(arrScore, 'out')}
+          OUT = {API.handleHoleSum(arrScore, 'out')}
         </Box>
         <Box className={classes.text} m={1}>
-          IN = {handleSum(arrScore, 'in')}
+          IN = {API.handleHoleSum(arrScore, 'in')}
         </Box>
         <div style={{ flex: 1 }} />
         <Box className={classes.textHighlight} m={1}>
-          Total = {handleSum(arrScore, 'out') + handleSum(arrScore, 'in')}
+          Total = {API.handleHoleSum(arrScore, 'out') + API.handleHoleSum(arrScore, 'in')}
         </Box>
       </Typography>
       <div className={classes.controls}>

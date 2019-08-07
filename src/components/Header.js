@@ -15,6 +15,7 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputBase from '@material-ui/core/InputBase';
+import Avatar from '@material-ui/core/Avatar';
 
 import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
@@ -44,7 +45,7 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginRight: theme.spacing(1),
     display: 'none',
-    [theme.breakpoints.up(500)]: {
+    [theme.breakpoints.up(575)]: {
       display: 'block'
     },
   },
@@ -85,7 +86,7 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: '100%',
-    [theme.breakpoints.up(500)]: {
+    [theme.breakpoints.up(575)]: {
       width: '50%',
     },
     [theme.breakpoints.up('sm')]: {
@@ -101,7 +102,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    [theme.breakpoints.down(500)]: {
+    [theme.breakpoints.down(575)]: {
       width: theme.spacing(5),
     },
   },
@@ -240,11 +241,16 @@ function Header(props) {
             { ( sess && sess.status === 1 ) &&
               <React.Fragment>
                 <div className={classes.afterLoginIcon}>
-                  {/*<IconButton
+                  {/*
+                    <IconButton
                     color="inherit"
-                  >
-                    <NotificationsIcon />
-                  </IconButton>*/}
+                    >
+                      <NotificationsIcon />
+                    </IconButton>
+                    <IconButton onClick={menuOpenHandler}>
+                      <Avatar src="https://sites.google.com/site/nigthcorecollection/_/rsrc/1488517350554/phaph-anime-nigthcor-a-swy/maxresdefault%20%282%29.jpg"/>
+                    </IconButton>
+                  */}
                   <IconButton
                     color="inherit"
                     onClick={menuOpenHandler}

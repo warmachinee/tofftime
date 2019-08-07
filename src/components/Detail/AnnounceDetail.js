@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function NewsDetail(props){
+export default function AnnounceDetail(props){
   const classes = useStyles();
   const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
@@ -56,10 +56,10 @@ export default function NewsDetail(props){
   const currentWebURL = hd + API.webURL()
 
   async function handleFetch(){
-    const newsid = parseInt(props.computedMatch.params.detailparam)
+    const announceid = parseInt(props.computedMatch.params.detailparam)
     const res = await token? token : API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${res}&action=newsdetail&newsid=${newsid}`
+    `?_csrf=${res}&action=announcedetail&announceid=${announceid}`
     )
     setCSRFToken(d.token)
     setData(d.response)
@@ -82,13 +82,10 @@ export default function NewsDetail(props){
             <Typography variant="h2">
               {d.title}
             </Typography>
-            <Typography variant="h5">
-              {d.subtitle}
-            </Typography>
             { d.picture &&
               <img className={classes.img} src={isSupportWebp? currentWebURL + d.picture + '.webp' : currentWebURL + d.picture + '.jpg'} />
             }
-            <DetailComponent newsdetail={d.newsdetail}/>
+            <DetailComponent announcedetail={d.announcedetail}/>
           </div>
       )}
     </Paper>
@@ -96,11 +93,11 @@ export default function NewsDetail(props){
 }
 
 function DetailComponent(props){
-  const { newsdetail } = props
+  const { announcedetail } = props
 
   return(
     <div className="ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline ck-read-only">
-      {ReactHtmlParser(newsdetail)}
+      {ReactHtmlParser(announcedetail)}
     </div>
   );
 }

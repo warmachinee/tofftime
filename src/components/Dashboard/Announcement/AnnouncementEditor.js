@@ -1,5 +1,4 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import * as API from '../../../api'
 import { ThemeProvider } from '@material-ui/styles';
@@ -20,9 +19,6 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
 import red from '@material-ui/core/colors/red';
-
-import { LDCircular } from '../../loading/LDCircular'
-
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -131,9 +127,9 @@ const theme = createMuiTheme({
 
 export default function AnnouncementEditor(props) {
   const classes = useStyles();
-  const { setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData } = props
-  const [ title, setTitle ] = React.useState(edittingData? edittingData.title:'')
-  const [ detail, setDetail ] = React.useState(edittingData? edittingData.announcedetail : '')
+  const { token, setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData, isSupportWebp, setData } = props
+  const [ title, setTitle ] = React.useState( clickAction === 'edit'? ( edittingData ? edittingData.title : '' ) : '' )
+  const [ detail, setDetail ] = React.useState( clickAction === 'edit'? ( edittingData ? edittingData.announcedetail : '' ) : '' )
   const [ borderOnFocus, setBorderOnFocus ] = React.useState(`1px solid ${grey[400]}`)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -199,43 +195,50 @@ export default function AnnouncementEditor(props) {
       announceid: edittingData.announceid,
       display: true
     };
+
     if(selectedFile){
       formData.append('announceimage', selectedFile)
-      Object.assign(sendObj, {
+      const d = await API.fetchPostFile('announcemain',`?_csrf=${res.token}`, {
+        action: 'edit',
+        announceid: edittingData.announceid,
         photopath: true,
-      });
+        display: true,
+      }, formData)
+      if(d.response.status !== 'success'){
+        handleSnackBar({
+          state: true,
+          message: d.response.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
     }
 
     if(title){
       Object.assign(sendObj, { announcename:  title});
     }
 
-    const d = await API.fetchPostFile('announcemain',`?_csrf=${res.token}`, sendObj, formData)
-    console.log(d);
-    const res2 = await API.xhrGet('getcsrf')
-    handleSnackBar({
-      state: true,
-      message: d.status,
-      variant: d.status === 'success' ? d.status : 'error',
-      autoHideDuration: d.status === 'success'? 2000 : 5000
-    })
-    try {
-      const sendObj2 = {
-        action: 'updatedetail',
-        announceid: d.announceid
-      };
-      if(detail){
-        Object.assign(sendObj2, { announcedetail:  detail});
-      }
-      await API.xhrPost(
-        res2.token,
-        'announcemain', {
-          ...sendObj2
-      }, (csrf, d) =>{
-        console.log(d);
-        setCSRFToken(csrf)
+    if(detail){
+      Object.assign(sendObj, { announcedetail:  detail});
+    }
+
+    await API.xhrPost(
+      res.token,
+      'announcemain', {
+        ...sendObj
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-    }catch(err) { console.log(err.message) }
+      handleFetch()
+      if(d.status === 'success'){
+        handleClose()
+      }
+    })
   }
 
   async function handleCreate(){
@@ -245,43 +248,79 @@ export default function AnnouncementEditor(props) {
       action: 'create',
       display: true
     };
-    if(selectedFile){
-      formData.append('announceimage', selectedFile)
-      Object.assign(sendObj, {
-        photopath: true,
-      });
-    }
 
     if(title){
       Object.assign(sendObj, { announcename:  title});
     }
 
-    const d = await API.fetchPostFile('announcemain',`?_csrf=${res.token}`, sendObj, formData)
-    console.log(d);
-    const res2 = await API.xhrGet('getcsrf')
-    handleSnackBar({
-      state: true,
-      message: d.status,
-      variant: d.status === 'success' ? d.status : 'error',
-      autoHideDuration: d.status === 'success'? 2000 : 5000
-    })
-    try {
-      const sendObj2 = {
-        action: 'updatedetail',
-        announceid: d.announceid
-      };
-      if(detail){
-        Object.assign(sendObj2, { announcedetail:  detail});
-      }
-      await API.xhrPost(
-        res2.token,
-        'announcemain', {
-          ...sendObj2
-      }, (csrf, d) =>{
-        console.log(d);
-        setCSRFToken(csrf)
+    if(detail){
+      Object.assign(sendObj, { announcedetail:  detail});
+    }
+
+    await API.xhrPost(
+      res.token,
+      'announcemain', {
+        ...sendObj
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-    }catch(err) { console.log(err.message) }
+      if(d.status === 'success'){
+        handleCreatePicture(csrf, d)
+      }
+    })
+  }
+
+  async function handleCreatePicture(csrf, d){
+    const formData = new FormData()
+    const sendObj = {
+      action: 'edit',
+      announceid: d.announceid,
+      photopath: true
+    }
+    if(selectedFile){
+      formData.append('announceimage', selectedFile)
+      const response = await API.fetchPostFile('announcemain',`?_csrf=${csrf}`, sendObj, formData)
+      setCSRFToken( await API.xhrGet('getcsrf') )
+      handleSnackBar({
+        state: true,
+        message: response.status,
+        variant: response.status === 'success' ? response.status : 'error',
+        autoHideDuration: response.status === 'success'? 2000 : 5000
+      })
+      await handleFetch()
+      if(response.status === 'success'){
+        handleClose()
+      }
+    }else{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      await handleFetch()
+      if(d.status === 'success'){
+        handleClose()
+      }
+    }
+  }
+
+  async function handleFetch(){
+    const res = await token? token : API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : res.token,
+      'loadmainpage', {
+        action: 'announce',
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+    })
   }
 
   return (
@@ -298,7 +337,13 @@ export default function AnnouncementEditor(props) {
             onMouseLeave={()=>handleFileHover(false)}>
             <img ref={imgRef}
               style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
-              className={classes.matchImg} src={ selectedFile ? URL.createObjectURL(selectedFile) : matchPicture + '.webp' } />
+              className={classes.matchImg}
+              src={
+                selectedFile ?
+                URL.createObjectURL(selectedFile)
+                :
+                ( isSupportWebp? matchPicture + '.webp': matchPicture + '.jpg' )
+              }/>
             { imgRef.current &&
               <div
                 style={{

@@ -1,5 +1,4 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import * as API from '../../../api'
@@ -13,13 +12,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../../loading/LDCircular'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -69,6 +67,15 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
+const GreenTextButton = withStyles(theme => ({
+  root: {
+    color: teal[600],
+    '&:hover': {
+      backgroundColor: teal[100],
+    },
+  },
+}))(Button);
+
 const StyledTabs = withStyles({
   root: {
     //borderBottom: '1px solid #e8e8e8',
@@ -106,6 +113,16 @@ function PlayoffContainer(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar, data, setData, setMatchDetail } = props
 
+  function handleUpdatePlayoff(selected){
+    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+    const socket = socketIOClient( hd + API.webURL() )
+    socket.emit('client-message', {
+      action: "updateplayoff",
+      matchid: matchid,
+      userid: selected.userid,
+    })
+  }
+
   async function handleSetPlayoff(selected){
     const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
@@ -130,16 +147,6 @@ function PlayoffContainer(props){
         }catch(err) { console.log(err.message) }
       })
     }
-  }
-
-  function handleUpdatePlayoff(selected){
-    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
-    const socket = socketIOClient( hd + API.webURL() )
-    socket.emit('client-message', {
-      action: "updateplayoff",
-      matchid: matchid,
-      userid: selected.userid,
-    })
   }
 
   async function handleFetch(){
@@ -215,7 +222,7 @@ function PlayoffContainer(props){
           :
           <div style={{ width: 20, textAlign: 'center', fontSize: 20, fontWeight: 600 }}>-</div>
         }
-    </ListItemIcon>
+      </ListItemIcon>
     </ListItem>
   );
 }
@@ -291,6 +298,30 @@ export default function MBPlayoffBody(props){
     }
   }
 
+  async function handleClearPlayoff(d){
+    const res = await token? token : API.xhrGet('getcsrf')
+    if(matchid){
+      await API.xhrPost(
+        token? token : res.token,
+        'matchmember', {
+          action: 'clearplayoff',
+          matchid: matchid,
+          classno: d.classno
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: d.status === 'success' ? 'success' : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
+        })
+        try {
+          handleFetch()
+        }catch(err) { console.log(err.message) }
+      })
+    }
+  }
+
   React.useEffect(()=>{
     handleFetch()
   },[ ])
@@ -319,13 +350,6 @@ export default function MBPlayoffBody(props){
       </Paper>
       <div className={classes.list}>
         <List>
-          <ListItem className={classes.listItem}>
-            <ListItemText style={{ color: 'white' }} className={classes.listText} primary="First name" />
-            <ListItemText style={{ color: 'white' }} className={classes.listText} primary="Last name" />
-            <ListItemIcon className={classes.listStatus}>
-              <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>Playoff</div>
-            </ListItemIcon>
-          </ListItem>
           { matchDetail && matchDetail.class &&
             matchDetail.class.map( (c, i) =>{
               const filtered = c && data.filter( item =>{
@@ -335,6 +359,16 @@ export default function MBPlayoffBody(props){
                 <React.Fragment key={i}>
                   { value === i && filtered &&
                     <React.Fragment>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                        <GreenTextButton onClick={()=>handleClearPlayoff(c)}>Clear</GreenTextButton>
+                      </div>
+                      <ListItem className={classes.listItem}>
+                        <ListItemText style={{ color: 'white' }} className={classes.listText} primary="First name" />
+                        <ListItemText style={{ color: 'white' }} className={classes.listText} primary="Last name" />
+                        <ListItemIcon className={classes.listStatus}>
+                          <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>Playoff</div>
+                        </ListItemIcon>
+                      </ListItem>
                       { filtered.length > 1 &&
                         filtered.map( d =>
                           <PlayoffContainer key={d.userid} data={d} token={token} setCSRFToken={setCSRFToken}

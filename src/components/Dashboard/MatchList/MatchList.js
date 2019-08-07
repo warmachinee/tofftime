@@ -24,7 +24,7 @@ import red from '@material-ui/core/colors/red';
 import { LDCircular } from '../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -218,7 +218,7 @@ export default function Match(props){
           </ListItemIcon>
         </ListItem>
         { data &&
-          data.map( d =>
+          API.handleSortArray(data, 'date', 'title').map( d =>
             d &&
             <React.Fragment key={d.matchid}>
               <ListItem>

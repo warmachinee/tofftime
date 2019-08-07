@@ -50,15 +50,20 @@ export default function News(props) {
     handleFetch()
   },[ ])
 
-  return (
+  return data ?(
     <List className={classes.root}>
-      { data &&
-        API.handleSortArray(data).map( d=>
-          <div key={d.newsid}>
-            <NewsListItem data={d} key={d} isSupportWebp={isSupportWebp} time={API.handleGetPostTime(d.createdate)}/>
-            <Divider />
-          </div>
+      { API.handleSortArray(data, 'createdate', 'title').map( d=>
+        <div key={d.newsid}>
+          <NewsListItem data={d} key={d} isSupportWebp={isSupportWebp} time={API.handleGetPostTime(d.createdate)}/>
+          <Divider />
+        </div>
       )}
     </List>
-  );
+  ):
+  (
+    <div className={classes.root}
+      style={{ minHeight: 200, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+      <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 36, opacity: .7 }}>No news</div>
+    </div>
+  )
 }

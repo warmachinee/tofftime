@@ -44,38 +44,37 @@ async function xhrGet(url, params){
   }
   req.open('GET', sendUrl, false);
   req.send(null);
-  //var org = ( req.getResponseHeader('Origin') === 'https://www.thai-pga.com' )? urlHeader[0]:urlHeader[1]
-  return {
-    token: req.getResponseHeader('csrf-token'),
-    response: JSON.parse(req.responseText),
-  }
+  return new Promise(resolve => {
+    resolve({
+      token: req.getResponseHeader('csrf-token'),
+      response: JSON.parse(req.responseText),
+    });
+  });
 }
+
 async function xhrPost(token, url, obj, func){
   /*--------------------USEAGE--------------------
-  const [ csrfToken, setCSRFToken ] = React.useState(null)
-  const [ dataSomeThing, setSomeThing ] = React.useState(null)
-  .
-  .
-  .
   API.xhrPost( TOKEN, 'url', obj, function(csrf, d){
     setCSRFToken(csrf)  // set New token
     setSomeThing(d)     // set data from response
   })
-
   --------------------------------------------------*/
   var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
   var req = new XMLHttpRequest();
   var sendUrl = hd + urlLink[url]
-
   req.open("POST", sendUrl, true);
   req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
   req.setRequestHeader("Cache-Control", "no-cache")
-  req.onreadystatechange = function() {
+  req.onreadystatechange = () => {
     if (req.readyState !== 4) return;
     if (req.status >= 200 && req.status < 300) {
       func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
-    }else{
-      console.log('Invalid !!!');
+    }
+    if (req.status === 0){
+      setTimeout(()=>{
+        console.log(req);
+        //xhrPost(token, url, obj, func)
+      }, 5000)
     }
   }
   const returnedObj = Object.assign({
@@ -89,7 +88,9 @@ async function fetchUrl(url){
   else{
     const res = await fetch(urlLink[url])
     const json = await res.json()
-    return json;
+    return new Promise(resolve => {
+      resolve(json);
+    });
   }
 }
 
@@ -106,18 +107,33 @@ async function fetchPostFile(url, extendURL, obj, formData){
   }
   const res = await fetch(sendUrl, options)
   const json = await res.json()
-  return json
+  return new Promise(resolve => {
+    resolve(json);
+  });
 }
 
-function handleSortArray(data){
+function TestFunc(){
+  var obj = [
+    { a: 1, createdate: 1},
+    { a: 2, date3: 4},
+    { a: 3, date2: 18}
+  ]
+  for(var i = 0;i < obj.length;i++){
+    console.log(Object.getOwnPropertyNames(obj[i]).find( d =>{
+      return /date/.test(d)
+    }));
+  }
+}
+
+function handleSortArray(data, primary, secondary){
   if(data){
     var obj = data
     obj.sort( (a, b) =>{
-      const da = new Date(a.createdate)
-      const db = new Date(b.createdate)
+      const da = new Date(a[primary])
+      const db = new Date(b[primary])
       if (da < db) return 1;
       if (da > db) return -1;
-      return a.title.localeCompare(b.title);
+      if(secondary) return a[secondary].localeCompare(b[secondary]);
     })
     return obj
   }else{
@@ -178,6 +194,31 @@ function handleGetPostTime(time){
   }
 }
 
+function handleHoleSum(array, type){
+  let temp = 0
+  let start = (type === 'out')? 0 : 9
+  let end = (type === 'out')? 9 : 18
+  for(var i = start;i < end;i++){
+    temp += array[i]
+  }
+  return temp
+}
+
+function handleDateToString(d){
+  const day = (d.getDate() > 9) ? d.getDate():'0' + d.getDate()
+  const month = (d.getMonth() + 1 > 9) ? d.getMonth() + 1:'0' + ( d.getMonth() + 1 )
+  const dateStr = d.getFullYear() + '-' + month + '-' + day
+  return dateStr
+}
+
+function handleStringToDate(d){
+  if(d){
+    const dateSp = d.split('/')
+    const dateConvert = dateSp[1] + '/' + dateSp[0] + '/' + dateSp[2]
+    return dateConvert
+  }
+}
+
 export {
   webURL,
   fetchUrl,
@@ -186,4 +227,7 @@ export {
   xhrPost,
   handleSortArray,
   handleGetPostTime,
+  handleHoleSum,
+  handleDateToString,
+  handleStringToDate
 }

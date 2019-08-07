@@ -28,7 +28,7 @@ import grey from '@material-ui/core/colors/grey';
 import { LDCircular } from '../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -261,23 +261,7 @@ function MBOverviewBody(props){
   }
 
   function handleDateChange(d){
-    //console.log(handleConvertDate(d));
     setSelectedDate(d)
-  }
-
-  function handleConvertDate(d){
-    const day = (selectedDate.getDate() > 9) ? selectedDate.getDate():'0' + selectedDate.getDate()
-    const month = (selectedDate.getMonth() + 1 > 9) ? selectedDate.getMonth() + 1:'0' + ( selectedDate.getMonth() + 1 )
-    const dateStr = selectedDate.getFullYear() + '-' + month + '-' + day
-    return dateStr
-  }
-
-  function handleStringToDate(d){
-    if(d){
-      const dateSp = d.split('/')
-      const dateConvert = dateSp[1] + '/' + dateSp[0] + '/' + dateSp[2]
-      return dateConvert
-    }
   }
 
   function handlePicture(e){
@@ -306,21 +290,13 @@ function MBOverviewBody(props){
 
   async function handleEditMatch(){
     let res = await API.xhrGet('getcsrf')
-    const formData = new FormData()
     const sendObj = {
       action: 'edit',
       matchid: parseInt(matchid)
     };
 
-    if(selectedFile){
-      formData.append('matchimage', selectedFile)
-      Object.assign(sendObj, {
-        photopath: true,
-      });
-    }
-
     if(selectedDate){
-      Object.assign(sendObj, { matchdate: handleConvertDate(selectedDate) });
+      Object.assign(sendObj, { matchdate: API.handleDateToString(selectedDate) });
     }
 
     if(selectedField){
@@ -339,21 +315,48 @@ function MBOverviewBody(props){
       Object.assign(sendObj, { scorematch: parseInt(selectedMatchType) });
     }
 
-    const d = await API.fetchPostFile('matchsystem',`?_csrf=${res.token}`, sendObj, formData)
-    res = await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : res.token,
+      'matchsystem', sendObj,
+      (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      if(d.status === 'success'){
+        handleCreatePicture(csrf, d)
+      }
+    })
+  }
+
+  async function handleCreatePicture(csrf, d){
+    var status = d.status
+    const formData = new FormData()
+    if(selectedFile){
+      formData.append('matchimage', selectedFile)
+      const response = await API.fetchPostFile('matchsystem',`?_csrf=${csrf}`, {
+        action: 'edit',
+        matchid: parseInt(matchid),
+        photopath: true,
+      }, formData)
+      setCSRFToken( await API.xhrGet('getcsrf') )
+      status = response.status
+    }else{
+      setCSRFToken(csrf)
+    }
     handleSnackBar({
       state: true,
-      message: d.status,
-      variant: d.status === 'success' ? d.status : 'error',
-      autoHideDuration: d.status === 'success'? 2000 : 5000
+      message: status,
+      variant: status === 'success' ? status : 'error',
+      autoHideDuration: status === 'success'? 2000 : 5000
     })
-    setCSRFToken(res.token)
-    try {
-      handleFetch()
-      if(d.status === 'success'){
-        handleEditting(false)
-      }
-    }catch(err) { console.log(err.message) }
+    await handleFetch()
+    if(status === 'success'){
+      handleEditting(false)
+    }
   }
 
   async function handleFetch(){
@@ -422,7 +425,7 @@ function MBOverviewBody(props){
                   label="Date"
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
-                  value={ data?( selectedDate ? selectedDate : new Date(handleStringToDate(data.date)) ):new Date() }
+                  value={ data?( selectedDate ? selectedDate : new Date(API.handleStringToDate(data.date)) ):new Date() }
                   onChange={date => handleDateChange(date)}
                 />
               </MuiPickersUtilsProvider>

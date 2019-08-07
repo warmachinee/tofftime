@@ -1,7 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
-import * as API from '../../api'
+import * as API from './../../api'
 
 import Modal from '@material-ui/core/Modal';
 import Portal from '@material-ui/core/Portal';
@@ -19,6 +19,11 @@ const SignInComponent = Loadable({
 
 const SignUpComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignUp" */'./SignUpComponent'),
+  loading: () => <LDCircular />
+});
+
+const TemplateDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -178,10 +183,6 @@ export default function Dialog(props) {
     })
   }
 
-  function setTest(){
-
-  }
-
   return (
     <div>
       <Portal container={container.current}>
@@ -200,7 +201,6 @@ export default function Dialog(props) {
             </IconButton>
             { pageState === 'signin' &&
               <SignInComponent
-                setTest={setTest}
                 username={username}
                 password={password}
                 setUsername={setUsername}

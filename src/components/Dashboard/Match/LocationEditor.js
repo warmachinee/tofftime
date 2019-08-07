@@ -252,31 +252,25 @@ export default function LocationEditor(props){
     let res = await API.xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
-      //action: 'createcustom',
+      action: 'createcustom',
     };
 
-    formData.append('action', 'createcustom')
     if(selectedFile){
       formData.append('fieldimage', selectedFile)
-      formData.append('photopath', true)
-      /*
       Object.assign(sendObj, {
         photopath: true,
       });
-      */
     }
 
     if(location){
-      formData.append('fieldname', location)
-      //Object.assign(sendObj, { fieldname: location });
+      Object.assign(sendObj, { fieldname: location });
     }
 
     if(holeScore.length){
       const checkScoreArr = holeScore.every( d =>{ return !( isNaN(d) || d === '' ) })
       if(checkScoreArr){
         setTextScoreErr(false)
-        formData.append('fieldscore', holeScore)
-        //Object.assign(sendObj, { fieldscore: holeScore, });
+        Object.assign(sendObj, { fieldscore: holeScore, });
       }else{
         setTextScoreErr(true)
       }
@@ -286,8 +280,7 @@ export default function LocationEditor(props){
       const checkHCPArr = hcpScore.every( d =>{ return !( isNaN(d) || d === '' ) })
       if(checkHCPArr){
         setTextHCPErr(false)
-        formData.append('hcfieldscore', hcpScore)
-        //Object.assign(sendObj, { hcfieldscore: hcpScore, });
+        Object.assign(sendObj, { hcfieldscore: hcpScore, });
       }else{
         setTextHCPErr(true)
       }

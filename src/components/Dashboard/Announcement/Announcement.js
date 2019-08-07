@@ -1,10 +1,10 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
 import * as API from '../../../api'
 
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -14,12 +14,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
 
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ImageIcon from '@material-ui/icons/Image';
+import CreateIcon from '@material-ui/icons/Create';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
@@ -28,7 +29,7 @@ import red from '@material-ui/core/colors/red';
 import { LDCircular } from '../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -74,6 +75,24 @@ const useStyles = makeStyles(theme => ({
   listDetail: {
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
+  greenIcon: {
+    color: teal[600]
+  },
+  confirmTitle: {
+    textAlign: 'center', color: teal[900],
+    fontSize: 20,
+    [theme.breakpoints.up(500)]: {
+      fontSize: 24,
+    },
+  },
+  confirmSubtitle: {
+    fontFamily: 'monospace',
+    color: grey[600],
+    fontWeight: 600,
+  },
+  confirmButton: {
+    padding: theme.spacing(1, 4.5)
+  },
 
 }))
 
@@ -108,6 +127,9 @@ export default function Announcement(props){
   const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
+  const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
+  const [ selectedDeleteItem, handleSelectedDeleteItem ] = React.useState(null)
+  const [ editting, setEditting ] = React.useState(false)
   const [ edittingData, setEdittingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
   const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
@@ -118,7 +140,7 @@ export default function Announcement(props){
     setOpen(!open)
   }
 
-  function handleSelectAnnouncement(d){
+  function handleSelectAnnounce(d){
     handleOpen('edit')
     setEdittingData(d)
   }
@@ -129,6 +151,44 @@ export default function Announcement(props){
     setEdittingData(null)
   }
 
+  function handleConfirmCancel(){
+    handleSelectedDeleteItem(null)
+    handleConfirmDeleteState(!confirmDeleteState)
+  }
+
+  function handleDeleteItem(d){
+    handleConfirmDeleteState(!confirmDeleteState)
+    handleSelectedDeleteItem(d)
+  }
+
+  function handleConfirmDelete(){
+    handleFetchDelete(selectedDeleteItem)
+  }
+
+  async function handleFetchDelete(data){
+    const res = await token? token : API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : res.token,
+      'announcemain', {
+        action: 'delete',
+        announceid: data.announceid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      try {
+        handleFetch()
+        if(d.status === 'success'){
+          handleConfirmDeleteState(false)
+        }
+      }catch(err) { console.log(err.message) }
+    })
+  }
+
   async function handleFetch(){
     const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
@@ -136,7 +196,6 @@ export default function Announcement(props){
       'loadmainpage', {
         action: 'announce',
     }, (csrf, d) =>{
-      console.log(d);
       setCSRFToken(csrf)
       setData(d)
     })
@@ -151,55 +210,94 @@ export default function Announcement(props){
       <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Announcement
+          Announce
         </Box>
       </Typography>
-      <RedButton style={{ marginTop: 'auto', padding: '8px 16px 8px 0' }} variant="contained" color="secondary"
-        onClick={()=>handleOpen('create')}>
-        <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
-        Create
-      </RedButton>
+      <div style={{ display: 'flex' }}>
+        <RedButton style={{ padding: '8px 16px 8px 0' }} variant="contained" color="secondary"
+          onClick={()=>handleOpen('create')}>
+          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+          Create
+        </RedButton>
+        <div style={{ flex: 1 }} />
+        <GreenTextButton style={{ padding: '8px 24px' }}
+          variant={ editting? 'text' : 'outlined' }
+          onClick={()=>setEditting(!editting)}>
+          { editting? 'Done' : 'Remove' }
+        </GreenTextButton>
+      </div>
       <List>
         <ListItem className={classes.tableHead}>
           <ListItemAvatar style={{ marginRight: 16 }}>
             <div style={{ margin: 10, width: 60, height: 24 }}></div>
           </ListItemAvatar>
-          <StyledText primary="Announcement" />
+          <StyledText primary="Announce" />
         </ListItem>
       </List>
       <List className={classes.listRoot}>
-        { data &&
-          data.map( d =>
-            d &&
+        { data && !data.status &&
+          API.handleSortArray(data, 'createdate', 'title').map( d =>{
+            return d &&
             <React.Fragment key={d.announceid}>
-              <ListItem>
+              <ListItem button>
                 <ListItemAvatar style={{ marginRight: 16 }}>
-                  { d.picture?
-                    <Avatar alt={d.title}
-                      src={
-                        isSupportWebp?
-                        currentWebURL + d.picture + '.webp'
-                        :
-                        currentWebURL + d.picture + '.jpg'
-                      }
-                      className={classes.bigAvatar} />
-                    :
-                    <ImageIcon className={classes.bigAvatar}/>
+                  {
+                    d.picture?
+                      <Avatar
+                        alt={d.title}
+                        src={
+                          isSupportWebp?
+                          currentWebURL + d.picture + '.webp#' + new Date().toISOString()
+                          :
+                          currentWebURL + d.picture + '.jpg#' + new Date().toISOString()
+                        }
+                        className={classes.bigAvatar} />
+                      :
+                      <ImageIcon className={classes.bigAvatar}/>
                   }
                 </ListItemAvatar>
-                <ListItemText className={classes.listDetail} primary={d.title}/>
+                <ListItemText className={classes.listDetail} primary={d.title} secondary={d.subtitle}/>
                 <ListItemIcon>
-                  <GreenTextButton onClick={()=>handleSelectAnnouncement(d)}>Edit</GreenTextButton>
+                  { editting?
+                    <IconButton onClick={()=>handleDeleteItem(d)}>
+                      <DeleteIcon classes={{ root: classes.greenIcon }}/>
+                    </IconButton>
+                    :
+                    <IconButton onClick={()=>handleSelectAnnounce(d)}>
+                      <CreateIcon />
+                    </IconButton>
+                  }
                 </ListItemIcon>
               </ListItem>
               <Divider />
-              { /*ReactHtmlParser(d.announcedetail)*/ }
             </React.Fragment>
-        )}
+        })}
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
-        <AnnouncementEditor clickAction={clickAction} handleClose={handleClose}
-          edittingData={edittingData} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+        <AnnouncementEditor clickAction={clickAction} handleClose={handleClose} isSupportWebp={isSupportWebp}
+          setData={setData}
+          edittingData={edittingData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      </TemplateDialog>
+      <TemplateDialog
+        maxWidth={400}
+        open={confirmDeleteState} handleClose={handleConfirmCancel}>
+        <Typography component="div">
+          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
+            Are you sure you want to delete?
+          </Box>
+          <Box className={classes.confirmSubtitle} m={3}>
+            ( Class : { selectedDeleteItem && selectedDeleteItem.title } )
+          </Box>
+        </Typography>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
+            Cancel
+          </GreenTextButton>
+          <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
+            Delete
+          </RedButton>
+        </div>
       </TemplateDialog>
     </div>
   );

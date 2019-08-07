@@ -1,5 +1,4 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import Fuse from 'fuse.js';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';

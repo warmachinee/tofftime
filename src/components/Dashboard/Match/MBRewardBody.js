@@ -1,5 +1,4 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
@@ -21,8 +20,6 @@ import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 import teal from '@material-ui/core/colors/teal';
 import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../../loading/LDCircular'
 
 const useStyles = makeStyles(theme => ({
   root: {

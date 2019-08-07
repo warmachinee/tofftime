@@ -4,6 +4,7 @@ import MaskedInput from 'react-text-mask';
 import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
+import * as API from './../../api'
 
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -143,19 +144,9 @@ export default function SignUpComponent(props){
   function handlePhoneNumber(num){
     setPhoneNumber( num.substring(1,4) + num.substring(6,9) + num.substring(12,16) )
   }
-  function handleDateChange(d){
-    //console.log(handleConvertDate(d));
-    setSelectedDate(d)
-  }
-  function handleConvertDate(d){
-    const day = (selectedDate.getDate() > 9) ? selectedDate.getDate():'0' + selectedDate.getDate()
-    const month = (selectedDate.getMonth() + 1 > 9) ? selectedDate.getMonth() + 1:'0' + ( selectedDate.getMonth() + 1 )
-    const dateStr = selectedDate.getFullYear() + '-' + month + '-' + day
-    //const dateSp = dateStr.split('/')
-    //const dateConvert = dateSp[1] + '/' + dateSp[0] + '/' + dateSp[2]
 
-    //setSelectedDate(new Date(dateConvert))
-    return dateStr
+  function handleDateChange(d){
+    setSelectedDate(d)
   }
 
   function handleKeyPress(e){
@@ -167,7 +158,7 @@ export default function SignUpComponent(props){
         fullname: fullname,
         lastname: lastname,
         gender: gender,
-        birthdate: handleConvertDate(selectedDate)
+        birthdate: API.handleDateToString(selectedDate)
       })
     }
   }
@@ -283,7 +274,7 @@ export default function SignUpComponent(props){
             fullname: fullname,
             lastname: lastname,
             gender: gender,
-            birthdate: handleConvertDate(selectedDate)
+            birthdate: API.handleDateToString(selectedDate)
           })}>
           Confirm
         </SignUpButton>

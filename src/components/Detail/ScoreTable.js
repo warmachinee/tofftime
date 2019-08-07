@@ -1,4 +1,5 @@
 import React from 'react';
+import Loadable from 'react-loadable';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 
 import Table from '@material-ui/core/Table';
@@ -16,6 +17,13 @@ import Divider from '@material-ui/core/Divider';
 
 import teal from '@material-ui/core/colors/teal';
 import blueGrey from '@material-ui/core/colors/blueGrey';
+import amber from '@material-ui/core/colors/amber';
+import green from '@material-ui/core/colors/green';
+
+const ScoreTableChip = Loadable({
+  loader: () => import(/* webpackChunkName: "ScoreTableChip" */'./ScoreTableChip'),
+  loading: () => null
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -59,7 +67,8 @@ const useStyles = makeStyles(theme => ({
   tableCell: {
     textAlign: 'center',
     padding: '0 0 0 14px',
-  }
+  },
+
 }));
 
 const StyledTableRank = withStyles(theme => ({
@@ -71,6 +80,7 @@ const StyledTableRank = withStyles(theme => ({
   },
   body: {
     fontSize: 14,
+    border: 'none'
   },
 }))(TableCell);
 
@@ -84,6 +94,7 @@ const StyledTableHead = withStyles(theme => ({
   },
   body: {
     fontSize: 14,
+    border: 'none'
   },
 }))(TableCell);
 
@@ -96,6 +107,7 @@ const StyledTableCell = withStyles(theme => ({
   },
   body: {
     fontSize: 14,
+    border: 'none'
   },
 }))(TableCell);
 
@@ -109,6 +121,7 @@ function ScoreRow(props){
     width: '100%',
     maxWidth: (wd >= 500)? 64:48
   }
+
   return(
     <React.Fragment>
       <ListItem button className={classes.listItem}
@@ -137,71 +150,90 @@ function ScoreRow(props){
       </ListItem>
       {!expanded && <Divider />}
       <Collapse in={expanded} unmountOnExit>
-        <div style={{ overflow: 'auto', padding: '16px 0 36px 0', overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch', }}>
-          <ListItem style={{ padding: 0 }}>
-            <div style={{ display: 'flex', margin: 'auto' }}>
-              <div style={{ backgroundColor: 'black', color: 'white',
-                padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '4px 0 0 0', fontWeight: 800 }}>HOLE</div>
-              {[0,1,2,3,4,5,6,7,8].map( d=>
-                <div key={d} style={{ backgroundColor: 'black', color: 'white',
-                  padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
-              )}
-              <div style={{ backgroundColor: 'black', color: 'white',
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>OUT</div>
-              {[9,10,11,12,13,14,15,16,17].map( d=>
-                <div key={d} style={{ backgroundColor: 'black', color: 'white',
-                  padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
-              )}
-              <div style={{ backgroundColor: 'black', color: 'white',
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>IN</div>
-              <div style={{ backgroundColor: 'black', color: 'white',
-                padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 4px 0 0', fontWeight: 800 }}>TOT</div>
-            </div>
-          </ListItem>
-          <ListItem style={{ padding: 0 }}>
-            <div style={{ display: 'flex', margin: 'auto' }}>
-              <div style={{ backgroundColor: teal[800], color: teal[50],
-                padding: '8px 4px', width: 64, textAlign: 'right', fontWeight: 800 }}>PAR</div>
-              { data && data.fieldscore &&
-                data.fieldscore.slice(0,9).map( (d,i)=>
-                <div key={i} style={{ backgroundColor: teal[800], color: teal[100],
-                  padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
-              )}
-              <div style={{ backgroundColor: teal[800], color: teal[50],
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.out}</div>
-              { data && data.fieldscore &&
-                data.fieldscore.slice(9,18).map( (d,i)=>
-                <div key={i} style={{ backgroundColor: teal[800], color: teal[100],
-                  padding: '8px 4px', width: 32, textAlign: 'center'}}>{d}</div>
-              )}
-              <div style={{ backgroundColor: teal[800], color: teal[50],
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.in}</div>
-              <div style={{ backgroundColor: teal[800], color: teal[50],
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.gross}</div>
-            </div>
-          </ListItem>
-          <ListItem style={{ padding: 0 }}>
-            <div style={{ display: 'flex', margin: 'auto' }}>
-              <div style={{ backgroundColor: blueGrey[100],
-                padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '0 0 0 4px', fontWeight: 800 }}>SCORE</div>
-              { row && row.score &&
-                row.score.slice(0,9).map( (d,i)=>
-                <div key={i} style={{ backgroundColor: blueGrey[100],
-                  padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
-              )}
-              <div style={{ backgroundColor: blueGrey[100],
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.out}
+        <div style={{
+            overflow: 'auto', padding: '16px 0 16px 0',
+            overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch'
+          }}>
+          { data && data.fieldscore && row && row.score &&
+            <React.Fragment>
+              <ListItem style={{ padding: 0 }}>
+                <div style={{ display: 'flex', margin: 'auto' }}>
+                  <div style={{ backgroundColor: 'black', color: 'white',
+                    padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '4px 0 0 0', fontWeight: 800 }}>HOLE</div>
+                  {[0,1,2,3,4,5,6,7,8].map( d=>
+                    <div key={d} style={{ backgroundColor: 'black', color: 'white',
+                      padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
+                  )}
+                  <div style={{ backgroundColor: 'black', color: 'white',
+                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>OUT</div>
+                  {[9,10,11,12,13,14,15,16,17].map( d=>
+                    <div key={d} style={{ backgroundColor: 'black', color: 'white',
+                      padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
+                  )}
+                  <div style={{ backgroundColor: 'black', color: 'white',
+                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>IN</div>
+                  <div style={{ backgroundColor: 'black', color: 'white',
+                    padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 4px 0 0', fontWeight: 800 }}>TOT</div>
+                </div>
+              </ListItem>
+              <ListItem style={{ padding: 0 }}>
+                <div style={{ display: 'flex', margin: 'auto' }}>
+                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                    padding: '8px 4px', width: 64, textAlign: 'right', fontWeight: 800 }}>PAR</div>
+                  { data.fieldscore.slice(0,9).map( (d,i)=>
+                    <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
+                      padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
+                  )}
+                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.out}</div>
+                  { data.fieldscore.slice(9,18).map( (d,i)=>
+                    <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
+                      padding: '8px 4px', width: 32, textAlign: 'center'}}>{d}</div>
+                  )}
+                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.in}</div>
+                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.gross}</div>
+                </div>
+              </ListItem>
+              <ListItem style={{ padding: 0 }}>
+                <div style={{ display: 'flex', margin: 'auto' }}>
+                  <div style={{ backgroundColor: blueGrey[50],
+                    padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '0 0 0 4px', fontWeight: 800 }}>SCORE</div>
+                  { row.score.slice(0,9).map( (d,i)=>
+                    <div key={i}
+                      style={{
+                        backgroundColor:
+                        data.fieldscore[i] - d < 0? amber[300]:
+                        data.fieldscore[i] - d > 0? green[300]:blueGrey[50],
+                        padding: '8px 4px', width: 32, textAlign: 'center'
+                    }}>{d}</div>
+                  )}
+                  <div style={{ backgroundColor: blueGrey[50],
+                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.out}
+                  </div>
+                  { row.score.slice(9,18).map( (d,i)=>
+                    <div key={i}
+                      style={{
+                        backgroundColor:
+                        data.fieldscore[i] - d < 0? amber[300]:
+                        data.fieldscore[i] - d > 0? green[300]:blueGrey[50],
+                        padding: '8px 4px', width: 32, textAlign: 'center'
+                    }}>{d}</div>
+                  )}
+                  <div style={{ backgroundColor: blueGrey[50],
+                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.in}</div>
+                  <div style={{ backgroundColor: blueGrey[50],
+                    padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 0 4px 0', fontWeight: 800 }}>{row.out + row.in}</div>
+                </div>
+              </ListItem>
+              <div style={{ display: 'flex' }}>
+                <ScoreTableChip dotColor={teal[300]} label="Under"/>
+                <ScoreTableChip dotColor={blueGrey[50]} label="Par"/>
+                <ScoreTableChip dotColor={amber[300]} label="Over"/>
               </div>
-              { row && row.score && row.score.slice(9,18).map( (d,i)=>
-                <div key={i} style={{ backgroundColor: blueGrey[100],
-                  padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
-              )}
-              <div style={{ backgroundColor: blueGrey[100],
-                padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.in}</div>
-              <div style={{ backgroundColor: blueGrey[100],
-                padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 0 4px 0', fontWeight: 800 }}>{row.out + row.in}</div>
-            </div>
-          </ListItem>
+            </React.Fragment>
+          }
         </div>
 
         <Divider />
@@ -247,7 +279,7 @@ export default function ScoreTable(props) {
       setOp(false)
     }
   }
-  
+
   React.useEffect(()=>{
     let tempIn = 0
     let tempOut = 0

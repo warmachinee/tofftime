@@ -13,10 +13,10 @@ import grey from '@material-ui/core/colors/grey';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-import ic_facebook from '../img/facebook.png'
-import ic_facebook_16 from '../img/facebook16px.png'
-import ic_google from '../img/google.png'
-import ic_google_16 from '../img/google16px.png'
+import ic_facebook from './../img/facebook.png'
+import ic_facebook_16 from './../img/facebook16px.png'
+import ic_google from './../img/google.png'
+import ic_google_16 from './../img/google16px.png'
 
 const useStyles = makeStyles(theme => ({
   margin: {
@@ -170,12 +170,12 @@ export default function SignInComponent(props){
         <Facebook variant="contained" color="primary" className={classes.button}
           onClick={()=>handleSignInWith('facebooklogin')}>
           <img src={ (window.innerWidth >= 500)?ic_facebook:ic_facebook_16} className={classes.loginWith}/>
-          Log in with Facebook
+          Sign in with Facebook
         </Facebook>
         <Google variant="contained" color="primary" className={classes.button}
           onClick={()=>handleSignInWith('googlelogin')}>
           <img src={ (window.innerWidth >= 500)?ic_google:ic_google_16} className={classes.loginWith}/>
-          Log in with Google
+          Sign in with Google
         </Google>
         <div style={{ display: 'flex' }}>
           <Button color="primary" className={classes.textButton} onClick={()=>setPageState('signup')}>

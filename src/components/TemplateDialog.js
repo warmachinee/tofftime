@@ -1,7 +1,5 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
-import * as API from '../../api'
 
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';

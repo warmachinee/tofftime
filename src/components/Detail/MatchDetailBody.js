@@ -176,18 +176,11 @@ function MatchDetailBody(props) {
             </Box>
           </Typography>
           <div>
-            {matchPicture?
-              (isSupportWebp?
-                <img ref={imageEl} src={matchPicture + '.webp'} align="left" className={classes.image} />
-                :
-                <img ref={imageEl} src={matchPicture + '.jpg'} align="left" className={classes.image} />
-              )
-            :
-              <div align="left" className={classes.imageLD}>
-                <div style={{ flex: 1 }} />
-                <center style={{ fontSize: 24, fontWeight: 500 }}>No Image</center>
-                <div style={{ flex: 1 }} />
-              </div>
+            { matchPicture &&
+              isSupportWebp?
+              <img ref={imageEl} src={matchPicture + '.webp'} align="left" className={classes.image} />
+              :
+              <img ref={imageEl} src={matchPicture + '.jpg'} align="left" className={classes.image} />
             }
           </div>
           {/*

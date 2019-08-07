@@ -20,6 +20,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 
 import teal from '@material-ui/core/colors/teal';
+import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles((theme) =>({
   card: {
@@ -36,8 +37,7 @@ const useStyles = makeStyles((theme) =>({
   },
   cardMedia: {
     width: '100%',
-    maxHeight: 140,
-    minHeight: 140,
+    height: 180,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
@@ -62,8 +62,7 @@ const useStyles = makeStyles((theme) =>({
   },
   cardMobileMedia: {
     width: '100%',
-    maxHeight: 140,
-    minHeight: 140,
+    height: 180,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
@@ -93,11 +92,14 @@ export default function MatchCard(props) {
   const { data, isSupportWebp } = props
   const [ expanded, setExpanded ] = React.useState(false)
   const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
-  const matchPicture = data.picture?(hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture):null
-
+  const [ matchPicture, setMatchPicture ] = React.useState(
+    data? ( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture ) : null
+  )
+  
   function expandHandler(){
     setExpanded(!expanded)
   }
+
   const renderCard = (
     <Card className={classes.card}>
       <div style={{ padding: 8, paddingBottom: 0, paddingLeft: 16, height: 180 }}>
@@ -118,20 +120,36 @@ export default function MatchCard(props) {
       </div>
       { matchPicture ?
         (isSupportWebp?
-          <img className={classes.cardMedia} src={matchPicture + '.webp'} />
-          :
-          <img className={classes.cardMedia} src={matchPicture + '.jpg'} />
+          /*<img className={classes.cardMedia} src={matchPicture + '.webp'} onError={console.log('error')}/>*/
+          <CardMedia
+            className={classes.cardMedia}
+            component="img"
+            alt={data.title}
+            src={matchPicture + '.webp'}
+            title={data.title}
+            onError={()=>setMatchPicture(null)}
+          />
+          :/*
+          <img className={classes.cardMedia} src={matchPicture + '.jpg'} onError={console.log('error')}/>
+          */
+          <CardMedia
+            className={classes.cardMedia}
+            component="img"
+            alt={data.title}
+            src={matchPicture + '.jpg'}
+            title={data.title}
+            onError={()=>setMatchPicture(null)}
+          />
         )
-        /*
-        <CardMedia
-          component="img"
-          alt="Match Picture"
-          src={matchPicture}
-          title="Match Picture"
-        />
-        */
         :
-        <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
+        <div
+          style={{
+            height: 180, width: '100%',
+            backgroundColor: grey[300],
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-around'
+          }}>
+          <div style={{ textAlign: 'center', fontWeight: 600, fontFamily: 'Monospace', fontSize: 16 }}>Image error</div>
+        </div>
       }
       <CardContent>
         <Typography gutterBottom component="div" style={{ display: 'flex' }}>
@@ -161,21 +179,33 @@ export default function MatchCard(props) {
     <Card className={classes.cardMobile}>
       { matchPicture ?
         (isSupportWebp?
-          <img className={classes.cardMobileMedia} src={matchPicture + '.webp'} />
+          <CardMedia
+            className={classes.cardMedia}
+            component="img"
+            alt={data.title}
+            src={matchPicture + '.webp'}
+            title={data.title}
+            onError={()=>setMatchPicture(null)}
+          />
           :
-          <img className={classes.cardMobileMedia} src={matchPicture + '.jpg'} />
+          <CardMedia
+            className={classes.cardMedia}
+            component="img"
+            alt={data.title}
+            src={matchPicture + '.jpg'}
+            title={data.title}
+            onError={()=>setMatchPicture(null)}
+          />
         )
-        /*
-        <CardMedia
-          className={classes.cardMobileMedia}
-          component="img"
-          alt={data.title}
-          src={matchPicture}
-          title={data.title}
-        />
-        */
         :
-        <div style={{ height: 140, width: '100%', backgroundColor: 'grey' }}></div>
+        <div
+          style={{
+            height: 180, width: '100%',
+            backgroundColor: grey[300],
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-around'
+          }}>
+          <div style={{ textAlign: 'center', fontWeight: 600, fontFamily: 'Monospace', fontSize: 16 }}>Image error</div>
+        </div>
       }
         <CardContent className={classes.cardMobileContent}>
           <Typography

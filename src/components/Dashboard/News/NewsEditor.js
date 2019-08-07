@@ -1,5 +1,4 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import * as API from '../../../api'
 import { ThemeProvider } from '@material-ui/styles';
@@ -129,9 +128,9 @@ const theme = createMuiTheme({
 export default function NewsEditor(props) {
   const classes = useStyles();
   const { token, setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData, isSupportWebp, setData } = props
-  const [ title, setTitle ] = React.useState('')
-  const [ subtitle, setSubtitle ] = React.useState('')
-  const [ detail, setDetail ] = React.useState('')
+  const [ title, setTitle ] = React.useState( clickAction === 'edit'? ( edittingData ? edittingData.title : '' ) : '' )
+  const [ subtitle, setSubtitle ] = React.useState( clickAction === 'edit'? ( edittingData ? edittingData.subtitle : '' ) : '' )
+  const [ detail, setDetail ] = React.useState( clickAction === 'edit'? ( edittingData ? edittingData.newsdetail : '' ) : '' )
   const [ borderOnFocus, setBorderOnFocus ] = React.useState(`1px solid ${grey[400]}`)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -272,6 +271,7 @@ export default function NewsEditor(props) {
       'newsmain', {
         ...sendObj
     }, (csrf, d) =>{
+      setCSRFToken(csrf)
       handleSnackBar({
         state: true,
         message: d.status,
@@ -397,12 +397,7 @@ export default function NewsEditor(props) {
             className={classes.textField}
             label="Title"
             variant="outlined"
-            value={
-              clickAction === 'edit'?
-              ( edittingData && ( title ? title : edittingData.title ) || '' )
-              :
-              title
-            }
+            value={title}
             onChange={e => setTitle(e.target.value)}
             onKeyPress={e =>handleKeyPress(e.key)}
             onFocus={e => e.target.select()}/>
@@ -410,24 +405,14 @@ export default function NewsEditor(props) {
             className={classes.textField}
             label="Subtitle"
             variant="outlined"
-            value={
-              clickAction === 'edit'?
-              ( edittingData && ( subtitle ? subtitle : edittingData.subtitle ) || ''  )
-              :
-              subtitle
-            }
+            value={subtitle}
             onChange={e => setSubtitle(e.target.value)}
             onKeyPress={e =>handleKeyPress(e.key)}
             onFocus={e => e.target.select()}/>
           <div>Fill content here</div>
           <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2 }}>
             <CKEditor
-              data={
-                clickAction === 'edit'?
-                ( edittingData && ( detail ? detail : edittingData.newsdetail ) || ''  )
-                :
-                detail
-              }
+              data={detail}
               editor={ BalloonEditor }
               onChange={ ( event, editor ) => {
                 const data = editor.getData();
@@ -436,7 +421,6 @@ export default function NewsEditor(props) {
               }}
               onFocus={handleCKEditorOnFocus}
               onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
-              on
             />
           </div>
           <div style={{ display: 'flex', marginTop: 24 }}>
