@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import teal from '@material-ui/core/colors/teal';
+import { primary } from './../../api/palette'
 
 const styles = {
   root: {
@@ -19,7 +19,7 @@ const styles = {
     margin: 3,
   },
   active: {
-    backgroundColor: teal[600],
+    backgroundColor: primary[600],
   },
 };
 

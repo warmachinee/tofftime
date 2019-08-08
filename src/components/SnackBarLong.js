@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { green } from './../api/palette'
 
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
@@ -7,9 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 
 import CloseIcon from '@material-ui/icons/Close';
-
-import teal from '@material-ui/core/colors/teal';
-import green from '@material-ui/core/colors/green';
 
 const useStyles = makeStyles(theme => ({
   close: {

@@ -10,7 +10,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { LDCircular } from '../loading/LDCircular'
+import { LDCircular } from './../loading/LDCircular'
 
 const SignInComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignIn" */'./SignInComponent'),
@@ -19,6 +19,11 @@ const SignInComponent = Loadable({
 
 const SignUpComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignUp" */'./SignUpComponent'),
+  loading: () => <LDCircular />
+});
+
+const ForgotPassword = Loadable({
+  loader: () => import(/* webpackChunkName: "ForgotPassword" */'./ForgotPassword'),
   loading: () => <LDCircular />
 });
 
@@ -80,16 +85,18 @@ const useStyles = makeStyles(theme => ({
   closeIcon: {
     fontSize: '2rem',
   },
+
 }));
 
 export default function Dialog(props) {
   const classes = useStyles();
+  const { open, token, handleClose, handleSess, setCSRFToken, handleSnackBar } = props
   const [ modalStyle ] = React.useState(getModalStyle);
   const [ pageState, setPageState ] = React.useState('signin')
+  const [ forgotState, setForgotState ] = React.useState(false)
   const [ username, setUsername ] = React.useState('')
   const [ password, setPassword ] = React.useState('')
   const [ actionStatus, handleActionStatus ] = React.useState(null)
-  const { open, handleClose, handleSess, setCSRFToken, handleSnackBar } = props
   const container = React.useRef(null);
 
   async function handleGetUserinfo(){
@@ -128,26 +135,17 @@ export default function Dialog(props) {
     })
   }
 
-  async function handleSignInWith(d){
-    const res = await API.xhrGet(d)
-    console.log(res);
-    setCSRFToken(res.token)
-    /*
-    setCSRFToken(token)
-    await API.xhrPost(
-      props.token,
-      d, {}, (csrf, d) =>{
-      console.log(d);
-      props.setCSRFToken(csrf)
-      props.handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: d.status === 'success'?'success':'error'
-      })
-      if(d.status === 'success'){
-        handleClose()
-      }
-    })*/
+  async function handleSignInWith(action){
+    var url =''
+    if(action === 'facebook'){ url = 'facebooklogin' }
+    if(action === 'google'){ url = 'googlelogin' }
+    const d = await API.xhrGet( url,
+    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}`
+    )
+    console.log(d);
+    setCSRFToken(d.token)
+
+    //setData(d.response)
   }
 
   async function handleSignUp(d){
@@ -208,7 +206,8 @@ export default function Dialog(props) {
                 actionStatus={actionStatus}
                 handleSignIn={handleSignIn}
                 handleSignInWith={handleSignInWith}
-                setPageState={setPageState}/>
+                setPageState={setPageState}
+                setForgotState={setForgotState}/>
             }
             { pageState === 'signup' &&
               <SignUpComponent
@@ -219,6 +218,9 @@ export default function Dialog(props) {
         </Modal>
       </Portal>
       <div ref={container} />
+      <TemplateDialog open={forgotState} maxWidth={500} handleClose={()=>setForgotState(!forgotState)}>
+        <ForgotPassword token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      </TemplateDialog>
     </div>
   );
 }

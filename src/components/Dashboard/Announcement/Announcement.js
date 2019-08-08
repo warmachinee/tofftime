@@ -2,7 +2,8 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey, red } from './../../../api/palette'
 
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
@@ -22,11 +23,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-import red from '@material-ui/core/colors/red';
-
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
@@ -39,7 +36,7 @@ const AnnouncementEditor = Loadable({
 });
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'../../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -53,7 +50,7 @@ const useStyles = makeStyles(theme => ({
     height: 60,
   },
   title: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
@@ -76,10 +73,10 @@ const useStyles = makeStyles(theme => ({
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
   greenIcon: {
-    color: teal[600]
+    color: primary[600]
   },
   confirmTitle: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 20,
     [theme.breakpoints.up(500)]: {
       fontSize: 24,
@@ -114,10 +111,10 @@ const RedButton = withStyles(theme => ({
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[500],
+    color: primary[500],
     fontWeight: 900,
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
@@ -166,9 +163,8 @@ export default function Announcement(props){
   }
 
   async function handleFetchDelete(data){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'announcemain', {
         action: 'delete',
         announceid: data.announceid
@@ -190,9 +186,8 @@ export default function Announcement(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loadmainpage', {
         action: 'announce',
     }, (csrf, d) =>{
@@ -236,7 +231,7 @@ export default function Announcement(props){
       </List>
       <List className={classes.listRoot}>
         { data && !data.status &&
-          API.handleSortArray(data, 'createdate', 'title').map( d =>{
+          API.handleSortArrayByDate(data, 'createdate', 'title').map( d =>{
             return d &&
             <React.Fragment key={d.announceid}>
               <ListItem button>
@@ -274,9 +269,11 @@ export default function Announcement(props){
         })}
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
-        <AnnouncementEditor clickAction={clickAction} handleClose={handleClose} isSupportWebp={isSupportWebp}
+        <AnnouncementEditor
+          {...props}
+          clickAction={clickAction}
           setData={setData}
-          edittingData={edittingData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+          edittingData={edittingData} />
       </TemplateDialog>
       <TemplateDialog
         maxWidth={400}
@@ -286,7 +283,7 @@ export default function Announcement(props){
             Are you sure you want to delete?
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
-            ( Class : { selectedDeleteItem && selectedDeleteItem.title } )
+            ( Announce : { selectedDeleteItem && selectedDeleteItem.title } )
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>

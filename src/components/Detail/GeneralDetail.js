@@ -1,7 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
-import * as API from '../../api'
+import * as API from './../../api'
+import { primary } from './../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
@@ -11,12 +12,10 @@ import Link from '@material-ui/core/Link';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import teal from '@material-ui/core/colors/teal';
-
-import ic_slide1 from '../img/slide1.png'
-import ic_sw from '../img/sw.jpg'
-import ic_ssw from '../img/ssw.jpg'
-import ic_gsw from '../img/gsw.jpg'
+import ic_slide1 from './../img/slide1.png'
+import ic_sw from './../img/sw.jpg'
+import ic_ssw from './../img/ssw.jpg'
+import ic_gsw from './../img/gsw.jpg'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,29 +26,29 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3, 2),
   },
   title: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
     },
   },
   detailDate: {
-    textAlign: 'left', color: teal[600],
+    textAlign: 'left', color: primary[600],
     fontSize: 16, fontStyle: 'oblique', fontFamily: 'monospace'
   },
   detailLocation: {
-    textAlign: 'left', color: teal[800],
+    textAlign: 'left', color: primary[800],
     fontSize: 18,
   },
   detailHead: {
-    textAlign: 'left', color: teal[800],
+    textAlign: 'left', color: primary[800],
     fontSize: 18,
     [theme.breakpoints.up(500)]: {
       fontSize: 20,
     },
   },
   detailText: {
-    textAlign: 'left', color: teal[800],
+    textAlign: 'left', color: primary[800],
     fontSize: 18,
     [theme.breakpoints.up(500)]: {
       fontSize: 20,
@@ -74,12 +73,12 @@ const useStyles = makeStyles(theme => ({
   back: {
     backgroundColor: 'white',
     '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
+      backgroundColor: fade(primary[600], 0.25),
     },
   },
   backIcon: {
     fontSize: '2rem',
-    color: teal[800],
+    color: primary[800],
     [theme.breakpoints.up(500)]: {
       fontSize: '2.5rem',
     },
@@ -101,18 +100,6 @@ export default function GeneralDetail(props){
   async function handleFetch(){
     const newsid = props.computedMatch.params.detailparam
     console.log(props.computedMatch);
-    /*
-    const res = await token? token : API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : res.token,
-      'loadgeneral', {
-        action: 'newsdetail',
-        newsid:
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setData(d)
-    })
-    */
   }
 
   React.useEffect(()=>{

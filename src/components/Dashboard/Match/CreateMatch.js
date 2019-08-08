@@ -4,8 +4,8 @@ import DateFnsUtils from '@date-io/date-fns';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple';
 import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import Collapse from '@material-ui/core/Collapse';
@@ -24,10 +24,7 @@ import Input from '@material-ui/core/Input';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
@@ -76,7 +73,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: 8
   },
   title: {
-    color: teal[900],
+    color: primary[900],
     fontSize: 18
   },
   matchImg: {
@@ -114,7 +111,7 @@ const useStyles = makeStyles(theme => ({
     height: '100%'
   },
   normal: {
-    color: teal[900],
+    color: primary[900],
     marginTop: 16
   },
   expandIcon: {
@@ -146,20 +143,20 @@ const useStyles = makeStyles(theme => ({
 
 const StyledTextButton = withStyles(theme => ({
   root: {
-    color: teal[500],
+    color: primary[500],
     fontWeight: 900,
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
 
 const StyledButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[700],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[700],
     '&:hover': {
-      backgroundColor: teal[900],
+      backgroundColor: primary[900],
     },
   },
 }))(Button);
@@ -175,9 +172,9 @@ const StyledIconButton = withStyles(theme => ({
 
 const GreenRadio = withStyles({
   root: {
-    color: teal[400],
+    color: primary[400],
     '&$checked': {
-      color: teal[600],
+      color: primary[600],
     },
   },
   checked: {},
@@ -185,13 +182,13 @@ const GreenRadio = withStyles({
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
 const datePickers = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
   overrides: {
     MuiDialog: {
@@ -330,9 +327,8 @@ function CreateMatchBody(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loadmatch', {
         action: 'list',
     }, (csrf, d) =>{
@@ -402,7 +398,7 @@ function CreateMatchBody(props){
                     <div style={{ flex: 1 }} />
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUploadIcon fontSize="large" style={{ color: teal[400] }}/>
+                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }}/>
                     </StyledIconButton>
                     <div style={{ flex: 1 }} />
                   </div>
@@ -419,7 +415,7 @@ function CreateMatchBody(props){
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUploadIcon fontSize="large" style={{ color: teal[500] }}/>
+                    <CloudUploadIcon fontSize="large" style={{ color: primary[500] }}/>
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>

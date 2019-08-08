@@ -1,8 +1,9 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
-import * as API from '../../../api'
 import { ThemeProvider } from '@material-ui/styles';
+import * as API from './../../../api'
+import { primary, grey, red } from './../../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
@@ -21,11 +22,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DragHandleIcon from '@material-ui/icons/DragHandle';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-import red from '@material-ui/core/colors/red';
-
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
@@ -40,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-end'
   },
   confirmTitle: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 20,
     [theme.breakpoints.up(500)]: {
       fontSize: 24,
@@ -71,7 +68,7 @@ const useStyles = makeStyles(theme => ({
     color: 'red'
   },
   deleteIcon: {
-    color: teal[600]
+    color: primary[600]
   },
   controls: {
     marginTop: 36,
@@ -128,7 +125,7 @@ const useStyles = makeStyles(theme => ({
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -144,19 +141,19 @@ const RedButton = withStyles(theme => ({
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[500],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[500],
     '&:hover': {
-      backgroundColor: teal[700],
+      backgroundColor: primary[700],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
@@ -235,9 +232,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchAdd(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'matchsection', {
         action: 'classadd',
         matchid: matchid,
@@ -257,9 +253,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchEdit(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'matchsection', {
         action: 'classedit',
         matchid: matchid,
@@ -280,9 +275,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchRemove(d){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'matchsection', {
         action: 'classremove',
         matchid: matchid,
@@ -306,9 +300,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loadmatch', {
         action: 'detail',
         matchid: matchid

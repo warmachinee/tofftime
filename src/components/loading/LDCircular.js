@@ -1,13 +1,12 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { primary } from './../../api/palette'
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import teal from '@material-ui/core/colors/teal';
-
 const ColorCircularProgress = withStyles({
   root: {
-    color: teal[800],
+    color: primary[800],
     margin: '36px auto'
   },
 })(CircularProgress);

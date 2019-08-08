@@ -2,7 +2,8 @@ import React from 'react';
 import Fuse from 'fuse.js';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
@@ -20,9 +21,6 @@ import Box from '@material-ui/core/Box';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -50,14 +48,14 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1, 0)
   },
   addCircleIcon: {
-    color: teal[600]
+    color: primary[600]
   },
 
 }))
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -106,9 +104,8 @@ export default function AddMatchModal(props){
   }
 
   async function handleAddMatch(d){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'matchmain', {
         action: 'add',
         matchid: d.matchid
@@ -129,9 +126,8 @@ export default function AddMatchModal(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loadmainpage', {
         action: 'match',
     }, (csrf, d) =>{
@@ -141,9 +137,8 @@ export default function AddMatchModal(props){
   }
 
   async function handleLoadMatch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loadmatch', {
         action: 'list',
     }, (csrf, d) =>{
@@ -251,7 +246,7 @@ export default function AddMatchModal(props){
         { searchMatch && handleSearch().length === 0 &&
           <ListItem>
             <Typography component="div" style={{ width: '100%' }}>
-              <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                 No Reult
               </Box>
             </Typography>

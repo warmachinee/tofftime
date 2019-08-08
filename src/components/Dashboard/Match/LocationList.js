@@ -1,8 +1,9 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
-import * as API from '../../../api'
 import { ThemeProvider } from '@material-ui/styles';
+import * as API from './../../../api'
+import { primary, grey, red } from './../../../api/palette'
 
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -21,11 +22,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-import red from '@material-ui/core/colors/red';
-
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
@@ -79,7 +76,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   confirmTitle: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 20,
     [theme.breakpoints.up(500)]: {
       fontSize: 24,
@@ -94,10 +91,10 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 4.5)
   },
   createIcon: {
-    color: teal[600]
+    color: primary[600]
   },
   deleteIcon: {
-    color: teal[600]
+    color: primary[600]
   },
 
 }));
@@ -114,26 +111,26 @@ const RedButton = withStyles(theme => ({
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[700],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[700],
     '&:hover': {
-      backgroundColor: teal[900],
+      backgroundColor: primary[900],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -251,7 +248,7 @@ export default function LocationList(props){
                   button
                   style={{
                     transition: '.2s',
-                    color: teal[900],
+                    color: primary[900],
                     ...(selectedField && selectedField.fieldid === d.fieldid) && { backgroundColor:  grey[400] }
                   }}
                   onClick={()=>setSelectedField(d)}>
@@ -278,7 +275,7 @@ export default function LocationList(props){
         open={open} handleClose={handleClose}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure to delete?
+            Are you sure you want to delete?
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )

@@ -1,7 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import Collapse from '@material-ui/core/Collapse';
@@ -12,10 +13,7 @@ import Box from '@material-ui/core/Box';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const MBScoreEditorBody = Loadable({
   loader: () => import(/* webpackChunkName: "MBScoreEditorBody" */'./MBScoreEditorBody'),
@@ -32,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: 24
   },
   title: {
-    color: teal[900],
+    color: primary[900],
     fontSize: 18
   },
   expandIcon: {
@@ -44,6 +42,7 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+
 }))
 
 export default function MBScoreEditor(props){
@@ -69,7 +68,7 @@ export default function MBScoreEditor(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <MBScoreEditorBody token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}/>
+        <MBScoreEditorBody {...props}/>
       </Collapse>
     </Paper>
   );

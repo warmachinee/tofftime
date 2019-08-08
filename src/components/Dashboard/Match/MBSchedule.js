@@ -2,7 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
 import * as API from './../../../api'
-import { primary, grey } from './../../../api/palette'
+import { primary, grey }from './../../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import Collapse from '@material-ui/core/Collapse';
@@ -15,8 +15,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { LDCircular } from './../../loading/LDCircular'
 
-const MBPlayoffBody = Loadable({
-  loader: () => import(/* webpackChunkName: "MBPlayoffBody" */'./MBPlayoffBody'),
+const MBScheduleBody = Loadable({
+  loader: () => import(/* webpackChunkName: "MBScheduleBody" */'./MBScheduleBody'),
   loading: () => <LDCircular />
 });
 
@@ -42,9 +42,10 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+
 }))
 
-export default function MBPlayoff(props){
+export default function MBSchedule(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar } = props
   const [ expanded, setExpanded ] = React.useState(false)
@@ -53,11 +54,10 @@ export default function MBPlayoff(props){
     setExpanded(!expanded)
   }
   return(
-    <Paper style={{ cursor: expanded?'auto':'pointer' }} className={classes.root} elevation={3}
-      onClick={()=>!expanded ? expandHandler():console.log()}>
+    <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Playoff
+          Match Schedule
         </Box>
       </Typography>
       <IconButton
@@ -68,7 +68,7 @@ export default function MBPlayoff(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <MBPlayoffBody {...props}/>
+        <MBScheduleBody {...props}/>
       </Collapse>
     </Paper>
   );

@@ -5,6 +5,7 @@ import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles
 import { ThemeProvider } from '@material-ui/styles';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import * as API from './../../api'
+import { primary } from './../../api/palette'
 
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -16,9 +17,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
@@ -40,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     margin: "24px 0",
   },
   title: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
@@ -48,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
   accountCircle: {
     fontSize: '5rem',
-    color: teal[900],
+    color: primary[900],
     [theme.breakpoints.up(500)]: {
       fontSize: '10rem',
     },
@@ -62,33 +60,34 @@ const useStyles = makeStyles(theme => ({
     },
   },
   textButton: {
-    color: teal[900]
+    color: primary[900]
   },
   loginWith: {
     position: 'absolute',
     left: 16
-  }
+  },
+
 }));
 
 const SignUpButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[700],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[700],
     '&:hover': {
-      backgroundColor: teal[900],
+      backgroundColor: primary[900],
     },
   },
 }))(Button);
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
 const datePickers = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
   overrides: {
     MuiDialog: {
@@ -185,6 +184,7 @@ export default function SignUpComponent(props){
       <div>
         <ThemeProvider theme={theme}>
           <TextField
+            autoFocus
             required
             error={actionStatus === 'email is used' || actionStatus === 'invalid email'}
             className={classes.margin}

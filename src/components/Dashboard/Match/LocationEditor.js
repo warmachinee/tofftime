@@ -1,7 +1,8 @@
 import React from 'react';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
-import * as API from '../../../api'
 import ThemeProvider from '@material-ui/styles/ThemeProvider';
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -9,9 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,14 +19,14 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 4.5)
   },
   headerText: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
     },
   },
   title: {
-    color: teal[900],
+    color: primary[900],
     fontWeight: 600,
     fontSize: 18,
     marginTop: 16,
@@ -89,27 +87,27 @@ const useStyles = makeStyles(theme => ({
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[700],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[700],
     '&:hover': {
-      backgroundColor: teal[900],
+      backgroundColor: primary[900],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[500],
+    color: primary[500],
     fontWeight: 900,
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 

@@ -4,15 +4,13 @@ import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
-import * as API from '../../api'
+import * as API from './../../api'
+import { primary, grey } from './../../api/palette'
 
 import IconButton from '@material-ui/core/IconButton';
 
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey'
 
 const Pagination = Loadable({
   loader: () => import(/* webpackChunkName: "Pagination" */'./Pagination'),
@@ -42,7 +40,7 @@ const useStyles = makeStyles( theme =>({
   },
   arrow: {
     fontSize: '2.75rem',
-    color: teal[700]
+    color: primary[700]
   },
   leftArrow: {
     left: '2%',
@@ -52,7 +50,7 @@ const useStyles = makeStyles( theme =>({
     backgroundColor: 'white',
     opacity: .6,
     '&:hover': {
-      backgroundColor: fade(teal[700], 0.25),
+      backgroundColor: fade(primary[700], 0.25),
       opacity: 1,
     },
   },
@@ -64,7 +62,7 @@ const useStyles = makeStyles( theme =>({
     backgroundColor: 'white',
     opacity: .6,
     '&:hover': {
-      backgroundColor: fade(teal[700], 0.25),
+      backgroundColor: fade(primary[700], 0.25),
       opacity: 1,
     },
   },
@@ -115,16 +113,15 @@ function Slider(props) {
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${res}&action=announcelist`
+    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}&action=announcelist`
     )
     setCSRFToken(d.token)
     setData(d.response)
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    //handleFetch()
   },[ ])
 
   React.useEffect(()=>{

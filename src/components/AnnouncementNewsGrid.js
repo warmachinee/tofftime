@@ -48,8 +48,8 @@ export default function AnnouncementNewsGrid(props) {
 
   return (
     <div className={classes.root}>
-      <Slider token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
-      <News token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
+      <Slider {...props}/>
+      <News {...props}/>
     </div>
   );
 }

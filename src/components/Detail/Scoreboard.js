@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import * as API from '../../api'
+import * as API from './../../api'
+import { primary } from './../../api/palette'
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
 
-import teal from '@material-ui/core/colors/teal';
-
 import ScoreTable from './ScoreTable'
-import PrintPDF from '../PrintPDF'
-import RewardPDF from '../RewardPDF'
+import PrintPDF from './../PrintPDF'
+import RewardPDF from './../RewardPDF'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,11 +46,11 @@ const StyledTabs = withStyles({
     //borderBottom: '1px solid #e8e8e8',
   },
   indicator: {
-    backgroundColor: teal[600],
+    backgroundColor: primary[600],
     height: 4
   },
   scrollButtons: {
-    color: teal[900],
+    color: primary[900],
     width: 50,
   }
 })(Tabs);
@@ -62,14 +61,14 @@ const StyledTab = withStyles(theme => ({
     fontWeight: 500,
     marginRight: theme.spacing(4),
     '&:hover': {
-      color: teal[600],
+      color: primary[600],
       opacity: 1,
     },
     '&$selected': {
-      color: teal[600],
+      color: primary[600],
     },
     '&:focus': {
-      color: teal[600],
+      color: primary[600],
     },
   },
   selected: {},
@@ -115,9 +114,10 @@ export default function Scoreboard(props) {
   React.useEffect(()=>{
     handleFetch()
   },[ ])
+
   return (
     <div className={classes.root}>
-      <Paper elevation={1} style={{ backgroundColor: teal[100], padding: '8px 0' }}>
+      <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
         <StyledTabs
           value={value}
           onChange={handleChange}

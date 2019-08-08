@@ -4,7 +4,8 @@ import socketIOClient from 'socket.io-client'
 import { Link } from "react-router-dom";
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import Button from '@material-ui/core/Button';
 import Tabs from '@material-ui/core/Tabs';
@@ -25,9 +26,6 @@ import Divider from '@material-ui/core/Divider';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -58,11 +56,11 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 3)
   },
   indicator: {
-    backgroundColor: teal[600],
+    backgroundColor: primary[600],
     height: 4
   },
   scrollButtons: {
-    color: teal[900],
+    color: primary[900],
     width: 50,
   },
   list: {
@@ -92,10 +90,10 @@ const useStyles = makeStyles(theme => ({
     minWidth: 700
   },
   text: {
-    color: teal[600],
+    color: primary[600],
   },
   textHighlight: {
-    color: teal[900],
+    color: primary[900],
     fontWeight: 800
   },
   notice: {
@@ -120,26 +118,26 @@ const useStyles = makeStyles(theme => ({
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[700],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[700],
     '&:hover': {
-      backgroundColor: teal[900],
+      backgroundColor: primary[900],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -317,7 +315,7 @@ function MBScoreEditorContainer(props){
                       ( value.classno === 0 ?
                         <React.Fragment>
                           <br></br>
-                          "-"
+                          {"-"}
                         </React.Fragment>
                         :
                         matchDetail.class.filter( d =>{
@@ -377,7 +375,7 @@ function MBScoreEditorContainer(props){
           { searchUser && handleSearch().length === 0 &&
             <ListItem>
               <Typography component="div" style={{ width: '100%' }}>
-                <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                   No Reult
                 </Box>
               </Typography>
@@ -478,10 +476,9 @@ export default function MBScoreEditorBody(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'userlist',
           matchid: matchid
@@ -509,10 +506,9 @@ export default function MBScoreEditorBody(props){
   }
 
   async function handleFetchMatchDetail(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'detail',
           matchid: matchid

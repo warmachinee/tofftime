@@ -3,14 +3,12 @@ import { Link, Redirect } from "react-router-dom";
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import * as API from '../api'
+import * as API from './../api'
+import { primary, grey } from './../api/palette'
 
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,6 +22,11 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 1000,
     marginLeft: 'auto',
     marginRight: 'auto',
+  },
+  scoreBlockGrid: {
+    overflow: 'auto',
+    marginTop: 24, marginBottom: 24,
+    overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch'
   },
   block: {
     position: 'relative',
@@ -46,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: 30,
     borderRadius: '4px 4px 0 0',
-    backgroundColor: teal[900]
+    backgroundColor: primary[900]
   },
   blockLabelText: {
     display: 'flex',
@@ -55,7 +58,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: 40,
     borderRadius: '0 0 4px 4px',
-    border: `1.5px solid ${teal[600]}`
+    border: `1.5px solid ${primary[600]}`
   },
   alignCenter: {
     textAlign: 'center',
@@ -66,10 +69,10 @@ const useStyles = makeStyles(theme => ({
     color: 'white'
   },
   text: {
-    color: teal[600],
+    color: primary[600],
   },
   textHighlight: {
-    color: teal[900],
+    color: primary[900],
     fontWeight: 800
   },
 
@@ -77,7 +80,7 @@ const useStyles = makeStyles(theme => ({
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   }
 });
 
@@ -121,7 +124,7 @@ export default function ScoreDisplay(props){
       }
       { hostUserid && <Redirect to={`/display/${matchid}/${hostUserid}`} /> }
       <ThemeProvider theme={theme}>
-        <div style={{ overflow: 'auto', marginTop: 24, marginBottom: 24 }}>
+        <div className={classes.scoreBlockGrid}>
           <div className={classes.blockGrid}>
             {tempArr.slice(0, 9).map( d =>
               <div key={d} className={classes.block}>

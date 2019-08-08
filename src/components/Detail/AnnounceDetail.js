@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
-import * as API from '../../api'
+import * as API from './../../api'
+import { primary } from './../../api/palette'
 
 import CKEditor from '@ckeditor/ckeditor5-react';
 
@@ -15,8 +16,6 @@ import Link from '@material-ui/core/Link';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import teal from '@material-ui/core/colors/teal';
-
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
@@ -28,12 +27,12 @@ const useStyles = makeStyles(theme => ({
   back: {
     backgroundColor: 'white',
     '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
+      backgroundColor: fade(primary[600], 0.25),
     },
   },
   backIcon: {
     fontSize: '2rem',
-    color: teal[800],
+    color: primary[800],
     [theme.breakpoints.up(500)]: {
       fontSize: '2.5rem',
     },
@@ -57,9 +56,8 @@ export default function AnnounceDetail(props){
 
   async function handleFetch(){
     const announceid = parseInt(props.computedMatch.params.detailparam)
-    const res = await token? token : API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${res}&action=announcedetail&announceid=${announceid}`
+    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}&action=announcedetail&announceid=${announceid}`
     )
     setCSRFToken(d.token)
     setData(d.response)

@@ -1,6 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { primary, blueGrey, amber, green } from './../../api/palette'
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -14,11 +15,6 @@ import Grow from '@material-ui/core/Grow';
 import Collapse from '@material-ui/core/Collapse';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
-
-import teal from '@material-ui/core/colors/teal';
-import blueGrey from '@material-ui/core/colors/blueGrey';
-import amber from '@material-ui/core/colors/amber';
-import green from '@material-ui/core/colors/green';
 
 const ScoreTableChip = Loadable({
   loader: () => import(/* webpackChunkName: "ScoreTableChip" */'./ScoreTableChip'),
@@ -228,7 +224,7 @@ function ScoreRow(props){
                 </div>
               </ListItem>
               <div style={{ display: 'flex' }}>
-                <ScoreTableChip dotColor={teal[300]} label="Under"/>
+                <ScoreTableChip dotColor={primary[300]} label="Under"/>
                 <ScoreTableChip dotColor={blueGrey[50]} label="Par"/>
                 <ScoreTableChip dotColor={amber[300]} label="Over"/>
               </div>
@@ -312,7 +308,7 @@ export default function ScoreTable(props) {
           ref={inputEl}
           position="relative"
           style={{
-            backgroundColor: teal[900],
+            backgroundColor: primary[900],
           }}>
           <Table className={classes.table}>
             <TableBody>
@@ -338,7 +334,7 @@ export default function ScoreTable(props) {
           style={{
             position: 'fixed',
             top: window.innerWidth > 600 ? 64: 56,
-            backgroundColor: teal[900],
+            backgroundColor: primary[900],
           }}>
           <Table
             className={classes.table}

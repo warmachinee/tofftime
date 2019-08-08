@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { fade, makeStyles } from '@material-ui/core/styles';
-import * as API from '../api'
+import * as API from './../api'
+import { primary } from './../api/palette'
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -22,8 +23,6 @@ import MoreIcon from '@material-ui/icons/MoreVert';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 
-import blue from '@material-ui/core/colors/blue';
-
 import ic_logo from './img/logoX2.png'
 
 const useStyles = makeStyles(theme => ({
@@ -31,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
   },
   appBar: {
-    backgroundColor: blue['600'],
+    backgroundColor: primary[900],
     color: 'white'
   },
   toolbar: {

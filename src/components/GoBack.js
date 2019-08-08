@@ -1,23 +1,22 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
+import { primary } from './../api/palette'
 
 import IconButton from '@material-ui/core/IconButton';
 
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import teal from '@material-ui/core/colors/teal';
-
 const useStyles = makeStyles(theme => ({
   back: {
     backgroundColor: 'white',
     '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
+      backgroundColor: fade(primary[600], 0.25),
     },
   },
   backIcon: {
     fontSize: '2rem',
-    color: teal[800],
+    color: primary[800],
     [theme.breakpoints.up(500)]: {
       fontSize: '2.5rem',
     },

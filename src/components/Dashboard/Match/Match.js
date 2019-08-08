@@ -2,7 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { Switch, Route, Redirect } from "react-router-dom";
 
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const RouteMatchBody = Loadable.Map({
   loader: {
@@ -40,14 +40,12 @@ const RouteMatchEditor = Loadable.Map({
 
 export default function Match(props){
   const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  
   return(
     <Switch>
 
-      <RouteMatchBody exact path='/user/match' token={token} setCSRFToken={setCSRFToken}
-        handleSnackBar={handleSnackBar} />
-      <RouteMatchEditor path='/user/match/:matchparam' token={token} setCSRFToken={setCSRFToken}
-        isSupportWebp={isSupportWebp}
-        handleSnackBar={handleSnackBar} />
+      <RouteMatchBody exact path='/user/match' {...props} />
+      <RouteMatchEditor path='/user/match/:matchparam' {...props} />
     </Switch>
   );
 }

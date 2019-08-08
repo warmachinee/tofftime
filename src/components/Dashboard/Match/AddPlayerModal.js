@@ -2,7 +2,8 @@ import React from 'react';
 import Fuse from 'fuse.js';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
@@ -21,9 +22,6 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,7 +61,7 @@ const useStyles = makeStyles(theme => ({
     padding: 16,
     marginBottom: 24,
     borderRadius: 4,
-    border: `1.5px solid ${teal[600]}`,
+    border: `1.5px solid ${primary[600]}`,
   },
   buttonGrid: {
     display: 'flex',
@@ -95,33 +93,33 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(2, 0)
   },
   addCircleIcon: {
-    color: teal[600]
+    color: primary[600]
   },
 
 }))
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[500],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[500],
     '&:hover': {
-      backgroundColor: teal[700],
+      backgroundColor: primary[700],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -153,9 +151,8 @@ export default function AddPlayerModal(props){
   }
 
   async function handleCreatePlayer(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'usersystem', {
         action: 'create',
         fullname: fullname,
@@ -175,9 +172,8 @@ export default function AddPlayerModal(props){
   }
 
   async function handleLoadUser(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loaduser', {
         action: 'userlist'
     }, (csrf, d) =>{
@@ -187,9 +183,8 @@ export default function AddPlayerModal(props){
   }
 
   async function handleAddUser(d){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'matchmember', {
         action: 'add',
         matchid: matchid,
@@ -209,10 +204,9 @@ export default function AddPlayerModal(props){
   }
 
   async function handleFetchUserList(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'userlist',
           matchid: matchid
@@ -240,10 +234,9 @@ export default function AddPlayerModal(props){
   }
 
   async function handleFetchMatchDetail(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'detail',
           matchid: matchid
@@ -362,7 +355,7 @@ export default function AddPlayerModal(props){
         { searchUser && handleSearch().length === 0 &&
           <ListItem>
             <Typography component="div" style={{ width: '100%' }}>
-              <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                 No Reult
               </Box>
             </Typography>

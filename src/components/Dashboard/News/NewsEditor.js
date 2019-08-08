@@ -1,7 +1,8 @@
 import React from 'react';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
-import * as API from '../../../api'
 import { ThemeProvider } from '@material-ui/styles';
+import * as API from './../../../api'
+import { primary, grey, red } from './../../../api/palette'
 
 import CKEditor from '@ckeditor/ckeditor5-react';
 
@@ -16,16 +17,12 @@ import IconButton from '@material-ui/core/IconButton';
 
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-import red from '@material-ui/core/colors/red';
-
 const useStyles = makeStyles(theme => ({
   root: {
     marginTop: 36
   },
   title: {
-    color: teal[900],
+    color: primary[900],
     fontSize: 18,
   },
   notice: {
@@ -93,19 +90,19 @@ const useStyles = makeStyles(theme => ({
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[500],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[500],
     '&:hover': {
-      backgroundColor: teal[700],
+      backgroundColor: primary[700],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
@@ -121,7 +118,7 @@ const StyledIconButton = withStyles(theme => ({
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -181,7 +178,7 @@ export default function NewsEditor(props) {
   }
 
   function handleCKEditorOnFocus(){
-    setBorderOnFocus(`1px solid ${teal[600]}`)
+    setBorderOnFocus(`1px solid ${primary[600]}`)
     const root = document.getElementById('template-dialog')
     if(ckeditorEl && root){
       root.scrollTo(0, ckeditorEl.current.offsetTop)
@@ -321,9 +318,8 @@ export default function NewsEditor(props) {
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loadmainpage', {
         action: 'news',
     }, (csrf, d) =>{
@@ -367,7 +363,7 @@ export default function NewsEditor(props) {
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUploadIcon fontSize="large" style={{ color: teal[400] }}/>
+                    <CloudUploadIcon fontSize="large" style={{ color: primary[400] }}/>
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>
@@ -384,7 +380,7 @@ export default function NewsEditor(props) {
                 <div style={{ flex: 1 }} />
                 <StyledIconButton className={classes.matchFile}>
                   <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                  <CloudUploadIcon fontSize="large" style={{ color: teal[500] }}/>
+                  <CloudUploadIcon fontSize="large" style={{ color: primary[500] }}/>
                 </StyledIconButton>
                 <div style={{ flex: 1 }} />
               </div>

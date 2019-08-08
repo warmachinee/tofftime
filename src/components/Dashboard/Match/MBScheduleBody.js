@@ -25,12 +25,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Slide from '@material-ui/core/Slide';
 import Divider from '@material-ui/core/Divider';
 
-import DeleteIcon from '@material-ui/icons/Delete';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ClassIcon from '@material-ui/icons/Class';
-import DesktopMacIcon from '@material-ui/icons/DesktopMac';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
 import { LDCircular } from './../../loading/LDCircular'
@@ -42,6 +40,11 @@ const TemplateDialog = Loadable({
 
 const AddPlayerModal = Loadable({
   loader: () => import(/* webpackChunkName: "AddPlayerModal" */'./AddPlayerModal'),
+  loading: () => <LDCircular />
+});
+
+const MatchTeam = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchTeam" */'./MatchTeam'),
   loading: () => <LDCircular />
 });
 
@@ -200,15 +203,14 @@ const theme = createMuiTheme({
   },
 });
 
-export default function MBPlayerBody(props){
+export default function MBScheduleBody(props){
   const classes = useStyles();
   const { token, setCSRFToken, matchid, handleSnackBar, } = props
-  const [ editting, setEditting ] = React.useState(false);
-  const [ edittingClass, setEdittingClass ] = React.useState(false);
-  const [ edittingDisplay, setEdittingDisplay ] = React.useState(false);
-  const [ open, setOpen ] = React.useState(false);
+  const [ edittingTeam, setEdittingTeam ] = React.useState(false);
+  const [ addState, setAddState ] = React.useState(false);
+  const [ teamState, setTeamState ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
-  const [ matchDetail, setMatchDetail ] = React.useState([])
+  const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ checked, setChecked ] = React.useState([]);
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
@@ -259,12 +261,20 @@ export default function MBPlayerBody(props){
     }
   }
 
-  function handleOpen(){
-    setOpen(true);
+  function handleAddOpen(){
+    setAddState(true);
   };
 
-  function handleClose(){
-    setOpen(false);
+  function handleAddClose(){
+    setAddState(false);
+  };
+
+  function handleTeamOpen(){
+    setTeamState(true);
+  };
+
+  function handleTeamClose(){
+    setTeamState(false);
   };
 
   function handleToggle(value){
@@ -280,41 +290,26 @@ export default function MBPlayerBody(props){
     setChecked(newChecked);
   };
 
-  function handleEdittingDisplay(){
-    setEdittingDisplay(!edittingDisplay)
-
-    setChecked([])
-  }
-
-  function handleDoneEditting(){
-    setEditting(!editting)
-    setChecked([])
-  }
-
   function handleDoneEdittingClass(){
-    setEdittingClass(!edittingClass)
+    setEdittingTeam(!edittingTeam)
     setChecked([])
-  }
-
-  function handleDoneEdittingDisplay(){
-    setEdittingDisplay(!edittingDisplay)
   }
 
   function handleSave(){
     let userid = []
-    let classno = []
+    let teamno = []
     for(var i = 0;i < checked.length;i++){
       userid.push(checked[i].userid)
-      classno.push(selectedClass)
+      teamno.push(selectedClass)
     }
-    handleSetClass(userid, classno)
+    handleSetTeam(userid, teamno)
   }
 
-  function handleSelectedClass(d){
+  function handleSelectedTeam(d){
     if( d === 0 ){
       setSelectedClass(0)
     }else{
-      setSelectedClass(d.classno)
+      setSelectedClass(d.teamno)
     }
     handleMenuClose()
   }
@@ -328,8 +323,8 @@ export default function MBPlayerBody(props){
         keys: [
           "firstname",
           "lastname",
-          "classname",
-          "classno"
+          "teamname",
+          "teamno"
         ]
       }
       var fuse = new Fuse(data, options)
@@ -338,76 +333,21 @@ export default function MBPlayerBody(props){
     }
   }
 
-  async function handleSetDisplay(d){
+  async function handleSetTeam(userid, teamno){
     if(matchid){
       await API.xhrPost(
         token? token : await API.xhrGet('getcsrf').token,
-        'displaymatchsystem', {
-          action: 'user',
-          matchid: matchid,
-          userid: d,
-      }, (csrf, d) =>{
-        setCSRFToken(csrf)
-        handleSnackBar({
-          state: true,
-          message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
-        })
-        try {
-          handleFetch()
-        }catch(err) { console.log(err.message) }
-      })
-    }
-  }
-
-  async function handleSetClass(userid, classno){
-    if(matchid){
-      await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'matchmember', {
-          action: 'setclass',
+        'matchsection', {
+          action: 'editteam',
           matchid: matchid,
           userid: userid,
-          classno: classno
+          teamno: teamno
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
           state: true,
           message: d.status,
           variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
-        })
-        setChecked([])
-        try {
-          handleFetch()
-        }catch(err) { console.log(err.message) }
-      })
-    }
-  }
-
-  async function handleRemovePlayer(d){
-    let userid = []
-    if( typeof(d.userid) === 'number' ){
-      userid.push(d.userid)
-    }else{
-      for(var i = 0;i < checked.length;i++){
-        userid.push(checked[i].userid)
-      }
-    }
-    if(matchid){
-      await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'matchmember', {
-          action: 'remove',
-          matchid: matchid,
-          userid: userid
-      }, (csrf, d) =>{
-        setCSRFToken(csrf)
-        handleSnackBar({
-          state: true,
-          message: d.status,
-          variant: d.status === 'remove member success' ? 'success' : 'error',
           autoHideDuration: d.status === 'success'? 2000 : 5000
         })
         setChecked([])
@@ -458,7 +398,7 @@ export default function MBPlayerBody(props){
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         if(
-          d.status !== 'class database error' ||
+          d.status !== 'team database error' ||
           d.status !== 'wrong matchid' ||
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
@@ -498,99 +438,69 @@ export default function MBPlayerBody(props){
       <List className={classes.listRoot}>
         <ListItem className={classes.controls}>
           <Button className={classes.addPlayerButton} variant="contained"
-            onClick={handleOpen}>
+            onClick={handleAddOpen}>
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
             Add player
           </Button>
+          <GreenTextButton
+            className={classes.button}
+            onClick={handleTeamOpen}
+            variant="outlined">
+            { matchDetail?
+              ( matchDetail.team && !matchDetail.team.status &&
+              ( matchDetail.team.length >= 2 ? ( matchDetail.team.length + ' Teams' ):( matchDetail.team.length + ' Team' ) )
+              )
+              :
+              'Team'
+            }
+          </GreenTextButton>
           <div style={{ flex: 1 }} />
           <div
             className={classes.controlsEdit}
             style={{
-              border: edittingClass && '0 solid',
-              justifyContent: (editting || edittingClass || edittingDisplay)? 'flex-end' : 'space-around',
+              border: edittingTeam && '0 solid',
+              justifyContent: edittingTeam? 'flex-end' : 'space-around',
             }}>
-            { !editting && !edittingClass &&
-              (
-                edittingDisplay?
-                <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>Done</GreenTextButton>
-                :
-                <GreenTextButton className={classes.controlsEditButton} onClick={handleEdittingDisplay}>
-                  <DesktopMacIcon
-                    style={{ left:
-                      window.innerWidth > 500? 0 :
-                      window.innerWidth > 450? '20%':'10%'
-                    }}
-                    className={classes.controlsEditButtonIcon}/>
-                  Display
-                </GreenTextButton>
-              )
-            }
-            { !editting && !edittingDisplay && /*style={{ padding: '8px 36px', margin: '2px 0' }}*/
-              (
-                edittingClass?
-                <React.Fragment>
-                  <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
-                  <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
-                </React.Fragment>
-                :
-                <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingClass(!edittingClass)}>
-                  <ClassIcon
-                    style={{ left:
-                      window.innerWidth > 500? 0 :
-                      window.innerWidth > 450? '20%':'10%'
-                    }}
-                    className={classes.controlsEditButtonIcon}/>
-                  Class
-                </GreenTextButton>
-              )
-            }
-            { !edittingClass && !edittingDisplay &&
-              (
-                editting?
-                <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
-                  onClick={handleDoneEditting}>Done</GreenTextButton>
-                :
-                <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
-                  <DeleteIcon
-                    style={{ left:
-                      window.innerWidth > 500? 0 :
-                      window.innerWidth > 450? '20%':'10%'
-                    }}
-                    className={classes.controlsEditButtonIcon}/>
-                  Remove
-                </GreenTextButton>
-              )
+            { edittingTeam?
+              <React.Fragment>
+                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
+                <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
+              </React.Fragment>
+              :
+              <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
+                <ClassIcon
+                  style={{ left:
+                    window.innerWidth > 500? 0 :
+                    window.innerWidth > 450? '20%':'10%'
+                  }}
+                  className={classes.controlsEditButtonIcon}/>
+                Team
+              </GreenTextButton>
             }
           </div>
         </ListItem>
         <ListItem className={classes.controlsSecondary}>
-          { edittingClass &&
+          { edittingTeam &&
             <React.Fragment>
               <div style={{ display: 'flex' }}>
                 <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
-                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedClass !== 0 ? 'Selected Class : ' : 'Select Class :' }</div>
+                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedClass !== 0 ? 'Selected Time : ' : 'Select Time :' }</div>
               </div>
               <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
                 { selectedClass !== 0?
-                  matchDetail && matchDetail.class &&
-                  matchDetail.class.filter( item =>{
-                    return item.classno === selectedClass
+                  matchDetail && matchDetail.team &&
+                  matchDetail.team.filter( item =>{
+                    return item.teamno === selectedClass
                   }).map( d =>
                     d &&
-                    <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
+                    <React.Fragment key={d.teamname}>{d.teamname}</React.Fragment>
                   )
-                  : <React.Fragment>No class selected</React.Fragment>
+                  : <React.Fragment>No team selected</React.Fragment>
                 }
               </GreenTextButton>
             </React.Fragment>
           }
-          { editting &&
-            <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
-              <DeleteIcon />
-              Remove
-            </GreenTextButton>
-          }
-          { !( editting || edittingClass) &&
+          { !edittingTeam &&
             <div style={{ height: 42 }}></div>
           }
         </ListItem>
@@ -624,12 +534,10 @@ export default function MBPlayerBody(props){
           </ThemeProvider>
         </ListItem>
         <div style={{ overflow: 'auto', position: 'relative' }}>
-          { ( editting || edittingClass || edittingDisplay ) &&
+          { edittingTeam &&
             <Typography component="div">
               <Box className={classes.notice} m={1}>
-                { edittingDisplay && 'Click the list to toggle the player display.'}
-                { edittingClass && 'Select class and player to change player class.'}
-                { editting && 'Select the list to delete multiple or Hit the icon on the right to delete single.'}
+                { edittingTeam && 'Select team and player to change player team.'}
               </Box>
             </Typography>
           }
@@ -637,14 +545,14 @@ export default function MBPlayerBody(props){
             style={{
               display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
             }}>
+            { window.innerWidth > 600 &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }} primary="Team" />
+            }
             <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={ window.innerWidth < 600? "Player" : "First name" } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
                 primary="Last name" />
-            }
-            { window.innerWidth > 600 &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }} primary="Class" />
             }
             <ListItemIcon style={{ justifyContent: 'flex-start' }}>
               <div style={{ height: 42, width: 42 }}></div>
@@ -658,31 +566,16 @@ export default function MBPlayerBody(props){
                 return value && (
                   <React.Fragment key={value.userid}>
                     <ListItem role={undefined} button
-                      onClick={()=>
-                        ( editting || edittingClass )?
-                        handleToggle(value):
-                        ( edittingDisplay?
-                          handleSetDisplay(value.userid)
-                          :
-                          console.log()
-                        )
-                      }>
+                      onClick={()=>edittingTeam? handleToggle(value): console.log()}>
                       <ListItemIcon>
-                        { ( editting || edittingClass )?
+                        { edittingTeam ?
                           <GreenCheckbox
                             edge="start"
                             checked={checked.indexOf(value) !== -1}
                             tabIndex={-1}
                             disableRipple />
                           :
-                          (edittingDisplay ?
-                            <GreenCheckbox
-                              edge="start"
-                              checked={value.display === 1}
-                              tabIndex={-1}
-                              disableRipple />
-                          :
-                            <div style={{ height: 42, width: 42 }} />)
+                          <div style={{ height: 42, width: 42 }}></div>
                         }
                       </ListItemIcon>
                       <ListItemText className={classes.listText}
@@ -703,20 +596,20 @@ export default function MBPlayerBody(props){
                                 {value.lastname}
                               </Typography>
                             }
-                            { matchDetail && matchDetail.class && window.innerWidth < 600 &&
-                              ( value.classno === 0 ?
+                            { matchDetail && matchDetail.team && window.innerWidth < 600 &&
+                              ( value.teamno === 0 ?
                                 <React.Fragment>
                                   <br></br>
                                   {"-"}
                                 </React.Fragment>
                                 :
-                                matchDetail.class.filter( d =>{
-                                  return d.classno === value.classno
+                                matchDetail.team.filter( d =>{
+                                  return d.teamno === value.teamno
                                 }).map((d, i) =>
                                   d &&
                                   <React.Fragment key={i}>
                                     <br></br>
-                                    {d.classname}
+                                    {d.teamname}
                                   </React.Fragment>
                                 )
                               )
@@ -727,27 +620,18 @@ export default function MBPlayerBody(props){
                         <ListItemText className={classes.listText}
                           primary={value.lastname}/>
                       }
-                      { matchDetail && matchDetail.class && window.innerWidth > 600 &&
-                        ( value.classno === 0 ?
+                      { matchDetail && matchDetail.team && window.innerWidth > 600 &&
+                        ( value.teamno === 0 ?
                           <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
                           :
-                          matchDetail.class.filter( d =>{
-                            return d.classno === value.classno
+                          matchDetail.team.filter( d =>{
+                            return d.teamno === value.teamno
                           }).map( d =>
                             d &&
-                            <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.classname} />
+                            <ListItemText key={d.teamname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.teamname} />
                           )
                         )
                       }
-                      <ListItemIcon style={{ justifyContent: 'flex-end' }}>
-                        { ( editting && checked.length === 0 )?
-                          <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                            <DeleteIcon classes={{ root: classes.deleteIcon}}/>
-                          </IconButton>
-                          :
-                          <div style={{ height: 42, width: 42 }}></div>
-                        }
-                      </ListItemIcon>
                     </ListItem>
                     <Divider />
                   </React.Fragment>
@@ -788,11 +672,16 @@ export default function MBPlayerBody(props){
           </div>
         </div>
       </List>
-      <TemplateDialog open={open} handleClose={handleClose}>
+      <TemplateDialog open={addState} handleClose={handleAddClose}>
         <AddPlayerModal
           token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}
           data={data}
           setMBData={setData} setMBMatchDetail={setMatchDetail}/>
+      </TemplateDialog>
+      <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth={500}>
+        <MatchTeam token={token} setCSRFToken={setCSRFToken} data={matchDetail && matchDetail.team}
+          handleSnackBar={handleSnackBar}
+          matchid={matchid} setData={setMatchDetail}/>
       </TemplateDialog>
       <Menu
         anchorEl={anchorEl}
@@ -800,11 +689,11 @@ export default function MBPlayerBody(props){
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={()=>handleSelectedClass(0)}>{"-"}</MenuItem>
-        { matchDetail && matchDetail.class &&
-          matchDetail.class.map( (d, i) =>
+        <MenuItem onClick={()=>handleSelectedTeam(0)}>{"-"}</MenuItem>
+        { matchDetail && matchDetail.team &&
+          matchDetail.team.map( (d, i) =>
             d &&
-            <MenuItem key={"i : " + i + " data: " + d} onClick={()=>handleSelectedClass(d)}>{d.classname}</MenuItem>
+            <MenuItem key={"i : " + i + " data: " + d} onClick={()=>handleSelectedTeam(d)}>{d.teamname}</MenuItem>
           )
         }
       </Menu>

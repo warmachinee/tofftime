@@ -1,12 +1,12 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
-import * as API from '../../api'
+import * as API from './../../api'
 
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 
-import { LDCircular } from '../loading/LDCircular'
+import { LDCircular } from './../loading/LDCircular'
 
 const NewsListItem = Loadable({
   loader: () => import(/* webpackChunkName: "NewsListItem" */'./NewsListItem'),
@@ -38,21 +38,20 @@ export default function News(props) {
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${res}&action=newslist`
+    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}&action=newslist`
     )
     setCSRFToken(d.token)
     setData(d.response)
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    //handleFetch()
   },[ ])
 
   return data ?(
     <List className={classes.root}>
-      { API.handleSortArray(data, 'createdate', 'title').map( d=>
+      { API.handleSortArrayByDate(data, 'createdate', 'title').map( d=>
         <div key={d.newsid}>
           <NewsListItem data={d} key={d} isSupportWebp={isSupportWebp} time={API.handleGetPostTime(d.createdate)}/>
           <Divider />

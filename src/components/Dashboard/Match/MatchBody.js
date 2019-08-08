@@ -2,7 +2,8 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { Link } from "react-router-dom";
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -16,10 +17,7 @@ import Divider from '@material-ui/core/Divider';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const CreateMatch = Loadable({
   loader: () => import(/* webpackChunkName: "CreateMatch" */'./CreateMatch'),
@@ -27,7 +25,7 @@ const CreateMatch = Loadable({
 });
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'../../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -40,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     color: 'inherit'
   },
   title: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
@@ -86,28 +84,28 @@ const StyledText = withStyles(theme => ({
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[500],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[500],
     '&:hover': {
-      backgroundColor: teal[700],
+      backgroundColor: primary[700],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
 
 const GreenCheckbox = withStyles({
   root: {
-    color: teal[400],
+    color: primary[400],
     '&$checked': {
-      color: teal[600],
+      color: primary[600],
     },
   },
 })(props => <Checkbox color="default" {...props} />);
@@ -120,9 +118,8 @@ export default function MatchBody(props){
   const [ editting, setEditting ] = React.useState(false)
 
   async function handleSetDisplay(d){
-    const res = await token? token : API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'displaymatchsystem', {
         action: 'match',
         matchid: d.matchid
@@ -141,10 +138,9 @@ export default function MatchBody(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     var arrData = []
     await API.xhrPost(
-      token? token : res.token,
+      token? token : await API.xhrGet('getcsrf').token,
       'loadmatch', {
         action: 'list',
     }, (csrf, d) =>{

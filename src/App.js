@@ -2,10 +2,9 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-router-dom";
 import * as API from './api'
+import { blueGrey } from './api/palette'
 
 import { LDTopnav } from './components/loading/LDTopnav';
-
-import blueGrey from '@material-ui/core/colors/blueGrey';
 
 const Header = Loadable({
   loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
@@ -146,6 +145,8 @@ const Footer = Loadable({
   loading: () => null
 });
 
+
+
 import MatchEditor from './components/Dashboard/Match/MatchEditor'
 import MatchBody from './components/Dashboard/Match/MatchBody'
 import MatchDetail from './components/Detail/MatchDetail'
@@ -154,7 +155,9 @@ import News from './components/Dashboard/News/News'
 import NewsDetail from './components/Detail/NewsDetail'
 import Announcement from './components/Dashboard/Announcement/Announcement'
 import Dashboard from './components/Dashboard/Dashboard'
+import User from './components/Dashboard/User/User'
 import ScoreDisplay from './components/ScoreDisplay'
+
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
@@ -176,6 +179,13 @@ function App() {
   const [ open, setOpen ] = React.useState(false);
   const [ sess, handleSess ] = React.useState([])
   const [ isSupportWebp, handleSupportWebp ] = React.useState(false)
+
+  const passingProps = {
+    token: csrfToken,
+    setCSRFToken: setCSRFToken,
+    handleSnackBar: handleSnackBar,
+    isSupportWebp: isSupportWebp
+  }
 
   const handleOpen = () => {
     setOpen(true);
@@ -234,29 +244,42 @@ function App() {
         sess={sess}
         handleOpen={handleOpen}
         handleSess={handleSess}
-        setCSRFToken={setCSRFToken}/>
+        setCSRFToken={setCSRFToken} />
 
       { !true ?
         <Switch>
-          <RouteMain exact path="/" token={csrfToken} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}
-            isSupportWebp={isSupportWebp}/>
-          <RouteAnnounceDetail path="/announce/:detailparam" token={csrfToken} setCSRFToken={setCSRFToken}
-            handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
-          <RouteNewsDetail path="/news/:detailparam" token={csrfToken} setCSRFToken={setCSRFToken}
-            handleSnackBar={handleSnackBar} isSupportWebp={isSupportWebp}/>
-          <RouteMatchDetail path="/match/:matchparam" token={csrfToken} setCSRFToken={setCSRFToken}
-            handleSnackBar={handleSnackBar} handleSnackBarL={handleSnackBarL} isSupportWebp={isSupportWebp}/>
-          <RouteDashboard path="/user" token={csrfToken} setCSRFToken={setCSRFToken}
-            isSupportWebp={isSupportWebp}
-            handleSnackBar={handleSnackBar} />
-          <RouteScoreDisplay path="/display/:matchid/:userid" token={csrfToken} setCSRFToken={setCSRFToken}
-            handleSnackBar={handleSnackBar} />
+          <RouteMain exact path="/"
+            {...passingProps}/>
+          <RouteAnnounceDetail path="/announce/:detailparam"
+            {...passingProps}/>
+          <RouteNewsDetail path="/news/:detailparam"
+            {...passingProps}/>
+          <RouteMatchDetail path="/match/:matchparam"
+            {...passingProps}
+            handleSnackBarL={handleSnackBarL} />
+          <RouteDashboard path="/user"
+            {...passingProps} />
+          <RouteScoreDisplay path="/display/:matchid/:userid"
+            {...passingProps} />
           <Route component={NoMatch} />
         </Switch>
         :
-        <MatchBody handleSnackBar={handleSnackBar} />
-        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchListB /><Dashboard />
+        <div
+          style={{
+            minHeight: window.innerHeight * .8,
+            maxWidth: 1200,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            padding: '24px 16px',
+            overflow: 'auto',
+            overflowScrolling: 'touch',
+            WebkitOverflowScrolling: 'touch',
+          }}>
+          <User {...passingProps} />
+        </div>
+        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchListB /><Dashboard /><User />
       }
+
 
       {/* sess && sess.status === 1 && sess.typeid === 'admin' &&
         <Redirect to='/user' />
@@ -267,10 +290,11 @@ function App() {
         */
       }
 
-      <Dialog open={open} handleClose={handleClose}
-        token={csrfToken} setCSRFToken={setCSRFToken}
-        handleSess={handleSess}
-        handleSnackBar={handleSnackBar}/>
+      <Dialog
+        {...passingProps}
+        open={open}
+        handleClose={handleClose}
+        handleSess={handleSess}/>
 
       <SnackBarAlert
         variant={snackBar.variant}

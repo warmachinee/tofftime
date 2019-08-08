@@ -1,7 +1,8 @@
 import React from 'react';
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -16,9 +17,6 @@ import Button from '@material-ui/core/Button';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -32,11 +30,11 @@ const useStyles = makeStyles(theme => ({
     }
   },
   indicator: {
-    backgroundColor: teal[600],
+    backgroundColor: primary[600],
     height: 4
   },
   scrollButtons: {
-    color: teal[900],
+    color: primary[900],
     width: 50,
   },
   notice: {
@@ -62,16 +60,16 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
   },
   checkCircle: {
-    color: teal[600]
+    color: primary[600]
   },
 
 }))
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
@@ -81,11 +79,11 @@ const StyledTabs = withStyles({
     //borderBottom: '1px solid #e8e8e8',
   },
   indicator: {
-    backgroundColor: teal[600],
+    backgroundColor: primary[600],
     height: 4
   },
   scrollButtons: {
-    color: teal[900],
+    color: primary[900],
     width: 50,
   }
 })(Tabs);
@@ -96,14 +94,14 @@ const StyledTab = withStyles(theme => ({
     fontWeight: 500,
     marginRight: theme.spacing(4),
     '&:hover': {
-      color: teal[600],
+      color: primary[600],
       opacity: 1,
     },
     '&$selected': {
-      color: teal[600],
+      color: primary[600],
     },
     '&:focus': {
-      color: teal[600],
+      color: primary[600],
     },
   },
   selected: {},
@@ -124,10 +122,9 @@ function PlayoffContainer(props){
   }
 
   async function handleSetPlayoff(selected){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'matchmember', {
           action: 'setplayoff',
           matchid: matchid,
@@ -150,10 +147,9 @@ function PlayoffContainer(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'playoff',
           matchid: matchid
@@ -181,10 +177,9 @@ function PlayoffContainer(props){
   }
 
   async function handleFetchMatchDetail(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'detail',
           matchid: matchid
@@ -233,16 +228,16 @@ export default function MBPlayoffBody(props){
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ value, setValue ] = React.useState(0);
+  const [ checkPlayoff, setCheckPlayoff ] = React.useState(null);
 
   function handleChange(event, newValue) {
     setValue(newValue);
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'playoff',
           matchid: matchid
@@ -270,10 +265,9 @@ export default function MBPlayoffBody(props){
   }
 
   async function handleFetchMatchDetail(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'detail',
           matchid: matchid
@@ -299,10 +293,9 @@ export default function MBPlayoffBody(props){
   }
 
   async function handleClearPlayoff(d){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'matchmember', {
           action: 'clearplayoff',
           matchid: matchid,
@@ -333,7 +326,7 @@ export default function MBPlayoffBody(props){
           Select class
         </Box>
       </Typography>
-      <Paper elevation={1} style={{ backgroundColor: teal[100], padding: '8px 0' }}>
+      <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
         <StyledTabs
           value={value}
           onChange={handleChange}
@@ -341,11 +334,9 @@ export default function MBPlayoffBody(props){
           scrollButtons="on"
         >
           { matchDetail && matchDetail.class &&
-            matchDetail.class.map( d=>
-              d &&
-              <StyledTab key={d.classname} label={d.classname} />
-            )
-          }
+            matchDetail.class.map( d =>
+              d && <StyledTab key={d.classname} label={d.classname} />
+          )}
         </StyledTabs>
       </Paper>
       <div className={classes.list}>
@@ -379,7 +370,7 @@ export default function MBPlayoffBody(props){
                       { filtered.length <= 1 &&
                         <ListItem>
                           <Typography component="div" style={{ width: '100%' }}>
-                            <Box style={{ textAlign: 'center', color: teal[900] }} fontWeight={500} fontSize={24} m={1}>
+                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                               No playoff player
                             </Box>
                           </Typography>

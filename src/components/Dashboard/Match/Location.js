@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import Loadable from 'react-loadable';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey } from './../../../api/palette'
 
 import Button from '@material-ui/core/Button';
 
@@ -13,10 +14,7 @@ import Box from '@material-ui/core/Box';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CreateIcon from '@material-ui/icons/Create';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../../loading/LDCircular'
+import { LDCircular } from './../../loading/LDCircular'
 
 const LocationList = Loadable({
   loader: () => import(/* webpackChunkName: "LocationList" */'./LocationList'),
@@ -33,7 +31,7 @@ const useStyles = makeStyles(theme => ({
     marginTop: 36
   },
   title: {
-    color: teal[900],
+    color: primary[900],
     fontSize: 18,
   },
   notice: {
@@ -74,20 +72,20 @@ const useStyles = makeStyles(theme => ({
 
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[700],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[700],
     '&:hover': {
-      backgroundColor: teal[900],
+      backgroundColor: primary[900],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[500],
+    color: primary[500],
     fontWeight: 900,
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);

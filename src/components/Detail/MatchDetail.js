@@ -3,9 +3,9 @@ import Loadable from 'react-loadable';
 import { Route } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import socketIOClient from 'socket.io-client'
-import * as API from '../../api'
+import * as API from './../../api'
 
-import { LDCircular } from '../loading/LDCircular'
+import { LDCircular } from './../loading/LDCircular'
 
 const MatchDetailBody = Loadable({
   loader: () => import(/* webpackChunkName: "MatchDetailBody" */'./MatchDetailBody'),

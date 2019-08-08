@@ -1,12 +1,13 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { primary } from './../api/palette'
 
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
-    backgroundColor: '#0d47a1',
+    backgroundColor: primary[800],
     height: 200,
     width: '100%',
     padding: '16px 20%'

@@ -1,15 +1,13 @@
 import React from 'react';
 import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import { primary, grey } from './../../api/palette'
 
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
-
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
@@ -35,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     right: 8
   },
   title: {
-    textAlign: 'center', color: teal[900],
+    textAlign: 'center', color: primary[900],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
@@ -43,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   },
   accountCircle: {
     fontSize: '5rem',
-    color: teal[900],
+    color: primary[900],
     [theme.breakpoints.up(500)]: {
       fontSize: '10rem',
     },
@@ -57,20 +55,21 @@ const useStyles = makeStyles(theme => ({
     },
   },
   textButton: {
-    color: teal[900]
+    color: primary[900]
   },
   loginWith: {
     position: 'absolute',
     left: 16
-  }
+  },
+
 }));
 
 const SignInButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[700],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[700],
     '&:hover': {
-      backgroundColor: teal[900],
+      backgroundColor: primary[900],
     },
   },
 }))(Button);
@@ -97,7 +96,7 @@ const Google = withStyles(theme => ({
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -106,7 +105,7 @@ export default function SignInComponent(props){
   const classes = useStyles();
   const {
     handleSignIn, handleSignInWith, setPageState, actionStatus,
-    username, password, setUsername, setPassword
+    username, password, setUsername, setPassword, setForgotState
   } = props
 
   function handleKeyPress(e){
@@ -168,12 +167,12 @@ export default function SignInComponent(props){
           </div>
         </div>
         <Facebook variant="contained" color="primary" className={classes.button}
-          onClick={()=>handleSignInWith('facebooklogin')}>
+          onClick={()=>handleSignInWith('facebook')}>
           <img src={ (window.innerWidth >= 500)?ic_facebook:ic_facebook_16} className={classes.loginWith}/>
           Sign in with Facebook
         </Facebook>
         <Google variant="contained" color="primary" className={classes.button}
-          onClick={()=>handleSignInWith('googlelogin')}>
+          onClick={()=>handleSignInWith('google')}>
           <img src={ (window.innerWidth >= 500)?ic_google:ic_google_16} className={classes.loginWith}/>
           Sign in with Google
         </Google>
@@ -182,7 +181,7 @@ export default function SignInComponent(props){
             Join us?
           </Button>
           <div style={{ flexGrow: 1 }}></div>
-          <Button color="primary" className={classes.textButton}>
+          <Button color="primary" className={classes.textButton} onClick={()=>setForgotState(true)}>
             Forgot?
           </Button>
         </div>

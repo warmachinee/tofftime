@@ -2,14 +2,12 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { Route, Link } from "react-router-dom";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { primary, grey } from './../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
-import { LDCircular } from '../loading/LDCircular'
+import { LDCircular } from './../loading/LDCircular'
 
 const RouteAnnouncement = Loadable.Map({
   loader: {
@@ -79,6 +77,23 @@ const RouteMatch = Loadable.Map({
   loading: () => <LDCircular />
 });
 
+const RouteUser = Loadable.Map({
+  loader: {
+    User: () => import(/* webpackChunkName: "User" */'./User/User'),
+  },
+  render(loaded, props) {
+    let Component = loaded.User.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
@@ -108,10 +123,10 @@ const StyledButton = withStyles(theme => ({
   root: {
     fontWeight: 700,
     fontSize: 18,
-    color: teal[900],
-    backgroundColor: teal[100],
+    color: primary[900],
+    backgroundColor: primary[100],
     '&:hover': {
-      backgroundColor: teal[300],
+      backgroundColor: primary[300],
     },
   },
 }))(Button);
@@ -168,12 +183,11 @@ export default function Dashboard(props){
   return(
     <Paper className={classes.root}>
       <Route exact path='/user' component={SystemComponent} />
-      <RouteAnnouncement path='/user/announce' token={token} setCSRFToken={setCSRFToken}
-        isSupportWebp={isSupportWebp} handleSnackBar={handleSnackBar}/>
-      <RouteNews path='/user/news' token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp} handleSnackBar={handleSnackBar}/>
-      <RouteMatchList path='/user/matchlist' token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
-      <RouteMatch path='/user/match' token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp}
-        handleSnackBar={handleSnackBar}/>
+      <RouteAnnouncement path='/user/announce' {...props}/>
+      <RouteNews path='/user/news' {...props}/>
+      <RouteMatchList path='/user/matchlist' {...props}/>
+      <RouteMatch path='/user/match' {...props}/>
+      <RouteUser path='/user/user' {...props}/>
     </Paper>
   );
 }

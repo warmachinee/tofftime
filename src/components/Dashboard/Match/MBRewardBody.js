@@ -2,7 +2,8 @@ import React from 'react';
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import * as API from '../../../api'
+import * as API from './../../../api'
+import { primary, grey, red } from './../../../api/palette'
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -18,9 +19,6 @@ import Typography from '@material-ui/core/Typography';
 
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -31,11 +29,11 @@ const useStyles = makeStyles(theme => ({
     marginTop: 24
   },
   indicator: {
-    backgroundColor: teal[600],
+    backgroundColor: primary[600],
     height: 4
   },
   scrollButtons: {
-    color: teal[900],
+    color: primary[900],
     width: 50,
   },
   list: {
@@ -66,11 +64,11 @@ const StyledTabs = withStyles({
     //borderBottom: '1px solid #e8e8e8',
   },
   indicator: {
-    backgroundColor: teal[600],
+    backgroundColor: primary[600],
     height: 4
   },
   scrollButtons: {
-    color: teal[900],
+    color: primary[900],
     width: 50,
   }
 })(Tabs);
@@ -81,41 +79,51 @@ const StyledTab = withStyles(theme => ({
     fontWeight: 500,
     marginRight: theme.spacing(4),
     '&:hover': {
-      color: teal[600],
+      color: primary[600],
       opacity: 1,
     },
     '&$selected': {
-      color: teal[600],
+      color: primary[600],
     },
     '&:focus': {
-      color: teal[600],
+      color: primary[600],
     },
   },
   selected: {},
 }))(props => <Tab disableRipple {...props} />);
 
+const RedButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(red[600]),
+    backgroundColor: red[600],
+    '&:hover': {
+      backgroundColor: red[800],
+    },
+  },
+}))(Button);
+
 const GreenButton = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(teal[500]),
-    backgroundColor: teal[500],
+    color: theme.palette.getContrastText(primary[500]),
+    backgroundColor: primary[500],
     '&:hover': {
-      backgroundColor: teal[700],
+      backgroundColor: primary[700],
     },
   },
 }))(Button);
 
 const GreenTextButton = withStyles(theme => ({
   root: {
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
 }))(Button);
 
 const theme = createMuiTheme({
   palette: {
-    primary: teal,
+    primary: primary,
   },
 });
 
@@ -146,10 +154,9 @@ function RewardContainer(props){
     let prize = []
     userid.push(data.userid)
     prize.push(parseInt(edittingData))
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'rewardsystem', {
           action: 'prize',
           matchid: matchid,
@@ -171,10 +178,9 @@ function RewardContainer(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'reward',
           matchid: matchid
@@ -204,10 +210,9 @@ function RewardContainer(props){
   }
 
   async function handleFetchMatchDetail(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'detail',
           matchid: matchid
@@ -293,7 +298,7 @@ function RewardContainer(props){
                     }}
                     />
                 </ThemeProvider>
-                <Button style={{ height: 36 }} color="primary" variant="contained" onClick={handleSave}>Save</Button>
+                <GreenButton style={{ height: 36 }} onClick={handleSave}>Save</GreenButton>
               </div>
             } />
         )
@@ -332,10 +337,9 @@ export default function MBRewardBody(props){
   }
 
   async function handleCreate(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'rewardsystem', {
           action: 'create',
           matchid: matchid
@@ -360,10 +364,9 @@ export default function MBRewardBody(props){
 
     classno.push(matchDetail.class[value].classno)
     customsequence.push(parseInt(rewardEdit))
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'rewardsystem', {
           action: 'edit',
           matchid: matchid,
@@ -387,12 +390,10 @@ export default function MBRewardBody(props){
 
   async function handleReset(){
     let classno = []
-
     classno.push(matchDetail.class[value].classno)
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'rewardsystem', {
           action: 'clear',
           matchid: matchid,
@@ -413,10 +414,9 @@ export default function MBRewardBody(props){
   }
 
   async function handleFetch(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'reward',
           matchid: matchid
@@ -446,10 +446,9 @@ export default function MBRewardBody(props){
   }
 
   async function handleFetchMatchDetail(){
-    const res = await token? token : API.xhrGet('getcsrf')
     if(matchid){
       await API.xhrPost(
-        token? token : res.token,
+        token? token : await API.xhrGet('getcsrf').token,
         'loadmatch', {
           action: 'detail',
           matchid: matchid
@@ -490,9 +489,10 @@ export default function MBRewardBody(props){
       window.removeEventListener('resize', resizeHandler)
     }
   },[ window.innerWidth ])
+
   return(
     <div className={classes.root}>
-      <Paper elevation={1} style={{ backgroundColor: teal[100], padding: '8px 0' }}>
+      <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
         <StyledTabs
           value={value}
           onChange={handleChange}
@@ -508,9 +508,11 @@ export default function MBRewardBody(props){
         </StyledTabs>
       </Paper>
       <div className={classes.list}>
-        <div style={{ display: 'flex', height: 56 }}>
+        <div style={{ display: 'flex', height: 56, marginBottom: 16 }}>
           { data && data.status &&
-            <Button className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleCreate}>Create</Button>
+            <RedButton className={classes.buttonMargin}
+              style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
+              onClick={handleCreate}>Create</RedButton>
           }
           { editting &&
             <React.Fragment>
@@ -519,7 +521,8 @@ export default function MBRewardBody(props){
                   onChange={e =>handleRewardChange(e.target.value)}
                   onFocus={e => e.target.select()}
                   onKeyPress={e =>handleRewardKeyPress(e)}
-                  label="Edit sequence"
+                  label="Number"
+                  helperText="The number of the player who will get a reward."
                   type="number"
                 />
               </ThemeProvider>
@@ -535,7 +538,7 @@ export default function MBRewardBody(props){
           }
           { !editting &&
             <GreenButton
-              className={classes.buttonMargin} style={{ paddingLeft: 36, paddingRight: 36 }} color='primary' onClick={()=>setEditting(!editting)}>Edit</GreenButton>
+              className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>Edit</GreenButton>
           }
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -569,10 +572,7 @@ export default function MBRewardBody(props){
               }).map( (d, i) =>{
                 return d && (
                   <RewardContainer key={d.userid}
-                    token={token}
-                    setCSRFToken={setCSRFToken}
-                    matchid={matchid}
-                    handleSnackBar={handleSnackBar}
+                    {...props}
                     data={d}
                     setData={setData}
                     setMatchDetail={setMatchDetail}

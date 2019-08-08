@@ -1,7 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, fade } from '@material-ui/core/styles';
-import * as API from '../../api'
+import * as API from './../../api'
+import { primary } from './../../api/palette'
 
 import Scoreboard from './Scoreboard'
 
@@ -18,12 +19,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
-import teal from '@material-ui/core/colors/teal';
-
-import { LDCircular } from '../loading/LDCircular'
+import { LDCircular } from './../loading/LDCircular'
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -45,7 +44,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   title: {
-    color: teal[900],
+    color: primary[900],
     fontWeight: 600,
     fontVariant: 'petite-caps',
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
@@ -58,15 +57,15 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 4,
     marginTop: 4,
     fontWeight: 600,
-    color: teal[800],
+    color: primary[800],
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
   locationIcon: {
     fontSize: 24,
     marginLeft: -8,
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      color: teal[800],
+      color: primary[800],
     },
   },
   imageGrid: {
@@ -115,7 +114,7 @@ const useStyles = makeStyles(theme => ({
   detail: {
     fontSize: 16,
     fontWeight: 600,
-    color: teal[800],
+    color: primary[800],
     minHeight: 200,
     [theme.breakpoints.up(700)]: {
       minHeight: 250,
@@ -133,6 +132,7 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+
 }));
 
 function MatchDetailBody(props) {
@@ -216,8 +216,7 @@ function MatchDetailBody(props) {
 
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             { data && userscore &&
-              <Scoreboard token={token} setCSRFToken={setCSRFToken}
-                data={data} userscore={userscore} matchClass={data && data.class} matchid={matchid}/>
+              <Scoreboard {...props} matchClass={data && data.class} />
 
             }
           </Collapse>

@@ -64,3 +64,22 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/*-------------------- Scrollbar --------------------*/
+/*
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background-color: #b2dfdb;
+}
+::-webkit-scrollbar-thumb {
+  background: #26a69a;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #009688;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #00897b;
+}
+*/

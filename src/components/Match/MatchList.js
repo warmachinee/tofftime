@@ -2,7 +2,8 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import SwipeableViews from 'react-swipeable-views';
-import * as API from '../../api'
+import * as API from './../../api'
+import { primary } from './../../api/palette'
 
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
@@ -11,9 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 
-import teal from '@material-ui/core/colors/teal';
-
-import { LDMatchCard } from '../loading/LDMatchCard'
+import { LDMatchCard } from './../loading/LDMatchCard'
 
 const MatchCard = Loadable({
   loader: () => import(/* webpackChunkName: "MatchCard" */'./MatchCard'),
@@ -33,7 +32,7 @@ const useStyles = makeStyles({
   title: {
     marginTop: 32,
     padding: '0 5%',
-    color: teal[900],
+    color: primary[900],
     fontWeight: 600,
     fontVariant: 'petite-caps'
   },
@@ -42,7 +41,7 @@ const useStyles = makeStyles({
   },
   arrow: {
     fontSize: '3.5rem',
-    color: teal[600]
+    color: primary[600]
   },
   leftArrow: {
     left: '2%',
@@ -51,7 +50,7 @@ const useStyles = makeStyles({
     zIndex: '10',
     backgroundColor: 'white',
     '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
+      backgroundColor: fade(primary[600], 0.25),
     },
   },
   rightArrow: {
@@ -61,7 +60,7 @@ const useStyles = makeStyles({
     zIndex: '10',
     backgroundColor: 'white',
     '&:hover': {
-      backgroundColor: fade(teal[600], 0.25),
+      backgroundColor: fade(primary[600], 0.25),
     },
   },
 });

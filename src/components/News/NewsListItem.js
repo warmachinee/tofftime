@@ -11,7 +11,7 @@ import Avatar from '@material-ui/core/Avatar';
 
 import ImageIcon from '@material-ui/icons/Image';
 
-import * as API from '../../api'
+import * as API from './../../api'
 
 const useStyles = makeStyles(theme => ({
   bigAvatar: {

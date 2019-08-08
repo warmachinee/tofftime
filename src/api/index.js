@@ -17,6 +17,7 @@ const urlLink = {
   googlelogin: webURL() + 'session/auth/google',
   register: webURL() + 'users/register',
   logout: webURL() + 'session/logout',
+  forgotpassword: webURL() + 'users/forgotpassword',
   //--------------------Dashboard--------------------
   loadmatch: webURL() + 'admin/loadmatch',
   loaduser: webURL() + 'admin/loaduser',
@@ -44,12 +45,18 @@ async function xhrGet(url, params){
   }
   req.open('GET', sendUrl, false);
   req.send(null);
+
   return new Promise(resolve => {
     resolve({
       token: req.getResponseHeader('csrf-token'),
       response: JSON.parse(req.responseText),
     });
   });
+  /*
+  return {
+    token: req.getResponseHeader('csrf-token'),
+    response: JSON.parse(req.responseText),
+  }*/
 }
 
 async function xhrPost(token, url, obj, func){
@@ -70,12 +77,13 @@ async function xhrPost(token, url, obj, func){
     if (req.status >= 200 && req.status < 300) {
       func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
     }
+    /*
     if (req.status === 0){
       setTimeout(()=>{
         console.log(req);
         //xhrPost(token, url, obj, func)
       }, 5000)
-    }
+    }*/
   }
   const returnedObj = Object.assign({
     _csrf: token
@@ -125,12 +133,28 @@ function TestFunc(){
   }
 }
 
-function handleSortArray(data, primary, secondary){
+function handleSortArrayByDate(data, primary, secondary){
   if(data){
     var obj = data
     obj.sort( (a, b) =>{
       const da = new Date(a[primary])
       const db = new Date(b[primary])
+      if (da < db) return 1;
+      if (da > db) return -1;
+      if(secondary) return a[secondary].localeCompare(b[secondary]);
+    })
+    return obj
+  }else{
+    return null
+  }
+}
+
+function handleSortArrayByDateStr(data, primary, secondary){
+  if(data){
+    var obj = data
+    obj.sort( (a, b) =>{
+      const da = new Date(handleStringToDate(a[primary]))
+      const db = new Date(handleStringToDate(b[primary]))
       if (da < db) return 1;
       if (da > db) return -1;
       if(secondary) return a[secondary].localeCompare(b[secondary]);
@@ -225,7 +249,8 @@ export {
   fetchPostFile,
   xhrGet,
   xhrPost,
-  handleSortArray,
+  handleSortArrayByDate,
+  handleSortArrayByDateStr,
   handleGetPostTime,
   handleHoleSum,
   handleDateToString,

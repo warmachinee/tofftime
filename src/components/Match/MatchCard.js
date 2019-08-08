@@ -1,7 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from "react-router-dom";
-import * as API from '../../api'
+import * as API from './../../api'
+import { primary, grey } from './../../api/palette'
 
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
@@ -19,9 +20,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 
-import teal from '@material-ui/core/colors/teal';
-import grey from '@material-ui/core/colors/grey';
-
 const useStyles = makeStyles((theme) =>({
   card: {
     maxWidth: 345,
@@ -29,10 +27,10 @@ const useStyles = makeStyles((theme) =>({
     borderRadius: 0
   },
   learnMore: {
-    color: teal[500],
+    color: primary[500],
     fontWeight: 900,
     '&:hover': {
-      backgroundColor: teal[100],
+      backgroundColor: primary[100],
     },
   },
   cardMedia: {
@@ -80,9 +78,9 @@ const useStyles = makeStyles((theme) =>({
   },
   locationIcon: {
     fontSize: 24,
-    color: teal[600],
+    color: primary[600],
     '&:hover': {
-      color: teal[800],
+      color: primary[800],
     },
   }
 }));
@@ -95,7 +93,7 @@ export default function MatchCard(props) {
   const [ matchPicture, setMatchPicture ] = React.useState(
     data? ( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture ) : null
   )
-  
+
   function expandHandler(){
     setExpanded(!expanded)
   }
