@@ -129,8 +129,15 @@ export default function Announcement(props){
   const [ editting, setEditting ] = React.useState(false)
   const [ edittingData, setEdittingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const currentWebURL = hd + API.webURL()
+
+  const passingProps = {
+    token: token,
+    setCSRFToken: setCSRFToken,
+    handleSnackBar: handleSnackBar,
+    isSupportWebp: isSupportWebp
+  }
 
   function handleOpen(action){
     setClickAction(action)
@@ -163,8 +170,9 @@ export default function Announcement(props){
   }
 
   async function handleFetchDelete(data){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'announcemain', {
         action: 'delete',
         announceid: data.announceid
@@ -186,14 +194,12 @@ export default function Announcement(props){
   }
 
   async function handleFetch(){
-    await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'loadmainpage', {
-        action: 'announce',
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setData(d)
-    })
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    const d = await API.xhrGet('loadgeneral',
+    `?_csrf=${token? token : resToken.token}&action=announcelist`
+    )
+    setCSRFToken(d.token)
+    setData(d.response)
   }
 
   React.useEffect(()=>{
@@ -270,7 +276,7 @@ export default function Announcement(props){
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
         <AnnouncementEditor
-          {...props}
+          {...passingProps}
           clickAction={clickAction}
           setData={setData}
           edittingData={edittingData} />

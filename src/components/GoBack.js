@@ -47,14 +47,20 @@ export default function GoBack(props){
     //console.log(root, " : ",rootSplit, " : ", root.substring(0, rootSearchLength));
     return root.substring(0, rootSearchLength)
   }
-
+  /*
+  <div style={{ width: '100%' }}>
+    <Link to={handleBack()} className={classes.linkElement}>
+      <IconButton className={classes.back}>
+        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+      </IconButton>
+    </Link>
+  </div>
+  */
   return(
     <div style={{ width: '100%' }}>
-      <Link to={handleBack()} className={classes.linkElement}>
-        <IconButton className={classes.back}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      </Link>
+      <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+      </IconButton>
     </div>
   );
 }

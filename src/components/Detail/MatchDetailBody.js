@@ -139,9 +139,8 @@ function MatchDetailBody(props) {
   const classes = useStyles();
   const { data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
   const [ expanded, setExpanded ] = React.useState(true)
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const matchPicture = data?( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture ):null
-  const imageEl = React.useRef(null)
 
   function expandHandler(){
     setExpanded(!expanded)
@@ -172,15 +171,15 @@ function MatchDetailBody(props) {
           <Typography gutterBottom component="div" style={{ display: 'flex' }}>
             <LocationOnIcon className={classes.locationIcon}/>
             <Box className={classes.location} >
-              {data?data.location:'Location'}
+              {data?data.location:'Location'} {data? '(' + data.locationversion + ')':''}
             </Box>
           </Typography>
           <div>
             { matchPicture &&
               isSupportWebp?
-              <img ref={imageEl} src={matchPicture + '.webp'} align="left" className={classes.image} />
+              <img src={matchPicture + '.webp'} align="left" className={classes.image} />
               :
-              <img ref={imageEl} src={matchPicture + '.jpg'} align="left" className={classes.image} />
+              <img src={matchPicture + '.jpg'} align="left" className={classes.image} />
             }
           </div>
           {/*

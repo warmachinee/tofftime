@@ -1,5 +1,6 @@
 import React from 'react';
 import Fuse from 'fuse.js';
+import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
@@ -125,7 +126,7 @@ const theme = createMuiTheme({
 
 export default function AddPlayerModal(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar, setMBData, setMBMatchDetail } = props
+  const { playerAction, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
 
   const [ data, setData ] = React.useState(null)
   const [ createState, setCreateState ] = React.useState(false)
@@ -150,9 +151,21 @@ export default function AddPlayerModal(props){
     }
   }
 
+  function handleInviteUser(d){
+    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
+    const socket = socketIOClient( hd + API.webURL() )//[0] : hostid , [1] : targetuserid
+
+    socket.emit('match-request-client-message', {
+      action: "invite",
+      matchid: matchid,
+      userid: [ sess.userid, d.userid],
+    })
+  }
+  
   async function handleCreatePlayer(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'usersystem', {
         action: 'create',
         fullname: fullname,
@@ -165,16 +178,14 @@ export default function AddPlayerModal(props){
         variant: d.status === 'success' ? 'success' : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-      try {
-        handleFetchUserList()
-      }catch(err) { console.log(err.message) }
     })
   }
 
   async function handleLoadUser(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'loaduser', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loaduser' : 'mloaduser', {
         action: 'userlist'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
@@ -183,9 +194,10 @@ export default function AddPlayerModal(props){
   }
 
   async function handleAddUser(d){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'matchmember', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
         action: 'add',
         matchid: matchid,
         userid: d.userid
@@ -197,47 +209,15 @@ export default function AddPlayerModal(props){
         variant: d.status === 'add member success' ? 'success' : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-      try {
-        handleFetchUserList()
-      }catch(err) { console.log(err.message) }
     })
-  }
-
-  async function handleFetchUserList(){
-    if(matchid){
-      await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
-          action: 'userlist',
-          matchid: matchid
-      }, (csrf, d) =>{
-        setCSRFToken(csrf)
-        if(
-          d.status !== 'no data' ||
-          d.status !== 'wrong action' ||
-          d.status !== 'wrong params'
-        ){
-          setMBData(d)
-          try {
-            handleFetchMatchDetail()
-          }catch(err) { console.log(err.message) }
-        }else{
-          handleSnackBar({
-            state: true,
-            message: d.status,
-            variant: 'error',
-            autoHideDuration: 5000
-          })
-        }
-      })
-    }
   }
 
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatchsystem' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -249,6 +229,7 @@ export default function AddPlayerModal(props){
           d.status !== 'wrong params'
         ){
           setMBMatchDetail(d)
+          handleLoadUser()
         }else{
           handleSnackBar({
             state: true,
@@ -263,7 +244,7 @@ export default function AddPlayerModal(props){
 
   React.useEffect(()=>{
     handleLoadUser()
-  },[ props.data ])
+  },[ ])
 
   return(
     <div className={classes.root}>
@@ -309,6 +290,8 @@ export default function AddPlayerModal(props){
       </Collapse>
       <ThemeProvider theme={theme}>
         <TextField
+          autoFocus
+          disabled={data === null}
           className={classes.searchBox}
           variant="outlined"
           placeholder={ !searchUser? "Search player" : '' }
@@ -340,7 +323,7 @@ export default function AddPlayerModal(props){
               return value && (
                 <React.Fragment key={value.firstname + `(${value.userid})`}>
                   <ListItem role={undefined} dense button
-                    onClick={()=>handleAddUser(value)}>
+                    onClick={()=>playerAction === 'add' ? handleAddUser(value) : handleInviteUser(value)}>
                     <ListItemIcon className={classes.listItemIcon}>
                       <AddCircleIcon classes={{ root: classes.addCircleIcon }}/>
                     </ListItemIcon>

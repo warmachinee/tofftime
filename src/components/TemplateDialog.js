@@ -32,9 +32,6 @@ const useStyles = makeStyles(theme => ({
     overflowScrolling: 'touch',
     WebkitOverflowScrolling: 'touch',
     width: '100%',
-    maxWidth: '100%',
-    height: 'auto',
-    maxHeight: 'calc(100% - 16px)'
   },
   close: {
     position: 'absolute',
@@ -49,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 export default function TemplateDialog(props) {
   const classes = useStyles();
   const [ modalStyle ] = React.useState(getModalStyle);
-  const { open, handleClose, getRef } = props
+  const { open, handleClose, getRef, fullScreen } = props
   const container = React.useRef(null);
 
   const [ ,updateState ] = React.useState(null)
@@ -72,7 +69,13 @@ export default function TemplateDialog(props) {
           open={open}
           onClose={handleClose}
         >
-          <div id="template-dialog" style={{ ...modalStyle, maxWidth: props.maxWidth? props.maxWidth : 600, }} className={classes.paper}>
+          <div id="template-dialog"
+            style={{
+              ...modalStyle,
+              maxWidth: fullScreen? '100%' : ( props.maxWidth? props.maxWidth : 600 ),
+              maxHeight: fullScreen ? '100%' : 'calc(100% - 16px)',
+              height: fullScreen ? '100%' : 'auto',
+            }} className={classes.paper}>
             <IconButton className={classes.close} onClick={handleClose}>
               <CloseIcon classes={{ root: classes.closeIcon }}/>
             </IconButton>

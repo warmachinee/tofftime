@@ -100,9 +100,9 @@ export default function Dialog(props) {
   const container = React.useRef(null);
 
   async function handleGetUserinfo(){
-    const res = await API.xhrGet('getcsrf')
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      res.token,
+      token? token : resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
@@ -111,8 +111,9 @@ export default function Dialog(props) {
   }
 
   async function handleSignIn(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      props.token,
+      token? token : resToken.token,
       'login', {
         username: username,
         password: password
@@ -139,8 +140,9 @@ export default function Dialog(props) {
     var url =''
     if(action === 'facebook'){ url = 'facebooklogin' }
     if(action === 'google'){ url = 'googlelogin' }
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const d = await API.xhrGet( url,
-    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}`
+    `?_csrf=${token? token : resToken.token}`
     )
     console.log(d);
     setCSRFToken(d.token)
@@ -151,8 +153,9 @@ export default function Dialog(props) {
   async function handleSignUp(d){
     const tempUsername = d.username
     const tempPassword = d.password
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      props.token,
+      token? token : resToken.token,
       'register', {
         username: d.username,
         password: d.password,
@@ -166,8 +169,8 @@ export default function Dialog(props) {
       handleActionStatus(d.status)
       handleSnackBar({
         state: true,
-        message: d.log,
-        variant: d.log === 'success'?'success':'error',
+        message: d.status,
+        variant: d.status === 'success'?'success':'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       if(d.status === 'success'){

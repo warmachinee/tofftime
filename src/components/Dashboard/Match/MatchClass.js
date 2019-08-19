@@ -230,11 +230,12 @@ export default function MatchClass(props) {
   function handleDragOver(d){
     handleDropItem(d)
   }
-
+  
   async function handleFetchAdd(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'matchsection', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classadd',
         matchid: matchid,
         classname: text
@@ -253,9 +254,10 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchEdit(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'matchsection', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classedit',
         matchid: matchid,
         classname: arrEdit,
@@ -275,9 +277,10 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchRemove(d){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'matchsection', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classremove',
         matchid: matchid,
         classno: parseInt(d)
@@ -300,9 +303,10 @@ export default function MatchClass(props) {
   }
 
   async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'loadmatch', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
         action: 'detail',
         matchid: matchid
     }, (csrf, d) =>{
@@ -327,15 +331,17 @@ export default function MatchClass(props) {
 
   React.useEffect(()=>{
     if(data){
-      let classname = [];
-      let classno = [];
-      for(var i = 0;i < data.length;i++){
-        classname.push(data[i].classname)
-        classno.push(data[i].classno)
+      if(data.class){
+        let classname = [];
+        let classno = [];
+        for(var i = 0;i < data.class.length;i++){
+          classname.push(data.class[i].classname)
+          classno.push(data.class[i].classno)
+        }
+        setArrEdit(classname)
+        setArrEditClassno(classno)
+        setLists(data.class)
       }
-      setArrEdit(classname)
-      setArrEditClassno(classno)
-      setLists(data)
     }
   },[ data ])
 
@@ -350,6 +356,13 @@ export default function MatchClass(props) {
           onClick={()=>setClassAction( classAction === 'delete'? '':'delete')}>Remove</Button>
       </div>
       <List className={classes.root}>
+        { lists && lists.length === 0 && data &&
+          <ListItem>
+            <ListItemText
+              style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, color: primary[900] }}
+              primary={ data.scorematch === 1? "No class" : "No flight" } />
+          </ListItem>
+        }
         { lists && ( classAction === '' || classAction === 'add' ) &&
           lists.map( (d, i) =>{
             return d && (
@@ -359,13 +372,15 @@ export default function MatchClass(props) {
             )
           }
         )}
-        { classAction === 'add' &&
+        { classAction === 'add' && data &&
           <ListItem className={classes.addClass}>
             <ThemeProvider theme={theme}>
               <TextField
                 fullWidth
                 autoFocus
                 value={text || ''}
+                type={ data.scorematch === 1? 'text' : 'number' }
+                helperText={ data.scorematch === 1? 'Please input class name.' : 'Please input number.' }
                 onChange={e =>setText(e.target.value)}
                 onKeyPress={e =>handleKeyPress(e.key)}
               />
@@ -378,7 +393,7 @@ export default function MatchClass(props) {
             </ListItemIcon>
           </ListItem>
         }
-        { lists && classAction === 'edit' &&
+        { lists && classAction === 'edit' && data &&
           arrEdit.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
@@ -428,7 +443,7 @@ export default function MatchClass(props) {
           }
         )}
       </List>
-      { classAction === 'edit' &&
+      { classAction === 'edit' && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenButton className={classes.saveButton} onClick={handleSave}>Save</GreenButton>
         </div>

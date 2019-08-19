@@ -112,7 +112,7 @@ function PlayoffContainer(props){
   const { token, setCSRFToken, matchid, handleSnackBar, data, setData, setMatchDetail } = props
 
   function handleUpdatePlayoff(selected){
-    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
     const socket = socketIOClient( hd + API.webURL() )
     socket.emit('client-message', {
       action: "updateplayoff",
@@ -123,9 +123,10 @@ function PlayoffContainer(props){
 
   async function handleSetPlayoff(selected){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'matchmember', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'setplayoff',
           matchid: matchid,
           userid: selected.userid,
@@ -148,9 +149,10 @@ function PlayoffContainer(props){
 
   async function handleFetch(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'playoff',
           matchid: matchid
       }, (csrf, d) =>{
@@ -178,9 +180,10 @@ function PlayoffContainer(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -233,12 +236,13 @@ export default function MBPlayoffBody(props){
   function handleChange(event, newValue) {
     setValue(newValue);
   }
-
+  
   async function handleFetch(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'playoff',
           matchid: matchid
       }, (csrf, d) =>{
@@ -266,9 +270,10 @@ export default function MBPlayoffBody(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -294,9 +299,10 @@ export default function MBPlayoffBody(props){
 
   async function handleClearPlayoff(d){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'matchmember', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'clearplayoff',
           matchid: matchid,
           classno: d.classno

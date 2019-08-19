@@ -1,6 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { LDSlider } from './loading/LDSlider';
 import { LDNews } from './loading/LDNews';
 
@@ -14,25 +14,24 @@ const News = Loadable({
   loading: () => <LDNews />
 });
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    maxWidth: 1200,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    [theme.breakpoints.up(900)]: {
-      flexDirection: 'row',
-      marginTop: 16,
-      maxHeight: 450
-    },
-  },
-}));
-
 export default function AnnouncementNewsGrid(props) {
-  const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp, scale = 1 } = props
+  const useStyles = makeStyles(theme => ({
+    root: {
+      maxWidth: 1200,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      [theme.breakpoints.up(900 * scale)]: {
+        flexDirection: 'row',
+        marginTop: 16,
+        maxHeight: 450
+      },
+    },
 
+  }));
+  const classes = useStyles();
   const [ ,updateState ] = React.useState(null)
 
   function resizeHandler(){
@@ -45,7 +44,7 @@ export default function AnnouncementNewsGrid(props) {
       window.removeEventListener('resize', resizeHandler)
     }
   },[ window.innerWidth ])
-
+  
   return (
     <div className={classes.root}>
       <Slider {...props}/>

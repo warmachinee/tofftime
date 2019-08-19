@@ -74,30 +74,23 @@ const theme = createMuiTheme({
 
 export default function MatchTeam(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, data, matchid, setData, handleSnackBar } = props
-  const [ currentTime, setCurrentTime ] = React.useState(getTime())
+  const { token, setCSRFToken, matchDetail, matchid, handleSnackBar } = props
+  const [ currentTime, setCurrentTime ] = React.useState(API.getTodayTime())
   const [ period, setPeriod ] = React.useState(0)
   const [ person, setPerson] = React.useState(0)
 
-  function getTime(){
-    const today = new Date()
-    const hr = ( today.getHours() < 10 )? '0' + today.getHours() : today.getHours()
-    const min = ( today.getMinutes() < 10 )? '0' + today.getMinutes() : today.getMinutes()
-    const time = hr + ":" + min
-    return time
-  }
-
   function handleKeyPress(e){
     if (e === 'Enter'){
-      handleCreateSchedule()
+      handleSchedule()
     }
   }
 
-  async function handleCreateSchedule(){
+  async function handleSchedule(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'matchsection', {
-        action: 'createschedule',
+        action: ( matchDetail && matchDetail.length === 0 ) ? 'createschedule' : 'editschedule',
         matchid: parseInt(matchid),
         period: period,
         starttime: currentTime,
@@ -105,95 +98,59 @@ export default function MatchTeam(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       console.log(d);
-      try{
-        handleFetch()
-      }catch(err) { console.log(err.message) }
     })
   }
-
-
-  async function handleFetch(){
-    await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'loadmatch', {
-        action: 'detail',
-        matchid: matchid
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      if(
-        d.status !== 'class database error' ||
-        d.status !== 'wrong matchid' ||
-        d.status !== 'wrong action' ||
-        d.status !== 'wrong params'
-      ){
-        setData(d)
-      }else{
-        handleSnackBar({
-          state: true,
-          message: d.status,
-          variant: 'error',
-          autoHideDuration: 5000
-        })
-      }
-    })
-  }
-
-  React.useEffect(()=>{
-    console.log(data);
-  },[ data ])
 
   return (
     <div className={classes.root}>
-      { !( data && data.length ) &&
-        <React.Fragment>
-          <Typography component="div">
-            <Box className={classes.title} fontWeight={600}>
-              Create Team
-            </Box>
-          </Typography>
-          <div style={{ marginTop: 24 }}>
-            <ThemeProvider theme={theme}>
+      <React.Fragment>
+        <Typography component="div">
+          <Box className={classes.title} fontWeight={600}>
+            { matchDetail && matchDetail.length === 0 ? 'Create Team' : 'Edit Team' }
+          </Box>
+        </Typography>
+        <div style={{ marginTop: 24 }}>
+          <ThemeProvider theme={theme}>
+            <TextField
+              fullWidth
+              className={classes.timePicker}
+              label="Time"
+              type="time"
+              onKeyPress={e =>handleKeyPress(e.key)}
+              onChange={e => setCurrentTime(e.target.value)}
+              defaultValue={currentTime}/>
+            <div className={classes.fieldGrid}>
               <TextField
-                fullWidth
-                className={classes.timePicker}
-                label="Time"
-                type="time"
+                className={classes.textField}
+                variant="outlined"
+                label="Period"
+                helperText="0 - 59 minute"
+                value={period}
                 onKeyPress={e =>handleKeyPress(e.key)}
-                onChange={e => setCurrentTime(e.target.value)}
-                defaultValue={currentTime}/>
-              <div className={classes.fieldGrid}>
-                <TextField
-                  className={classes.textField}
-                  variant="outlined"
-                  label="Period"
-                  helperText="0 - 59 minute"
-                  value={period}
-                  onKeyPress={e =>handleKeyPress(e.key)}
-                  onChange={e => setPeriod(parseInt(e.target.value))}
-                  onFocus={e => e.target.select()}
-                  type="number"/>
-                <div style={{ width: 16 }}/>
-                <TextField
-                  className={classes.textField}
-                  variant="outlined"
-                  label="Person"
-                  helperText="Number of persons in the team"
-                  value={person}
-                  onKeyPress={e =>handleKeyPress(e.key)}
-                  onChange={e => setPerson(parseInt(e.target.value))}
-                  onFocus={e => e.target.select()}
-                  type="number"/>
-              </div>
-              <GreenButton
-                fullWidth
-                className={classes.createButton}
-                onClick={handleCreateSchedule}>
-                Create
-              </GreenButton>
-            </ThemeProvider>
-          </div>
-        </React.Fragment>
-      }
+                onChange={e => setPeriod(parseInt(e.target.value))}
+                onFocus={e => e.target.select()}
+                type="number"/>
+              <div style={{ width: 16 }}/>
+              <TextField
+                className={classes.textField}
+                variant="outlined"
+                label="Person"
+                helperText="Number of persons in the team"
+                value={person}
+                onKeyPress={e =>handleKeyPress(e.key)}
+                onChange={e => setPerson(parseInt(e.target.value))}
+                onFocus={e => e.target.select()}
+                type="number"/>
+            </div>
+            <GreenButton
+              fullWidth
+              className={classes.createButton}
+              onClick={handleSchedule}>
+              { matchDetail && matchDetail.length === 0 ? 'Create' : 'Confirm' }
+            </GreenButton>
+          </ThemeProvider>
+        </div>
+      </React.Fragment>
     </div>
   );
 }

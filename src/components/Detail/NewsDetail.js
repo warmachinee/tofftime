@@ -45,26 +45,53 @@ const useStyles = makeStyles(theme => ({
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
   },
+
 }))
 
 export default function NewsDetail(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const currentWebURL = hd + API.webURL()
 
-  async function handleFetch(){
-    const newsid = parseInt(props.computedMatch.params.detailparam)
+  async function handleFetchPost(newsid, pageid){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'ploadpage', {
+        action: 'postdetail',
+        pageid: pageid,
+        postid: newsid,
+        userid: sess.userid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      console.log('postdetail', d);
+    })
+  }
+
+  async function handleFetch(newsid){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}&action=newsdetail&newsid=${newsid}`
+    `?_csrf=${token? token : resToken.token}&action=newsdetail&newsid=${newsid}`
     )
     setCSRFToken(d.token)
     setData(d.response)
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    const splitStr = props.computedMatch.params.detailparam.split('-')
+    let newsid;
+    let pageid;
+    console.log(splitStr);
+    if(splitStr.length > 1){
+      newsid = parseInt(splitStr[0])
+      pageid = parseInt(splitStr[1])
+      handleFetchPost(newsid, pageid)
+    }else{
+      newsid = parseInt(props.computedMatch.params.detailparam)
+      handleFetch(newsid)
+    }
   },[ ])
 
   return(

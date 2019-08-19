@@ -192,7 +192,7 @@ const theme = createMuiTheme({
 
 export default function User(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { token, setCSRFToken, matchid, handleSnackBar, isSupportWebp } = props
 
   const [ open, setOpen ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
@@ -204,8 +204,16 @@ export default function User(props){
   const [ fullname, setFullname ] = React.useState('')
   const [ lastname, setLastname ] = React.useState('')
   const [ selectedFile, setSelectedFile ] = React.useState(null);
+  const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
+
+  const passingProps = {
+    token: token,
+    setCSRFToken: setCSRFToken,
+    handleSnackBar: handleSnackBar,
+    isSupportWebp: isSupportWebp
+  }
 
   function handleOpen(d){
     setOpen(!open)
@@ -284,6 +292,7 @@ export default function User(props){
   function handlePicture(e){
     const file = event.target.files[0]
     const fileSize = file.size
+    var reader = new FileReader();
     if( fileSize > 5000000 ){
       handleSnackBar({
         state: true,
@@ -294,6 +303,10 @@ export default function User(props){
     }else{
       if( file.type === 'image/jpeg' || file.type === 'image/png'){
         setSelectedFile(file)
+        reader.readAsDataURL(file);
+        reader.onloadend = function (){
+          setTempFile(reader.result)
+        }
       }else{
         handleSnackBar({
           state: true,
@@ -306,8 +319,9 @@ export default function User(props){
   }
 
   async function handleCreatePlayer(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'usersystem', {
         action: 'create',
         fullname: fullname,
@@ -336,8 +350,9 @@ export default function User(props){
   }
 
   async function handleLoadUser(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'loaduser', {
         action: 'userlist'
     }, (csrf, d) =>{
@@ -526,7 +541,7 @@ export default function User(props){
                 className={classes.matchImg}
                 src={
                   selectedFile ?
-                  URL.createObjectURL(selectedFile)
+                  tempFile
                   :
                   ( isSupportWebp? edittingUser.photopath + '.webp': edittingUser.photopath + '.jpg' )
                 }/>

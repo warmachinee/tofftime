@@ -67,7 +67,8 @@ const useStyles = makeStyles(theme => ({
   },
   createIcon: {
     marginRight: 12,
-  }
+  },
+
 }));
 
 const GreenButton = withStyles(theme => ({
@@ -92,7 +93,7 @@ const GreenTextButton = withStyles(theme => ({
 
 export default function Location(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, handleClose } = props
+  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, handleClose } = props
   const [ pageState, setPageState ] = React.useState('select')
   const [ edittingField, setEdittingField ] = React.useState(null)
 
@@ -135,21 +136,21 @@ export default function Location(props) {
       }
 
       { pageState === 'select' &&
-        <LocationList token={token} setCSRFToken={setCSRFToken}
-          handleSnackBar={handleSnackBar}
-          selectedField={selectedField}
-          setSelectedField={setSelectedField}
+        <LocationList
+          {...props}
           setEdittingField={setEdittingField}
           setPageState={setPageState}/>
       }
 
       { pageState === 'create' &&
-        <LocationEditor token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}
+        <LocationEditor
+          {...props}
           setPageState={setPageState}/>
       }
 
       { pageState === 'edit' &&
-        <LocationEditor token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}
+        <LocationEditor
+          {...props}
           edittingField={edittingField}
           setEdittingField={setEdittingField}
           setPageState={setPageState}/>

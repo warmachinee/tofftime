@@ -12,50 +12,43 @@ const MatchDetailBody = Loadable({
   loading: () => <LDCircular />
 });
 
-class MatchDetail extends React.Component{
-  constructor(props) {
-    super(props)
-    this.state = {
-      endpoint: API.webURL(),
-      csrfToken: null,
-      data: null,
-      userscore: null
-    }
-  }
+export default function MatchDetail(props){
+  const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, handleSnackBarL } = props
+  const endpoint = API.webURL()
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
+  const [ data, setData ] = React.useState(null)
+  const [ userscore, setUserscore ] = React.useState(null)
 
-  handleFetch = async () =>{
-    const res = await API.xhrGet('getcsrf')
+  async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      res.token,
+      token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',
-        matchid: parseInt(this.props.computedMatch.params.matchparam)
+        matchid: parseInt(props.computedMatch.params.matchparam)
     }, (csrf, d) =>{
-      this.props.setCSRFToken(csrf)
+      setCSRFToken(csrf)
       if(d.status === 'wrong params'){
-        this.props.handleSnackBar({
+        handleSnackBar({
           state: true,
           message: d.status,
           variant: 'error',
           autoHideDuration: 5000
         })
       }else{
-        this.setState({
-          data: d,
-          userscore: d.userscore
-        })
+        setData(d)
+        setUserscore(d.userscore)
       }
     })
   }
 
-  response = () => {
-    const { endpoint, userscore } = this.state
-    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  function response(){
+    const matchid = parseInt(props.computedMatch.params.matchparam)
     const socket = socketIOClient( hd + endpoint )
-    socket.on('admin-match-server-message', (messageNew) => {
+    socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
       if(messageNew && messageNew.status === 'success'){
         if(messageNew.hostdetail){
-          this.props.handleSnackBarL({
+          handleSnackBarL({
             state: true,
             sFULLNAME: messageNew.hostdetail.fullname,
             sLASTNAME: messageNew.hostdetail.lastname,
@@ -65,35 +58,21 @@ class MatchDetail extends React.Component{
             sPAR: messageNew.hostdetail.par
           })
         }
-        this.setState({ userscore: messageNew.result })
-        /*
-        this.props.handleSnackBar({
-          state: true,
-          message: messageNew.status,
-          variant: messageNew.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
-        })*/
+        setUserscore(messageNew.result)
       }
     })
   }
 
-  componentDidMount = () => {
-    this.response()
-    this.handleFetch()
-  }
+  React.useEffect(()=>{
+    response()
+    handleFetch()
+  },[ ])
 
-  render(){
-    const { token, setCSRFToken, isSupportWebp } = this.props
-    const { message, data, userscore } = this.state
-
-    return(
-      /*
-      <MatchDetailBody data={data} userscore={userscore} matchid={parseInt(this.props.computedMatch.params.matchparam)}
-        token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp}/>
-      */
-      <MatchDetailBody data={data} userscore={userscore}
-        token={token} setCSRFToken={setCSRFToken} isSupportWebp={isSupportWebp}/>
-    );
-  }
+  return(
+    <MatchDetailBody
+      {...props}
+      data={data}
+      userscore={userscore}
+      matchid={parseInt(props.computedMatch.params.matchparam)} />
+  );
 }
-export default MatchDetail;

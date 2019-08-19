@@ -1,7 +1,7 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { primary, blueGrey, amber, green } from './../../api/palette'
+import { primary, secondary, blueGrey, amber, green } from './../../api/palette'
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -308,7 +308,7 @@ export default function ScoreTable(props) {
           ref={inputEl}
           position="relative"
           style={{
-            backgroundColor: primary[900],
+            backgroundColor: secondary[900],
           }}>
           <Table className={classes.table}>
             <TableBody>
@@ -334,7 +334,7 @@ export default function ScoreTable(props) {
           style={{
             position: 'fixed',
             top: window.innerWidth > 600 ? 64: 56,
-            backgroundColor: primary[900],
+            backgroundColor: secondary[900],
           }}>
           <Table
             className={classes.table}

@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: primary[800],
     height: 200,
     width: '100%',
-    padding: '16px 20%'
+    padding: '16px 20%',
   },
 }));
 

@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-ro
 import * as API from './api'
 import { blueGrey } from './api/palette'
 
+import { LDCircular } from './components/loading/LDCircular';
 import { LDTopnav } from './components/loading/LDTopnav';
 
 const Header = Loadable({
@@ -28,6 +29,23 @@ const RouteMain = Loadable.Map({
     )
   },
   loading: () => null
+});
+
+const RouteOrganizer = Loadable.Map({
+  loader: {
+    Organizer: () => import(/* webpackChunkName: "Organizer" */'./page/Organizer'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Organizer.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => <LDCircular />
 });
 
 const MatchList = Loadable({
@@ -103,6 +121,23 @@ const RouteDashboard = Loadable.Map({
   loading: () => null
 });
 
+const RouteUserPage = Loadable.Map({
+  loader: {
+    UserPage: () => import(/* webpackChunkName: "UserPage" */'./page/UserPage'),
+  },
+  render(loaded, props) {
+    let Component = loaded.UserPage.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteScoreDisplay = Loadable.Map({
   loader: {
     ScoreDisplay: () => import(/* webpackChunkName: "ScoreDisplay" */'./components/ScoreDisplay'),
@@ -145,19 +180,10 @@ const Footer = Loadable({
   loading: () => null
 });
 
-
-
-import MatchEditor from './components/Dashboard/Match/MatchEditor'
-import MatchBody from './components/Dashboard/Match/MatchBody'
-import MatchDetail from './components/Detail/MatchDetail'
-import MatchListB from './components/Dashboard/MatchList/MatchList'
-import News from './components/Dashboard/News/News'
-import NewsDetail from './components/Detail/NewsDetail'
-import Announcement from './components/Dashboard/Announcement/Announcement'
-import Dashboard from './components/Dashboard/Dashboard'
-import User from './components/Dashboard/User/User'
-import ScoreDisplay from './components/ScoreDisplay'
-
+import Organizer from './page/Organizer'
+import PageEditor from './components/page/PageEditor'
+import PagePost from './components/page/PagePost'
+import EditPage from './components/page/EditPage'
 
 function App() {
   const [ csrfToken, setCSRFToken ] = React.useState(null)
@@ -177,10 +203,12 @@ function App() {
     sPAR: 0
   })
   const [ open, setOpen ] = React.useState(false);
-  const [ sess, handleSess ] = React.useState([])
+  const [ sess, handleSess ] = React.useState(null)
   const [ isSupportWebp, handleSupportWebp ] = React.useState(false)
+  const [ pageData, setPageData ] = React.useState(null)
 
   const passingProps = {
+    sess: sess,
     token: csrfToken,
     setCSRFToken: setCSRFToken,
     handleSnackBar: handleSnackBar,
@@ -212,55 +240,68 @@ function App() {
     }
   }
 
-  async function handleGetToken(){
-    const res = await API.xhrGet('getcsrf')
-    setCSRFToken(res.token)
-    await handleGetUserinfo()
-  }
-
   async function handleGetUserinfo(){
-    const res = await API.xhrGet('getcsrf')
+    const resToken = await API.xhrGet('getcsrf')
     await API.xhrPost(
-      res.token,
+      resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSess(d)
+      console.log(d);
+      if(d.status !== 1 && window.location.pathname !== '/'){
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
     })
     await detectWebp()
   }
 
   React.useEffect(()=>{
-    //handleGetToken()
     handleGetUserinfo()
     /*
     const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
-    console.log(/iPad|iPhone|iPod/.test(navigator.userAgent));*/
+    console.log(/iPad|iPhone|iPod/.test(navigator.userAgent));
+    */
   },[ ])
 
   return (
     <div style={{ backgroundColor: blueGrey[50], minHeight: window.innerHeight }}>
       <Header
-        sess={sess}
+        {...passingProps}
+        pageData={pageData}
         handleOpen={handleOpen}
-        handleSess={handleSess}
-        setCSRFToken={setCSRFToken} />
-
-      { !true ?
+        handleSess={handleSess} />
+      { true ?
         <Switch>
           <RouteMain exact path="/"
-            {...passingProps}/>
+            {...passingProps} />
+
+          <RouteOrganizer path={`/page/:pageParam`}
+            {...passingProps}
+            setPageData={setPageData} />
+
           <RouteAnnounceDetail path="/announce/:detailparam"
-            {...passingProps}/>
+            {...passingProps} />
           <RouteNewsDetail path="/news/:detailparam"
-            {...passingProps}/>
+            {...passingProps} />
           <RouteMatchDetail path="/match/:matchparam"
             {...passingProps}
             handleSnackBarL={handleSnackBarL} />
-          <RouteDashboard path="/user"
+
+          <RouteDashboard path="/admin"
             {...passingProps} />
+          <RouteUserPage path="/user"
+            {...passingProps}
+            setHPageData={setPageData} />
+
           <RouteScoreDisplay path="/display/:matchid/:userid"
             {...passingProps} />
+
           <Route component={NoMatch} />
         </Switch>
         :
@@ -275,9 +316,9 @@ function App() {
             overflowScrolling: 'touch',
             WebkitOverflowScrolling: 'touch',
           }}>
-          <User {...passingProps} />
+          <EditPage {...passingProps} />
         </div>
-        //<MatchBody /><MatchEditor /><MatchDetailBody /><MatchListB /><Dashboard /><User />
+        //<MatchBody /><MatchEditor /><MatchDetailBody /><UserPage /><Dashboard /><User /><MatchDetail />
       }
 
 
@@ -285,9 +326,17 @@ function App() {
         <Redirect to='/user' />
         */
       }
-      { /*sess && sess.status !== 1 && sess.typeid !== 'admin' && window.location === '/user' &&
+
+      {
+        sess && sess.status !== 1 &&
+        /.com\/admin/.test(window.location.href) &&
         <Redirect to='/' />
-        */
+      }
+
+      {
+        sess && sess.status !== 1 &&
+        /.com\/user/.test(window.location.href) &&
+        <Redirect to='/' />
       }
 
       <Dialog

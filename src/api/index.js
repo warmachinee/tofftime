@@ -3,6 +3,8 @@ function webURL(){
   return URL[1]
 }
 
+var count = 0
+
 const urlLink = {
   //--------------------Main Page--------------------
   main: webURL(),
@@ -11,6 +13,7 @@ const urlLink = {
   userinfo: webURL() + 'session/userinfo',
   views: webURL() + 'session/views',
   loadgeneral: webURL() + 'main/loadgeneral',
+  loadmatchsystem: webURL() + 'main/loadmatchsystem',
   //--------------------Account--------------------
   login: webURL() + 'users/login',
   facebooklogin: webURL() + 'session/auth/facebook',
@@ -18,7 +21,9 @@ const urlLink = {
   register: webURL() + 'users/register',
   logout: webURL() + 'session/logout',
   forgotpassword: webURL() + 'users/forgotpassword',
-  //--------------------Dashboard--------------------
+  loadusersystem: webURL() + 'users/loadusersystem',
+  usersystem: webURL() + 'users/usersystem',
+  //--------------------Admin--------------------
   loadmatch: webURL() + 'admin/loadmatch',
   loaduser: webURL() + 'admin/loaduser',
   matchsystem: webURL() + 'admin/matchsystem',
@@ -33,20 +38,35 @@ const urlLink = {
   usersystem: webURL() + 'admin/usersystem',
   newsmain: webURL() + 'admin/newsmain',
   announcemain: webURL() + 'admin/announcemain',
+  //--------------------User--------------------
+  mloadmatch: webURL() + 'match/loadmatch',
+  mloaduser: webURL() + 'match/loaduser',
+  mmatchsystem: webURL() + 'match/matchsystem',
+  mmatchmember: webURL() + 'match/matchmember',
+  mdisplaymatchsystem: webURL() + 'match/displaymatchsystem',
+  mmatchsection: webURL() + 'match/matchsection',
+  mrewardsystem: webURL() + 'match/rewardsystem',
+  //--------------------Field--------------------
+  floadfield: webURL() + 'field/loadfield',
+  ffieldsystem: webURL() + 'field/fieldsystem',
+  //--------------------Page--------------------
+  ploadpage: webURL() + 'page/loadpage',
+  ppagesystem: webURL() + 'page/pagesystem',
+  ppagesection: webURL() + 'page/pagesection',
 }
+
 const urlHeader = [ 'https://www.', 'https://' ]
 
-async function xhrGet(url, params){
-  var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
-  var req = new XMLHttpRequest();
-  var sendUrl = hd + urlLink[url]
-  if(params){
-    sendUrl = sendUrl + params
-  }
-  req.open('GET', sendUrl, false);
-  req.send(null);
-
+function xhrGet(url, params){
   return new Promise(resolve => {
+    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
+    var req = new XMLHttpRequest();
+    var sendUrl = hd + urlLink[url]
+    if(params){
+      sendUrl = sendUrl + params
+    }
+    req.open('GET', sendUrl, false);
+    req.send(null);
     resolve({
       token: req.getResponseHeader('csrf-token'),
       response: JSON.parse(req.responseText),
@@ -59,7 +79,7 @@ async function xhrGet(url, params){
   }*/
 }
 
-async function xhrPost(token, url, obj, func){
+function xhrPost(token, url, obj, func){
   /*--------------------USEAGE--------------------
   API.xhrPost( TOKEN, 'url', obj, function(csrf, d){
     setCSRFToken(csrf)  // set New token
@@ -76,14 +96,20 @@ async function xhrPost(token, url, obj, func){
     if (req.readyState !== 4) return;
     if (req.status >= 200 && req.status < 300) {
       func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
+    }else{
+      //console.log(req.status);
     }
-    /*
-    if (req.status === 0){
-      setTimeout(()=>{
-        console.log(req);
-        //xhrPost(token, url, obj, func)
-      }, 5000)
-    }*/
+    if (req.status === 504){
+      if(count < 3){
+        setTimeout(()=>{
+          xhrPost(token, url, obj, func)
+        }, 5000)
+      }else{
+        count = 0
+        console.log('Stopped');
+      }
+      count++;
+    }
   }
   const returnedObj = Object.assign({
     _csrf: token
@@ -218,6 +244,47 @@ function handleGetPostTime(time){
   }
 }
 
+function handleGetDate(date){
+  var thisD;
+  var day;
+  var month;
+  var dateStr;
+  const today = new Date()
+  const cdate = new Date(date)
+  var diff = (today - cdate)/(1000) //millisecond
+  var str = ''
+  if(diff < 60){
+    str = 'just now'
+    return str
+  }else{
+    if(diff >= 60 && diff < 60*60){
+      diff = diff / 60
+      if(Math.floor(diff) > 1){
+        str = ' mins'
+      }else{
+        str = ' min'
+      }
+      return Math.floor(diff) + str
+    }
+    if(diff>=60*60 && diff < 60*60*24){
+      diff = diff / ( 60*60 )
+      if(Math.floor(diff) > 1){
+        str = ' hrs'
+      }else{
+        str = ' hr'
+      }
+      return Math.floor(diff) + str
+    }
+    else{
+      thisD = cdate
+      day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
+      month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
+      dateStr = day + '-' + month + '-' + thisD.getFullYear()
+      return dateStr
+    }
+  }
+}
+
 function handleHoleSum(array, type){
   let temp = 0
   let start = (type === 'out')? 0 : 9
@@ -229,9 +296,21 @@ function handleHoleSum(array, type){
 }
 
 function handleDateToString(d){
-  const day = (d.getDate() > 9) ? d.getDate():'0' + d.getDate()
-  const month = (d.getMonth() + 1 > 9) ? d.getMonth() + 1:'0' + ( d.getMonth() + 1 )
-  const dateStr = d.getFullYear() + '-' + month + '-' + day
+  var thisD;
+  var day;
+  var month;
+  var dateStr;
+  if(typeof(d) === 'object'){
+    thisD = d
+    day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
+    month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
+    dateStr = thisD.getFullYear() + '-' + month + '-' + day
+  }else{
+    thisD = new Date(d)
+    day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
+    month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
+    dateStr = thisD.getFullYear() + '-' + month + '-' + day
+  }
   return dateStr
 }
 
@@ -243,6 +322,14 @@ function handleStringToDate(d){
   }
 }
 
+function getTodayTime(){
+  const today = new Date()
+  const hr = ( today.getHours() < 10 )? '0' + today.getHours() : today.getHours()
+  const min = ( today.getMinutes() < 10 )? '0' + today.getMinutes() : today.getMinutes()
+  const time = hr + ":" + min
+  return time
+}
+
 export {
   webURL,
   fetchUrl,
@@ -252,7 +339,9 @@ export {
   handleSortArrayByDate,
   handleSortArrayByDateStr,
   handleGetPostTime,
+  handleGetDate,
   handleHoleSum,
   handleDateToString,
-  handleStringToDate
+  handleStringToDate,
+  getTodayTime,
 }

@@ -12,7 +12,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Divider from '@material-ui/core/Divider';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
@@ -112,15 +111,17 @@ const GreenCheckbox = withStyles({
 
 export default function MatchBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { sess, token, setCSRFToken, handleSnackBar } = props
   const [ data, setData ] = React.useState(null)
   const [ dataClassed, setDataClassed ] = React.useState(null)
   const [ editting, setEditting ] = React.useState(false)
+  const pageid = props.computedMatch ? parseInt(props.computedMatch.params.pageParam) : null
 
   async function handleSetDisplay(d){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'displaymatchsystem', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'displaymatchsystem' : 'mdisplaymatchsystem', {
         action: 'match',
         matchid: d.matchid
     }, (csrf, d) =>{
@@ -139,10 +140,11 @@ export default function MatchBody(props){
 
   async function handleFetch(){
     var arrData = []
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'loadmatch', {
-        action: 'list',
+      token? token : resToken.token,
+      sess.typeid === 'admin'? 'loadmatch' : 'loadusersystem', {
+        ...(sess.typeid === 'admin')? { action: 'list' } : { action: 'creator' }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(!d.status){
@@ -174,7 +176,7 @@ export default function MatchBody(props){
           Match
         </Box>
       </Typography>
-      <CreateMatch setData={setData} token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+      <CreateMatch pageid={pageid} setData={setData} setDataClassed={setDataClassed} {...props}/>
       <div style={{ display: 'flex', margin: '24px 16px 0 0' }}>
         <div style={{ flex: 1 }} />
         <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>
@@ -202,23 +204,31 @@ export default function MatchBody(props){
           </ListItem>
         }
 
-        {data && !data.status && !editting &&
-          data.map( (d, i) =>
+        {data && !data.status && !editting && sess &&
+          [
+            ... (sess.typeid === 'admin')? data: API.handleSortArrayByDate(data, 'matchcreatedate', 'matchname')
+          ].map( (d, i) =>
             d &&
             <React.Fragment key={i}>
-              <Link to={`/user/match/${d.matchid}`} className={classes.linkElement}>
+              <Link to={
+                  sess.typeid === 'admin'?
+                  `/${sess.typeid}/match/${d.matchid}`
+                  :
+                  `/${sess.typeid}/match/${pageid}/${d.matchid}`
+                } className={classes.linkElement}>
                 <ListItem key={d.matchid} button>
                   { window.innerWidth >= 600 &&
-                    <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
+                    <ListItemText className={classes.tableDate} classes={{ primary: classes.tableDateText }}
+                      primary={sess.typeid === 'admin'? d.date : API.handleDateToString(d.matchcreatedate)}/>
                   }
-                  <ListItemText primary={d.views} className={classes.tableView}/>
+                  <ListItemText primary={sess.typeid === 'admin'? d.views : d.view} className={classes.tableView}/>
                   <ListItemText inset className={classes.tableTitle}
-                    primary={d.title}
+                    primary={sess.typeid === 'admin'? d.title : d.matchname}
                     secondary={
                       window.innerWidth < 800 &&
                       (
                         window.innerWidth >= 600?
-                        d.location
+                        sess.typeid === 'admin'? d.location : d.fieldname
                         :
                         <React.Fragment>
                           <Typography
@@ -227,23 +237,25 @@ export default function MatchBody(props){
                             variant="caption"
                             color="textPrimary"
                           >
-                            {d.date}
+                            {sess.typeid === 'admin'? d.date : API.handleDateToString(d.matchcreatedate)}
                           </Typography>
                           <br></br>
-                          {d.location}
+                          {sess.typeid === 'admin'? d.location : d.fieldname}
                         </React.Fragment>
                       )
                     }/>
                   { window.innerWidth >= 800 &&
-                    <ListItemText inset primary={d.location} className={classes.tableLocation}/>
+                    <ListItemText inset primary={sess.typeid === 'admin'? d.location : d.fieldname} className={classes.tableLocation}/>
                   }
                 </ListItem>
               </Link>
               <Divider />
             </React.Fragment>
         )}
-        { dataClassed && editting &&
-          dataClassed.map( (d, i) =>
+        { dataClassed && editting && sess &&
+          [
+            ... (sess.typeid === 'admin')? dataClassed: API.handleSortArrayByDate(dataClassed, 'matchcreatedate', 'matchname')
+          ].map( (d, i) =>
             d &&
             <React.Fragment key={i}>
               <ListItem key={d.matchid} style={{ ...d.display !== 1 && { opacity: .5 }}} button onClick={()=>handleSetDisplay(d)}>
@@ -255,8 +267,8 @@ export default function MatchBody(props){
                     disableRipple/>
                 </ListItemIcon>
                 <ListItemText className={classes.tableTitle}
-                  primary={d.title}
-                  secondary={d.location}/>
+                  primary={sess.typeid === 'admin'? d.title : d.matchname}
+                  secondary={sess.typeid === 'admin'? d.location : d.fieldname}/>
                 <ListItemText
                   style={{ textAlign: 'right' }}
                   primary={
@@ -266,7 +278,7 @@ export default function MatchBody(props){
                       variant="caption"
                       color="textPrimary"
                     >
-                      {d.date}
+                      {sess.typeid === 'admin'? d.date : API.handleDateToString(d.matchcreatedate)}
                     </Typography>
                   }/>
               </ListItem>

@@ -45,6 +45,11 @@ const AddPlayerModal = Loadable({
   loading: () => <LDCircular />
 });
 
+const EditDisplayModal= Loadable({
+  loader: () => import(/* webpackChunkName: "EditDisplayModal" */'./EditDisplayModal'),
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     padding: 8,
@@ -202,11 +207,12 @@ const theme = createMuiTheme({
 
 export default function MBPlayerBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ editting, setEditting ] = React.useState(false);
   const [ edittingClass, setEdittingClass ] = React.useState(false);
   const [ edittingDisplay, setEdittingDisplay ] = React.useState(false);
   const [ open, setOpen ] = React.useState(false);
+  const [ displayModal, setDisplayModal ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ checked, setChecked ] = React.useState([]);
@@ -214,6 +220,7 @@ export default function MBPlayerBody(props){
   const [ dataSliced, setDataSliced ] = React.useState(10)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ selectedClass, setSelectedClass ] = React.useState(0)
+  const [ selectedPlayer, setSelectedPlayer ] = React.useState(null);
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -265,6 +272,14 @@ export default function MBPlayerBody(props){
 
   function handleClose(){
     setOpen(false);
+  };
+
+  function handleDisplayModalOpen(){
+    setDisplayModal(true);
+  };
+
+  function handleDisplayModalClose(){
+    setDisplayModal(false);
   };
 
   function handleToggle(value){
@@ -338,34 +353,40 @@ export default function MBPlayerBody(props){
     }
   }
 
-  async function handleSetDisplay(d){
+  function handleSelectedPlayer(d){
+    console.log(d);
+    setSelectedPlayer(d)
+    handleDisplayModalOpen()
+  }
+
+  async function handleUpdateFlight(flightaction){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'displaymatchsystem', {
-          action: 'user',
-          matchid: matchid,
-          userid: d,
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+          action: 'flight',
+          flightaction: flightaction,
+          matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
+          variant: d.status === 'uccess' ? 'success' : 'error',
           autoHideDuration: d.status === 'success'? 2000 : 5000
         })
-        try {
-          handleFetch()
-        }catch(err) { console.log(err.message) }
       })
+      await handleFetch()
     }
   }
 
   async function handleSetClass(userid, classno){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'matchmember', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'setclass',
           matchid: matchid,
           userid: userid,
@@ -396,9 +417,10 @@ export default function MBPlayerBody(props){
       }
     }
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'matchmember', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'remove',
           matchid: matchid,
           userid: userid
@@ -420,9 +442,10 @@ export default function MBPlayerBody(props){
 
   async function handleFetch(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'userlist',
           matchid: matchid
       }, (csrf, d) =>{
@@ -450,9 +473,10 @@ export default function MBPlayerBody(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -476,9 +500,18 @@ export default function MBPlayerBody(props){
     }
   }
 
+  function tempFetch(){
+    var json = '[{"userid":659293,"firstname":"เอกชัย","lastname":"ปัตถาวโร ","classno":0,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"rank":0,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":637016,"firstname":"วานิช","lastname":"สมชาติ ","classno":1,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"rank":0,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":118486,"firstname":"วรรธนะ","lastname":"ทับทิมทอง","classno":1,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"rank":0,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":175937,"firstname":"ประทีป","lastname":"ค้ายาดี","classno":1,"teamno":0,"out":37,"in":36,"par":1,"sf":38,"net":70,"hc":3,"display":1,"rank":1,"score":[5,4,3,5,4,4,3,5,4,6,4,4,4,4,4,2,3,5]},{"userid":383134,"firstname":"สีไพร","lastname":"อภิสนธิ์","classno":1,"teamno":0,"out":37,"in":37,"par":2,"sf":37,"net":71,"hc":3,"display":1,"rank":2,"score":[4,4,3,5,4,3,4,5,5,5,3,4,4,4,4,3,5,5]},{"userid":422094,"firstname":"อธิวัฒน์","lastname":"แย้มเรืองรัตน์","classno":1,"teamno":0,"out":39,"in":35,"par":2,"sf":39,"net":69,"hc":5,"display":1,"rank":2,"score":[4,4,4,5,5,3,3,6,5,5,3,4,4,4,5,2,3,5]},{"userid":859661,"firstname":"พงศ์ภูมินทร์","lastname":"กล้าหาญ","classno":1,"teamno":0,"out":39,"in":36,"par":3,"sf":40,"net":68,"hc":7,"display":1,"rank":4,"score":[4,6,2,6,5,5,3,5,3,4,3,5,4,5,4,3,4,4]},{"userid":375128,"firstname":"วิชยะ","lastname":"ศรีนาคาร์","classno":1,"teamno":0,"out":38,"in":37,"par":3,"sf":37,"net":71,"hc":4,"display":1,"rank":4,"score":[4,5,3,5,5,4,3,5,4,6,3,4,5,4,4,3,4,4]},{"userid":380855,"firstname":"ประสิทธิ","lastname":"คำภูแสน","classno":1,"teamno":0,"out":39,"in":36,"par":3,"sf":41,"net":67,"hc":8,"display":1,"rank":4,"score":[5,5,4,4,5,5,2,4,5,7,3,4,4,3,4,3,4,4]},{"userid":560646,"firstname":"พูลลาภ","lastname":"เยือกเย็น","classno":1,"teamno":0,"out":38,"in":38,"par":4,"sf":37,"net":71,"hc":5,"display":1,"rank":7,"score":[6,5,3,4,4,4,3,5,4,5,3,5,5,4,4,3,4,5]},{"userid":825953,"firstname":"สัมพันธ์","lastname":"เรศมณเฑียร","classno":1,"teamno":0,"out":39,"in":37,"par":4,"sf":37,"net":71,"hc":5,"display":1,"rank":7,"score":[4,5,3,5,6,3,4,5,4,5,3,4,4,4,4,3,4,6]},{"userid":223893,"firstname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":1,"teamno":0,"out":39,"in":38,"par":5,"sf":38,"net":70,"hc":7,"display":1,"rank":9,"score":[5,6,2,6,5,3,3,5,4,5,3,5,4,4,4,4,4,5]},{"userid":726183,"firstname":"ทินพันธ์","lastname":"พิลึก","classno":1,"teamno":0,"out":38,"in":41,"par":7,"sf":39,"net":69,"hc":10,"display":1,"rank":10,"score":[5,4,3,5,6,3,2,6,4,6,4,5,4,3,5,4,5,5]},{"userid":697510,"firstname":"วีรนันท์","lastname":"จันทร์เอียง","classno":1,"teamno":0,"out":40,"in":40,"par":8,"sf":36,"net":72,"hc":8,"display":1,"rank":11,"score":[4,5,4,6,4,4,3,6,4,5,3,4,6,5,5,3,4,5]},{"userid":186918,"firstname":"สุทธิพันธ์","lastname":"กิมสวัสดิ","classno":1,"teamno":0,"out":39,"in":42,"par":9,"sf":36,"net":72,"hc":9,"display":1,"rank":12,"score":[4,4,3,5,5,4,3,6,5,5,3,5,4,5,5,4,5,6]},{"userid":313675,"firstname":"วสันต์","lastname":"มีลาภ","classno":1,"teamno":0,"out":42,"in":39,"par":9,"sf":38,"net":70,"hc":11,"display":1,"rank":12,"score":[5,5,3,7,4,5,4,5,4,6,3,5,3,4,4,4,6,4]},{"userid":531500,"firstname":"ธนกฤต","lastname":"เครื่องสนุก","classno":1,"teamno":0,"out":47,"in":38,"par":13,"sf":36,"net":73,"hc":12,"display":1,"rank":14,"score":[4,5,4,8,4,4,5,6,7,6,2,5,4,4,4,4,4,5]},{"userid":686853,"firstname":"ภัศดา","lastname":"บุรณศิริ","classno":2,"teamno":0,"out":33,"in":34,"par":-5,"sf":41,"net":67,"hc":0,"display":1,"rank":1,"score":[4,4,2,4,4,3,3,5,4,5,3,4,4,4,4,3,3,4]},{"userid":298863,"firstname":"พรชัย","lastname":"เนียมหมื่นไวย์","classno":2,"teamno":0,"out":36,"in":34,"par":-2,"sf":41,"net":67,"hc":3,"display":1,"rank":2,"score":[4,5,3,4,4,3,4,5,4,5,3,5,3,4,3,2,4,5]},{"userid":290370,"firstname":"ดุสิต","lastname":"สมศักดิ์","classno":2,"teamno":0,"out":34,"in":38,"par":0,"sf":38,"net":70,"hc":2,"display":1,"rank":3,"score":[4,4,3,4,4,4,2,5,4,5,3,6,4,4,4,3,4,5]},{"userid":243286,"firstname":"พัสกร  ","lastname":"ยุพาวัฒนะ","classno":2,"teamno":0,"out":36,"in":37,"par":1,"sf":40,"net":68,"hc":5,"display":1,"rank":4,"score":[5,4,2,5,5,3,3,4,5,5,3,4,4,5,5,3,3,5]},{"userid":127642,"firstname":"ธงชัย","lastname":"แตงอ่อน","classno":2,"teamno":0,"out":40,"in":34,"par":2,"sf":38,"net":70,"hc":4,"display":1,"rank":5,"score":[5,4,3,5,5,5,3,6,4,5,2,4,4,4,4,2,4,5]},{"userid":121302,"firstname":"อานนท์ ","lastname":"โพธิ์ทอง","classno":2,"teamno":0,"out":37,"in":38,"par":3,"sf":38,"net":70,"hc":5,"display":1,"rank":6,"score":[5,4,3,5,4,3,3,5,5,4,4,5,4,4,4,3,5,5]},{"userid":584981,"firstname":"มนัส ","lastname":"สุขเย็น","classno":2,"teamno":0,"out":39,"in":36,"par":3,"sf":38,"net":70,"hc":5,"display":1,"rank":6,"score":[4,4,3,6,5,3,3,7,4,5,3,4,4,4,4,3,5,4]},{"userid":158541,"firstname":"Mike","lastname":"Missler","classno":2,"teamno":0,"out":37,"in":38,"par":3,"sf":36,"net":72,"hc":3,"display":1,"rank":6,"score":[4,4,3,5,5,4,3,5,4,5,3,4,4,4,5,3,4,6]},{"userid":395229,"firstname":"ธวัชชัย ","lastname":"ชายชาญ","classno":2,"teamno":0,"out":38,"in":38,"par":4,"sf":39,"net":69,"hc":7,"display":1,"rank":9,"score":[7,4,3,4,4,4,4,4,4,4,3,4,5,5,5,3,5,4]},{"userid":154714,"firstname":"ธวัช","lastname":"กุลสุวรรณ","classno":2,"teamno":0,"out":37,"in":39,"par":4,"sf":38,"net":70,"hc":6,"display":1,"rank":9,"score":[4,4,3,6,5,3,3,5,4,5,5,4,5,4,4,3,3,6]},{"userid":428247,"firstname":"นิรันทร์","lastname":"ฉัตรไกรศรี","classno":2,"teamno":0,"out":39,"in":38,"par":5,"sf":37,"net":71,"hc":6,"display":1,"rank":11,"score":[4,4,3,6,4,5,3,5,5,6,3,5,4,5,4,3,4,4]},{"userid":722638,"firstname":"พิทักษ์ ","lastname":"ศรีตะวัน","classno":2,"teamno":0,"out":39,"in":38,"par":5,"sf":36,"net":72,"hc":5,"display":1,"rank":11,"score":[4,5,3,5,4,5,4,5,4,5,3,5,4,5,4,3,4,5]},{"userid":735952,"firstname":"ธานนิทร์","lastname":"เหลืองภูมิยุทธ ","classno":2,"teamno":0,"out":39,"in":41,"par":8,"sf":37,"net":71,"hc":9,"display":1,"rank":13,"score":[5,4,4,4,5,4,3,5,5,5,3,4,4,5,6,3,5,6]},{"userid":958766,"firstname":"ธนู","lastname":"พุทธสุวรรณ","classno":2,"teamno":0,"out":38,"in":43,"par":9,"sf":38,"net":70,"hc":11,"display":1,"rank":14,"score":[5,4,3,5,3,5,3,5,5,6,4,3,4,5,7,2,5,7]},{"userid":432045,"firstname":"เยี่ยม","lastname":"สุขัง","classno":2,"teamno":0,"out":42,"in":39,"par":9,"sf":37,"net":71,"hc":10,"display":1,"rank":14,"score":[6,4,3,6,4,5,4,5,5,6,3,6,4,4,3,3,5,5]},{"userid":381888,"firstname":"ประคอง","lastname":"วระพันธุ์","classno":2,"teamno":0,"out":40,"in":41,"par":9,"sf":37,"net":71,"hc":10,"display":1,"rank":14,"score":[5,4,3,4,4,5,3,6,6,6,3,4,4,5,6,3,4,6]},{"userid":870523,"firstname":"ดิชพงศ์","lastname":"วงศ์คำจันทร์","classno":2,"teamno":0,"out":41,"in":40,"par":9,"sf":37,"net":71,"hc":10,"display":1,"rank":14,"score":[4,6,3,5,4,4,4,6,5,4,5,5,4,4,4,4,4,6]},{"userid":283135,"firstname":"วรพล ","lastname":"อ่อนนุช","classno":2,"teamno":0,"out":42,"in":40,"par":10,"sf":37,"net":71,"hc":11,"display":1,"rank":18,"score":[4,3,3,6,5,4,5,6,6,5,5,4,4,5,5,3,4,5]},{"userid":961801,"firstname":"วิรัตน์","lastname":"แป้นดี","classno":2,"teamno":0,"out":42,"in":40,"par":10,"sf":37,"net":71,"hc":11,"display":1,"rank":18,"score":[6,5,3,4,6,5,3,5,5,5,4,5,4,5,4,4,4,5]},{"userid":525973,"firstname":"วิริยะ ","lastname":"ใจชื่น","classno":2,"teamno":0,"out":44,"in":39,"par":11,"sf":38,"net":70,"hc":13,"display":1,"rank":20,"score":[6,4,2,7,5,4,5,5,6,6,3,4,4,5,4,2,4,7]},{"userid":171247,"firstname":"วิชัย ","lastname":"ศรีระผา","classno":2,"teamno":0,"out":43,"in":40,"par":11,"sf":35,"net":73,"hc":10,"display":1,"rank":20,"score":[5,6,3,5,4,4,4,8,4,5,5,4,4,4,5,3,5,5]},{"userid":452902,"firstname":"ภิรมย์","lastname":"ไพบูลย์ ","classno":2,"teamno":0,"out":42,"in":42,"par":12,"sf":38,"net":72,"hc":12,"display":1,"rank":22,"score":[5,5,3,9,3,4,3,6,4,5,5,6,4,5,4,5,4,4]},{"userid":289142,"firstname":"สุชาติ ","lastname":"ทะวะบุตร","classno":2,"teamno":0,"out":45,"in":42,"par":15,"sf":37,"net":73,"hc":14,"display":1,"rank":23,"score":[5,6,3,9,5,4,3,6,4,7,3,4,4,6,6,3,3,6]},{"userid":570929,"firstname":"สมนัส","lastname":"จันทนะ","classno":3,"teamno":0,"out":39,"in":38,"par":5,"sf":40,"net":68,"hc":9,"display":1,"rank":1,"score":[5,6,2,4,5,4,4,5,4,6,3,6,4,3,4,3,3,6]},{"userid":344566,"firstname":"ประทีป ","lastname":"แก้ววงษา ","classno":3,"teamno":0,"out":44,"in":37,"par":9,"sf":36,"net":72,"hc":9,"display":1,"rank":2,"score":[5,5,3,6,6,4,4,6,5,6,3,4,4,4,4,3,4,5]},{"userid":349921,"firstname":"สนอง ","lastname":"ช้างเนียม","classno":3,"teamno":0,"out":46,"in":39,"par":13,"sf":36,"net":72,"hc":13,"display":1,"rank":3,"score":[5,5,4,5,6,4,4,7,6,7,3,4,4,5,4,3,4,5]},{"userid":362257,"firstname":"ทวีโชค ","lastname":"พุทธชน","classno":3,"teamno":0,"out":41,"in":45,"par":14,"sf":36,"net":72,"hc":14,"display":1,"rank":4,"score":[6,4,4,5,5,4,3,5,5,7,4,5,4,6,4,3,5,7]}]'
+    setData(JSON.parse(json))
+
+    var json1 = '{"title":"SNT 4-2019","date":"04/07/2019","picture":"/matchlist/watermill.jpg","location":"Watermill GOLF&GARDENS","locationid":631932,"createdate":"04/07/2019","scorematch":0,"matchtype":0,"display":1,"status":1,"class":[{"classno":1,"classname":"S"},{"classno":2,"classname":"SS"},{"classno":3,"classname":"GS"}],"team":[],"playoff":[0,0,0]}'
+    setMatchDetail(JSON.parse(json1))
+  }
+
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+    //tempFetch()
+  },[ open, displayModal ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -497,11 +530,13 @@ export default function MBPlayerBody(props){
     <div className={classes.root}>
       <List className={classes.listRoot}>
         <ListItem className={classes.controls}>
-          <Button className={classes.addPlayerButton} variant="contained"
-            onClick={handleOpen}>
-            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
-            Add player
-          </Button>
+          { sess && sess.typeid === 'admin' &&
+            <Button className={classes.addPlayerButton} variant="contained"
+              onClick={handleOpen}>
+              <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+              Add player
+            </Button>
+          }
           <div style={{ flex: 1 }} />
           <div
             className={classes.controlsEdit}
@@ -525,12 +560,21 @@ export default function MBPlayerBody(props){
                 </GreenTextButton>
               )
             }
-            { !editting && !edittingDisplay && /*style={{ padding: '8px 36px', margin: '2px 0' }}*/
+            { !editting && !edittingDisplay && matchDetail &&/*style={{ padding: '8px 36px', margin: '2px 0' }}*/
               (
                 edittingClass?
                 <React.Fragment>
-                  <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
-                  <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
+                  {
+                    matchDetail.scorematch === 1?
+                    <React.Fragment>
+                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
+                      <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
+                    </React.Fragment>
+                    :
+                    <React.Fragment>
+                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
+                    </React.Fragment>
+                  }
                 </React.Fragment>
                 :
                 <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingClass(!edittingClass)}>
@@ -540,7 +584,7 @@ export default function MBPlayerBody(props){
                       window.innerWidth > 450? '20%':'10%'
                     }}
                     className={classes.controlsEditButtonIcon}/>
-                  Class
+                  { matchDetail.scorematch === 1? "Class" : 'Flight' }
                 </GreenTextButton>
               )
             }
@@ -564,25 +608,35 @@ export default function MBPlayerBody(props){
           </div>
         </ListItem>
         <ListItem className={classes.controlsSecondary}>
-          { edittingClass &&
-            <React.Fragment>
-              <div style={{ display: 'flex' }}>
-                <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
-                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedClass !== 0 ? 'Selected Class : ' : 'Select Class :' }</div>
-              </div>
-              <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
-                { selectedClass !== 0?
-                  matchDetail && matchDetail.class &&
-                  matchDetail.class.filter( item =>{
-                    return item.classno === selectedClass
-                  }).map( d =>
-                    d &&
-                    <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
-                  )
-                  : <React.Fragment>No class selected</React.Fragment>
-                }
-              </GreenTextButton>
-            </React.Fragment>
+          { edittingClass && matchDetail &&
+            (
+              matchDetail.scorematch === 1?
+              <React.Fragment>
+                <div style={{ display: 'flex' }}>
+                  <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
+                  <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedClass !== 0 ? 'Selected Class : ' : 'Select Class :' }</div>
+                </div>
+                <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
+                  { selectedClass !== 0?
+                    matchDetail && matchDetail.class &&
+                    matchDetail.class.filter( item =>{
+                      return item.classno === selectedClass
+                    }).map( d =>
+                      d &&
+                      <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
+                    )
+                    : <React.Fragment>No class selected</React.Fragment>
+                  }
+                </GreenTextButton>
+              </React.Fragment>
+              :
+              <React.Fragment>
+                <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
+                  onClick={()=>handleUpdateFlight('clear')}>Clear</GreenTextButton>
+                <GreenButton className={classes.controlsEditButton2}
+                  onClick={()=>handleUpdateFlight('update')}>Update</GreenButton>
+              </React.Fragment>
+            )
           }
           { editting &&
             <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
@@ -597,6 +651,7 @@ export default function MBPlayerBody(props){
         <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
           <ThemeProvider theme={theme}>
             <TextField
+              disabled={data === null}
               className={classes.searchBox}
               variant="outlined"
               placeholder={ !searchUser? "Search player" : '' }
@@ -644,17 +699,19 @@ export default function MBPlayerBody(props){
                 primary="Last name" />
             }
             { window.innerWidth > 600 &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }} primary="Class" />
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }}
+                primary={ matchDetail.scorematch === 1? "Class" : 'Flight' } />
             }
             <ListItemIcon style={{ justifyContent: 'flex-start' }}>
               <div style={{ height: 42, width: 42 }}></div>
             </ListItemIcon>
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
-            { data && !data.status &&
+            { data && !data.status && matchDetail &&
               [
                 ...searchUser? handleSearch() : data
               ].slice(0, dataSliced).map(value => {
+
                 return value && (
                   <React.Fragment key={value.userid}>
                     <ListItem role={undefined} button
@@ -662,7 +719,7 @@ export default function MBPlayerBody(props){
                         ( editting || edittingClass )?
                         handleToggle(value):
                         ( edittingDisplay?
-                          handleSetDisplay(value.userid)
+                          handleSelectedPlayer(value)
                           :
                           console.log()
                         )
@@ -691,7 +748,7 @@ export default function MBPlayerBody(props){
                           <div style={{ display: 'flex' }}>
                             { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
                           </div>
-                          : value.firstname }
+                          : value.firstname}
                         secondary={
                           <React.Fragment>
                             { window.innerWidth < 450 &&
@@ -716,10 +773,21 @@ export default function MBPlayerBody(props){
                                   d &&
                                   <React.Fragment key={i}>
                                     <br></br>
-                                    {d.classname}
+                                    {
+                                      matchDetail.scorematch === 1 ?
+                                      d.classname
+                                      :
+                                      String.fromCharCode(65 + value.classno - 1)
+                                    }
+
                                   </React.Fragment>
                                 )
                               )
+                            }
+                            { value.note &&
+                              <Typography variant="caption" display="block">
+                                {value.note}
+                              </Typography>
                             }
                           </React.Fragment>
                         } />
@@ -729,18 +797,28 @@ export default function MBPlayerBody(props){
                       }
                       { matchDetail && matchDetail.class && window.innerWidth > 600 &&
                         ( value.classno === 0 ?
-                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
+                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                            primary={"-"} />
                           :
                           matchDetail.class.filter( d =>{
                             return d.classno === value.classno
                           }).map( d =>
                             d &&
-                            <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.classname} />
+                            <ListItemText
+                              key={d.classname + `(${value.userid})`}
+                              style={{ justifyContent: 'center' }}
+                              className={classes.listClass}
+                              primary={
+                                matchDetail.scorematch === 1 ?
+                                d.classname
+                                :
+                                String.fromCharCode(65 + value.classno - 1)
+                              } />
                           )
                         )
                       }
                       <ListItemIcon style={{ justifyContent: 'flex-end' }}>
-                        { ( editting && checked.length === 0 )?
+                        { editting?
                           <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
                             <DeleteIcon classes={{ root: classes.deleteIcon}}/>
                           </IconButton>
@@ -790,9 +868,18 @@ export default function MBPlayerBody(props){
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
         <AddPlayerModal
-          token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}
-          data={data}
-          setMBData={setData} setMBMatchDetail={setMatchDetail}/>
+          {...props}
+          playerAction="add" />
+      </TemplateDialog>
+      <TemplateDialog open={displayModal} handleClose={handleDisplayModalClose}>
+        { selectedPlayer &&
+          <EditDisplayModal
+            {...props}
+            handleClose={handleDisplayModalClose}
+            selectedPlayer={selectedPlayer}
+            matchDetail={matchDetail}
+            />
+        }
       </TemplateDialog>
       <Menu
         anchorEl={anchorEl}

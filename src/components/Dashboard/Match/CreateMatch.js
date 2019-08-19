@@ -138,7 +138,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: 16,
     padding: 16,
     width: '100%'
-  }
+  },
+
 }))
 
 const StyledTextButton = withStyles(theme => ({
@@ -211,7 +212,7 @@ const datePickers = createMuiTheme({
 
 function CreateMatchBody(props){
   const classes = useStyles();
-  const { setData, token, setCSRFToken, handleSnackBar, setExpanded } = props
+  const { sess, setData, setDataClassed, token, setCSRFToken, handleSnackBar, setExpanded, pageid } = props
   const [ open, setOpen ] = React.useState(false);
   const imgRef = React.useRef(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -222,7 +223,8 @@ function CreateMatchBody(props){
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('0');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState('1');
   const [ selectedDate, setSelectedDate ] = React.useState(new Date());
-  const [ selectedFile, setSelectedFile ] = React.useState('');
+  const [ selectedFile, setSelectedFile ] = React.useState(null);
+  const [ tempFile, setTempFile ] = React.useState(null)
 
   const handleOpen = () => {
     setOpen(true);
@@ -257,6 +259,7 @@ function CreateMatchBody(props){
   function handlePicture(e){
     const file = event.target.files[0]
     const fileSize = file.size
+    var reader = new FileReader();
     if( fileSize > 5000000 ){
       handleSnackBar({
         state: true,
@@ -267,6 +270,10 @@ function CreateMatchBody(props){
     }else{
       if( file.type === 'image/jpeg' || file.type === 'image/png'){
         setSelectedFile(file)
+        reader.readAsDataURL(file);
+        reader.onloadend = function (){
+          setTempFile(reader.result)
+        }
       }else{
         handleSnackBar({
           state: true,
@@ -279,15 +286,17 @@ function CreateMatchBody(props){
   }
 
   async function handleCreate(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      props.token,
-      'matchsystem', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem', {
         action: 'create',
         matchname: matchName,
         fieldid: selectedField.fieldid,
         scorematch: parseInt(selectedMatchType),
         class: matchClass,
         matchdate: API.handleDateToString(selectedDate),
+        pageid: pageid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -307,34 +316,51 @@ function CreateMatchBody(props){
     const formData = new FormData()
     if(selectedFile){
       formData.append('matchimage', selectedFile)
-      const response = await API.fetchPostFile('matchsystem',`?_csrf=${csrf}`, {
+      const response = await API.fetchPostFile(
+        sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem',
+        `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: d.matchid,
         photopath: true,
       }, formData)
-      setCSRFToken( await API.xhrGet('getcsrf') )
+      const resToken = await API.xhrGet('getcsrf')
+      setCSRFToken(resToken.token)
       status = response.status
     }else{
       setCSRFToken(csrf)
     }
+    handleFetch()
     handleSnackBar({
       state: true,
       message: status,
       variant: status === 'success' ? status : 'error',
       autoHideDuration: status === 'success'? 2000 : 5000
     })
-    await handleFetch()
   }
 
   async function handleFetch(){
+    var arrData = []
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'loadmatch', {
-        action: 'list',
+      token? token : resToken.token,
+      sess.typeid === 'admin'? 'loadmatch' : 'loadusersystem', {
+        ...(sess.typeid === 'admin')? { action: 'list' } : { action: 'creator' }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
+      if(!d.status){
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === 1
+          })
+        )
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === -1
+          })
+        )
+        setDataClassed(arrData)
+      }
       setData(d)
-      setExpanded(false)
     })
   }
 
@@ -377,13 +403,13 @@ function CreateMatchBody(props){
               />
             </ThemeProvider>
           </div>
-          { selectedFile?
+          { selectedFile && tempFile?
             <div style={{ position: 'relative', marginTop: 16 }}
               onMouseEnter={()=>handleFileHover(true)}
               onMouseLeave={()=>handleFileHover(false)}>
               <img ref={imgRef}
                 style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
-                className={classes.matchImg} src={URL.createObjectURL(selectedFile)} />
+                className={classes.matchImg} src={tempFile} />
               { imgRef.current &&
                 <div
                   style={{
@@ -483,9 +509,11 @@ function CreateMatchBody(props){
           onClick={handleCreate}>Create</StyledButton>
       </div>
       <TemplateDialog open={open} handleClose={handleClose}>
-        <Location token={token} setCSRFToken={setCSRFToken}
-          handleSnackBar={handleSnackBar}
-          selectedField={selectedField} setSelectedField={setSelectedField} />
+        <Location
+          {...props}
+          handleClose={handleClose}
+          selectedField={selectedField}
+          setSelectedField={setSelectedField} />
       </TemplateDialog>
     </div>
   );
@@ -499,6 +527,7 @@ export default function CreateMatch(props){
   function expandHandler(){
     setExpanded(!expanded)
   }
+
   return(
     <Paper className={classes.root} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
@@ -514,8 +543,9 @@ export default function CreateMatch(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CreateMatchBody token={token} setCSRFToken={setCSRFToken}
-          setData={setData} handleSnackBar={handleSnackBar} setExpanded={setExpanded}/>
+        <CreateMatchBody
+          {...props}
+          setExpanded={setExpanded}/>
       </Collapse>
     </Paper>
   );

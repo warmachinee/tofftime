@@ -32,28 +32,46 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewsListItem(props) {
   const classes = useStyles();
-  const { data, isSupportWebp, time } = props
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const { data, isSupportWebp, time, page, pageid } = props
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const currentWebURL = hd + API.webURL()
 
   return (
-    <Link to={`/news/${data.newsid}`} style={{ textDecoration: 'none', color: 'inherit'}}>
+    <Link to={ page ? `/news/${pageid + '-' + data.postid}` : `/news/${data.newsid}` }
+      style={{ textDecoration: 'none', color: 'inherit'}}>
       <ListItem style={{ padding: 0 }} button>
         <ListItemAvatar className={classes.listAvatar}>
-          { data.picture?
-            <Avatar alt={data.title}
-              src={
-                isSupportWebp?
-                currentWebURL + data.picture + '.webp'
-                :
-                currentWebURL + data.picture + '.jpg'
-              }
-              className={classes.bigAvatar} />
+          { page ?
+            (
+              data.photopath?
+              <Avatar alt={data.message}
+                src={
+                  isSupportWebp?
+                  currentWebURL + data.photopath + '.webp'
+                  :
+                  currentWebURL + data.photopath + '.jpg'
+                }
+                className={classes.bigAvatar} />
+              :
+              <ImageIcon className={classes.bigAvatar}/>
+            )
             :
-            <ImageIcon className={classes.bigAvatar}/>
+            (
+              data.picture?
+              <Avatar alt={data.title}
+                src={
+                  isSupportWebp?
+                  currentWebURL + data.picture + '.webp'
+                  :
+                  currentWebURL + data.picture + '.jpg'
+                }
+                className={classes.bigAvatar} />
+              :
+              <ImageIcon className={classes.bigAvatar}/>
+            )
           }
         </ListItemAvatar>
-        <ListItemText className={classes.listDetail} primary={data.title} secondary={data.subtitle}/>
+        <ListItemText className={classes.listDetail} primary={page ? data.message : data.title} secondary={page ? data.submessage : data.subtitle}/>
         <ListItemIcon>
           <Typography variant="caption">{time}</Typography>
         </ListItemIcon>

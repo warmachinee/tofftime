@@ -1,10 +1,11 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import socketIOClient from 'socket.io-client'
 import Fuse from 'fuse.js';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
-import { primary, grey, red } from './../../../api/palette'
+import { primary, grey, red, amber, green } from './../../../api/palette'
 
 import Paper from '@material-ui/core/Paper';
 import Collapse from '@material-ui/core/Collapse';
@@ -48,6 +49,11 @@ const MatchTeam = Loadable({
   loading: () => <LDCircular />
 });
 
+const MatchFormAction = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchFormAction" */'./MatchFormAction'),
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     padding: 8,
@@ -83,15 +89,18 @@ const useStyles = makeStyles(theme => ({
       display: 'flex',
     },
   },
-  addPlayerButton: {
+  iconButton: {
     marginTop: 'auto',
     padding: '8px 16px 8px 0',
     width: '100%',
-    color: theme.palette.getContrastText(red[600]),
-    backgroundColor: red[600],
-    '&:hover': {
-      backgroundColor: red[800],
+    [theme.breakpoints.up(700)]: {
+      width: 'auto'
     },
+  },
+  button: {
+    marginTop: 'auto',
+    padding: theme.spacing(1, 2),
+    width: '100%',
     [theme.breakpoints.up(700)]: {
       width: 'auto'
     },
@@ -142,13 +151,6 @@ const useStyles = makeStyles(theme => ({
     paddingTop: 0,
     paddingBottom: 0
   },
-  selectedClassText: {
-    color: '#3f51b5',
-    fontWeight: 600,
-    paddingLeft: 12,
-    paddingBottom: 8,
-    marginTop: 'auto'
-  },
   searchBox: {
     width: '100%',
     [theme.breakpoints.up(600)]: {
@@ -168,6 +170,16 @@ const useStyles = makeStyles(theme => ({
   },
 
 }))
+
+const RedButton = withStyles(theme => ({
+  root: {
+    color: theme.palette.getContrastText(red[600]),
+    backgroundColor: red[600],
+    '&:hover': {
+      backgroundColor: red[800],
+    },
+  },
+}))(Button);
 
 const GreenButton = withStyles(theme => ({
   root: {
@@ -205,17 +217,21 @@ const theme = createMuiTheme({
 
 export default function MBScheduleBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ edittingTeam, setEdittingTeam ] = React.useState(false);
   const [ addState, setAddState ] = React.useState(false);
   const [ teamState, setTeamState ] = React.useState(false);
+  const [ formState, setFormState ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
+  //const [ dataSchedule, setDataSchedule ] = React.useState(null)
+  //const [ dataForm, setDataForm ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ checked, setChecked ] = React.useState([]);
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
-  const [ selectedClass, setSelectedClass ] = React.useState(0)
+  const [ selectedTeam, setSelectedTeam ] = React.useState(0)
+  const [ selectedUser, setSelectedUser ] = React.useState(null)
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -277,6 +293,16 @@ export default function MBScheduleBody(props){
     setTeamState(false);
   };
 
+  function handleFormOpen(d){
+    setFormState(true);
+    setSelectedUser(d)
+  };
+
+  function handleFormClose(){
+    setFormState(false);
+    setSelectedUser(null)
+  };
+
   function handleToggle(value){
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
@@ -290,7 +316,7 @@ export default function MBScheduleBody(props){
     setChecked(newChecked);
   };
 
-  function handleDoneEdittingClass(){
+  function handleDoneEdittingTeam(){
     setEdittingTeam(!edittingTeam)
     setChecked([])
   }
@@ -300,16 +326,16 @@ export default function MBScheduleBody(props){
     let teamno = []
     for(var i = 0;i < checked.length;i++){
       userid.push(checked[i].userid)
-      teamno.push(selectedClass)
+      teamno.push(selectedTeam)
     }
     handleSetTeam(userid, teamno)
   }
 
   function handleSelectedTeam(d){
     if( d === 0 ){
-      setSelectedClass(0)
+      setSelectedTeam(0)
     }else{
-      setSelectedClass(d.teamno)
+      setSelectedTeam(d.teamno)
     }
     handleMenuClose()
   }
@@ -321,7 +347,7 @@ export default function MBScheduleBody(props){
         caseSensitive: true,
         minMatchCharLength: 2,
         keys: [
-          "firstname",
+          "fullname",
           "lastname",
           "teamname",
           "teamno"
@@ -333,11 +359,21 @@ export default function MBScheduleBody(props){
     }
   }
 
+  function handleResponseForm(){
+    const endpoint = API.webURL()
+    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
+    const socket = socketIOClient( hd + endpoint )
+    socket.on(`${matchid}-form-server-message`, (messageNew) => {
+      setData(API.handleSortArrayByDate(messageNew, 'createdate', 'fullname'))
+    })
+  }
+
   async function handleSetTeam(userid, teamno){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'matchsection', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'editteam',
           matchid: matchid,
           userid: userid,
@@ -358,41 +394,12 @@ export default function MBScheduleBody(props){
     }
   }
 
-  async function handleFetch(){
-    if(matchid){
-      await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
-          action: 'userlist',
-          matchid: matchid
-      }, (csrf, d) =>{
-        setCSRFToken(csrf)
-        if(
-          d.status !== 'no data' ||
-          d.status !== 'wrong action' ||
-          d.status !== 'wrong params'
-        ){
-          setData(d)
-          try {
-            handleFetchMatchDetail()
-          }catch(err) { console.log(err.message) }
-        }else{
-          handleSnackBar({
-            state: true,
-            message: d.status,
-            variant: 'error',
-            autoHideDuration: 5000
-          })
-        }
-      })
-    }
-  }
-
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -416,9 +423,56 @@ export default function MBScheduleBody(props){
     }
   }
 
+  async function handleFetchSchedule(){
+    if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+          action: 'schedule',
+          matchid: matchid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        setMatchDetail(d.teamname)
+        setData(d.userscore)
+        /*
+        console.log(d.teamname);
+        console.log(d.userscore);*/
+      })
+    }
+  }
+
+  async function handleFetchForm(){
+    if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+          action: 'form',
+          matchid: matchid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        setData(API.handleSortArrayByDate(d.resultform, 'createdate', 'fullname'))
+      })
+    }
+  }
+
   React.useEffect(()=>{
-    handleFetch()
-  },[ ])
+    if(edittingTeam){
+      handleFetchSchedule()
+      /*
+      var json = '{"teamname":[],"userscore":[{"userid":659293,"fullname":"เอกชัย","lastname":"ปัตถาวโร ","teamno":0,"permission":"host"},{"userid":511165,"fullname":"Jack","lastname":"Dawson","teamno":0,"permission":"member"},{"userid":364611,"fullname":"asd","lastname":"asd","teamno":0,"permission":"admin"},{"userid":859661,"fullname":"พงศ์ภูมินทร์","lastname":"กล้าหาญ","teamno":0,"permission":"admin"},{"userid":186918,"fullname":"สุทธิพันธ์","lastname":"กิมสวัสดิ","teamno":0,"permission":"member"},{"userid":832753,"fullname":"ณรงค์","lastname":"แก้วพิณ","teamno":0,"permission":"member"},{"userid":722638,"fullname":"พิทักษ์ ","lastname":"ศรีตะวัน","teamno":0,"permission":"member"},{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","teamno":0,"permission":"member"},{"userid":166164,"fullname":"Giovanni","lastname":"Palazzoli","teamno":0,"permission":"member"},{"userid":317246,"fullname":"Akira","lastname":"Osaka","teamno":0,"permission":"member"}]}'
+      setMatchDetail(JSON.parse(json).teamname)
+      setData(JSON.parse(json).userscore)
+      */
+    }else{
+      handleFetchForm()
+      handleResponseForm()
+      /*
+      var json1 = '{"resultform":[{"userid":317246,"fullname":"Akira","lastname":"Osaka","photopath":null,"createdate":"2019-08-14T09:59:29.000Z","status":0},{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","photopath":null,"createdate":"2019-08-14T09:27:19.000Z","status":0},{"userid":166164,"fullname":"Giovanni","lastname":"Palazzoli","photopath":null,"createdate":"2019-08-14T09:59:28.000Z","status":0}]}'
+      setData(API.handleSortArrayByDate(JSON.parse(json1).resultform, 'createdate', 'fullname'))*/
+    }
+  },[ edittingTeam, teamState, formState ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -437,21 +491,24 @@ export default function MBScheduleBody(props){
     <div className={classes.root}>
       <List className={classes.listRoot}>
         <ListItem className={classes.controls}>
-          <Button className={classes.addPlayerButton} variant="contained"
+          <RedButton className={classes.iconButton} variant="contained"
+            style={{ margin: '2px 0'}}
             onClick={handleAddOpen}>
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
-            Add player
-          </Button>
+            Invite
+          </RedButton>
           <GreenTextButton
             className={classes.button}
+            style={{ marginLeft: window.innerWidth > 700? 16 : 0, marginTop: window.innerWidth > 700? 0 : 16, }}
             onClick={handleTeamOpen}
             variant="outlined">
-            { matchDetail?
-              ( matchDetail.team && !matchDetail.team.status &&
-              ( matchDetail.team.length >= 2 ? ( matchDetail.team.length + ' Teams' ):( matchDetail.team.length + ' Team' ) )
+            { matchDetail && matchDetail.length > 0?
+              (
+                matchDetail.team && !matchDetail.team.status &&
+                ( 'Edit Team' + '( ' + matchDetail.team.length + ' )' )
               )
               :
-              'Team'
+              'Edit Team'
             }
           </GreenTextButton>
           <div style={{ flex: 1 }} />
@@ -463,18 +520,18 @@ export default function MBScheduleBody(props){
             }}>
             { edittingTeam?
               <React.Fragment>
-                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
+                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingTeam}>Done</GreenTextButton>
                 <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
               </React.Fragment>
               :
-              <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
+              <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
                 <ClassIcon
                   style={{ left:
                     window.innerWidth > 500? 0 :
                     window.innerWidth > 450? '20%':'10%'
                   }}
-                  className={classes.controlsEditButtonIcon}/>
-                Team
+                  className={classes.controlsEditButtonIcon} />
+                {window.innerWidth >= 450? 'Set Player Team' : 'Set Team'}
               </GreenTextButton>
             }
           </div>
@@ -484,13 +541,13 @@ export default function MBScheduleBody(props){
             <React.Fragment>
               <div style={{ display: 'flex' }}>
                 <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
-                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedClass !== 0 ? 'Selected Time : ' : 'Select Time :' }</div>
+                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedTeam !== 0 ? 'Selected Team : ' : 'Select Team :' }</div>
               </div>
               <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
-                { selectedClass !== 0?
+                { selectedTeam !== 0?
                   matchDetail && matchDetail.team &&
                   matchDetail.team.filter( item =>{
-                    return item.teamno === selectedClass
+                    return item.teamno === selectedTeam
                   }).map( d =>
                     d &&
                     <React.Fragment key={d.teamname}>{d.teamname}</React.Fragment>
@@ -545,18 +602,23 @@ export default function MBScheduleBody(props){
             style={{
               display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
             }}>
-            { window.innerWidth > 600 &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }} primary="Team" />
-            }
-            <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
+            <ListItemText inset={edittingTeam} style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={ window.innerWidth < 600? "Player" : "First name" } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
                 primary="Last name" />
             }
-            <ListItemIcon style={{ justifyContent: 'flex-start' }}>
-              <div style={{ height: 42, width: 42 }}></div>
-            </ListItemIcon>
+            {/*
+              <ListItemIcon style={{ justifyContent: 'flex-start' }}>
+                <div style={{ height: 42, width: 42 }}></div>
+              </ListItemIcon>*/
+            }
+            { window.innerWidth > 600 && edittingTeam &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass} primary="Team" />
+            }
+            { window.innerWidth > 450 && !edittingTeam &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}  primary="Status" />
+            }
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
             { data && !data.status &&
@@ -566,25 +628,26 @@ export default function MBScheduleBody(props){
                 return value && (
                   <React.Fragment key={value.userid}>
                     <ListItem role={undefined} button
-                      onClick={()=>edittingTeam? handleToggle(value): console.log()}>
-                      <ListItemIcon>
-                        { edittingTeam ?
+                      onClick={
+                        ()=>edittingTeam? handleToggle(value): handleFormOpen(value)}>
+                      { edittingTeam &&
+                        <ListItemIcon>
                           <GreenCheckbox
                             edge="start"
                             checked={checked.indexOf(value) !== -1}
                             tabIndex={-1}
                             disableRipple />
-                          :
-                          <div style={{ height: 42, width: 42 }}></div>
-                        }
-                      </ListItemIcon>
+                        </ListItemIcon>
+                        /*<div style={{ height: 42, width: 42 }}></div>*/
+                      }
+
                       <ListItemText className={classes.listText}
                         primary={
                           ( window.innerWidth >= 450 && window.innerWidth < 600 )?
                           <div style={{ display: 'flex' }}>
-                            { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
+                            { value.fullname }<div style={{ width: 20 }}></div>{ value.lastname }
                           </div>
-                          : value.firstname }
+                          : value.fullname }
                         secondary={
                           <React.Fragment>
                             { window.innerWidth < 450 &&
@@ -596,23 +659,54 @@ export default function MBScheduleBody(props){
                                 {value.lastname}
                               </Typography>
                             }
-                            { matchDetail && matchDetail.team && window.innerWidth < 600 &&
-                              ( value.teamno === 0 ?
+                            { window.innerWidth < 400 && !edittingTeam &&
+                              <React.Fragment>
+                                <br></br>
+                                <Typography
+                                  component="span"
+                                  variant="caption"
+                                  style={{
+                                    color:
+                                    value.status === 0? red[500] :
+                                    value.status === 1? amber[800] : green[500]
+                                  }}
+                                >
+                                  {
+                                    value.status === 0? 'Incomplete' :
+                                    value.status === 1? 'Pending' : 'Complete'
+                                  }
+                                </Typography>
+                              </React.Fragment>
+                            }
+                            { window.innerWidth < 600 && edittingTeam &&
+                              ( matchDetail && matchDetail.team ?
+                                ( value.teamno === 0 ?
+                                  <React.Fragment>
+                                    <br></br>
+                                    {"-"}
+                                  </React.Fragment>
+                                  :
+                                  matchDetail.team.filter( d =>{
+                                    return d.teamno === value.teamno
+                                  }).map((d, i) =>
+                                    d &&
+                                    <React.Fragment key={i}>
+                                      <br></br>
+                                      {d.teamname}
+                                    </React.Fragment>
+                                  )
+                                )
+                                :
                                 <React.Fragment>
                                   <br></br>
                                   {"-"}
                                 </React.Fragment>
-                                :
-                                matchDetail.team.filter( d =>{
-                                  return d.teamno === value.teamno
-                                }).map((d, i) =>
-                                  d &&
-                                  <React.Fragment key={i}>
-                                    <br></br>
-                                    {d.teamname}
-                                  </React.Fragment>
-                                )
                               )
+                            }
+                            { window.innerWidth < 600 && !edittingTeam && value.createdate &&
+                              <Typography variant="caption" display="block">
+                                {API.handleGetDate(value.createdate)}
+                              </Typography>
                             }
                           </React.Fragment>
                         } />
@@ -620,17 +714,47 @@ export default function MBScheduleBody(props){
                         <ListItemText className={classes.listText}
                           primary={value.lastname}/>
                       }
-                      { matchDetail && matchDetail.team && window.innerWidth > 600 &&
-                        ( value.teamno === 0 ?
-                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
-                          :
-                          matchDetail.team.filter( d =>{
-                            return d.teamno === value.teamno
-                          }).map( d =>
-                            d &&
-                            <ListItemText key={d.teamname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.teamname} />
+                      { window.innerWidth > 600 && edittingTeam &&
+                        (
+                          matchDetail && matchDetail.team ?
+                          ( value.teamno === 0 ?
+                            <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
+                            :
+                            matchDetail.team.filter( d =>{
+                              return d.teamno === value.teamno
+                            }).map( d =>
+                              d &&
+                              <ListItemText key={d.teamname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.teamname} />
+                            )
                           )
+                          :
+                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
                         )
+                      }
+                      { window.innerWidth > 400 && !edittingTeam &&
+                        <ListItemText className={classes.listClass}
+                          primary={
+                            <Typography
+                              component="span"
+                              variant="subtitle2"
+                              style={{
+                                color:
+                                value.status === 0? red[500] :
+                                value.status === 1? amber[800] : green[500]
+                              }}
+                            >
+                              {
+                                value.status === 0? 'Incomplete' :
+                                value.status === 1? 'Pending' : 'Complete'
+                              }
+                            </Typography>
+                          }
+                          secondary={
+                            window.innerWidth >= 600 && !edittingTeam && value.createdate &&
+                              <Typography variant="caption" display="block" style={{ color: grey[500] }}>
+                                {API.handleGetDate(value.createdate)}
+                              </Typography>
+                          } />
                       }
                     </ListItem>
                     <Divider />
@@ -674,14 +798,21 @@ export default function MBScheduleBody(props){
       </List>
       <TemplateDialog open={addState} handleClose={handleAddClose}>
         <AddPlayerModal
-          token={token} setCSRFToken={setCSRFToken} matchid={matchid} handleSnackBar={handleSnackBar}
-          data={data}
-          setMBData={setData} setMBMatchDetail={setMatchDetail}/>
+          {...props}
+          playerAction="invite"
+          data={data}/>
       </TemplateDialog>
       <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth={500}>
-        <MatchTeam token={token} setCSRFToken={setCSRFToken} data={matchDetail && matchDetail.team}
-          handleSnackBar={handleSnackBar}
-          matchid={matchid} setData={setMatchDetail}/>
+        <MatchTeam
+          {...props}
+          matchDetail={matchDetail}/>
+      </TemplateDialog>
+      <TemplateDialog open={formState} handleClose={handleFormClose} maxWidth={500}>
+        <MatchFormAction
+          {...props}
+          selectedUser={selectedUser}
+          handleClose={handleFormClose}
+          />
       </TemplateDialog>
       <Menu
         anchorEl={anchorEl}

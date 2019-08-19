@@ -80,10 +80,10 @@ const useStyles = makeStyles( theme =>({
 
 function Slider(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp, scale = 1, page, pageid } = props
   const [ index, setIndex ] = React.useState(0)
   const [ data, setData ] = React.useState(null)
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const currentWebURL = hd + API.webURL()
 
   function handleChangeIndex(index) {
@@ -106,23 +106,43 @@ function Slider(props) {
     }
   }
 
-  const [ ,updateState ] = React.useState(null)
-
-  function resizeHandler(){
-    updateState({})
+  async function handleFetchPage(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'ploadpage', {
+        action: 'postlist',
+        pageid: pageid,
+        userid: sess.userid,
+        type: 'announce'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+    })
   }
 
   async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}&action=announcelist`
+    `?_csrf=${token? token : resToken.token}&action=announcelist`
     )
     setCSRFToken(d.token)
     setData(d.response)
   }
 
   React.useEffect(()=>{
-    //handleFetch()
+    if(page){
+      handleFetchPage()
+    }else{
+      handleFetch()
+    }
   },[ ])
+
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
 
   React.useEffect(()=>{
     window.addEventListener('resize', resizeHandler)
@@ -136,26 +156,65 @@ function Slider(props) {
       <AutoPlaySwipeableViews
         interval={10000}
         enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
-      { data ?
+      { data && data.length > 0?
         data.map( d =>
           d &&
-          <div key={d.announceid}>
-            <Link to={`/announce/${d.announceid}`} style={{ textDecoration: 'none'}}>
-              <img className={classes.slide} style={{ height: window.innerWidth * .45 }}
-                src={
-                  isSupportWebp?
-                  currentWebURL + d.picture + '.webp'
+          <div key={page ? d.postid : d.announceid}>
+            <Link to={ page ? `/announce/${pageid + '-' + d.postid}` : `/announce/${d.announceid}`}
+              style={{ textDecoration: 'none'}}>
+              { page ?
+                (
+                  d.photopath ?
+                  <img className={classes.slide} style={{ height: window.innerWidth * scale * .45 }}
+                    src={
+                      isSupportWebp?
+                      currentWebURL + d.photopath + '.webp'
+                      :
+                      currentWebURL + d.photopath + '.jpg'
+                    } />
                   :
-                  currentWebURL + d.picture + '.jpg'
-                } />
+                  <div
+                    style={{
+                      height: window.innerWidth * scale * .45, width: '100%',
+                      backgroundColor: grey[300],
+                      display: 'flex', flexDirection: 'column', justifyContent: 'space-around'
+                    }}>
+                    <div style={{ textAlign: 'center', fontWeight: 600, fontFamily: 'Monospace', fontSize: 16 * scale }}>No Image</div>
+                  </div>
+                )
+                :
+                (
+                  d.picture ?
+                  <img className={classes.slide} style={{ height: window.innerWidth * scale * .45 }}
+                    src={
+                      isSupportWebp?
+                      currentWebURL + d.picture + '.webp'
+                      :
+                      currentWebURL + d.picture + '.jpg'
+                    } />
+                  :
+                  <div
+                    style={{
+                      height: window.innerWidth * scale * .45, width: '100%',
+                      backgroundColor: grey[300],
+                      display: 'flex', flexDirection: 'column', justifyContent: 'space-around'
+                    }}>
+                    <div style={{ textAlign: 'center', fontWeight: 600, fontFamily: 'Monospace', fontSize: 16 * scale }}>No Image</div>
+                  </div>
+                )
+              }
             </Link>
-            <Link to={`/announce/${d.announceid}`} style={{ textDecoration: 'none'}}>
-              <div className={classes.label}>{d.title}</div>
+            <Link to={ page ? `/announce/${pageid + '-' + d.postid}` : `/announce/${d.announceid}`}
+              style={{ textDecoration: 'none'}}>
+              <div className={classes.label}>{page ? d.message : d.title}</div>
             </Link>
           </div>
         )
         :
-        <div style={{ width: '100%', height: window.innerWidth * .45, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+        <div style={{
+            width: '100%', height: window.innerWidth * scale * .45, maxHeight: 450,
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
+          }}>
           <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 36, opacity: .7 }}>No announce</div>
         </div>
       }
@@ -163,13 +222,13 @@ function Slider(props) {
       </AutoPlaySwipeableViews>
       <Pagination dots={ data ? data.length : 0 } index={index} onChangeIndex={handleChangeIndex} />
       {
-        window.innerWidth > 500 && data &&
+        window.innerWidth * scale > 500 * scale && data && data.length > 0 &&
         <IconButton classes={{ root: classes.iconButton }} className={classes.leftArrow} onClick={backHandler}>
           <KeyboardArrowLeftIcon classes={{ root: classes.arrow }}/>
         </IconButton>
       }
       {
-        window.innerWidth > 500 && data &&
+        window.innerWidth * scale > 500 * scale && data && data.length > 0 &&
         <IconButton classes={{ root: classes.iconButton }} className={classes.rightArrow} onClick={nextHandler}>
           <KeyboardArrowRightIcon classes={{ root: classes.arrow }}/>
         </IconButton>

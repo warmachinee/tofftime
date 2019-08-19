@@ -129,7 +129,7 @@ const theme = createMuiTheme({
 
 function RewardContainer(props){
   const classes = useStyles();
-  const { token, setCSRFToken,
+  const { sess, token, setCSRFToken,
     matchid, handleSnackBar,
     data, setData, setMatchDetail, editting
   } = props
@@ -155,9 +155,10 @@ function RewardContainer(props){
     userid.push(data.userid)
     prize.push(parseInt(edittingData))
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'rewardsystem', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'prize',
           matchid: matchid,
           userid: userid,
@@ -179,9 +180,10 @@ function RewardContainer(props){
 
   async function handleFetch(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'reward',
           matchid: matchid
       }, (csrf, d) =>{
@@ -211,9 +213,10 @@ function RewardContainer(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -311,7 +314,7 @@ function RewardContainer(props){
 
 export default function MBRewardBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
   const [ value, setValue ] = React.useState(0);
@@ -338,9 +341,10 @@ export default function MBRewardBody(props){
 
   async function handleCreate(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'rewardsystem', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'create',
           matchid: matchid
       }, (csrf, d) =>{
@@ -365,9 +369,10 @@ export default function MBRewardBody(props){
     classno.push(matchDetail.class[value].classno)
     customsequence.push(parseInt(rewardEdit))
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'rewardsystem', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'edit',
           matchid: matchid,
           classno: classno,
@@ -392,9 +397,10 @@ export default function MBRewardBody(props){
     let classno = []
     classno.push(matchDetail.class[value].classno)
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'rewardsystem', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'clear',
           matchid: matchid,
           classno: classno
@@ -415,9 +421,10 @@ export default function MBRewardBody(props){
 
   async function handleFetch(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'reward',
           matchid: matchid
       }, (csrf, d) =>{
@@ -447,9 +454,10 @@ export default function MBRewardBody(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{

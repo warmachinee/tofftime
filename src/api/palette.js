@@ -24,9 +24,11 @@ import grey from '@material-ui/core/colors/grey';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 
 const primary = teal
+const secondary = green
 
 export {
   primary,
+  secondary,
   red,
   pink,
   purple,

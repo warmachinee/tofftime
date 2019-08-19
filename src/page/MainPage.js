@@ -1,8 +1,20 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { LDTopnav } from './../components/loading/LDTopnav';
+
 import { LDMatchList } from './../components/loading/LDMatchList';
-import AnnouncementNewsGrid from './../components/AnnouncementNewsGrid'
+import { LDTopnav } from './../components/loading/LDTopnav';
+
+const Header = Loadable({
+  loader: () => import(/* webpackChunkName: "Header" */'./../components/Header'),
+  loading() {
+    return <LDTopnav />
+  }
+});
+
+const AnnouncementNewsGrid = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchList" */'./../components/AnnouncementNewsGrid'),
+  loading: () => <LDMatchList />
+});
 
 const MatchList = Loadable({
   loader: () => import(/* webpackChunkName: "MatchList" */'./../components/Match/MatchList'),
@@ -10,7 +22,7 @@ const MatchList = Loadable({
 });
 
 function MainPage(props) {
-  
+
   return (
     <div>
       <AnnouncementNewsGrid {...props}/>

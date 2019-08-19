@@ -143,7 +143,7 @@ const theme = createMuiTheme({
 
 function MBScoreEditorContainer(props){
   const classes = useStyles();
-  const { matchid, data, matchDetail, selected, handleSelectPlayer } = props
+  const { sess, matchid, data, matchDetail, selected, handleSelectPlayer } = props
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
   const [ expanded, setExpanded ] = React.useState(true)
@@ -247,6 +247,7 @@ function MBScoreEditorContainer(props){
         <div className={classes.searchBox}>
           <ThemeProvider theme={theme}>
             <TextField
+              disabled={data === null}
               autoFocus={expanded}
               className={classes.searchBox}
               variant="outlined"
@@ -286,13 +287,14 @@ function MBScoreEditorContainer(props){
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={ window.innerWidth < 450? "" : "Last name" } />
             { window.innerWidth > 450 &&
-              <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass} primary="Class" />
+              <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass}
+                primary={ matchDetail.scorematch === 1? "Class" : 'Flight' } />
             }
 
           </ListItem>
         </List>
         <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .4 }}>
-          { data && !data.status &&
+          { data && !data.status && matchDetail &&
             [
               ...searchUser? handleSearch() : data
             ].slice(0, dataSliced).map( value =>
@@ -324,7 +326,12 @@ function MBScoreEditorContainer(props){
                           d &&
                           <React.Fragment key={i}>
                             <br></br>
-                            {d.classname}
+                            {
+                              matchDetail.scorematch === 1 ?
+                              d.classname
+                              :
+                              String.fromCharCode(65 + value.classno - 1)
+                            }
                           </React.Fragment>
                         )
                       )
@@ -341,7 +348,12 @@ function MBScoreEditorContainer(props){
                         return d.classno === value.classno
                       }).map( d =>
                         d &&
-                        <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.classname} />
+                        <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={
+                          matchDetail.scorematch === 1 ?
+                          d.classname
+                          :
+                          String.fromCharCode(65 + value.classno - 1)
+                        } />
                       )
                     )
                   }
@@ -389,7 +401,7 @@ function MBScoreEditorContainer(props){
 
 export default function MBScoreEditorBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
   const tempArr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
@@ -437,7 +449,7 @@ export default function MBScoreEditorBody(props){
 
   function handleScoreDisplay(){
     return new Promise(resolve => {
-      var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+      var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
       const socket = socketIOClient( hd + API.webURL() )
       socket.emit('player-show-client-message', {
         action: "showplayerscore",
@@ -457,9 +469,8 @@ export default function MBScoreEditorBody(props){
   }, [ arrScore, oldSelected, selected ])
 
   function handleUpdateScore(){
-    console.log('userid : ', oldSelected.firstname, " : ", 'newuserid : ', selected.firstname);
-    /*
-    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+    //console.log('userid : ', oldSelected.firstname, " : ", 'newuserid : ', selected.firstname);
+    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
     const socket = socketIOClient( hd + API.webURL() )
     socket.emit('admin-match-client-message', {
       action: "scorebysystemadmin",
@@ -467,7 +478,6 @@ export default function MBScoreEditorBody(props){
       userid: selected.userid,
       userscore: arrScore,
     })
-    */
   }
 
   function handleReset(){
@@ -477,9 +487,10 @@ export default function MBScoreEditorBody(props){
 
   async function handleFetch(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'userlist',
           matchid: matchid
       }, (csrf, d) =>{
@@ -507,9 +518,10 @@ export default function MBScoreEditorBody(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -544,12 +556,13 @@ export default function MBScoreEditorBody(props){
 
   return(
     <div className={classes.root}>
-      <MBScoreEditorContainer matchid={matchid} data={data} matchDetail={matchDetail} selected={selected} handleSelectPlayer={handleSelectPlayer}/>
+      <MBScoreEditorContainer {...props} data={data} matchDetail={matchDetail} selected={selected} handleSelectPlayer={handleSelectPlayer}/>
       <ThemeProvider theme={theme}>
         <div style={{ overflow: 'auto', marginTop: 24, marginBottom: 24 }}>
           <div className={classes.textfieldGrid}>
             {tempArr.slice(0, 9).map( d =>
               <TextField
+                disabled={selected === null}
                 key={d}
                 className={classes.textfield}
                 label={d + 1}
@@ -566,6 +579,7 @@ export default function MBScoreEditorBody(props){
           <div className={classes.textfieldGrid}>
             {tempArr.slice(9, 18).map( d =>
               <TextField
+                disabled={selected === null}
                 key={d}
                 className={classes.textfield}
                 label={d + 1}
@@ -594,10 +608,18 @@ export default function MBScoreEditorBody(props){
         </Box>
       </Typography>
       <div className={classes.controls}>
-        <Button className={classes.button} onClick={handleReset}>Reset</Button>
-        <GreenButton
-          variant="contained" color="primary"
-          className={classes.button} onClick={handleUpdateScore}>Save</GreenButton>
+        <Button disabled={selected === null} className={classes.button} onClick={handleReset}>Reset</Button>
+        { selected?
+          <GreenButton
+            disabled={selected === null}
+            variant="contained" color="primary"
+            className={classes.button} onClick={handleUpdateScore}>Save</GreenButton>
+          :
+          <Button
+            disabled
+            variant="contained" color="primary"
+            className={classes.button} >Save</Button>
+        }
       </div>
     </div>
   );

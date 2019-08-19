@@ -129,8 +129,15 @@ export default function News(props){
   const [ editting, setEditting ] = React.useState(false)
   const [ edittingData, setEdittingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const currentWebURL = hd + API.webURL()
+
+  const passingProps = {
+    token: token,
+    setCSRFToken: setCSRFToken,
+    handleSnackBar: handleSnackBar,
+    isSupportWebp: isSupportWebp
+  }
 
   function handleOpen(action){
     setClickAction(action)
@@ -163,8 +170,9 @@ export default function News(props){
   }
 
   async function handleFetchDelete(data){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'newsmain', {
         action: 'delete',
         newsid: data.newsid
@@ -186,10 +194,10 @@ export default function News(props){
   }
 
   async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}&action=newslist`
+    `?_csrf=${token? token : resToken.token}&action=newslist`
     )
-    console.log(d);
     setCSRFToken(d.token)
     setData(d.response)
   }
@@ -268,7 +276,7 @@ export default function News(props){
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
         <NewsEditor
-          {...props}
+          {...passingProps}
           clickAction={clickAction}
           handleClose={handleClose}
           setData={setData}

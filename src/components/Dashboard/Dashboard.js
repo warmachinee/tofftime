@@ -133,61 +133,74 @@ const StyledButton = withStyles(theme => ({
 
 export default function Dashboard(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+
+  const passingProps = {
+    sess: sess,
+    token: token,
+    setCSRFToken: setCSRFToken,
+    handleSnackBar: handleSnackBar,
+    isSupportWebp: isSupportWebp
+  }
 
   function SystemComponent(){
-    return(
-      <div>
+    return sess && sess.status === 1 && (
+      <React.Fragment>
         <div style={{ marginTop: 36 }}>
-          <Link to='/user/announce' className={classes.linkElement}>
+          <Link to={`/admin/announce`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Announcement
             </StyledButton>
           </Link>
-          <Link to='/user/news' className={classes.linkElement}>
+          <Link to={`/admin/news`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               News
             </StyledButton>
           </Link>
-          <Link to='/user/matchlist' className={classes.linkElement}>
+          <Link to={`/admin/matchlist`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Match List
             </StyledButton>
           </Link>
         </div>
         <div style={{ marginTop: 36 }}>
-          <Link to='/user/match' className={classes.linkElement}>
+          <Link to={`/admin/match`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Match
             </StyledButton>
           </Link>
-          <Link to='/user/course' className={classes.linkElement}>
+          <Link to={`/admin/course`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Course
             </StyledButton>
           </Link>
-          <Link to='/user/user' className={classes.linkElement}>
+          <Link to={`/admin/user`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               User
             </StyledButton>
           </Link>
-          <Link to='/user/page' className={classes.linkElement}>
+          <Link to={`/admin/page`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Page
             </StyledButton>
           </Link>
         </div>
-      </div>
+      </React.Fragment>
     )
   }
+
   return(
     <Paper className={classes.root}>
-      <Route exact path='/user' component={SystemComponent} />
-      <RouteAnnouncement path='/user/announce' {...props}/>
-      <RouteNews path='/user/news' {...props}/>
-      <RouteMatchList path='/user/matchlist' {...props}/>
-      <RouteMatch path='/user/match' {...props}/>
-      <RouteUser path='/user/user' {...props}/>
+      { sess && sess.status === 1 &&
+        <React.Fragment>
+          <Route exact path={`/admin`} component={SystemComponent} />
+          <RouteAnnouncement path={`/admin/announce`} {...passingProps}/>
+          <RouteNews path={`/admin/news`} {...passingProps}/>
+          <RouteMatchList path={`/admin/matchlist`} {...passingProps}/>
+          <RouteMatch path={`/admin/match`} {...passingProps}/>
+          <RouteUser path={`/admin/user`} {...passingProps}/>
+        </React.Fragment>
+      }
     </Paper>
   );
 }

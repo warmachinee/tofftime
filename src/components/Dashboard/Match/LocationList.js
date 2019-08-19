@@ -136,7 +136,7 @@ const theme = createMuiTheme({
 
 export default function LocationList(props){
   const classes = useStyles();
-  const { token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, setPageState, setEdittingField } = props
+  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, setPageState, setEdittingField } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ searchField, setSearchField ] = React.useState('')
@@ -163,10 +163,18 @@ export default function LocationList(props){
   }
 
   async function handleLoadField(d){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      props.token,
-      'loadfield', {
-        action: 'list'
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadfield' : 'loadusersystem', {
+        ...(sess.typeid === 'admin')?
+        {
+          action: 'matchlist'
+        } :
+        {
+          action: 'fieldlist',
+          type: 0
+        }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
@@ -174,9 +182,10 @@ export default function LocationList(props){
   }
 
   async function handleDeleteField(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      props.token,
-      'fieldsystem', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
         action: 'delete',
         fieldid: selectedDeleteItem.fieldid,
         usertarget: selectedDeleteItem.hostid

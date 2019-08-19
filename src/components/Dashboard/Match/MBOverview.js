@@ -220,11 +220,11 @@ const datePickers = createMuiTheme({
 
 function MBOverviewBody(props){
   const classes = useStyles();
-  const { token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
   const [ editting, handleEditting ] = React.useState(false)
   const [ open, setOpen ] = React.useState(false);
   const [ modalType, setModalType ] = React.useState('');
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const matchPicture = data?(data.picture && ( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture )):null
   const imgRef = React.useRef(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -235,6 +235,7 @@ function MBOverviewBody(props){
   const [ selectedMatchType, setSelectedMatchType ] = React.useState(null);
   const [ selectedDate, setSelectedDate ] = React.useState(null);
   const [ selectedFile, setSelectedFile ] = React.useState(null);
+  const [ tempFile, setTempFile ] = React.useState(null)
 
   const handleOpen = (d) => {
     setOpen(true);
@@ -260,6 +261,7 @@ function MBOverviewBody(props){
   function handlePicture(e){
     const file = event.target.files[0]
     const fileSize = file.size
+    var reader = new FileReader();
     if( fileSize > 5000000 ){
       handleSnackBar({
         state: true,
@@ -270,6 +272,10 @@ function MBOverviewBody(props){
     }else{
       if( file.type === 'image/jpeg' || file.type === 'image/png'){
         setSelectedFile(file)
+        reader.readAsDataURL(file);
+        reader.onloadend = function (){
+          setTempFile(reader.result)
+        }
       }else{
         handleSnackBar({
           state: true,
@@ -309,8 +315,8 @@ function MBOverviewBody(props){
     }
 
     await API.xhrPost(
-      token? token : res.token,
-      'matchsystem', sendObj,
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem', sendObj,
       (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -330,12 +336,15 @@ function MBOverviewBody(props){
     const formData = new FormData()
     if(selectedFile){
       formData.append('matchimage', selectedFile)
-      const response = await API.fetchPostFile('matchsystem',`?_csrf=${csrf}`, {
+      const response = await API.fetchPostFile(
+        sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem',
+        `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: parseInt(matchid),
         photopath: true,
       }, formData)
-      setCSRFToken( await API.xhrGet('getcsrf') )
+      const res = await API.xhrGet('getcsrf')
+      setCSRFToken( res.token )
       status = response.status
     }else{
       setCSRFToken(csrf)
@@ -354,9 +363,10 @@ function MBOverviewBody(props){
 
   async function handleFetch(){
     if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : await API.xhrGet('getcsrf').token,
-        'loadmatch', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -431,8 +441,8 @@ function MBOverviewBody(props){
                 style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
                 className={classes.matchImg}
                 src={
-                  selectedFile ?
-                  URL.createObjectURL(selectedFile)
+                  selectedFile && tempFile ?
+                  tempFile
                   :
                   ( isSupportWebp? matchPicture + '.webp': matchPicture + '.jpg' )
                 }/>
@@ -488,17 +498,15 @@ function MBOverviewBody(props){
               onClick={()=>handleOpen('location')}>
               { data?( selectedField? selectedField.fieldname : data.location ):'Location' }
             </GreenTextButton>
-            <div style={{ display: 'flex' }}>
-              <GreenTextButton
-                disabled={!editting}
-                className={classes.button}
-                variant="outlined"
-                onClick={()=>handleOpen('class')}>
-                { data?( data.class && !data.class.status &&
-                  ( data.class.length >= 2 ? ( data.class.length + ' Classes' ):( data.class.length + ' Class' ) )):'Class'
-                }
-              </GreenTextButton>
-            </div>
+            <GreenTextButton
+              disabled={!editting}
+              className={classes.button}
+              variant="outlined"
+              onClick={()=>handleOpen('class')}>
+              { data?( data.class && !data.class.status &&
+                ( data.class.length >= 2 ? ( data.class.length + ' Classes' ):( data.class.length + ' Class' ) )):'Class'
+              }
+            </GreenTextButton>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
               disabled={!editting}>
@@ -561,15 +569,18 @@ function MBOverviewBody(props){
       }
       { modalType && modalType === 'location' &&
         <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
-          <Location token={token} setCSRFToken={setCSRFToken} selectedField={selectedField} setSelectedField={setSelectedField}
-            handleClose={handleClose}
-            handleSnackBar={handleSnackBar} />
+          <Location
+            {...props}
+            selectedField={selectedField}
+            setSelectedField={setSelectedField}
+            handleClose={handleClose}/>
         </TemplateDialog>
       }
       { modalType && modalType === 'class' &&
         <TemplateDialog open={open} handleClose={handleClose} maxWidth={500}>
-          <MatchClass token={token} setCSRFToken={setCSRFToken} data={data && data.status !== 'class database error' && data.class}
-            handleSnackBar={handleSnackBar}
+          <MatchClass
+            {...props}
+            data={data && data.status !== 'class database error' && data}
             matchid={matchid} setData={setData}/>
         </TemplateDialog>
       }
@@ -580,11 +591,12 @@ function MBOverviewBody(props){
 export default function MBOverview(props){
   const classes = useStyles();
   const { token, setCSRFToken, handleSnackBar, setData, data, matchid } = props
-  const [ expanded, setExpanded ] = React.useState(!true)
+  const [ expanded, setExpanded ] = React.useState(true)
 
   function expandHandler(){
     setExpanded(!expanded)
   }
+
   return(
     <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">

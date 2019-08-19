@@ -49,22 +49,49 @@ const useStyles = makeStyles(theme => ({
 
 export default function AnnounceDetail(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
-  const hd = ( window.location.href.substring(0, 25) === 'https://www.' + API.webURL() )? 'https://www.' : 'https://'
+  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
   const currentWebURL = hd + API.webURL()
 
+  async function handleFetchPost(announceid, pageid){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'ploadpage', {
+        action: 'postdetail',
+        pageid: pageid,
+        postid: announceid,
+        userid: sess.userid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      console.log('postdetail', d);
+    })
+  }
+
   async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const announceid = parseInt(props.computedMatch.params.detailparam)
     const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${token? token : await API.xhrGet('getcsrf').token}&action=announcedetail&announceid=${announceid}`
+    `?_csrf=${token? token : resToken.token}&action=announcedetail&announceid=${announceid}`
     )
     setCSRFToken(d.token)
     setData(d.response)
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    const splitStr = props.computedMatch.params.detailparam.split('-')
+    let announceid;
+    let pageid;
+    console.log(splitStr);
+    if(splitStr.length > 1){
+      announceid = parseInt(splitStr[0])
+      pageid = parseInt(splitStr[1])
+      handleFetchPost(announceid, pageid)
+    }else{
+      announceid = parseInt(props.computedMatch.params.detailparam)
+      handleFetch(announceid)
+    }
   },[ ])
 
   return(

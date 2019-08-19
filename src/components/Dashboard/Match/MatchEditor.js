@@ -40,6 +40,11 @@ const MBReward = Loadable({
   loading: () => <LDCircular />
 });
 
+const MBMatchAdmin = Loadable({
+  loader: () => import(/* webpackChunkName: "MBMatchAdmin" */'./MBMatchAdmin'),
+  loading: () => <LDCircular />
+});
+
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../../GoBack'),
   loading: () => <LDCircular />
@@ -61,7 +66,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchEditor(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const matchid = props.computedMatch && props.computedMatch.params.matchparam
   const [ data, setData ] = React.useState(null)
   const passingProps = {
@@ -70,11 +75,12 @@ export default function MatchEditor(props){
   }
 
   async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
-      'loadmatch', {
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
         action: 'detail',
-        matchid: matchid
+        matchid: matchid,
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(
@@ -97,8 +103,10 @@ export default function MatchEditor(props){
 
   React.useEffect(()=>{
     handleFetch()
+    console.log(props);
   },[ ])
-
+  //sess.typeid === 'admin' ? 'loadmatchsystem' : 'mloadmatch'
+  //...(sess.typeid === 'admin')?{ action: 'matchlist' } : null
   return(
     <div className={classes.root}>
       <GoBack />
@@ -113,6 +121,7 @@ export default function MatchEditor(props){
       <MBScoreEditor {...passingProps} />
       <MBPlayoff {...passingProps} />
       <MBReward {...passingProps} />
+      <MBMatchAdmin {...passingProps} />
     </div>
   );
 }

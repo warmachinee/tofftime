@@ -193,7 +193,7 @@ function HCPPanel(props){
 
 export default function LocationEditor(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, setPageState, edittingField, setEdittingField } = props
+  const { sess, token, setCSRFToken, handleSnackBar, setPageState, edittingField, setEdittingField } = props
   const [ location, setLocation ] = React.useState(null)
   const [ holeScore, setHoleScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
   const [ hcpScore, setHCPScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
@@ -247,18 +247,10 @@ export default function LocationEditor(props){
   }
 
   async function handleCreate(){
-    let res = await API.xhrGet('getcsrf')
-    const formData = new FormData()
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const sendObj = {
       action: 'createcustom',
     };
-
-    if(selectedFile){
-      formData.append('fieldimage', selectedFile)
-      Object.assign(sendObj, {
-        photopath: true,
-      });
-    }
 
     if(location){
       Object.assign(sendObj, { fieldname: location });
@@ -284,15 +276,50 @@ export default function LocationEditor(props){
       }
     }
 
-    if(
-      location &&
-      holeScore.length === 18 &&
-      holeScore.every( d =>{ return !( isNaN(d) || d === '' ) }) &&
-      hcpScore.length === 18 &&
-      hcpScore.every( d =>{ return !( isNaN(d) || d === '' ) })
-    ){
-      const d = await API.fetchPostFile('fieldsystem',`?_csrf=${res.token}`, sendObj, formData)
-      res = await API.xhrGet('getcsrf')
+    if(Object.keys(sendObj).length === 4){
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
+          ...sendObj
+      }, (csrf, d) =>{
+        console.log(d);
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: d.status === 'success' ? d.status : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
+        })
+        try {
+          handleEditPicture(d.fieldid)
+        }catch(err) { console.log(err.message) }
+      })
+    }else{
+      handleSnackBar({
+        state: true,
+        message: 'Please complete the field.',
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+    }
+  }
+
+  async function handleEditPicture(fieldid){
+    const formData = new FormData()
+    const sendObj = {
+      action: 'edit',
+    };
+
+    if(selectedFile){
+      formData.append('fieldimage', selectedFile)
+      Object.assign(sendObj, {
+        fieldid: fieldid,
+        photopath: true,
+      });
+      const resToken = token? token : await API.xhrGet('getcsrf')
+      const d = await API.fetchPostFile(
+        sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem',
+        `?_csrf=${token? token : resToken.token}`, sendObj, formData)
       console.log(d);
       handleSnackBar({
         state: true,
@@ -300,6 +327,7 @@ export default function LocationEditor(props){
         variant: d.status === 'success' ? d.status : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
+      const res = await API.xhrGet('getcsrf')
       setCSRFToken(res.token)
       try {
         setPageState('select')
@@ -308,19 +336,13 @@ export default function LocationEditor(props){
   }
 
   async function handleEdit(){
-    let res = await API.xhrGet('getcsrf')
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'editscore',
       fieldid: edittingField.fieldid,
       usertarget: edittingField.hostid
     };
-    if(selectedFile){
-      formData.append('fieldimage', selectedFile)
-      Object.assign(sendObj, {
-        photopath: true,
-      });
-    }
 
     if(location){
       Object.assign(sendObj, { fieldname: location });
@@ -345,38 +367,52 @@ export default function LocationEditor(props){
         setTextHCPErr(true)
       }
     }
-
-    if(
-      location &&
-      holeScore.length === 18 &&
-      holeScore.every( d =>{ return !( isNaN(d) || d === '' ) }) &&
-      hcpScore.length === 18 &&
-      hcpScore.every( d =>{ return !( isNaN(d) || d === '' ) })
-    ){
-      const d = await API.fetchPostFile('fieldsystem',`?_csrf=${res.token}`, sendObj, formData)
-      res = await API.xhrGet('getcsrf')
+    
+    await API.xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
+        ...sendObj
+    }, (csrf, d) =>{
       console.log(d);
+      setCSRFToken(csrf)
       handleSnackBar({
         state: true,
         message: d.status,
         variant: d.status === 'success' ? d.status : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-      setCSRFToken(res.token)
       try {
-        //setPageState('select')
+        handleEditPicture(d.fieldid)
       }catch(err) { console.log(err.message) }
+    })
+  }
+
+  async function handleFetchLoadFieldVersion(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    if(edittingField){
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
+          action: 'versioncount',
+          fieldid: edittingField.fieldid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        try {
+          handleFetchLoadField(d[d.length - 1].version)
+        }catch(err) { console.log(err.message) }
+      })
     }
   }
 
-  async function handleFetchLoadField(){
-    const res = await API.xhrGet('getcsrf')
+  async function handleFetchLoadField(version){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     if(edittingField){
       await API.xhrPost(
-        token? token : res,
-        'loadfield', {
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
           action: 'score',
-          fieldid: edittingField.fieldid
+          fieldid: edittingField.fieldid,
+          fieldversion: version
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         try {
@@ -390,7 +426,7 @@ export default function LocationEditor(props){
 
   React.useEffect(()=>{
     if(edittingField){
-      handleFetchLoadField()
+      handleFetchLoadFieldVersion()
     }
   }, [ ])
 

@@ -130,6 +130,7 @@ export default function NewsEditor(props) {
   const [ detail, setDetail ] = React.useState( clickAction === 'edit'? ( edittingData ? edittingData.newsdetail : '' ) : '' )
   const [ borderOnFocus, setBorderOnFocus ] = React.useState(`1px solid ${grey[400]}`)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
+  const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
   const ckeditorEl = React.useRef(null)
@@ -144,6 +145,7 @@ export default function NewsEditor(props) {
   function handlePicture(e){
     const file = event.target.files[0]
     const fileSize = file.size
+    var reader = new FileReader();
     if( fileSize > 5000000 ){
       handleSnackBar({
         state: true,
@@ -154,6 +156,10 @@ export default function NewsEditor(props) {
     }else{
       if( file.type === 'image/jpeg' || file.type === 'image/png'){
         setSelectedFile(file)
+        reader.readAsDataURL(file);
+        reader.onloadend = function (){
+          setTempFile(reader.result)
+        }
       }else{
         handleSnackBar({
           state: true,
@@ -186,8 +192,7 @@ export default function NewsEditor(props) {
   }
 
   async function handleEdit(){
-    const res = await API.xhrGet('getcsrf')
-    const formData = new FormData()
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const sendObj = {
       action: 'edit',
       newsid: edittingData.newsid,
@@ -195,21 +200,7 @@ export default function NewsEditor(props) {
     };
 
     if(selectedFile){
-      formData.append('newsimage', selectedFile)
-      const d = await API.fetchPostFile('newsmain',`?_csrf=${res.token}`, {
-        action: 'edit',
-        newsid: edittingData.newsid,
-        photopath: true,
-        display: true,
-      }, formData)
-      if(d.response.status !== 'success'){
-        handleSnackBar({
-          state: true,
-          message: d.response.status,
-          variant: 'error',
-          autoHideDuration: 5000
-        })
-      }
+      handleEditPicture()
     }
 
     if(title){
@@ -225,7 +216,7 @@ export default function NewsEditor(props) {
     }
 
     await API.xhrPost(
-      res.token,
+      token? token : resToken.token,
       'newsmain', {
         ...sendObj
     }, (csrf, d) =>{
@@ -243,8 +234,29 @@ export default function NewsEditor(props) {
     })
   }
 
+  async function handleEditPicture(){
+    const formData = new FormData()
+    formData.append('newsimage', selectedFile)
+    const d = await API.fetchPostFile('newsmain',`?_csrf=${token? token : res.token}`, {
+      action: 'edit',
+      newsid: edittingData.newsid,
+      photopath: true,
+      display: true,
+    }, formData)
+    const resToken = await API.xhrGet('getcsrf')
+    setCSRFToken(resToken.token)
+    if(d.status !== 'success'){
+      handleSnackBar({
+        state: true,
+        message: d.response.status,
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+    }
+  }
+
   async function handleCreate(){
-    const res = await API.xhrGet('getcsrf')
+    const resToken = token? token : await API.xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'create',
@@ -264,7 +276,7 @@ export default function NewsEditor(props) {
     }
 
     await API.xhrPost(
-      res.token,
+      token? token : resToken.token,
       'newsmain', {
         ...sendObj
     }, (csrf, d) =>{
@@ -291,7 +303,8 @@ export default function NewsEditor(props) {
     if(selectedFile){
       formData.append('newsimage', selectedFile)
       const response = await API.fetchPostFile('newsmain',`?_csrf=${csrf}`, sendObj, formData)
-      setCSRFToken( await API.xhrGet('getcsrf') )
+      const res = await API.xhrGet('getcsrf')
+      setCSRFToken(res.token)
       handleSnackBar({
         state: true,
         message: response.status,
@@ -318,8 +331,9 @@ export default function NewsEditor(props) {
   }
 
   async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'loadmainpage', {
         action: 'news',
     }, (csrf, d) =>{
@@ -345,7 +359,7 @@ export default function NewsEditor(props) {
               className={classes.matchImg}
               src={
                 selectedFile ?
-                URL.createObjectURL(selectedFile)
+                tempFile
                 :
                 ( isSupportWebp? matchPicture + '.webp': matchPicture + '.jpg' )
               }/>

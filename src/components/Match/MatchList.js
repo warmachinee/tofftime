@@ -67,13 +67,12 @@ const useStyles = makeStyles({
 
 function MatchListBody(props) {
   const classes = useStyles();
-  const { isSupportWebp } = props
+  const { scale = 1, isSupportWebp, data, page, pageid } = props
   const [ gridRes, setGridRes ] = React.useState(
-    window.innerWidth >= 1080? { width: '33.333333%', indicator: 3 }:
-    window.innerWidth >= 850? { width: '50%', indicator: 2 }:{ width: '100%', indicator: 1 }
+    window.innerWidth * scale >= 1080 * scale ? { width: '33.333333%', indicator: 3 }:
+    window.innerWidth * scale >= 850 * scale ? { width: '50%', indicator: 2 }:{ width: '100%', indicator: 1 }
   );
   const [ sliderIndex, setSliderIndex ] = React.useState(0)
-  const data = props.data
 
   function nextHandler(){
     if(data){
@@ -84,6 +83,7 @@ function MatchListBody(props) {
       }
     }
   }
+
   function backHandler(){
     if(sliderIndex <= 0){
       setSliderIndex(0)
@@ -91,12 +91,13 @@ function MatchListBody(props) {
       setSliderIndex(sliderIndex - 1)
     }
   }
+
   function resizeHandler(){
-    let wd = window.innerWidth
-    if( wd >= 1080 ){
+    let wd = window.innerWidth * scale
+    if( wd >= 1080 * scale  ){
       setGridRes({ width: '33.333333%', indicator: 3 })
     }
-    else if( wd >= 850 ){
+    else if( wd >= 850 * scale  ){
       setGridRes({ width: '50%', indicator: 2 })
     }
     else {
@@ -104,6 +105,7 @@ function MatchListBody(props) {
     }
     setSliderIndex(0)
   }
+
   React.useEffect(()=>{
     window.addEventListener('resize', resizeHandler)
     return ()=>{
@@ -117,32 +119,34 @@ function MatchListBody(props) {
         Match List
       </Typography>
       <div style={{ padding: '0 5%' }}>
-        <SwipeableViews index={sliderIndex} enableMouseEvents
-           style={{ padding: '0 30px' }}
-           slideStyle={{ padding: '0 10px', width: gridRes.width }}
-          >
-          { data ?
-            data.map( d =>
-              d &&
-              <MatchCard key={d.matchid} data={d} isSupportWebp={isSupportWebp}/>
-            )
-            :
-            [0,1,2,3].map( d =>
-              <LDMatchCard key={d}/>
-            )
-          }
-        </SwipeableViews>
+        { data && data.length > 0 ?
+          <SwipeableViews
+            index={sliderIndex}
+            style={{ padding: '0 30px' }}
+            slideStyle={{ padding: '0 10px', width: gridRes.width }}
+            >
+            { data.map( d =>
+              d && <MatchCard key={d.matchid} {...props} data={d} page={page}/>
+            )}
+          </SwipeableViews>
+          :
+          <div
+            style={{ minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+            <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 36, opacity: .7 }}>No match</div>
+          </div>
+        }
+
       </div>
       {
         (sliderIndex > 0) &&
-        window.innerWidth > 500 &&
+        window.innerWidth * scale > 500 * scale  &&
         <IconButton classes={{ root: classes.iconButton }} className={classes.leftArrow} onClick={backHandler}>
           <KeyboardArrowLeftIcon classes={{ root: classes.arrow }}/>
         </IconButton>
       }
       { data &&
         (sliderIndex + 1) * gridRes.indicator < data.length &&
-        window.innerWidth > 500 &&
+        window.innerWidth * scale > 500 * scale  &&
         <IconButton classes={{ root: classes.iconButton }} className={classes.rightArrow} onClick={nextHandler}>
           <KeyboardArrowRightIcon classes={{ root: classes.arrow }}/>
         </IconButton>
@@ -152,24 +156,43 @@ function MatchListBody(props) {
 }
 
 function MatchList(props){
-  const { isSupportWebp } = props
-  const [ csrfToken, setCSRFToken ] = React.useState(null)
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp, scale = 1, page, pageid } = props
   const [ data, setData ] = React.useState(null)
 
-  async function handleFetch(){
-    const res = await API.xhrGet('getcsrf')
-    await API.xhrPost( res.token, 'loadmatchsystem', {
-      action: 'matchlist'
+  async function handleFetchPage(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadusersystem' , {
+        action: 'upcoming'
     }, function(csrf, d){
+      setCSRFToken(csrf)
+      setData(d)
+    })
+  }
+  
+  async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadmatchsystem' , {
+        action: 'matchlist'
+    }, function(csrf, d){
+      //console.log(d);
       setCSRFToken(csrf)
       setData(d)
     })
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    if(page){
+      handleFetchPage()
+    }else{
+      handleFetch()
+    }
   },[ ])
-  return <MatchListBody data={data} isSupportWebp={isSupportWebp}/>
+
+  return <MatchListBody {...props} data={data} />
 }
 
 export default MatchList;

@@ -115,10 +115,17 @@ const GreenTextButton = withStyles(theme => ({
 
 export default function Match(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ editting, setEditting ] = React.useState(false)
+
+  const passingProps = {
+    token: token,
+    setCSRFToken: setCSRFToken,
+    handleSnackBar: handleSnackBar,
+    isSupportWebp: isSupportWebp
+  }
 
   function handleOpen(){
     setOpen(true);
@@ -129,8 +136,9 @@ export default function Match(props){
   };
 
   async function handleRemove(d){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'matchmain', {
         action: 'remove',
         matchid: d.matchid
@@ -151,13 +159,23 @@ export default function Match(props){
   }
 
   async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
-      token? token : await API.xhrGet('getcsrf').token,
+      token? token : resToken.token,
       'loadmainpage', {
         action: 'match',
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setData(d)
+      if(!d.status){
+        setData(d)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
     })
   }
 
@@ -263,7 +281,7 @@ export default function Match(props){
 
       </List>
       <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
-        <AddMatchModal {...props} setData={setData}/>
+        <AddMatchModal {...passingProps} setData={setData}/>
       </TemplateDialog>
     </div>
   );
