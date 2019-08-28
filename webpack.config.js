@@ -30,7 +30,21 @@ module.exports = {
             plugins: [
               '@babel/plugin-proposal-class-properties',
               '@babel/plugin-syntax-dynamic-import',
-              '@babel/plugin-transform-runtime'
+              '@babel/plugin-transform-runtime',
+              [require('babel-plugin-transform-imports'), {
+                '@material-ui/core': {
+                  transform: function(importName, matches) {
+                    return '@material-ui/core/esm/' + importName
+                  },
+                  preventFullImport: true
+                },
+                '@material-ui/icons': {
+                  transform: function(importName, matches) {
+                    return '@material-ui/icons/esm/' + importName
+                  },
+                  preventFullImport: true
+                }
+              }]
             ]
           }
         }
@@ -68,7 +82,7 @@ module.exports = {
         loader: 'svg-inline-loader'
       },
       {
-        test: /\.(png|jpe?g|gif)$/,
+        test: /\.(png|svg|jpe?g|gif|pdf)$/,
         use: [
           {
             loader: 'file-loader',
@@ -78,7 +92,8 @@ module.exports = {
           },
         ],
       },
-    ]
+
+    ],
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -90,6 +105,6 @@ module.exports = {
         viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
       },
       favicon: './public/favicon.ico'
-    })
+    }),
   ]
 };

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
-import * as API from './../../api'
 import { primary } from './../../api/palette'
 
 import CKEditor from '@ckeditor/ckeditor5-react';
@@ -45,14 +44,14 @@ const useStyles = makeStyles(theme => ({
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
   },
+
 }))
 
 export default function AnnounceDetail(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { API, sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
-  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-  const currentWebURL = hd + API.webURL()
+  //const splitStr = props.computedMatch.params.detailparam.split('-')
 
   async function handleFetchPost(announceid, pageid){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -65,6 +64,7 @@ export default function AnnounceDetail(props){
         userid: sess.userid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
+      setData(d)
       console.log('postdetail', d);
     })
   }
@@ -76,22 +76,23 @@ export default function AnnounceDetail(props){
     `?_csrf=${token? token : resToken.token}&action=announcedetail&announceid=${announceid}`
     )
     setCSRFToken(d.token)
-    setData(d.response)
+    setData(d.response[0])
   }
 
   React.useEffect(()=>{
-    const splitStr = props.computedMatch.params.detailparam.split('-')
     let announceid;
     let pageid;
+    /*
     console.log(splitStr);
     if(splitStr.length > 1){
-      announceid = parseInt(splitStr[0])
-      pageid = parseInt(splitStr[1])
+      pageid = parseInt(splitStr[0])
+      announceid = parseInt(splitStr[1])
       handleFetchPost(announceid, pageid)
     }else{
       announceid = parseInt(props.computedMatch.params.detailparam)
       handleFetch(announceid)
-    }
+    }*/
+    handleFetch()
   },[ ])
 
   return(
@@ -101,18 +102,48 @@ export default function AnnounceDetail(props){
           <ArrowBackIcon classes={{ root: classes.backIcon }}/>
         </IconButton>
       </div>
-      { data &&
-        data.map( d =>
-          <div key={d.title}>
+      {
+        /*splitStr.length > 1 ?
+        (
+          <div>
             <Typography variant="h2">
-              {d.title}
+              {data && data.message ? data.message : ''}
             </Typography>
-            { d.picture &&
-              <img className={classes.img} src={isSupportWebp? currentWebURL + d.picture + '.webp' : currentWebURL + d.picture + '.jpg'} />
+            { data && data.photopath &&
+              <img className={classes.img}
+                src={
+                  API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )
+                } />
             }
-            <DetailComponent announcedetail={d.announcedetail}/>
+            <DetailComponent announcedetail={data && data.messagedetail ? data.messagedetail : ''}/>
           </div>
-      )}
+        )
+        :
+        (
+          data &&
+          data.map( d =>
+            <div key={d.title}>
+              <Typography variant="h2">
+                {d.title}
+              </Typography>
+              { d.picture &&
+                <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              }
+              <DetailComponent announcedetail={d.announcedetail}/>
+            </div>
+          )
+        )*/
+        data &&
+        <div>
+          <Typography variant="h2">
+            {data.title}
+          </Typography>
+          { data.picture &&
+            <img className={classes.img} src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+          }
+          <DetailComponent announcedetail={data.announcedetail}/>
+        </div>
+      }
     </Paper>
   );
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles';
+import { Link } from "react-router-dom";
 import { ThemeProvider } from '@material-ui/styles';
+import * as API from './../../api'
 import { primary, grey } from './../../api/palette'
 
 import Typography from '@material-ui/core/Typography';
@@ -33,7 +35,7 @@ const useStyles = makeStyles(theme => ({
     right: 8
   },
   title: {
-    textAlign: 'center', color: primary[900],
+    textAlign: 'center', color: grey[800],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
@@ -41,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   },
   accountCircle: {
     fontSize: '5rem',
-    color: primary[900],
+    color: grey[800],
     [theme.breakpoints.up(500)]: {
       fontSize: '10rem',
     },
@@ -118,7 +120,7 @@ export default function SignInComponent(props){
     <div>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Sign in
+          Log in
         </Box>
       </Typography>
       <div style={{ display: 'flex', marginBottom: 16 }}>
@@ -167,12 +169,12 @@ export default function SignInComponent(props){
           </div>
         </div>
         <Facebook variant="contained" color="primary" className={classes.button}
-          onClick={()=>handleSignInWith('facebook')}>
+          onClick={()=>window.location.pathname = '/session/auth/facebook'}>
           <img src={ (window.innerWidth >= 500)?ic_facebook:ic_facebook_16} className={classes.loginWith}/>
           Sign in with Facebook
         </Facebook>
         <Google variant="contained" color="primary" className={classes.button}
-          onClick={()=>handleSignInWith('google')}>
+          onClick={()=>window.location.pathname = '/session/auth/google'}>
           <img src={ (window.innerWidth >= 500)?ic_google:ic_google_16} className={classes.loginWith}/>
           Sign in with Google
         </Google>

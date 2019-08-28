@@ -7,48 +7,37 @@ import { fade, makeStyles } from '@material-ui/core/styles';
 import * as API from './../api'
 import * as COLOR from './../api/palette'
 
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Portal from '@material-ui/core/Portal';
-import Typography from '@material-ui/core/Typography';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import useScrollTrigger from '@material-ui/core/useScrollTrigger';
-import Slide from '@material-ui/core/Slide';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputBase from '@material-ui/core/InputBase';
-import Avatar from '@material-ui/core/Avatar';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Popover from '@material-ui/core/Popover';
-import Paper from '@material-ui/core/Paper';
-import Hidden from '@material-ui/core/Hidden';
+import {
+  AppBar,
+  Toolbar,
+  Portal,
+  Typography,
+  CssBaseline,
+  useScrollTrigger,
+  Slide,
+  IconButton,
+  Button,
+  Menu,
+  MenuItem,
+  InputBase,
+  Avatar,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  Popover,
+  Paper,
+  Hidden,
+} from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SettingsIcon from '@material-ui/icons/Settings';
+import MenuIcon from '@material-ui/icons/Menu';
 
 import ic_logo from './img/logoX2.png'
-
-const ListRead = Loadable({
-  loader: () => import(/* webpackChunkName: "listReadNoti" */'./List/listReadNoti'),
-  loading() {
-    return <LDTopnav />
-  }
-});
-
-const ListUnRead = Loadable({
-  loader: () => import(/* webpackChunkName: "listUnreadNoti" */'./List/listUnreadNoti'),
-  loading() {
-    return <LDTopnav />
-  }
-});
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -58,6 +47,7 @@ const useStyles = makeStyles(theme => ({
     color: 'white'
   },
   toolbar: {
+    padding: theme.spacing(0, 2),
     [theme.breakpoints.up('md')]: {
       maxWidth: 1200,
       width: '100%',
@@ -67,9 +57,17 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     marginRight: theme.spacing(1),
+    color: COLOR.grey[900],
     display: 'none',
-    [theme.breakpoints.up(575)]: {
+    [theme.breakpoints.up(450)]: {
       display: 'block'
+    },
+  },
+  loginBtn: {
+    color: COLOR.grey[50],
+    backgroundColor: COLOR.primary[600],
+    '&:hover': {
+      backgroundColor: COLOR.primary[700],
     },
   },
   moreIcon: {
@@ -176,14 +174,11 @@ function HideOnScroll(props) {
 
 function Header(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, setResponse, sess, handleSess, isSupportWebp, pageData } = props
+  const { token, setCSRFToken, setResponse, sess, handleSess, isSupportWebp , drawerOpen} = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ anchorNoti, setAnchorNoti] = React.useState(null);
   const [ notiState, setNotiState ] = React.useState(false);
-  const [ userInfo, setUserInfo ] = React.useState(null);
   const container = React.useRef(null);
-  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-  const currentWebURL = hd + API.webURL()
 
   function menuOpenHandler(event) {
     setAnchorEl(event.currentTarget);
@@ -262,17 +257,14 @@ function Header(props) {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setUserInfo(d)
     })
   }
 
   React.useEffect(()=>{
-    if(sess && sess.status === 1 && sess.typeid === 'user'){
-      handleNotifications()
-      handleFetchNotifications()
-      handleFetchInfo()
+    if(sess && sess.status === 1 && sess.typeid !== 'admin'){
+      //handleNotifications()
+      //handleFetchNotifications()
     }
-    console.log(pageData);
   },[ sess ])
 
   const [ ,updateState ] = React.useState(null)
@@ -293,22 +285,28 @@ function Header(props) {
       <CssBaseline />
       <HideOnScroll {...props}>
         <AppBar
-          style={{ backgroundColor: (pageData && pageData.color)? COLOR[pageData.color][900] : COLOR.primary[900] }}
+          style={{ backgroundColor: COLOR.grey[50] }}
           classes={{
             colorDefault: classes.appBar,
           }}>
           <Toolbar className={classes.toolbar}>
+            { window.innerWidth < 600 &&
+              <IconButton
+                onClick={drawerOpen}>
+                <MenuIcon />
+              </IconButton>
+            }
             <Link to="/" style={{ textDecoration: 'none' }}>
               <IconButton
                 edge="start"
                 className={classes.logo}
-                color="inherit"
               >
                 <img src={ic_logo} className={classes.logoImg}/>
               </IconButton>
             </Link>
+            { window.innerWidth < 600 && <div className={classes.grow} /> }
             <Typography className={classes.title} variant="h6" noWrap>
-              { pageData && window.location.pathname !== '/' && window.location.pathname !== '/user' ? pageData.pagename : 'T-off Time' }
+              { 'T-off Time' }
             </Typography>
             { /*
               <div className={classes.search}>
@@ -326,47 +324,22 @@ function Header(props) {
               </div>*/
             }
             <div className={classes.grow} />
-            <div className={classes.moreIcon}>
-              <IconButton
-                edge="end"
-                aria-label="Show more"
-                aria-haspopup="true"
-                color="inherit"
-                onClick={menuOpenHandler}
-              >
-                <MoreIcon />
-              </IconButton>
-            </div>
             { ( sess && sess.status === 1 ) &&
               <React.Fragment>
                 <div className={classes.afterLoginIcon}>
                   <IconButton
-                    color="inherit"
                     onClick={handleClickNoti}>
                     <NotificationsIcon />
                   </IconButton>
-                  { userInfo && userInfo.photopath ?
-                    <IconButton onClick={menuOpenHandler}>
-                      <Avatar src={
-                        isSupportWebp?
-                        currentWebURL + data.picture + '.webp'
-                        :
-                        currentWebURL + data.picture + '.jpg'
-                      }/>
-                    </IconButton>
-                    :
-                    <IconButton
-                      color="inherit"
-                      onClick={menuOpenHandler}>
-                      <AccountIcon />
-                    </IconButton>
-                  }
-
                 </div>
+                <IconButton
+                  onClick={menuOpenHandler}>
+                  <AccountIcon />
+                </IconButton>
               </React.Fragment>
             }
-            { !( sess && sess.status === 1 ) && window.innerWidth > 600 &&
-              <Button className={classes.loginBtn} color="inherit"
+            { !( sess && sess.status === 1 ) &&
+              <Button className={classes.loginBtn}
                 onClick={handleLogin}>Login</Button>
             }
           </Toolbar>
@@ -380,30 +353,34 @@ function Header(props) {
           open={Boolean(anchorEl)}
           onClose={menuCloseHandler}
         >
-          { window.location.pathname === '/admin' && ( sess && sess.status === 1) &&
+          { /*window.location.pathname === '/admin' && ( sess && sess.status === 1) &&
             <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
-            </Link>
+            </Link>*/
           }
-          { window.location.pathname !== '/admin' && ( sess && sess.status === 1 ) &&
+          { /*window.location.pathname !== '/admin' && ( sess && sess.status === 1 ) &&
             <Link to={`/${sess.typeid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler} style={{ textTransform: 'capitalize' }}>{`${sess.typeid}`}</MenuItem>
-            </Link>
+            </Link>*/
           }
           {/* window.location.pathname !== '/organizer' && ( sess && sess.status === 1 && sess.typeid === 'user' ) &&
             <Link to="/organizer" style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>User</MenuItem>
             </Link>
           */}
+
+          { sess && sess.status === 1 && sess.typeid !== 'admin' && window.innerWidth >= 600 &&
+            <Link to={`/user/${sess.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <MenuItem onClick={menuCloseHandler}>User</MenuItem>
+            </Link>
+          }
+
           { ( sess && sess.status === 1 ) &&
             <MenuItem onClick={handleLogout}>Logout</MenuItem>
           }
 
-          { !( sess && sess.status === 1 ) &&
-            <MenuItem onClick={handleLogin}>Login</MenuItem>
-          }
-          { ( sess && sess.status === 1 ) && window.innerWidth < 600 &&
-            <MenuItem onClick={handleClickNoti}>Notifications</MenuItem>
+          {/* ( sess && sess.status === 1 ) && window.innerWidth < 600 &&
+            <MenuItem onClick={handleClickNoti}>Notifications</MenuItem>*/
           }
           <div></div>
         </Menu>

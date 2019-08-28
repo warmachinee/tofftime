@@ -1,192 +1,155 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { Route } from "react-router-dom";
-import * as API from './../api'
-import { primary, blueGrey, red } from './../api/palette'
+import socketIOClient from 'socket.io-client'
+import { makeStyles } from '@material-ui/core/styles';
 
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import {
+  TextField
+} from '@material-ui/core';
 
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-
-import { LDMatchList } from './../components/loading/LDMatchList';
-import { LDCircular } from './../components/loading/LDCircular';
-
-const RouteUserPageBody = Loadable.Map({
-  loader: {
-    UserPageBody: () => import(/* webpackChunkName: "UserPageBody" */'./UserPageBody'),
-  },
-  render(loaded, props) {
-    let Component = loaded.UserPageBody.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
+const Announce = Loadable({
+  loader: () => import(/* webpackChunkName: "Announce" */ './../components/Announce/Announce'),
+  loading: () => null
 });
 
-const RouteAnnouncement = Loadable.Map({
-  loader: {
-    Announcement: () => import(/* webpackChunkName: "Announcement" */'./../components/Dashboard/Announcement/Announcement'),
-  },
-  render(loaded, props) {
-    let Component = loaded.Announcement.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
+const OverviewProfile = Loadable({
+  loader: () => import(/* webpackChunkName: "OverviewProfile" */ './../components/User/OverviewProfile'),
+  loading: () => null
 });
 
-const RouteNews = Loadable.Map({
-  loader: {
-    News: () => import(/* webpackChunkName: "MatchList" */'./../components/Dashboard/News/News'),
-  },
-  render(loaded, props) {
-    let Component = loaded.News.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
-});
-
-const RouteMatchList = Loadable.Map({
-  loader: {
-    MatchList: () => import(/* webpackChunkName: "MatchList" */'./../components/Dashboard/MatchList/MatchList'),
-  },
-  render(loaded, props) {
-    let Component = loaded.MatchList.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
-});
-
-const RouteMatch = Loadable.Map({
-  loader: {
-    Match: () => import(/* webpackChunkName: "Match" */'./../components/Dashboard/Match/Match'),
-  },
-  render(loaded, props) {
-    let Component = loaded.Match.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
-});
-
-const RouteUser = Loadable.Map({
-  loader: {
-    User: () => import(/* webpackChunkName: "User" */'./../components/Dashboard/User/User'),
-  },
-  render(loaded, props) {
-    let Component = loaded.User.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
-});
-
-const RoutePagePost = Loadable.Map({
-  loader: {
-    PagePost: () => import(/* webpackChunkName: "PagePost" */'./../components/Page/PagePost'),
-  },
-  render(loaded, props) {
-    let Component = loaded.PagePost.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
-});
-
-const RoutePageEditor = Loadable.Map({
-  loader: {
-    PageEditor: () => import(/* webpackChunkName: "PageEditor" */'./../components/Page/PageEditor'),
-  },
-  render(loaded, props) {
-    let Component = loaded.PageEditor.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )}/>
-    )
-  },
-  loading: () => <LDCircular />
+const Statistics = Loadable({
+  loader: () => import(/* webpackChunkName: "Statistics" */ './../components/Statistics/Statistics'),
+  loading: () => null
 });
 
 const useStyles = makeStyles(theme => ({
   root: {
-    minHeight: window.innerHeight * .8,
+    position: 'relative',
     maxWidth: 1200,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    padding: theme.spacing(3, 2),
-    overflow: 'auto',
-    overflowScrolling: 'touch',
-    WebkitOverflowScrolling: 'touch',
+    width: '100%',
+    margin: 'auto',
+  },
+  grid: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    flexDirection: 'column',
+    [theme.breakpoints.up(630)]: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
   },
 
-}))
+}));
 
 export default function UserPage(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp, setHPageData } = props
+  const {
+    COLOR, API, BTN, isSupportWebp, sess, handleSess, accountData, handleAccountData,
+    token, setCSRFToken, drawerState, drawerClose
+  } = props
 
-  const passingProps = {
-    sess: sess,
-    token: token,
-    setCSRFToken: setCSRFToken,
-    handleSnackBar: handleSnackBar,
-    isSupportWebp: isSupportWebp,
-    setHPageData: setHPageData
+  function handleChangePerson(e){
+    if(sess){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.emit('search-client-message', {
+        action: "person",
+        userid: sess.userid,
+        text: e.target.value
+      })
+    }
   }
 
+  function handleChangeField(e){
+    if(sess){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.emit('search-client-message', {
+        action: "field",
+        userid: sess.userid,
+        text: e.target.value
+      })
+    }
+  }
+
+  function responsePerson(){
+    const socket = socketIOClient( API.getWebURL() )
+    socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
+      console.log("Person : ", messageNew.result.infolist);
+    })
+  }
+
+  function responseField(){
+    const socket = socketIOClient( API.getWebURL() )
+    socket.on(`${sess.userid}-field-search-server-message`, (messageNew) => {
+      console.log("field : ", messageNew.result.infolist);
+    })
+  }
+
+  async function handleFetchInfo(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadusersystem', {
+        action: 'info'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleAccountData(d[0])
+      console.log(d[0]);
+    })
+  }
+
+  React.useEffect(()=>{
+    //console.log(props);
+    if(sess && sess.status === 1 && sess.typeid !== 'admin'){
+      handleFetchInfo()
+      responsePerson()
+      responseField()
+    }else{
+      var json = '[{"userid":812454,"email":"warmachineza01@gmail.com","tel":"-","gender":"-","birthdate":null,"nickname":"-","fullname":"Sippakorn","lastname":"Suppapinyo","favgolf":"-","photopath":null}]'
+      handleAccountData(JSON.parse(json)[0])
+    }
+  },[ sess ])
+
   return (
-    <Paper className={classes.root}>
-      <RouteUserPageBody exact path={`/user`} {...passingProps}/>
-      <RouteAnnouncement path={`/user/announce`} {...passingProps}/>
-      <RouteNews path={`/user/news`} {...passingProps}/>
-      <RouteMatchList path={`/user/matchlist`} {...passingProps}/>
-      <RouteMatch path={`/user/match/:pageParam`} {...passingProps}/>
-      <RouteUser path={`/user/user`} {...passingProps}/>
-      <RoutePagePost path="/user/post/:pageParam" {...passingProps}/>
-      <RoutePageEditor path="/user/page/:pageParam" {...passingProps}/>
-    </Paper>
+    <div className={classes.root}>
+      <div style={{ width: '100%', border: '1px solid black', padding: 24 }}>
+        { sess &&
+          (
+            sess.status === 1?
+            (
+              <p style={{ fontSize: 28 }}>
+                <b>user</b> : {sess.fullname} {sess.lastname} <br></br>
+                <b>userid</b> : {sess.userid} <br></br>
+                <b>type</b>: {sess.typeid} <br></br>
+                <b>language</b>: {sess.language}  <br></br>
+            </p>
+            )
+            :
+            (
+              <p style={{ fontSize: 28 }}>
+                <b>user</b> : {sess.status}
+              </p>
+            )
+          )
+        }
+      </div>
+
+      {
+        true ?
+        <div className={classes.grid}>
+          <OverviewProfile {...props} />
+          <Statistics {...props} />
+        </div>
+        :
+        <div style={{ width: '100%', border: '1px solid black', padding: 24 }}>
+          <TextField fullWidth variant="outlined" label="Person"
+            onChange={handleChangePerson}/>
+          <br></br>
+          <br></br>
+          <TextField fullWidth variant="outlined" label="field"
+            onChange={handleChangeField}/>
+        </div>
+      }
+
+    </div>
   );
 }

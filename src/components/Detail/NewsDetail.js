@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
-import * as API from './../../api'
 import { primary } from './../../api/palette'
 
 import CKEditor from '@ckeditor/ckeditor5-react';
@@ -50,10 +49,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewsDetail(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { API, sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
-  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-  const currentWebURL = hd + API.webURL()
+  //const splitStr = props.computedMatch.params.detailparam.split('-')
 
   async function handleFetchPost(newsid, pageid){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -66,6 +64,7 @@ export default function NewsDetail(props){
         userid: sess.userid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
+      setData(d)
       console.log('postdetail', d);
     })
   }
@@ -76,22 +75,24 @@ export default function NewsDetail(props){
     `?_csrf=${token? token : resToken.token}&action=newsdetail&newsid=${newsid}`
     )
     setCSRFToken(d.token)
-    setData(d.response)
+    setData(d.response[0])
   }
 
   React.useEffect(()=>{
-    const splitStr = props.computedMatch.params.detailparam.split('-')
     let newsid;
     let pageid;
+    /*
     console.log(splitStr);
     if(splitStr.length > 1){
-      newsid = parseInt(splitStr[0])
-      pageid = parseInt(splitStr[1])
+      pageid = parseInt(splitStr[0])
+      newsid = parseInt(splitStr[1])
       handleFetchPost(newsid, pageid)
     }else{
       newsid = parseInt(props.computedMatch.params.detailparam)
       handleFetch(newsid)
-    }
+    }*/
+    newsid = parseInt(props.computedMatch.params.detailparam)
+    handleFetch(newsid)
   },[ ])
 
   return(
@@ -101,21 +102,56 @@ export default function NewsDetail(props){
           <ArrowBackIcon classes={{ root: classes.backIcon }}/>
         </IconButton>
       </div>
-      { data &&
-        data.map( d =>
-          <div key={d.title}>
+      {
+        /*splitStr.length > 1 ?
+        (
+          <div>
             <Typography variant="h2">
-              {d.title}
+              {data && data.message ? data.message : ''}
             </Typography>
             <Typography variant="h5">
-              {d.subtitle}
+              {data && data.submessage ? data.submessage : ''}
             </Typography>
-            { d.picture &&
-              <img className={classes.img} src={isSupportWebp? currentWebURL + d.picture + '.webp' : currentWebURL + d.picture + '.jpg'} />
+            { data && data.photopath &&
+              <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
-            <DetailComponent newsdetail={d.newsdetail}/>
+            <DetailComponent newsdetail={data && data.messagedetail ? data.messagedetail : ''}/>
           </div>
-      )}
+        )
+        :
+        (
+          data &&
+          data.map( d =>
+            <div key={d.title}>
+              <Typography variant="h2">
+                {d.title}
+              </Typography>
+              <Typography variant="h5">
+                {d.subtitle}
+              </Typography>
+              {
+                d.picture &&
+                  <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              }
+              <DetailComponent newsdetail={d.newsdetail}/>
+            </div>
+          )
+        )*/
+        data &&
+        <div>
+          <Typography variant="h2">
+            {data.title}
+          </Typography>
+          <Typography variant="h5">
+            {data.subtitle}
+          </Typography>
+          {
+            data.picture &&
+              <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+          }
+          <DetailComponent newsdetail={data.newsdetail}/>
+        </div>
+      }
     </Paper>
   );
 }

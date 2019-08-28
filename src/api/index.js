@@ -1,67 +1,83 @@
 function webURL(){
-  const URL = [ 'tofftime.com/', 'thai-pga.com/' ]
+  const URL = [ 'tofftime.com', 'thai-pga.com' ]
   return URL[1]
+}
+
+function getWebURL(){
+  const URL = ( /www/.test(window.location.href) )? 'https://www.' : 'https://' + webURL()
+  return URL
+}
+
+function getPictureUrl(path){
+  var url = ''
+  if(path){
+    let newPath = path.substring(0, 1) === '/' ? path : '/' + path
+    if( /./.test(path.split('/')[path.split('/').length - 1]) ){
+      newPath = path.split('.')[0]
+    }
+    url = getWebURL() + newPath
+  }
+  return url
 }
 
 var count = 0
 
 const urlLink = {
   //--------------------Main Page--------------------
-  main: webURL(),
-  getcsrf: webURL() + 'getcsrf',
-  loadmatchsystem: webURL() + 'main/loadmatchsystem',
-  userinfo: webURL() + 'session/userinfo',
-  views: webURL() + 'session/views',
-  loadgeneral: webURL() + 'main/loadgeneral',
-  loadmatchsystem: webURL() + 'main/loadmatchsystem',
+  main: getWebURL(),
+  getcsrf: getWebURL() + '/getcsrf',
+  loadmatchsystem: getWebURL() + '/main/loadmatchsystem',
+  userinfo: getWebURL() + '/session/userinfo',
+  views: getWebURL() + '/session/views',
+  loadgeneral: getWebURL() + '/main/loadgeneral',
+  loadmatchsystem: getWebURL() + '/main/loadmatchsystem',
   //--------------------Account--------------------
-  login: webURL() + 'users/login',
-  facebooklogin: webURL() + 'session/auth/facebook',
-  googlelogin: webURL() + 'session/auth/google',
-  register: webURL() + 'users/register',
-  logout: webURL() + 'session/logout',
-  forgotpassword: webURL() + 'users/forgotpassword',
-  loadusersystem: webURL() + 'users/loadusersystem',
-  usersystem: webURL() + 'users/usersystem',
+  login: getWebURL() + '/users/login',
+  facebooklogin: getWebURL() + '/session/auth/facebook',
+  googlelogin: getWebURL() + '/session/auth/google',
+  register: getWebURL() + '/users/register',
+  logout: getWebURL() + '/session/logout',
+  forgotpassword: getWebURL() + '/users/forgotpassword',
+  loadusersystem: getWebURL() + '/users/loadusersystem',
+  uusersystem: getWebURL() + '/users/usersystem',
   //--------------------Admin--------------------
-  loadmatch: webURL() + 'admin/loadmatch',
-  loaduser: webURL() + 'admin/loaduser',
-  matchsystem: webURL() + 'admin/matchsystem',
-  loadfield: webURL() + 'admin/loadfield',
-  fieldsystem: webURL() + 'admin/fieldsystem',
-  matchsection: webURL() + 'admin/matchsection',
-  matchmember: webURL() + 'admin/matchmember',
-  displaymatchsystem: webURL() + 'admin/displaymatchsystem',
-  rewardsystem: webURL() + 'admin/rewardsystem',
-  loadmainpage: webURL() + 'admin/loadmainpage',
-  matchmain: webURL() + 'admin/matchmain',
-  usersystem: webURL() + 'admin/usersystem',
-  newsmain: webURL() + 'admin/newsmain',
-  announcemain: webURL() + 'admin/announcemain',
+  loadmatch: getWebURL() + '/admin/loadmatch',
+  loaduser: getWebURL() + '/admin/loaduser',
+  matchsystem: getWebURL() + '/admin/matchsystem',
+  loadfield: getWebURL() + '/admin/loadfield',
+  fieldsystem: getWebURL() + '/admin/fieldsystem',
+  matchsection: getWebURL() + '/admin/matchsection',
+  matchmember: getWebURL() + '/admin/matchmember',
+  displaymatchsystem: getWebURL() + '/admin/displaymatchsystem',
+  rewardsystem: getWebURL() + '/admin/rewardsystem',
+  loadmainpage: getWebURL() + '/admin/loadmainpage',
+  matchmain: getWebURL() + '/admin/matchmain',
+  usersystem: getWebURL() + '/admin/usersystem',
+  newsmain: getWebURL() + '/admin/newsmain',
+  announcemain: getWebURL() + '/admin/announcemain',
   //--------------------User--------------------
-  mloadmatch: webURL() + 'match/loadmatch',
-  mloaduser: webURL() + 'match/loaduser',
-  mmatchsystem: webURL() + 'match/matchsystem',
-  mmatchmember: webURL() + 'match/matchmember',
-  mdisplaymatchsystem: webURL() + 'match/displaymatchsystem',
-  mmatchsection: webURL() + 'match/matchsection',
-  mrewardsystem: webURL() + 'match/rewardsystem',
+  mloadmatch: getWebURL() + '/match/loadmatch',
+  mloaduser: getWebURL() + '/match/loaduser',
+  mmatchsystem: getWebURL() + '/match/matchsystem',
+  mmatchmember: getWebURL() + '/match/matchmember',
+  mdisplaymatchsystem: getWebURL() + '/match/displaymatchsystem',
+  mmatchsection: getWebURL() + '/match/matchsection',
+  mrewardsystem: getWebURL() + '/match/rewardsystem',
   //--------------------Field--------------------
-  floadfield: webURL() + 'field/loadfield',
-  ffieldsystem: webURL() + 'field/fieldsystem',
+  floadfield: getWebURL() + '/field/loadfield',
+  ffieldsystem: getWebURL() + '/field/fieldsystem',
   //--------------------Page--------------------
-  ploadpage: webURL() + 'page/loadpage',
-  ppagesystem: webURL() + 'page/pagesystem',
-  ppagesection: webURL() + 'page/pagesection',
+  ploadpage: getWebURL() + '/page/loadpage',
+  ppagesystem: getWebURL() + '/page/pagesystem',
+  ppagesection: getWebURL() + '/page/pagesection',
 }
 
 const urlHeader = [ 'https://www.', 'https://' ]
 
 function xhrGet(url, params){
   return new Promise(resolve => {
-    var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
     var req = new XMLHttpRequest();
-    var sendUrl = hd + urlLink[url]
+    var sendUrl = urlLink[url]
     if(params){
       sendUrl = sendUrl + params
     }
@@ -80,68 +96,54 @@ function xhrGet(url, params){
 }
 
 function xhrPost(token, url, obj, func){
-  /*--------------------USEAGE--------------------
-  API.xhrPost( TOKEN, 'url', obj, function(csrf, d){
-    setCSRFToken(csrf)  // set New token
-    setSomeThing(d)     // set data from response
-  })
-  --------------------------------------------------*/
-  var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
-  var req = new XMLHttpRequest();
-  var sendUrl = hd + urlLink[url]
-  req.open("POST", sendUrl, true);
-  req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-  req.setRequestHeader("Cache-Control", "no-cache")
-  req.onreadystatechange = () => {
-    if (req.readyState !== 4) return;
-    if (req.status >= 200 && req.status < 300) {
-      func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
-    }else{
-      //console.log(req.status);
-    }
-    if (req.status === 504){
-      if(count < 3){
-        setTimeout(()=>{
-          xhrPost(token, url, obj, func)
-        }, 5000)
+  return new Promise( resolve =>{
+    var req = new XMLHttpRequest();
+    var sendUrl = urlLink[url]
+    req.open("POST", sendUrl, true);
+    req.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+    req.setRequestHeader("Cache-Control", "no-cache")
+    req.onreadystatechange = () => {
+      if (req.readyState !== 4) return;
+      if (req.status >= 200 && req.status < 300) {
+        func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
+        resolve()
       }else{
-        count = 0
-        console.log('Stopped');
+        //console.log(req.status);
       }
-      count++;
+      if (req.status === 504){
+        if(count < 3){
+          setTimeout(()=>{
+            xhrPost(token, url, obj, func)
+          }, 5000)
+        }else{
+          count = 0
+          console.log('Stopped');
+        }
+        count++;
+      }
     }
-  }
-  const returnedObj = Object.assign({
-    _csrf: token
-  }, obj)
-  req.send(JSON.stringify(returnedObj));
+    const returnedObj = Object.assign({
+      _csrf: token
+    }, obj)
+    req.send(JSON.stringify(returnedObj));
+  })
 }
 
-async function fetchUrl(url){
-  if(typeof(url) !== 'string'){ console.error('url is required string'); }
-  else{
-    const res = await fetch(urlLink[url])
+function fetchPostFile(url, extendURL, obj, formData){
+  return new Promise(async resolve => {
+    var sendUrl = urlLink[url]
+    if(extendURL){
+      sendUrl = sendUrl + extendURL
+    }
+    const options = {
+      async: true,
+      crossDomain: true,
+      method: 'post',
+      headers: obj,
+      body: formData,
+    }
+    const res = await fetch(sendUrl, options)
     const json = await res.json()
-    return new Promise(resolve => {
-      resolve(json);
-    });
-  }
-}
-
-async function fetchPostFile(url, extendURL, obj, formData){
-  var hd = ( window.location.href.substring(0, 25) === 'https://www.' + webURL() )? urlHeader[0]:urlHeader[1]
-  var sendUrl = hd + urlLink[url] + extendURL
-
-  const options = {
-    async: true,
-    crossDomain: true,
-    method: 'post',
-    headers: obj,
-    body: formData,
-  }
-  const res = await fetch(sendUrl, options)
-  const json = await res.json()
-  return new Promise(resolve => {
     resolve(json);
   });
 }
@@ -332,7 +334,9 @@ function getTodayTime(){
 
 export {
   webURL,
-  fetchUrl,
+  getWebURL,
+  getPictureUrl,
+  urlLink,
   fetchPostFile,
   xhrGet,
   xhrPost,

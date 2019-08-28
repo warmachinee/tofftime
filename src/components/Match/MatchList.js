@@ -1,198 +1,101 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { makeStyles, fade } from '@material-ui/core/styles';
-import SwipeableViews from 'react-swipeable-views';
-import * as API from './../../api'
-import { primary } from './../../api/palette'
+import { makeStyles } from '@material-ui/core/styles'
+import { primary, grey } from './../../api/palette'
 
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-
-import { LDMatchCard } from './../loading/LDMatchCard'
+import Skeleton from '@material-ui/lab/Skeleton';
 
 const MatchCard = Loadable({
-  loader: () => import(/* webpackChunkName: "MatchCard" */'./MatchCard'),
-  loading: () => <LDMatchCard />
+  loader: () => import(/* webpackChunkName: "MatchCard" */ './MatchCard'),
+  loading: () => null
 });
 
-const useStyles = makeStyles({
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loading: () => null
+});
+
+const useStyles = makeStyles(theme => ({
   root: {
-    maxWidth: 1200,
     position: 'relative',
-    margin: '0 auto',
-    borderRadius: 2,
-    backgroundColor: 'white',
-    borderTop: '1px solid #e1e1e1',
-    borderBottom: '1px solid #e1e1e1'
+    maxWidth: 1200,
+    width: '100%',
+    margin: 'auto',
   },
-  title: {
-    marginTop: 32,
-    padding: '0 5%',
-    color: primary[900],
-    fontWeight: 600,
-    fontVariant: 'petite-caps'
+  grid: {
+    marginTop: 24,
+    padding: theme.spacing(1.5),
+    display: 'flex',
+    flexWrap: 'wrap',
+    WebkitFlexWrap: 'wrap',
+    boxSizing: 'border-box',
+    justifyContent: 'space-around'
   },
-  iconButton: {
-    padding: 0
-  },
-  arrow: {
-    fontSize: '3.5rem',
-    color: primary[600]
-  },
-  leftArrow: {
-    left: '2%',
-    top: '50%',
-    position: 'absolute',
-    zIndex: '10',
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(primary[600], 0.25),
-    },
-  },
-  rightArrow: {
-    right: '2%',
-    top: '50%',
-    position: 'absolute',
-    zIndex: '10',
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(primary[600], 0.25),
-    },
-  },
-});
 
-function MatchListBody(props) {
+}));
+
+const data = [
+  {
+    id: 1,
+    pic: 'https://media.golfdigest.com/photos/5856b814ba03cefc46ca223f/master/w_768/2017-79-Olympia-Fields-CC-hole-18.jpg',
+    title: 'Olympia Tour 01 - 2019',
+    location: 'Olympia Fields Country Club (North)',
+    views: 300,
+    date: '15/09/2019',
+  },
+  {
+    id: 2,
+    pic: 'https://cdn.cybergolf.com/images/721/North-Bellingham-GC_book-tee-times-databutton-web.jpg',
+    title: 'Bellingham 2019 Tour',
+    location: 'North Bellingham Golf Course',
+    views: 500,
+    date: '23/10/2019',
+  },
+  {
+    id: 3,
+    pic: 'https://www.hillsboroughgolf.com/wp-content/uploads/sites/5394/2015/09/golf-2.png',
+    title: 'LPGA tour 3 - 2019',
+    location: 'Hillsborough Golf and Country Club',
+    views: 900,
+    date: '31/10/2019',
+  },
+  {
+    id: 4,
+    pic: 'https://www.visitrenotahoe.com/wp-content/uploads/2017/07/BarracudaHeader.jpg',
+    title: 'Barracuda Championship 2019',
+    location: 'Fieldstone Golf Club - Auburn Hills, MI',
+    views: 1600,
+    date: '07/11/2019',
+  },
+  {
+    id: 5,
+    pic: 'https://www.mercedes-benz.co.in/passengercars/the-brand/mercedes-trophy-india/mercedes-trophy-/Homepage/multimedia-systems/_jcr_content/highlightcontainer/par/highlighttile.MQ6.0.20181101084019.jpeg',
+    title: 'MercedesTrophy 2019',
+    location: 'Birch Creek Golf Course',
+    views: 300,
+    date: '02/01/2020',
+  },
+  {
+    id: 6,
+    pic: 'https://radioimg.s3.amazonaws.com/995themountain/styles/delta__775x515/s3/s3fs-public/General/GolfTour_2017_carousel-Raccoon%20Creek.jpg?itok=m4r3zosx',
+    title: 'Mountain Golf Tour at Raccoon Creek Golf Course',
+    location: 'Washoe Golf Course',
+    views: 300,
+    date: '08/03/2020',
+  },
+];
+
+export default function MatchList(props) {
   const classes = useStyles();
-  const { scale = 1, isSupportWebp, data, page, pageid } = props
-  const [ gridRes, setGridRes ] = React.useState(
-    window.innerWidth * scale >= 1080 * scale ? { width: '33.333333%', indicator: 3 }:
-    window.innerWidth * scale >= 850 * scale ? { width: '50%', indicator: 2 }:{ width: '100%', indicator: 1 }
-  );
-  const [ sliderIndex, setSliderIndex ] = React.useState(0)
 
-  function nextHandler(){
-    if(data){
-      if( (sliderIndex + 1) * gridRes.indicator < data.length ){
-        setSliderIndex(sliderIndex + 1)
-      }else{
-        setSliderIndex(data.length/gridRes.indicator)
-      }
-    }
-  }
-
-  function backHandler(){
-    if(sliderIndex <= 0){
-      setSliderIndex(0)
-    }else{
-      setSliderIndex(sliderIndex - 1)
-    }
-  }
-
-  function resizeHandler(){
-    let wd = window.innerWidth * scale
-    if( wd >= 1080 * scale  ){
-      setGridRes({ width: '33.333333%', indicator: 3 })
-    }
-    else if( wd >= 850 * scale  ){
-      setGridRes({ width: '50%', indicator: 2 })
-    }
-    else {
-      setGridRes({ width: '100%', indicator: 1 })
-    }
-    setSliderIndex(0)
-  }
-
-  React.useEffect(()=>{
-    window.addEventListener('resize', resizeHandler)
-    return ()=>{
-      window.removeEventListener('resize', resizeHandler)
-    }
-  },[ window.innerWidth ])
-
-  return (
+  return(
     <div className={classes.root}>
-      <Typography classes={{ root: classes.title }} variant="h4">
-        Match List
-      </Typography>
-      <div style={{ padding: '0 5%' }}>
-        { data && data.length > 0 ?
-          <SwipeableViews
-            index={sliderIndex}
-            style={{ padding: '0 30px' }}
-            slideStyle={{ padding: '0 10px', width: gridRes.width }}
-            >
-            { data.map( d =>
-              d && <MatchCard key={d.matchid} {...props} data={d} page={page}/>
-            )}
-          </SwipeableViews>
-          :
-          <div
-            style={{ minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-            <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 36, opacity: .7 }}>No match</div>
-          </div>
+      <LabelText text="Match list" />
+      <div className={classes.grid}>
+        { data &&
+          data.map( d => <MatchCard key={d.id} data={d}/>)
         }
-
       </div>
-      {
-        (sliderIndex > 0) &&
-        window.innerWidth * scale > 500 * scale  &&
-        <IconButton classes={{ root: classes.iconButton }} className={classes.leftArrow} onClick={backHandler}>
-          <KeyboardArrowLeftIcon classes={{ root: classes.arrow }}/>
-        </IconButton>
-      }
-      { data &&
-        (sliderIndex + 1) * gridRes.indicator < data.length &&
-        window.innerWidth * scale > 500 * scale  &&
-        <IconButton classes={{ root: classes.iconButton }} className={classes.rightArrow} onClick={nextHandler}>
-          <KeyboardArrowRightIcon classes={{ root: classes.arrow }}/>
-        </IconButton>
-      }
     </div>
   );
 }
-
-function MatchList(props){
-  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp, scale = 1, page, pageid } = props
-  const [ data, setData ] = React.useState(null)
-
-  async function handleFetchPage(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadusersystem' , {
-        action: 'upcoming'
-    }, function(csrf, d){
-      setCSRFToken(csrf)
-      setData(d)
-    })
-  }
-  
-  async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadmatchsystem' , {
-        action: 'matchlist'
-    }, function(csrf, d){
-      //console.log(d);
-      setCSRFToken(csrf)
-      setData(d)
-    })
-  }
-
-  React.useEffect(()=>{
-    if(page){
-      handleFetchPage()
-    }else{
-      handleFetch()
-    }
-  },[ ])
-
-  return <MatchListBody {...props} data={data} />
-}
-
-export default MatchList;

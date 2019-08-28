@@ -1,33 +1,39 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 
-import { LDMatchList } from './../components/loading/LDMatchList';
-import { LDTopnav } from './../components/loading/LDTopnav';
+import NewsCardSkeleton from './../components/News/NewsCardSkeleton'
 
-const Header = Loadable({
-  loader: () => import(/* webpackChunkName: "Header" */'./../components/Header'),
-  loading() {
-    return <LDTopnav />
-  }
+const Announce = Loadable({
+  loader: () => import(/* webpackChunkName: "Announce" */ './../components/Announce/Announce'),
+  loading: () => null
 });
 
-const AnnouncementNewsGrid = Loadable({
-  loader: () => import(/* webpackChunkName: "MatchList" */'./../components/AnnouncementNewsGrid'),
-  loading: () => <LDMatchList />
+const News = Loadable({
+  loader: () => import(/* webpackChunkName: "News" */ './../components/News/News'),
+  loading: () => Array.from(new Array(3)).map((d, i) => <NewsCardSkeleton key={i} />)
 });
 
 const MatchList = Loadable({
-  loader: () => import(/* webpackChunkName: "MatchList" */'./../components/Match/MatchList'),
-  loading: () => <LDMatchList />
+  loader: () => import(/* webpackChunkName: "MatchList" */ './../components/Match/MatchList'),
+  loading: () => null
+});
+
+const OrganizerList = Loadable({
+  loader: () => import(/* webpackChunkName: "OrganizerList" */ './../components/Organizer/OrganizerList'),
+  loading: () => null
 });
 
 function MainPage(props) {
+  const { sess } = props
 
   return (
-    <div>
-      <AnnouncementNewsGrid {...props}/>
-      <MatchList {...props}/>
-    </div>
+    <React.Fragment>
+      <Announce {...props} />
+      <MatchList {...props} />
+      <OrganizerList {...props} />
+      <News {...props} />
+
+    </React.Fragment>
   );
 }
 

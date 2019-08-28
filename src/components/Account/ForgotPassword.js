@@ -1,8 +1,7 @@
 import React from 'react';
 import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import * as API from './../../api'
-import { primary } from './../../api/palette'
+import { primary, grey } from './../../api/palette'
 
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -18,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   title: {
-    textAlign: 'center', color: primary[900],
+    textAlign: 'center', color: grey[800],
     fontSize: 28,
     [theme.breakpoints.up(500)]: {
       fontSize: 32,
@@ -54,7 +53,7 @@ const theme = createMuiTheme({
 
 export default function SignInComponent(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar } = props
+  const { API, COLOR, BTN, token, setCSRFToken, handleSnackBar } = props
   const [ forgotEmail, setForgotEmail ] = React.useState('')
 
   function handleKeyPress(e){

@@ -1,7 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
-import * as API from './../../api'
 
 import Modal from '@material-ui/core/Modal';
 import Portal from '@material-ui/core/Portal';
@@ -10,26 +9,24 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { LDCircular } from './../loading/LDCircular'
-
 const SignInComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignIn" */'./SignInComponent'),
-  loading: () => <LDCircular />
+  loading: () => null
 });
 
 const SignUpComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignUp" */'./SignUpComponent'),
-  loading: () => <LDCircular />
+  loading: () => null
 });
 
 const ForgotPassword = Loadable({
   loader: () => import(/* webpackChunkName: "ForgotPassword" */'./ForgotPassword'),
-  loading: () => <LDCircular />
+  loading: () => null
 });
 
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
-  loading: () => <LDCircular />
+  loading: () => null
 });
 
 function getModalStyle() {
@@ -90,7 +87,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Dialog(props) {
   const classes = useStyles();
-  const { open, token, handleClose, handleSess, setCSRFToken, handleSnackBar } = props
+  const { API, COLOR, BTN, open, token, handleClose, handleSess, setCSRFToken } = props
   const [ modalStyle ] = React.useState(getModalStyle);
   const [ pageState, setPageState ] = React.useState('signin')
   const [ forgotState, setForgotState ] = React.useState(false)
@@ -120,12 +117,6 @@ export default function Dialog(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleActionStatus(d.status)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: d.status === 'success'?'success':'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
-      })
       if(d.status === 'success'){
         try {
           handleGetUserinfo()
@@ -141,12 +132,9 @@ export default function Dialog(props) {
     if(action === 'facebook'){ url = 'facebooklogin' }
     if(action === 'google'){ url = 'googlelogin' }
     const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet( url,
-    `?_csrf=${token? token : resToken.token}`
-    )
+    const d = await API.xhrGet(url)
     console.log(d);
     setCSRFToken(d.token)
-
     //setData(d.response)
   }
 
@@ -167,12 +155,6 @@ export default function Dialog(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleActionStatus(d.status)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: d.status === 'success'?'success':'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
-      })
       if(d.status === 'success'){
         try {
           setUsername(tempUsername)
@@ -202,6 +184,7 @@ export default function Dialog(props) {
             </IconButton>
             { pageState === 'signin' &&
               <SignInComponent
+                {...props}
                 username={username}
                 password={password}
                 setUsername={setUsername}
@@ -214,6 +197,7 @@ export default function Dialog(props) {
             }
             { pageState === 'signup' &&
               <SignUpComponent
+                {...props}
                 actionStatus={actionStatus}
                 handleSignUp={handleSignUp}/>
             }
@@ -222,7 +206,7 @@ export default function Dialog(props) {
       </Portal>
       <div ref={container} />
       <TemplateDialog open={forgotState} maxWidth={500} handleClose={()=>setForgotState(!forgotState)}>
-        <ForgotPassword token={token} setCSRFToken={setCSRFToken} handleSnackBar={handleSnackBar}/>
+        <ForgotPassword {...props} />
       </TemplateDialog>
     </div>
   );
