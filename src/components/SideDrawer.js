@@ -99,11 +99,8 @@ export default function SideDrawer(props) {
             <div className={classes.userInfo}>
               <BTN.NoStyleLink to={`/user/${sess.userid}`}>
                 { accountData.photopath ?
-                  /*
                   <Avatar className={classes.avatarImage}
-                    src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
-                  <Avatar className={classes.avatarImage}
-                    src={API.getPictureUrl(accountData.photopath) + ( '.jpg' )}/>
+                    src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>
                   :
                   <AccountIcon classes={{ root: classes.avatar }} />
                 }

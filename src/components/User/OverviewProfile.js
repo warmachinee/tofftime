@@ -63,11 +63,8 @@ export default function OverviewProfile(props) {
       <Paper className={classes.paper}>
         <div className={classes.imageGrid}>
           { accountData.photopath ?
-            /*
             <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
-            <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(accountData.photopath) + ( '.jpg' )}/>
+              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>
             :
             <AccountCircleIcon classes={{ root: classes.avatar }} />
           }

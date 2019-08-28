@@ -73,6 +73,23 @@ const RouteUserPage = Loadable.Map({
   loading: () => null
 });
 
+const RouteOrganizer = Loadable.Map({
+  loader: {
+    Organizer: () => import(/* webpackChunkName: "Organizer" */'./page/Organizer'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Organizer.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props}/>
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const Header = Loadable({
   loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
   loading: () => null
@@ -94,6 +111,7 @@ const SideDrawer = Loadable({
 });
 
 import UserPage from './page/UserPage'
+import Organizer from './page/Organizer'
 
 export default function App() {
   const [ token, setCSRFToken ] = React.useState(null)
@@ -160,7 +178,7 @@ export default function App() {
   },[ ])
 
   return (
-    <div>
+    <div style={{ backgroundColor: '#f5f7f8' }}>
       {/* !/\/user/.test(window.location.pathname) &&
         <Header
           {...passingProps}
@@ -187,11 +205,13 @@ export default function App() {
           {/*-------------------- Page --------------------*/}
           <RouteUserPage path="/user/:userid"
             {...passingProps} />
+          <RouteOrganizer path="/page/:pageid"
+            {...passingProps} />
 
           <Route component={NoMatch} />
         </Switch>
         :
-        <UserPage {...passingProps} />
+        <Organizer {...passingProps} />
       }
 
       { sess && sess.status === 1 && sess.typeid !== 'admin' &&
