@@ -90,6 +90,40 @@ const RouteOrganizer = Loadable.Map({
   loading: () => null
 });
 
+const RouteSystemAdmin = Loadable.Map({
+  loader: {
+    SystemAdmin: () => import(/* webpackChunkName: "SystemAdmin" */'./page/SystemAdmin'),
+  },
+  render(loaded, props) {
+    let Component = loaded.SystemAdmin.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props}/>
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
+const RouteSignIn = Loadable.Map({
+  loader: {
+    SignIn: () => import(/* webpackChunkName: "SignIn" */'./page/SignIn'),
+  },
+  render(loaded, props) {
+    let Component = loaded.SignIn.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props}/>
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const Header = Loadable({
   loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
   loading: () => null
@@ -100,18 +134,31 @@ const NoMatch = Loadable({
   loading: () => null
 });
 
+const SnackBarAlert = Loadable({
+  loader: () => import(/* webpackChunkName: "SnackBarAlert" */'./components/SnackBarAlert'),
+  loading: () => null
+});
+
 const Dialog = Loadable({
   loader: () => import(/* webpackChunkName: "Dialog" */'./components/Account/Dialog'),
   loading: () => null
 });
 
 const SideDrawer = Loadable({
-  loader: () => import(/* webpackChunkName: "SideDrawer" */'./components/SideDrawer'),
+  loader: () => import(/* webpackChunkName: "SideDrawer" */'./components/SideComponent/SideDrawer'),
+  loading: () => null
+});
+
+const Footer = Loadable({
+  loader: () => import(/* webpackChunkName: "Footer" */'./components/Footer'),
   loading: () => null
 });
 
 import UserPage from './page/UserPage'
 import Organizer from './page/Organizer'
+import SystemAdmin from './page/SystemAdmin'
+import Profile from './components/User/Profile'
+import SignIn from './page/SignIn'
 
 export default function App() {
   const [ token, setCSRFToken ] = React.useState(null)
@@ -120,6 +167,12 @@ export default function App() {
   const [ sess, handleSess ] = React.useState(null)
   const [ accountData, handleAccountData ] = React.useState(null)
   const [ isSupportWebp, handleSupportWebp ] = React.useState(false)
+  const [ snackBar, handleSnackBar ] = React.useState({
+    state: false,
+    message: null,
+    variant: null,
+    autoHideDuration: 2000
+  })
 
   const passingProps = {
     API: API,
@@ -131,7 +184,8 @@ export default function App() {
     handleAccountData: handleAccountData,
     token: token,
     setCSRFToken: setCSRFToken,
-    isSupportWebp: isSupportWebp
+    isSupportWebp: isSupportWebp,
+    handleSnackBar: handleSnackBar,
   }
 
   function toggleDrawer(){
@@ -179,21 +233,16 @@ export default function App() {
 
   return (
     <div style={{ backgroundColor: '#f5f7f8' }}>
-      {/* !/\/user/.test(window.location.pathname) &&
+      { !/\/user/.test(window.location.pathname) &&
         <Header
           {...passingProps}
           drawerOpen={toggleDrawer}
           handleOpen={toggleDialog}
-          handleSess={handleSess} />*/
+          handleSess={handleSess} />
       }
-      <Header
-        {...passingProps}
-        drawerOpen={toggleDrawer}
-        handleOpen={toggleDialog}
-        handleSess={handleSess} />
 
       {
-        true ?
+        !true ?
         <Switch>
           <RouteMain exact path="/"
             {...passingProps} />
@@ -207,26 +256,49 @@ export default function App() {
             {...passingProps} />
           <RouteOrganizer path="/page/:pageid"
             {...passingProps} />
+          <RouteSystemAdmin path="/admin"
+            {...passingProps} />
 
+          <RouteSignIn path="/login"
+            {...passingProps} />
           <Route component={NoMatch} />
         </Switch>
         :
-        <Organizer {...passingProps} />
+        <UserPage {...passingProps} />
       }
 
-      { sess && sess.status === 1 && sess.typeid !== 'admin' &&
-        <Redirect to={`/user/${sess.userid}`} />
+      { sess && sess.status !== 1 && /\/user/.test(window.location.pathname) &&
+        <Redirect to={`/`} />
       }
+
+      { sess && sess.status === 1 && /\/login/.test(window.location.pathname) &&
+        <Redirect to={`/`} />
+      }
+
+      <SnackBarAlert
+        variant={snackBar.variant}
+        autoHideDuration={snackBar.autoHideDuration}
+        open={snackBar.state}
+        onClose={()=>handleSnackBar({
+          state: false,
+          message: '',
+          variant: 'error',
+          autoHideDuration: 2000
+        })}
+        message={snackBar.message} />
 
       <Dialog
         {...passingProps}
         open={open}
         handleClose={toggleDialog}
-        handleSess={handleSess}/>
+        handleSess={handleSess} />
+
       <SideDrawer
         {...passingProps}
         drawerState={drawerState}
-        drawerClose={toggleDrawer}/>
+        drawerClose={toggleDrawer} />
+
+      <Footer />
     </div>
   );
 }

@@ -23,14 +23,15 @@ const useStyles = makeStyles(theme => ({
   grid: {
     marginTop: 24,
     padding: theme.spacing(3),
-    display: 'flex',
-    flexWrap: 'wrap',
-    WebkitFlexWrap: 'wrap',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
     boxSizing: 'border-box',
-    justifyContent: 'center'
+  },
+  marginAuto: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   iconButton: {
-    marginRight: 36,
     marginBottom: 16,
     boxShadow: '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)'
   },
@@ -89,14 +90,15 @@ const data = [
 
 export default function OrganizerList(props) {
   const classes = useStyles();
+  const { BTN } = props
 
   return (
-    <div className={classes.root}>
+    <div id="el_organizer" className={classes.root}>
       <LabelText text="Organizer" />
       <div className={classes.grid}>
         { data.map(
           d =>
-          <React.Fragment key={d.id}>
+          <BTN.NoStyleLink to={`/page/${d.id}`} key={d.id} className={classes.marginAuto}>
             { d.pic ?
               <IconButton className={classes.iconButton}>
                 <Avatar className={classes.avatar} src={d.pic}/>
@@ -108,7 +110,7 @@ export default function OrganizerList(props) {
                 </Avatar>
               </IconButton>
             }
-          </React.Fragment>
+          </BTN.NoStyleLink>
         )}
       </div>
     </div>

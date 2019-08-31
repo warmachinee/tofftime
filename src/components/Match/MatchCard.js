@@ -13,8 +13,9 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     marginBottom: 24,
-    marginRight: 4,
     [theme.breakpoints.up(600)]: {
       width: 300,
     },
@@ -68,7 +69,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchCard(props) {
   const classes = useStyles();
-  const { data } = props
+  const { API, data, isSupportWebp } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
 
   return(
@@ -78,7 +79,12 @@ export default function MatchCard(props) {
       elevation={window.innerWidth >= 600 ? paperHover : 1}
       onMouseEnter={()=>setPaperHover(3)}
       onMouseLeave={()=>setPaperHover(0)}>
-      <img src={data.pic} className={classes.image} />
+      { data.picture ?
+        <img className={classes.image}
+          src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+        :
+        <Skeleton className={classes.image} style={{ margin: 0 }} />
+      }
       <Box className={classes.box}>
         <Typography gutterBottom variant="body1" className={classes.title}>
           {data.title}

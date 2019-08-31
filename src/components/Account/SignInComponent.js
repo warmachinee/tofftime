@@ -106,7 +106,7 @@ const theme = createMuiTheme({
 export default function SignInComponent(props){
   const classes = useStyles();
   const {
-    handleSignIn, handleSignInWith, setPageState, actionStatus,
+    handleSignIn, setPageState, actionStatus,
     username, password, setUsername, setPassword, setForgotState
   } = props
 
@@ -120,7 +120,7 @@ export default function SignInComponent(props){
     <div>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Log in
+          Sign in
         </Box>
       </Typography>
       <div style={{ display: 'flex', marginBottom: 16 }}>

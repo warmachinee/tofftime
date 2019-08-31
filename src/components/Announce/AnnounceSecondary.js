@@ -99,8 +99,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function AnnounceSecondary(props) {
   const classes = useStyles();
-  const { isSupportWebp } = props
-  const [ data, setData ] = React.useState(null)
+  const { API, BTN, data, isSupportWebp } = props
 
   async function fetchJsonPlaceholder(){
     /*
@@ -125,39 +124,63 @@ export default function AnnounceSecondary(props) {
 
   React.useEffect(()=>{
     //console.log(props);
-    fetchJsonPlaceholder()
+    //fetchJsonPlaceholder()
   },[ ])
 
   return (
     <div className={classes.root}>
-      <div className={classes.itemGrid}
-        style={{
-          marginBottom: window.innerWidth >= 900? 24 : 0,
-          marginRight: window.innerWidth >= 900? 0 : 24,
-        }}>
-        { data?
-          <img className={classes.item} src={data[0].pic}/>
-          :
-          <Skeleton className={classes.skeleton} />
-        }
-        { data &&
-          <div className={classes.label}>
-            {data[0].title}
+      { ( data && data.length > 0 ) ?
+        <BTN.NoStyleLink to={`/announce/${data[0].announceid}`}>
+          <div className={classes.itemGrid}
+            style={{
+              marginBottom: window.innerWidth >= 900? 24 : 0,
+              marginRight: window.innerWidth >= 900? 0 : 24,
+            }}>
+            { data[0].picture ?
+              <img className={classes.item} src={API.getPictureUrl(data[0].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              :
+              <Skeleton className={classes.skeleton} />
+            }
+            { data[0].title &&
+              <div className={classes.label}>
+                {data[0].title}
+              </div>
+            }
           </div>
-        }
-      </div>
-      <div className={classes.itemGrid}>
-        { data?
-          <img className={classes.item} src={data[1].pic}/>
-          :
+        </BTN.NoStyleLink>
+        :
+        <div className={classes.itemGrid}
+          style={{
+            marginBottom: window.innerWidth >= 900? 24 : 0,
+            marginRight: window.innerWidth >= 900? 0 : 24,
+          }}>
           <Skeleton className={classes.skeleton} />
-        }
-        { data &&
-          <div className={classes.label}>
-            {data[1].title}
+        </div>
+      }
+      { ( data && data.length > 1 ) ?
+        <BTN.NoStyleLink to={`/announce/${data[1].announceid}`}>
+          <div className={classes.itemGrid}>
+            { data[1].picture ?
+              <img className={classes.item} src={API.getPictureUrl(data[1].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              :
+              <Skeleton className={classes.skeleton} />
+            }
+            { data[1].title &&
+              <div className={classes.label}>
+                {data[1].title}
+              </div>
+            }
           </div>
-        }
-      </div>
+        </BTN.NoStyleLink>
+        :
+        <div className={classes.itemGrid}
+          style={{
+            marginBottom: window.innerWidth >= 900? 24 : 0,
+            marginRight: window.innerWidth >= 900? 0 : 24,
+          }}>
+          <Skeleton className={classes.skeleton} />
+        </div>
+      }
     </div>
   );
 }

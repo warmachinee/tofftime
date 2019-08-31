@@ -87,7 +87,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Dialog(props) {
   const classes = useStyles();
-  const { API, COLOR, BTN, open, token, handleClose, handleSess, setCSRFToken } = props
+  const { API, COLOR, BTN, open, token, handleClose, handleSess, setCSRFToken, handleSnackBar } = props
   const [ modalStyle ] = React.useState(getModalStyle);
   const [ pageState, setPageState ] = React.useState('signin')
   const [ forgotState, setForgotState ] = React.useState(false)
@@ -123,19 +123,15 @@ export default function Dialog(props) {
           handleClose()
           handleActionStatus(null)
         }catch(err) { console.log(err.message) }
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: d.status === 'success'?'success':'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
+        })
       }
     })
-  }
-
-  async function handleSignInWith(action){
-    var url =''
-    if(action === 'facebook'){ url = 'facebooklogin' }
-    if(action === 'google'){ url = 'googlelogin' }
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet(url)
-    console.log(d);
-    setCSRFToken(d.token)
-    //setData(d.response)
   }
 
   async function handleSignUp(d){
@@ -155,6 +151,12 @@ export default function Dialog(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleActionStatus(d.status)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success'?'success':'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
       if(d.status === 'success'){
         try {
           setUsername(tempUsername)
@@ -191,7 +193,6 @@ export default function Dialog(props) {
                 setPassword={setPassword}
                 actionStatus={actionStatus}
                 handleSignIn={handleSignIn}
-                handleSignInWith={handleSignInWith}
                 setPageState={setPageState}
                 setForgotState={setForgotState}/>
             }
@@ -206,7 +207,7 @@ export default function Dialog(props) {
       </Portal>
       <div ref={container} />
       <TemplateDialog open={forgotState} maxWidth={500} handleClose={()=>setForgotState(!forgotState)}>
-        <ForgotPassword {...props} />
+        <ForgotPassword setForgotState={setForgotState} {...props} />
       </TemplateDialog>
     </div>
   );

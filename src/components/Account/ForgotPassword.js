@@ -70,15 +70,15 @@ export default function SignInComponent(props){
         email: forgotEmail
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      console.log(d);
-      /*
       handleSnackBar({
         state: true,
-        message: d.log,
-        variant: d.log === 'success'?'success':'error',
+        message: d.status,
+        variant: d.status === 'success'?'success':'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
-      if(d.log)*/
+      if(d.status === 'success'){
+        setForgotState(false)
+      }
     })
   }
 

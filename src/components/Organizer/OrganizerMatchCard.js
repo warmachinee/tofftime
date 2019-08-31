@@ -13,8 +13,9 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     marginBottom: 24,
-    marginRight: 4,
     [theme.breakpoints.up(600)]: {
       width: 300,
     },

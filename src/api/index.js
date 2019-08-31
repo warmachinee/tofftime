@@ -255,7 +255,7 @@ function handleGetDate(date){
   const cdate = new Date(date)
   var diff = (today - cdate)/(1000) //millisecond
   var str = ''
-  if(diff < 60){
+  if(diff >=0 && diff < 60){
     str = 'just now'
     return str
   }else{
@@ -281,7 +281,7 @@ function handleGetDate(date){
       thisD = cdate
       day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
       month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
-      dateStr = day + '-' + month + '-' + thisD.getFullYear()
+      dateStr = day + '/' + month + '/' + thisD.getFullYear()
       return dateStr
     }
   }
@@ -332,6 +332,11 @@ function getTodayTime(){
   return time
 }
 
+function handleScrolllTo(element){
+  var elmnt = document.getElementById("el_" + element);
+  elmnt.scrollIntoView();
+}
+
 export {
   webURL,
   getWebURL,
@@ -348,4 +353,5 @@ export {
   handleDateToString,
   handleStringToDate,
   getTodayTime,
+  handleScrolllTo
 }

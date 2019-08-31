@@ -36,6 +36,7 @@ import AccountIcon from '@material-ui/icons/AccountCircle';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MenuIcon from '@material-ui/icons/Menu';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 
 import ic_logo from './img/logoX2.png'
 
@@ -158,6 +159,13 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
     margin: 0
   },
+  avatar: {
+    fontSize: 32
+  },
+  avatarImage: {
+    width: 32,
+    height: 32,
+  },
 
 }));
 
@@ -174,7 +182,7 @@ function HideOnScroll(props) {
 
 function Header(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, setResponse, sess, handleSess, isSupportWebp , drawerOpen} = props
+  const { token, setCSRFToken, setResponse, sess, handleSess, isSupportWebp , drawerOpen, accountData } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ anchorNoti, setAnchorNoti] = React.useState(null);
   const [ notiState, setNotiState ] = React.useState(false);
@@ -223,9 +231,9 @@ function Header(props) {
       resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
+      menuCloseHandler()
       setCSRFToken(csrf)
       handleSess(d)
-      menuCloseHandler()
     })
   }
 
@@ -296,14 +304,28 @@ function Header(props) {
                 <MenuIcon />
               </IconButton>
             }
-            <Link to="/" style={{ textDecoration: 'none' }}>
-              <IconButton
-                edge="start"
-                className={classes.logo}
-              >
-                <img src={ic_logo} className={classes.logoImg}/>
-              </IconButton>
-            </Link>
+            { window.location.pathname === '/' ?
+              (
+                <IconButton
+                  edge="start"
+                  className={classes.logo}
+                  onClick={()=>window.scrollTo(0, 0)}
+                >
+                  <img src={ic_logo} className={classes.logoImg}/>
+                </IconButton>
+              )
+              :
+              (
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                  <IconButton
+                    edge="start"
+                    className={classes.logo}
+                  >
+                    <img src={ic_logo} className={classes.logoImg}/>
+                  </IconButton>
+                </Link>
+              )
+            }
             { window.innerWidth < 600 && <div className={classes.grow} /> }
             <Typography className={classes.title} variant="h6" noWrap>
               { 'T-off Time' }
@@ -324,17 +346,40 @@ function Header(props) {
               </div>*/
             }
             <div className={classes.grow} />
+            { window.location.pathname === '/' && window.innerWidth >= 600 &&
+              <React.Fragment>
+                <Button size="small" onClick={()=>API.handleScrolllTo('match')}>Match</Button>
+                <Button size="small" onClick={()=>API.handleScrolllTo('news')}>News</Button>
+                <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>Organizer</Button>
+                <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
+              </React.Fragment>
+            }
             { ( sess && sess.status === 1 ) &&
               <React.Fragment>
                 <div className={classes.afterLoginIcon}>
                   <IconButton
+                    style={{ padding: 8 }}
                     onClick={handleClickNoti}>
                     <NotificationsIcon />
                   </IconButton>
                 </div>
+                { accountData &&
+                  <Link to={`/user/${sess.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <IconButton
+                      style={{ padding: 8 }}>
+                      { accountData.photopath ?
+                        <Avatar className={classes.avatarImage}
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        :
+                        <AccountIcon classes={{ root: classes.avatar }} />
+                      }
+                    </IconButton>
+                  </Link>
+                }
                 <IconButton
+                  style={{ padding: 8 }}
                   onClick={menuOpenHandler}>
-                  <AccountIcon />
+                  <KeyboardArrowDownIcon />
                 </IconButton>
               </React.Fragment>
             }
@@ -353,23 +398,22 @@ function Header(props) {
           open={Boolean(anchorEl)}
           onClose={menuCloseHandler}
         >
-          { /*window.location.pathname === '/admin' && ( sess && sess.status === 1) &&
-            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
-            </Link>*/
-          }
-          { /*window.location.pathname !== '/admin' && ( sess && sess.status === 1 ) &&
-            <Link to={`/${sess.typeid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <MenuItem onClick={menuCloseHandler} style={{ textTransform: 'capitalize' }}>{`${sess.typeid}`}</MenuItem>
-            </Link>*/
-          }
-          {/* window.location.pathname !== '/organizer' && ( sess && sess.status === 1 && sess.typeid === 'user' ) &&
-            <Link to="/organizer" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <MenuItem onClick={menuCloseHandler}>User</MenuItem>
-            </Link>
-          */}
-
           { sess && sess.status === 1 && sess.typeid !== 'admin' && window.innerWidth >= 600 &&
+            !( window.location.pathname === '/' ) &&
+            <Link to={`/`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
+            </Link>
+          }
+
+          { sess && sess.status === 1 && sess.typeid === 'admin' &&
+            !/\/admin/.test(window.location.pathname) &&
+            <Link to={`/admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <MenuItem onClick={menuCloseHandler}>Admin</MenuItem>
+            </Link>
+          }
+
+          { sess && sess.status === 1 && sess.typeid !== 'admin' &&
+            !/\/user/.test(window.location.pathname) &&
             <Link to={`/user/${sess.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>User</MenuItem>
             </Link>

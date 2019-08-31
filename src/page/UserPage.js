@@ -1,11 +1,10 @@
 import React from 'react';
+import { Route, Redirect } from "react-router-dom";
 import Loadable from 'react-loadable';
 import socketIOClient from 'socket.io-client'
 import { makeStyles } from '@material-ui/core/styles';
 
-import {
-  TextField
-} from '@material-ui/core';
+const drawerWidth = 240;
 
 const Announce = Loadable({
   loader: () => import(/* webpackChunkName: "Announce" */ './../components/Announce/Announce'),
@@ -22,21 +21,72 @@ const Statistics = Loadable({
   loading: () => null
 });
 
+const Upcoming = Loadable({
+  loader: () => import(/* webpackChunkName: "Upcoming" */ './../components/User/Upcoming'),
+  loading: () => null
+});
+
+const History = Loadable({
+  loader: () => import(/* webpackChunkName: "History" */ './../components/User/History'),
+  loading: () => null
+});
+
+const FriendFollowList = Loadable({
+  loader: () => import(/* webpackChunkName: "FriendFollowList" */ './../components/SideComponent/FriendFollowList'),
+  loading: () => null
+});
+
+const UserHeader = Loadable({
+  loader: () => import(/* webpackChunkName: "UserHeader" */ './../components/User/UserHeader'),
+  loading: () => null
+});
+
+const SideMenu = Loadable({
+  loader: () => import(/* webpackChunkName: "SideMenu" */ './../components/SideComponent/SideMenu'),
+  loading: () => null
+});
+
+const RouteProfile = Loadable.Map({
+  loader: {
+    Profile: () => import(/* webpackChunkName: "Profile" */'./../components/User/Profile'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Profile.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props}/>
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
-    position: 'relative',
-    maxWidth: 1200,
-    width: '100%',
-    margin: 'auto',
+    display: 'flex',
   },
   grid: {
     display: 'flex',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     flexDirection: 'column',
-    [theme.breakpoints.up(630)]: {
+    [theme.breakpoints.up(870)]: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
     },
+  },
+  toolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: theme.spacing(0, 1),
+    ...theme.mixins.toolbar,
+  },
+  content: {
+    flexGrow: 1,
+    maxWidth: 1200,
+    width: '100%',
+    margin: 'auto',
   },
 
 }));
@@ -47,7 +97,31 @@ export default function UserPage(props) {
     COLOR, API, BTN, isSupportWebp, sess, handleSess, accountData, handleAccountData,
     token, setCSRFToken, drawerState, drawerClose
   } = props
+  const [ open, setOpen ] = React.useState(false);
 
+  const passingProps = {
+    API: props.API,
+    COLOR: props.COLOR,
+    BTN: props.BTN,
+    sess: props.sess,
+    handleSess: props.handleSess,
+    accountData: props.accountData,
+    handleAccountData: props.handleAccountData,
+    token: props.token,
+    setCSRFToken: props.setCSRFToken,
+    isSupportWebp: props.isSupportWebp,
+    handleSnackBar: props.handleSnackBar
+  }
+
+  function handleDrawerOpen() {
+    setOpen(true);
+  }
+
+  function handleDrawerClose() {
+    setOpen(false);
+  }
+
+  /*
   function handleChangePerson(e){
     if(sess){
       const socket = socketIOClient( API.getWebURL() )
@@ -83,6 +157,7 @@ export default function UserPage(props) {
       console.log("field : ", messageNew.result.infolist);
     })
   }
+  */
 
   async function handleFetchInfo(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -98,58 +173,59 @@ export default function UserPage(props) {
   }
 
   React.useEffect(()=>{
-    //console.log(props);
     if(sess && sess.status === 1 && sess.typeid !== 'admin'){
       handleFetchInfo()
+      /*
       responsePerson()
-      responseField()
+      responseField()*/
     }else{
-      var json = '[{"userid":812454,"email":"warmachineza01@gmail.com","tel":"-","gender":"-","birthdate":null,"nickname":"-","fullname":"Sippakorn","lastname":"Suppapinyo","favgolf":"-","photopath":null}]'
-      handleAccountData(JSON.parse(json)[0])
+
     }
   },[ sess ])
 
   return (
     <div className={classes.root}>
-      <div style={{ width: '100%', border: '1px solid black', padding: 24 }}>
-        { sess &&
-          (
-            sess.status === 1?
-            (
-              <p style={{ fontSize: 28 }}>
-                <b>user</b> : {sess.fullname} {sess.lastname} <br></br>
-                <b>userid</b> : {sess.userid} <br></br>
-                <b>type</b>: {sess.typeid} <br></br>
-                <b>language</b>: {sess.language}  <br></br>
-            </p>
-            )
-            :
-            (
-              <p style={{ fontSize: 28 }}>
-                <b>user</b> : {sess.status}
-              </p>
-            )
-          )
+      <UserHeader {...props} open={open} handleDrawerOpen={handleDrawerOpen}/>
+      <SideMenu {...props} open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose}/>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        { true ?
+          <React.Fragment>
+            { !true ?
+              <Route exact path={"/user/:userid"} render={()=> <UserDashboard {...props} />} />
+              :
+              <Route exact path={"/"} render={()=> <UserDashboard {...props} />} />
+            }
+            <RouteProfile path="/user/profile/:userid"
+              {...passingProps} />
+          </React.Fragment>
+          :
+          <RouteProfile exact path="/"
+            {...passingProps} />
         }
-      </div>
-
-      {
-        true ?
-        <div className={classes.grid}>
-          <OverviewProfile {...props} />
-          <Statistics {...props} />
-        </div>
-        :
-        <div style={{ width: '100%', border: '1px solid black', padding: 24 }}>
-          <TextField fullWidth variant="outlined" label="Person"
-            onChange={handleChangePerson}/>
-          <br></br>
-          <br></br>
-          <TextField fullWidth variant="outlined" label="field"
-            onChange={handleChangeField}/>
-        </div>
-      }
-
+      </main>
     </div>
+  );
+}
+
+function UserDashboard(props){
+  const classes = useStyles();
+  const { sess } = props
+
+  return(
+    <React.Fragment>
+      <div className={classes.grid}>
+        <OverviewProfile {...props} />
+        <Statistics userid={sess && sess.userid} {...props} />
+      </div>
+      <Upcoming {...props} />
+      <History {...props} />
+      <FriendFollowList {...props}/>
+      { sess && sess.status === 1 && sess.typeid !== 'admin' &&
+        props.computedMatch &&
+        parseInt(props.computedMatch.params.userid) !== parseInt(sess.userid) &&
+        <Redirect to={`/user/${sess.userid}`} />
+      }
+    </React.Fragment>
   );
 }

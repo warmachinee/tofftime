@@ -13,13 +13,14 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    maxWidth: 400,
     margin: 'auto',
     minHeight: 'auto',
-    [theme.breakpoints.up(630)]: {
+    maxWidth: 450,
+    [theme.breakpoints.up(870)]: {
       margin: theme.spacing(0, 3),
       minHeight: 300,
     },
+
   },
   paper: {
     padding: theme.spacing(3, 2),
@@ -60,27 +61,46 @@ export default function OverviewProfile(props) {
 
   return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <div className={classes.imageGrid}>
-          { accountData.photopath ?
-            <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>
-            :
-            <AccountCircleIcon classes={{ root: classes.avatar }} />
-          }
-        </div>
-        <Typography variant="h5" className={classes.name}>
-          {accountData.fullname} {accountData.lastname}
-        </Typography>
-        { accountData.nickname !== '-' &&
-          <Typography gutterBottom variant="h6" className={classes.name}>
-            ({accountData.nickname})
+      { accountData?
+        <Paper className={classes.paper}>
+          <div className={classes.imageGrid}>
+            { accountData.photopath ?
+              <Avatar className={classes.avatarImage}
+                src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+              :
+              <AccountCircleIcon classes={{ root: classes.avatar }} />
+            }
+          </div>
+          <Typography variant="h5" className={classes.name}>
+            {accountData.fullname} {accountData.lastname}
           </Typography>
-        }
-        <Typography gutterBottom variant="subtitle2" className={classes.email}>
-          {accountData.email}
-        </Typography>
-      </Paper>
+          { accountData.nickname !== '-' ?
+            <Typography gutterBottom variant="h6" className={classes.name}>
+              ({accountData.nickname})
+            </Typography>
+            :
+            <div style={{ height: 32 }} />
+          }
+          <Typography gutterBottom variant="subtitle2" className={classes.email}>
+            {accountData.email}
+          </Typography>
+        </Paper>
+        :
+        <Paper className={classes.paper}>
+          <div className={classes.imageGrid}>
+            <AccountCircleIcon classes={{ root: classes.avatar }} />
+          </div>
+          <Typography variant="h5" className={classes.name}>
+            Fullname Lastname
+          </Typography>
+          <Typography gutterBottom variant="h6" className={classes.name}>
+            (Nickname)
+          </Typography>
+          <Typography gutterBottom variant="subtitle2" className={classes.email}>
+            Email
+          </Typography>
+        </Paper>
+      }
     </div>
   );
 }

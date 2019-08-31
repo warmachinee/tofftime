@@ -50,6 +50,11 @@ export default function SideDrawer(props) {
     token, setCSRFToken, drawerState, drawerClose
   } = props
 
+  function handleScroll(element){
+    API.handleScrolllTo(element)
+    //setTimeout(()=>{ drawerClose() }, 1000)
+  }
+
   async function handleGetUserinfo(){
     const resToken = await API.xhrGet('getcsrf')
     await API.xhrPost(
@@ -100,9 +105,10 @@ export default function SideDrawer(props) {
               <BTN.NoStyleLink to={`/user/${sess.userid}`}>
                 { accountData.photopath ?
                   <Avatar className={classes.avatarImage}
-                    src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                    onClick={drawerClose}
+                    src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
                   :
-                  <AccountIcon classes={{ root: classes.avatar }} />
+                  <AccountIcon onClick={drawerClose} classes={{ root: classes.avatar }} />
                 }
               </BTN.NoStyleLink>
               <BTN.NoStyleLink to={`/user/${sess.userid}`}>
@@ -131,12 +137,39 @@ export default function SideDrawer(props) {
               <ListItemText primary="Notification" />
             </ListItem>
             /*
+            <Button size="small" onClick={()=>API.handleScrolllTo('match')}>Match</Button>
+            <Button size="small" onClick={()=>API.handleScrolllTo('news')}>News</Button>
+            <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>Organizer</Button>
             <ListItem button>
               <ListItemIcon>
                 <MailIcon />
               </ListItemIcon>
               <ListItemText primary="Inbox" />
             </ListItem>*/
+          }
+          { window.location.pathname === '/' &&
+            <React.Fragment>
+              <Divider />
+              <ListItem button onClick={()=>handleScroll('match')}>
+                <ListItemIcon>
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText primary="Match" />
+              </ListItem>
+              <ListItem button onClick={()=>handleScroll('news')}>
+                <ListItemIcon>
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText primary="News" />
+              </ListItem>
+              <ListItem button onClick={()=>handleScroll('organizer')}>
+                <ListItemIcon>
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText primary="Organizer" />
+              </ListItem>
+              <Divider />
+            </React.Fragment>
           }
         </List>
       </div>

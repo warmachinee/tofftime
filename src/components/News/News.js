@@ -101,7 +101,7 @@ export default function News(props) {
   },[ ])
 
   return(
-    <div className={classes.root}>
+    <div id="el_news" className={classes.root}>
       <LabelText text="News"/>
       <div className={classes.grid}>
         { data?

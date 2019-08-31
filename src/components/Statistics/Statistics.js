@@ -18,7 +18,6 @@ import {
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    maxWidth: 400,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -26,11 +25,19 @@ const useStyles = makeStyles(theme => ({
     margin: 'auto',
     marginTop: 36,
     [theme.breakpoints.up(630)]: {
+      marginTop: 36,
+      flexDirection: 'row',
+    },
+    [theme.breakpoints.up(870)]: {
       margin: theme.spacing(0, 3),
       marginTop: 36,
+      maxWidth: 400,
+      flexDirection: 'column',
     },
   },
   paper: {
+    boxSizing: 'border-box',
+    width: '100%',
     padding: theme.spacing(3, 4),
     display: 'flex',
     borderRadius: 0
@@ -42,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   },
   icon: {
     fontSize: 72,
-    [theme.breakpoints.down(600)]: {
+    [theme.breakpoints.down(840)]: {
       fontSize: 48,
       margin: "auto"
     }
@@ -76,9 +83,21 @@ export default function Statistics(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
-      console.log(d);
     })
   }
+
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
 
   React.useEffect(()=>{
     handleFetch()
@@ -94,12 +113,14 @@ export default function Statistics(props) {
         <div className={classes.valueGrid}>
           { data &&
             <Typography variant="h3" classes={{ root: classes.value }}>
+              {/*data.matchcount ? data.matchcount : '-'*/}
               {data.matchcount}
             </Typography>
           }
         </div>
       </Paper>
-      <Paper className={classes.paper} style={{ marginTop:  window.innerWidth < 630 ? 8 : 24 }}>
+      <Paper className={classes.paper}
+        style={{ ...(window.innerWidth >= 630 && window.innerWidth < 870)? { marginLeft: 24 } : { marginTop: 8 } }}>
         <div className={classes.statLabel}>
           <AssignmentInd className={classes.icon} />
           <Typography variant="body1" className={classes.typo}>Handicap</Typography>
@@ -107,7 +128,7 @@ export default function Statistics(props) {
         <div className={classes.valueGrid}>
           { data &&
             <Typography variant="h3" classes={{ root: classes.value }}>
-              {data.hc ? data.hc : '0'}
+              {data.hc ? data.hc : '-'}
             </Typography>
           }
         </div>

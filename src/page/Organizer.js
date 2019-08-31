@@ -36,6 +36,10 @@ export default function Organizer(props) {
   const classes = useStyles();
   const { sess } = props
 
+  React.useEffect(()=>{
+    console.log(props);
+  },[ ])
+
   return (
     <div className={classes.root}>
       <OrganizerAnnounce {...props} />
