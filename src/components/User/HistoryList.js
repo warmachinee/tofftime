@@ -23,20 +23,17 @@ import {
 
 const useStyles = makeStyles(theme => ({
   root: {
-    position: 'relative',
-    maxWidth: 1200,
-    width: '100%',
-    margin: 'auto',
+
   },
-  listImage: {
+  listImageDown: {
     width: 36,
     marginRight: 0,
-    [theme.breakpoints.up(500)]: {
-      width: 48,
-      marginRight: 16,
-    },
   },
-  image: {
+  listImageUp: {
+    width: 48,
+    marginRight: 16,
+  },
+  imageDown: {
     width: 36,
     height: 36,
     backgroundColor: grey[300],
@@ -46,36 +43,23 @@ const useStyles = makeStyles(theme => ({
     objectFit: 'cover',
     cursor: 'pointer',
     borderRadius: 4,
-    [theme.breakpoints.up(500)]: {
-      width: 48,
-      height: 48,
-    },
+  },
+  imageUp: {
+    width: 48,
+    height: 48,
+    backgroundColor: grey[300],
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
+    cursor: 'pointer',
+    borderRadius: 4,
   },
   listTitle: {
-    width: '100%',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-  },
-  listTitleShow: {
-    [theme.breakpoints.up(900)]: {
-      display: 'none',
-    },
-  },
-  listTitleHidden: {
-    [theme.breakpoints.down(900)]: {
-      display: 'none',
-    },
-  },
-  listDateShow: {
-    [theme.breakpoints.up(600)]: {
-      display: 'none',
-    },
-  },
-  listDateHidden: {
-    [theme.breakpoints.down(600)]: {
-      display: 'none',
-    },
+    marginRight: 16
   },
 
 }));
@@ -83,66 +67,149 @@ const useStyles = makeStyles(theme => ({
 
 export default function HistoryList(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, data, isSupportWebp } = props
+  const { API, BTN, COLOR, token, setCSRFToken, data, isSupportWebp, open } = props
+
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
 
   return(
     <div className={classes.root}>
       <List>
-        <ListItem button>
-          <ListItemIcon className={classes.listImage}>
-            { data.matchphoto ?
-              <img className={classes.image}
-                src={API.getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
-              :
-              <Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate/>
-            }
-          </ListItemIcon>
-          <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%' }}
-            className={classes.listDateHidden}
-            primary={
-              <Typography variant="subtitle2" color="textSecondary">
-                {API.handleGetDate(data.matchdate)}
-              </Typography>
-            }
-            secondary={
-              <React.Fragment>
-                <Typography variant="caption" color="textSecondary">
-                  {data.views + 'views'}
-                </Typography>
-              </React.Fragment>
-            }/>
-          {/*
-            <ListItemIcon>
-              { data.scorematch === 1 ?
-                <CheckCircle style={{ color: COLOR.primary[500] }}/>
-                :
-                <div style={{ width: 24 }} />
+        { data ?
+          <BTN.NoStyleLink to={`/match/${data.matchid}`}>
+            <ListItem button>
+              <ListItemIcon
+                className={clsx({
+                  [classes.listImageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
+                  [classes.listImageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
+                })}>
+                { data.matchphoto ?
+                  <img className={clsx({
+                    [classes.imageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
+                    [classes.imageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
+                  })}
+                    src={API.getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                  :
+                  <Skeleton className={clsx({
+                    [classes.imageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
+                    [classes.imageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
+                  })} style={{ margin: 0 }} disableAnimate />
+                }
+              </ListItemIcon>
+              { ( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
+                <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%' }}
+                  primary={
+                    <Typography variant="subtitle2" color="textSecondary">
+                      {API.handleGetDate(data.matchdate)}
+                    </Typography>
+                  }
+                  secondary={
+                    <React.Fragment>
+                      <Typography variant="caption" color="textSecondary">
+                        {data.views + 'views'}
+                      </Typography>
+                    </React.Fragment>
+                  }/>
               }
-            </ListItemIcon>*/
-          }
-          <ListItemText className={classes.listTitle}
-            primary={
-              <React.Fragment>
-                <Typography variant="caption" color="textSecondary" className={classes.listDateShow}>
-                  {`${API.handleGetDate(data.matchdate)} • ${data.views + 'views'}`}
+
+              {/*
+                <ListItemIcon>
+                  { data.scorematch === 1 ?
+                    <CheckCircle style={{ color: COLOR.primary[500] }}/>
+                    :
+                    <div style={{ width: 24 }} />
+                  }
+                </ListItemIcon>*/
+              }
+
+              <ListItemText
+                style={{ width: 100 }}
+                primary={
+                  <React.Fragment>
+                    { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
+                      <Typography variant="caption" color="textSecondary">
+                        {`${API.handleGetDate(data.matchdate)} • ${data.views + 'views'}`}
+                      </Typography>
+                    }
+                    <Typography variant="body2" color="textPrimary" className={classes.listTitle}>
+                      {data.matchname}
+                    </Typography>
+                  </React.Fragment>
+                }
+                secondary={
+                  !( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
+                    <Typography variant="body2" color="textSecondary"
+                      className={classes.listTitle}>
+                      {data.fieldname}
+                    </Typography>
+                } />
+              { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
+                <ListItemText
+                  style={{ width: 100 }}
+                  primary={
+                    <Typography variant="body2" color="textPrimary"
+                      className={classes.listTitle}>
+                      {data.fieldname}
+                    </Typography>
+                  } />
+              }
+              <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
+                <Typography variant="subtitle2" color="textSecondary"
+                  style={{ marginRight: 16, marginLeft: 'auto' }}>
+                  {data.hc}
                 </Typography>
-                <Typography variant="body2" color="textPrimary">
-                  {data.matchname}
-                </Typography>
-              </React.Fragment>
+              </ListItemIcon>
+
+            </ListItem>
+          </BTN.NoStyleLink>
+          :
+          <ListItem button>
+            <ListItemIcon
+              className={clsx({
+                [classes.listImageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
+                [classes.listImageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
+              })}>
+              <Skeleton className={clsx({
+                [classes.imageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
+                [classes.imageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
+              })} style={{ margin: 0 }} disableAnimate />
+            </ListItemIcon>
+            { ( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
+              <div style={{ maxWidth: 100, marginRight: 16, width: '100%' }}>
+                <Skeleton height={12} width="80%"/>
+                <Skeleton height={12} width="80%"/>
+              </div>
             }
-            secondary={
-              <Typography variant="body2" color="textSecondary" className={classes.listTitleShow}>
-                {data.fieldname}
-              </Typography>
-            } />
-          <ListItemText className={clsx(classes.listTitle, classes.listTitleHidden)} primary={data.fieldname} />
-          <ListItemIcon>
-            <Typography variant="subtitle2" color="textSecondary">
-              {data.hc}
-            </Typography>
-          </ListItemIcon>
-        </ListItem>
+            <div style={{ width: '100%' }}>
+              <div>
+                { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
+                  <Skeleton height={12} width="20%" style={{ marginRight: 16 }}/>
+                }
+                <Skeleton style={{ marginRight: 16 }} />
+              </div>
+              { !( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
+                <Skeleton width="60%" style={{ marginRight: 16 }} />
+              }
+            </div>
+            { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
+              <Skeleton style={{ marginRight: 16, width: '100%' }}/>
+            }
+            <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
+              <Skeleton width={ ( open ? window.innerWidth < 690 : window.innerWidth < 450) ? 24 : 36 }
+                style={{ marginRight: 16, marginLeft: 'auto' }} />
+            </ListItemIcon>
+          </ListItem>
+        }
       </List>
       <Divider />
     </div>

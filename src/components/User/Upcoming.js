@@ -36,7 +36,6 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-/*
 const dataTemp = [
   {
     matchid: 1,
@@ -87,19 +86,26 @@ const dataTemp = [
     date: '08/03/2020',
   },
 ];
-*/
 
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken } = props
+  const { API, token, setCSRFToken, userid } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
+    const sendObj = {
+      action: 'upcoming'
+    }
+
+    if(userid){
+      Object.assign(sendObj, { targetuser: userid });
+    }
+
     await API.xhrPost(
       token? token : resToken.token,
       'loadusersystem' , {
-        action: 'upcoming'
+        ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
       setData(d)
@@ -108,14 +114,16 @@ export default function Upcoming(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ props.userid ])
 
   return(
     <div className={classes.root}>
       <LabelText text="Upcoming" />
       <div className={classes.grid}>
-        { data &&
+        { data && data.length > 0 ?
           data.slice(0, 10).map( d => <MatchCard key={d.matchid} data={d} {...props}/>)
+          :
+          Array.from(new Array(2)).map((d, i) => <MatchCard key={i} />)
         }
       </div>
     </div>

@@ -28,6 +28,7 @@ import {
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import EditIcon from '@material-ui/icons/Edit';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -344,20 +345,29 @@ export default function Profile(props) {
   }
 
   React.useEffect(()=>{
-    if(!accountData){
-      handleFetchInfo()
+    if(sess && sess.status === 1 && sess.typeid !== 'admin'){
+      if(!accountData){
+        handleFetchInfo()
+      }
     }
+    if(sess && sess.status !== 1){
+      window.location.pathname = '/'
+    }
+    console.log('Profile ', props);
     /*
     var json = '[{"userid":812454,"email":"warmachineza01@gmail.com","tel":"-","gender":"-","birthdate":null,"nickname":"-","fullname":"Sippakorn","lastname":"Suppapinyo","favgolf":"-","photopath":"/general/812454.webp"}]'
     handleAccountData(JSON.parse(json)[0])
     */
   },[ ])
-
+  
   return (
     <div className={classes.root}>
       { accountData &&
         <Paper className={classes.paper}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <IconButton onClick={()=>window.history.go(-1)}>
+              <ChevronLeftIcon fontSize="large"/>
+            </IconButton>
             <BTN.PrimaryText onClick={toggleEditting}>{ editting ? 'Done' : 'Edit'}</BTN.PrimaryText>
           </div>
           <div className={classes.imageGrid}>
@@ -532,6 +542,11 @@ export default function Profile(props) {
             </List>
             :
             <List className={classes.listItem}>
+              <ListItem>
+                <Typography variant="subtitle1" className={classes.name}>
+                  Age : {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
+                </Typography>
+              </ListItem>
               <ListItem>
                 <Typography variant="subtitle1" className={classes.name}>
                   Birth date : {accountData.birthdate && API.handleDateToString(accountData.birthdate)}

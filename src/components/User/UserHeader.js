@@ -1,4 +1,5 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client'
 import { Link } from "react-router-dom";
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -11,7 +12,7 @@ import {
   Avatar,
   Menu,
   MenuItem,
-
+  Button
 } from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
@@ -19,6 +20,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+
+import ic_logo from './../img/logoX2.png'
 
 const drawerWidth = 240;
 
@@ -31,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     }),
   },
   appBarShift: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(601)]: {
       marginLeft: drawerWidth,
       width: `calc(100% - ${drawerWidth}px)`,
       transition: theme.transitions.create(['width', 'margin'], {
@@ -41,7 +44,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   appBarShiftClose: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(601)]: {
       marginLeft: theme.spacing(9) + 1,
       width: `calc(100% - ${theme.spacing(9) + 1}px)`,
       transition: theme.transitions.create(['width', 'margin'], {
@@ -50,15 +53,27 @@ const useStyles = makeStyles(theme => ({
       }),
     },
   },
-  menuButton: {
-    marginRight: 36,
+  logo: {
+    padding: 'none',
+    height: 56,
+    width: 56,
+    [theme.breakpoints.up('sm')]: {
+      height: 64,
+      width: 64,
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+    },
+  },
+  logoImg: {
+    height: '100%',
+    width: '100%'
   },
   hide: {
     display: 'none',
   },
   accountTitle: {
     display: 'none',
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(700)]: {
       display: 'block',
       width: 150,
       overflow: 'hidden',
@@ -92,17 +107,12 @@ const useStyles = makeStyles(theme => ({
       display: 'none',
     }
   },
-  menuIcon: {
-    [theme.breakpoints.up(600)]: {
-      display: 'none',
-    }
-  },
 
 }));
 
 export default function UserHeader(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, setCSRFToken, sess, handleSess, accountData, open, handleDrawerOpen } = props
+  const { API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, accountData, open, handleDrawerClick } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const theme = useTheme();
   function handleClick(event) {
@@ -133,6 +143,35 @@ export default function UserHeader(props) {
     })
   }
 
+  function handleNotifications(){
+    if(sess && sess.status === 1){
+      const endpoint = API.getWebURL()
+      const socket = socketIOClient(endpoint)
+      socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
+        console.log(messageNew);
+      })
+    }
+  }
+
+  async function handleFetchNotifications(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadusersystem', {
+        action: 'notification'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      console.log('notification', d);
+    })
+  }
+
+  React.useEffect(()=>{
+    if(sess && sess.status === 1){
+      handleNotifications()
+      handleFetchNotifications()
+    }
+  },[ sess ])
+
   const [ ,updateState ] = React.useState(null)
 
   function resizeHandler(){
@@ -158,17 +197,27 @@ export default function UserHeader(props) {
       >
         <Toolbar>
           <IconButton
-            className={classes.menuIcon}
-            onClick={handleDrawerOpen}
+            onClick={handleDrawerClick}
             edge="start"
           >
             <MenuIcon />
           </IconButton>
-          <IconButton
-            edge="start"
-          >
-            <AddIcon />
-          </IconButton>
+          <Link to="/" style={{ textDecoration: 'none' }}>
+            <IconButton
+              edge="start"
+              className={classes.logo}
+            >
+              <img src={ic_logo} className={classes.logoImg}/>
+            </IconButton>
+          </Link>
+          { /*
+            <IconButton
+              edge="start"
+            >
+              <AddIcon />
+            </IconButton>
+            */
+          }
           <div style={{ flex: 1 }} />
           <IconButton className={classes.notiHidden}>
             <NotificationsIcon />
@@ -186,7 +235,10 @@ export default function UserHeader(props) {
                       <AccountIcon classes={{ root: classes.avatar }} />
                     }
                   </IconButton>
-                  <Typography variant="subtitle1" noWrap className={classes.accountTitle} onClick={handleClick}>
+                  <Typography variant="subtitle1" noWrap className={classes.accountTitle} onClick={handleClick}
+                    style={{
+                      transition: '.2s', ...open? { width: 0 } : { width: 150 }
+                    }}>
                     {accountData.fullname} {accountData.lastname}
                   </Typography>
                 </React.Fragment>
@@ -204,8 +256,11 @@ export default function UserHeader(props) {
                     </IconButton>
                   </Link>
                   <Link to={`/user/profile/${accountData.userid}/`}
-                    style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography variant="subtitle1" noWrap className={classes.accountTitle}>
+                    style={{ textDecoration: 'none', color: 'inherit', }}>
+                    <Typography variant="subtitle1" noWrap className={classes.accountTitle}
+                      style={{
+                        transition: '.2s', ...open? { width: 0 } : { width: 150 }
+                      }}>
                       {accountData.fullname} {accountData.lastname}
                     </Typography>
                   </Link>
@@ -225,7 +280,7 @@ export default function UserHeader(props) {
       >
         { accountData &&
           ( /\/user\/profile/.test(window.location.pathname) ?
-          <Link to={`/user/${accountData.userid}/`}
+          <Link to={`/user`/*${accountData.userid}*/}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>Dashboard</MenuItem>
           </Link>

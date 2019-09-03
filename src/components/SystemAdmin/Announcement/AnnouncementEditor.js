@@ -293,9 +293,9 @@ export default function AnnouncementEditor(props) {
       setCSRFToken(res.token)
       handleSnackBar({
         state: true,
-        message: response.status,
-        variant: response.status === 'success' ? response.status : 'error',
-        autoHideDuration: response.status === 'success'? 2000 : 5000
+        message: response.response.status,
+        variant: response.response.status === 'success' ? response.response.status : 'error',
+        autoHideDuration: response.response.status === 'success'? 2000 : 5000
       })
       await handleFetch()
       if(response.status === 'success'){

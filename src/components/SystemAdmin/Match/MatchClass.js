@@ -121,6 +121,7 @@ const useStyles = makeStyles(theme => ({
       marginTop: 0,
     },
   }
+
 }));
 
 const theme = createMuiTheme({
@@ -212,30 +213,11 @@ export default function MatchClass(props) {
     setArrEdit(newClassname)
   }
 
-  function handleDragStart(d){
-    handleDraggedItem(d)
-  }
-
-  function handleDragEnd(){
-    console.log("Dragged : ", draggedItem, " , Dropped : ", dropItem);
-    console.log("Dragged : ", arrEdit.indexOf(draggedItem), " , Dropped : ", arrEdit.indexOf(dropItem));
-    const newArr = [...arrEdit]
-    newArr[arrEdit.indexOf(draggedItem)] = dropItem
-    newArr[arrEdit.indexOf(dropItem)] = draggedItem
-    setArrEdit(newArr)
-    handleDraggedItem(null)
-    handleDropItem(null)
-  }
-
-  function handleDragOver(d){
-    handleDropItem(d)
-  }
-
   async function handleFetchAdd(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+      'matchsection', {
         action: 'classadd',
         matchid: matchid,
         classname: text
@@ -257,7 +239,7 @@ export default function MatchClass(props) {
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+      'matchsection', {
         action: 'classedit',
         matchid: matchid,
         classname: arrEdit,
@@ -280,7 +262,7 @@ export default function MatchClass(props) {
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+      'matchsection', {
         action: 'classremove',
         matchid: matchid,
         classno: parseInt(d)
@@ -306,7 +288,7 @@ export default function MatchClass(props) {
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+      'loadmatch', {
         action: 'detail',
         matchid: matchid
     }, (csrf, d) =>{
@@ -397,25 +379,6 @@ export default function MatchClass(props) {
           arrEdit.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
-                {/*
-                  <ThemeProvider theme={theme}>
-                    <Paper style={{ background: dropItem === d && '#ccc' }} className={classes.paperList} elevation={1}
-                      draggable={true}
-                      onDragStart={()=>handleDragStart(d)}
-                      onDragOver={()=>handleDragOver(d)}
-                      onDragEnd={handleDragEnd}>
-                      <div className={classes.dragIconGrid}>
-                        <DragHandleIcon classes={{ root: classes.dragIcon }}/>
-                      </div>
-                      <TextField
-                        autoFocus
-                        value={d}
-                        onChange={e =>handleEditClass(d, e, i)}
-                      />
-                    </Paper>
-                  </ThemeProvider>
-                  */
-                }
                 <ThemeProvider theme={theme}>
                   <TextField
                     fullWidth

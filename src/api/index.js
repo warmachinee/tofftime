@@ -337,6 +337,20 @@ function handleScrolllTo(element){
   elmnt.scrollIntoView();
 }
 
+function handleAmateurClass(classno){
+  var asciiNumber = parseInt(classno)
+  if(!isNaN(asciiNumber)){
+    var res = String.fromCharCode(asciiNumber + 64)
+    return res
+  }
+}
+
+function handleGetUrlParam(){
+  var arrSplit = window.location.pathname.split('/')
+  var length = window.location.pathname.split('/').length
+  return parseInt(arrSplit[ length - 1 ])
+}
+
 export {
   webURL,
   getWebURL,
@@ -353,5 +367,7 @@ export {
   handleDateToString,
   handleStringToDate,
   getTodayTime,
-  handleScrolllTo
+  handleScrolllTo,
+  handleAmateurClass,
+  handleGetUrlParam
 }

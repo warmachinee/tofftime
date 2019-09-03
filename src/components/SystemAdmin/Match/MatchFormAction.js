@@ -95,15 +95,9 @@ const theme = createMuiTheme({
 export default function MatchTeam(props) {
   const classes = useStyles();
   const { sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp, selectedUser, handleClose } = props
-  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-  const matchPicture = selectedUser?(
-    selectedUser.photopath ?
-    hd + API.webURL().substring(0, API.webURL().length - 1) + selectedUser.photopath : null
-  ):null
 
   function handleUpdateForm(action){
-    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-    const socket = socketIOClient( hd + API.webURL() )
+    const socket = socketIOClient(API.getWebURL())
     socket.emit('match-request-client-message', {
       action: "confirm",
       matchid: matchid,
@@ -118,13 +112,9 @@ export default function MatchTeam(props) {
         <Typography component="h6" style={{ display: 'flex', marginBottom: 16 }}>
           { selectedUser.fullname }<div style={{ width: 16 }} />{ selectedUser.lastname }
         </Typography>
-        { matchPicture?
-          (
-            isSupportWebp?
-            <img src={matchPicture + '.webp'} align="left" className={classes.image} />
-            :
-            <img src={matchPicture + '.jpg'} align="left" className={classes.image} />
-          )
+        { ( selectedUser && selectedUser.photopath ) ?
+          <img align="left" className={classes.image}
+            src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )}/>
           :
           <div className={classes.matchImgTemp}
             style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>

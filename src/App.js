@@ -56,6 +56,23 @@ const RouteNewsDetail = Loadable.Map({
   loading: () => null
 });
 
+const RouteMatchDetail = Loadable.Map({
+  loader: {
+    MatchDetail: () => import(/* webpackChunkName: "MatchDetail" */'./components/Detail/MatchDetail'),
+  },
+  render(loaded, props) {
+    let Component = loaded.MatchDetail.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteUserPage = Loadable.Map({
   loader: {
     UserPage: () => import(/* webpackChunkName: "UserPage" */'./page/UserPage'),
@@ -124,6 +141,23 @@ const RouteSignIn = Loadable.Map({
   loading: () => null
 });
 
+const RouteScoreDisplay = Loadable.Map({
+  loader: {
+    ScoreDisplay: () => import(/* webpackChunkName: "ScoreDisplay" */'./components/ScoreDisplay'),
+  },
+  render(loaded, props) {
+    let Component = loaded.ScoreDisplay.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const Header = Loadable({
   loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
   loading: () => null
@@ -136,6 +170,11 @@ const NoMatch = Loadable({
 
 const SnackBarAlert = Loadable({
   loader: () => import(/* webpackChunkName: "SnackBarAlert" */'./components/SnackBarAlert'),
+  loading: () => null
+});
+
+const SnackBarLong = Loadable({
+  loader: () => import(/* webpackChunkName: "SnackBarLong" */'./components/SnackBarLong'),
   loading: () => null
 });
 
@@ -153,6 +192,7 @@ const Footer = Loadable({
   loader: () => import(/* webpackChunkName: "Footer" */'./components/Footer'),
   loading: () => null
 });
+
 
 import UserPage from './page/UserPage'
 import Organizer from './page/Organizer'
@@ -172,6 +212,15 @@ export default function App() {
     message: null,
     variant: null,
     autoHideDuration: 2000
+  })
+  const [ snackBarL, handleSnackBarL ] = React.useState({
+    state: false,
+    sFULLNAME: '',
+    sLASTNAME: '',
+    sOUT: 0,
+    sIN: 0,
+    sTOTAL: 0,
+    sPAR: 0
   })
 
   const passingProps = {
@@ -242,32 +291,39 @@ export default function App() {
       }
 
       {
-        !true ?
+        true ?
         <Switch>
+          {/*-------------------- Page --------------------*/}
           <RouteMain exact path="/"
+            {...passingProps} />
+          <RouteUserPage path="/user"
+            {...passingProps} />
+          <RouteOrganizer path="/page/:pageid"
+            {...passingProps} />
+          <RouteSystemAdmin path="/admin"
             {...passingProps} />
           {/*-------------------- Detail --------------------*/}
           <RouteAnnounceDetail path="/announce/:detailparam"
             {...passingProps} />
           <RouteNewsDetail path="/news/:detailparam"
             {...passingProps} />
-          {/*-------------------- Page --------------------*/}
-          <RouteUserPage path="/user/:userid"
-            {...passingProps} />
-          <RouteOrganizer path="/page/:pageid"
-            {...passingProps} />
-          <RouteSystemAdmin path="/admin"
-            {...passingProps} />
-
+          <RouteMatchDetail path="/match/:matchid"
+            {...passingProps}
+            handleSnackBarL={handleSnackBarL} />
+          {/*-------------------- Other --------------------*/}
           <RouteSignIn path="/login"
             {...passingProps} />
+          <RouteScoreDisplay path="/display/:matchid/:userid"
+            {...passingProps} />
+          {/*-------------------- No match path --------------------*/}
           <Route component={NoMatch} />
         </Switch>
         :
-        <UserPage {...passingProps} />
+        <UserPage
+          {...passingProps} />
       }
 
-      { sess && sess.status !== 1 && /\/user/.test(window.location.pathname) &&
+      { sess && sess.status !== 1 && /\/user|\/admin/.test(window.location.pathname) &&
         <Redirect to={`/`} />
       }
 
@@ -286,7 +342,25 @@ export default function App() {
           autoHideDuration: 2000
         })}
         message={snackBar.message} />
-
+      <SnackBarLong
+        autoHideDuration={15000}
+        open={snackBarL.state}
+        onClose={()=>handleSnackBarL({
+          state: false,
+          sFULLNAME: '',
+          sLASTNAME: '',
+          sOUT: 0,
+          sIN: 0,
+          sTOTAL: 0,
+          sPAR: 0
+        })}
+        sFULLNAME={snackBarL.sFULLNAME}
+        sLASTNAME={snackBarL.sLASTNAME}
+        sOUT={snackBarL.sOUT}
+        sIN={snackBarL.sIN}
+        sTOTAL={snackBarL.sTOTAL}
+        sPAR={snackBarL.sPAR}
+        />
       <Dialog
         {...passingProps}
         open={open}
@@ -298,7 +372,9 @@ export default function App() {
         drawerState={drawerState}
         drawerClose={toggleDrawer} />
 
-      <Footer />
+      { !/\/user/.test(window.location.pathname) &&
+        <Footer />
+      }
     </div>
   );
 }

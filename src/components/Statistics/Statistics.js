@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import { grey } from './../../api/palette'
 
@@ -16,31 +17,31 @@ import {
 } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
-  root: {
+  rootDown: {
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
     boxSizing: 'border-box',
     margin: 'auto',
     marginTop: 36,
-    [theme.breakpoints.up(630)]: {
-      marginTop: 36,
-      flexDirection: 'row',
-    },
-    [theme.breakpoints.up(870)]: {
-      margin: theme.spacing(0, 3),
-      marginTop: 36,
-      maxWidth: 400,
-      flexDirection: 'column',
-    },
+    padding: 12
+  },
+  rootUp: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    boxSizing: 'border-box',
+    margin: 'auto',
+    marginTop: 36,
+    padding: 12
   },
   paper: {
     boxSizing: 'border-box',
     width: '100%',
     padding: theme.spacing(3, 4),
     display: 'flex',
-    borderRadius: 0
+    borderRadius: 0,
+    maxWidth: 350
   },
   statLabel: {
     display: 'flex',
@@ -71,20 +72,32 @@ const useStyles = makeStyles(theme => ({
 
 export default function Statistics(props) {
   const classes = useStyles();
-  const { API, isSupportWebp, accountData, token, setCSRFToken } = props
+  const { API, isSupportWebp, accountData, token, setCSRFToken, open, userid } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
+    const sendObj = {
+      action: 'statavg'
+    }
+
+    if(userid){
+      Object.assign(sendObj, { targetuser: userid });
+    }
+
     await API.xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
-        action: 'statavg'
+        ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
     })
   }
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ props.userid ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -99,13 +112,20 @@ export default function Statistics(props) {
     }
   },[ window.innerWidth ])
 
-  React.useEffect(()=>{
-    handleFetch()
-  },[ ])
-
   return (
-    <div className={classes.root}>
-      <Paper className={classes.paper}>
+    <div
+      className={clsx({
+        [classes.rootDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+        [classes.rootUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+      })}
+      style={{
+        ...( open ? window.innerWidth >= 1090 : window.innerWidth >= 850 )?
+        {justifyContent: 'center' } : {justifyContent: 'space-between' } }}>
+      <Paper className={classes.paper}
+        style={{
+          ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+          { marginLeft: 'auto', marginRight: 'auto' } : null,
+        }}>
         <div className={classes.statLabel}>
           <GolfCourse className={classes.icon} />
           <Typography variant="body1" className={classes.typo}>Matches</Typography>
@@ -120,7 +140,12 @@ export default function Statistics(props) {
         </div>
       </Paper>
       <Paper className={classes.paper}
-        style={{ ...(window.innerWidth >= 630 && window.innerWidth < 870)? { marginLeft: 24 } : { marginTop: 8 } }}>
+        style={{
+          ...( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+          { marginLeft: 24 } : { marginTop: 16 },
+          ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+          { marginLeft: 'auto', marginRight: 'auto' } : null,
+        }}>
         <div className={classes.statLabel}>
           <AssignmentInd className={classes.icon} />
           <Typography variant="body1" className={classes.typo}>Handicap</Typography>

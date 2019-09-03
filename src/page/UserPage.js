@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from "react-router-dom";
 import Loadable from 'react-loadable';
-import socketIOClient from 'socket.io-client'
 import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
@@ -63,6 +62,23 @@ const RouteProfile = Loadable.Map({
   loading: () => null
 });
 
+const RouteTimeline = Loadable.Map({
+  loader: {
+    Timeline: () => import(/* webpackChunkName: "Timeline" */'./../components/User/Timeline'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Timeline.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props}/>
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -75,18 +91,18 @@ const useStyles = makeStyles(theme => ({
       flexDirection: 'row',
     },
   },
+  content: {
+    flexGrow: 1,
+    maxWidth: 1200,
+    width: '100%',
+    margin: 'auto',
+  },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
-  },
-  content: {
-    flexGrow: 1,
-    maxWidth: 1200,
-    width: '100%',
-    margin: 'auto',
   },
 
 }));
@@ -97,7 +113,7 @@ export default function UserPage(props) {
     COLOR, API, BTN, isSupportWebp, sess, handleSess, accountData, handleAccountData,
     token, setCSRFToken, drawerState, drawerClose
   } = props
-  const [ open, setOpen ] = React.useState(false);
+  const [ open, setOpen ] = React.useState( window.innerWidth >= 900 );
 
   const passingProps = {
     API: props.API,
@@ -113,6 +129,10 @@ export default function UserPage(props) {
     handleSnackBar: props.handleSnackBar
   }
 
+  function handleDrawerClick(){
+    setOpen(!open)
+  }
+
   function handleDrawerOpen() {
     setOpen(true);
   }
@@ -122,17 +142,6 @@ export default function UserPage(props) {
   }
 
   /*
-  function handleChangePerson(e){
-    if(sess){
-      const socket = socketIOClient( API.getWebURL() )
-      socket.emit('search-client-message', {
-        action: "person",
-        userid: sess.userid,
-        text: e.target.value
-      })
-    }
-  }
-
   function handleChangeField(e){
     if(sess){
       const socket = socketIOClient( API.getWebURL() )
@@ -142,13 +151,6 @@ export default function UserPage(props) {
         text: e.target.value
       })
     }
-  }
-
-  function responsePerson(){
-    const socket = socketIOClient( API.getWebURL() )
-    socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
-      console.log("Person : ", messageNew.result.infolist);
-    })
   }
 
   function responseField(){
@@ -175,33 +177,35 @@ export default function UserPage(props) {
   React.useEffect(()=>{
     if(sess && sess.status === 1 && sess.typeid !== 'admin'){
       handleFetchInfo()
-      /*
-      responsePerson()
-      responseField()*/
-    }else{
-
+      //responseField()
     }
-  },[ sess ])
+    if(sess && sess.status !== 1){
+      window.location.pathname = '/'
+    }
+    console.log(props);
+  },[ sess, props.location ])
 
   return (
     <div className={classes.root}>
-      <UserHeader {...props} open={open} handleDrawerOpen={handleDrawerOpen}/>
+      <UserHeader {...props} open={open} handleDrawerClick={handleDrawerClick}/>
       <SideMenu {...props} open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose}/>
       <main className={classes.content}>
         <div className={classes.toolbar} />
         { true ?
           <React.Fragment>
-            { !true ?
-              <Route exact path={"/user/:userid"} render={()=> <UserDashboard {...props} />} />
+            { true ?
+              <Route exact path="/user" render={()=> <UserDashboard {...props} open={open}/>} />
               :
-              <Route exact path={"/"} render={()=> <UserDashboard {...props} />} />
+              <Route exact path={"/"} render={()=> <UserDashboard {...props} open={open}/>} />
             }
             <RouteProfile path="/user/profile/:userid"
               {...passingProps} />
+            <RouteTimeline path="/user/timeline/:userid"
+              {...passingProps} location={props.location} />
           </React.Fragment>
           :
           <RouteProfile exact path="/"
-            {...passingProps} />
+            {...props} />
         }
       </main>
     </div>
@@ -210,21 +214,38 @@ export default function UserPage(props) {
 
 function UserDashboard(props){
   const classes = useStyles();
-  const { sess } = props
+  const { sess, open } = props
+
+  /*
+  React.useEffect(()=>{
+    if(props.computedMatch && sess){
+      console.log(props.computedMatch);
+      console.log('sess : ', parseInt(sess.userid), ' userid : ', props.computedMatch.params.userid);
+    }
+  },[ ])*/
 
   return(
     <React.Fragment>
-      <div className={classes.grid}>
-        <OverviewProfile {...props} />
-        <Statistics userid={sess && sess.userid} {...props} />
-      </div>
+      { /*
+        <div className={classes.grid}>
+          <OverviewProfile {...props} />
+          <Statistics userid={sess && sess.userid} {...props} />
+        </div>
+        <FriendFollowList {...props}/>*/
+      }
+      <Statistics {...props} />
       <Upcoming {...props} />
-      <History {...props} />
-      <FriendFollowList {...props}/>
-      { sess && sess.status === 1 && sess.typeid !== 'admin' &&
+
+      <History {...props} open={open}/>
+
+      {/* sess && sess.status === 1 && sess.typeid !== 'admin' &&
         props.computedMatch &&
         parseInt(props.computedMatch.params.userid) !== parseInt(sess.userid) &&
-        <Redirect to={`/user/${sess.userid}`} />
+        <Redirect to={`/user`/${sess.userid}} />
+        */
+      }
+      { sess && sess.status !== 1 && sess.typeid === 'admin' &&
+        <Redirect to={`/admin`} />
       }
     </React.Fragment>
   );

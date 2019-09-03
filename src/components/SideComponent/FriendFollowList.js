@@ -1,7 +1,9 @@
 import React from "react";
+import Loadable from 'react-loadable';
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import * as COLOR from './../../api/palette'
+import { Scrollbars } from "react-custom-scrollbars";
 
 import {
   Avatar,
@@ -15,7 +17,12 @@ import {
   Divider
 } from "@material-ui/core";
 
-import { Scrollbars } from "react-custom-scrollbars";
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loading: () => null
+});
+
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
@@ -73,6 +80,13 @@ const useStyles = makeStyles(theme => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
+  },
+  grid: {
+    display: 'flex',
+    flexDirection: 'column',
+    [theme.breakpoints.up(750)]: {
+      flexDirection: 'row',
+    },
   },
 
 }));
@@ -160,7 +174,7 @@ export default function FriendFollowList(props) {
 
   return (
     <div className={classes.root}>
-      { window.innerWidth >= 1300 &&
+      { window.innerWidth >= 1300 ?
         <Drawer
           anchor="right"
           variant="permanent"
@@ -175,73 +189,121 @@ export default function FriendFollowList(props) {
             })
           }}
           open={open}
-          onMouseOver={
-            ()=>!/iPad|iPhone|iPod|Android/.test(navigator.userAgent) ? handleDrawerOpen() : console.log()
-          }
-          onMouseLeave={
-            ()=>!/iPad|iPhone|iPod|Android/.test(navigator.userAgent) ? handleDrawerClose() : console.log()
-          }
-        >
+          {...!/iPad|iPhone|iPod|Android/.test(navigator.userAgent)?
+            {
+              onMouseEnter: ()=>handleDrawerOpen(),
+              onMouseLeave: ()=>handleDrawerClose(),
+            } : null
+          }>
           <Typography className={classes.label}>Friend</Typography>
           <List className={classes.list}>
-            <Scrollbars autoHide>
-              {itemFriend.map(item => (
-                <ListItem key={item.id} button className={classes.listItem}>
-                  <ListItemAvatar>
-                    {/* Change picture friend here */}
-                    { item.picture ?
-                      /*
-                      <Avatar className={classes.avatarImage}
-                        src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
-                      <Avatar className={classes.avatarImage}
-                        src={item.picture} />
-                      :
-                      <AccountCircleIcon classes={{ root: classes.avatar }} />
-                    }
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <React.Fragment>
-                        <Typography className={classes.name} variant="body2">
-                          {item.fullname}
-                        </Typography>
-                        <Typography className={classes.name} variant="body2">
-                          {item.lastname}
-                        </Typography>
-                      </React.Fragment>
-                    } />
-                </ListItem>
-              ))}
-            </Scrollbars>
+              { false ?
+                <Scrollbars autoHide>
+                  {
+                    itemFriend.map(item => (
+                      <ListItem key={item.id} button className={classes.listItem}>
+                        <ListItemAvatar>
+                          {/* Change picture friend here */}
+                          { item.picture ?
+                            /*
+                            <Avatar className={classes.avatarImage}
+                              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
+                            <Avatar className={classes.avatarImage}
+                              src={item.picture} />
+                            :
+                            <AccountCircleIcon classes={{ root: classes.avatar }} />
+                          }
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <React.Fragment>
+                              <Typography className={classes.name} variant="body2">
+                                {item.fullname}
+                              </Typography>
+                              <Typography className={classes.name} variant="body2">
+                                {item.lastname}
+                              </Typography>
+                            </React.Fragment>
+                          } />
+                      </ListItem>
+                    ))
+                  }
+                </Scrollbars>
+                :
+                Array.from(new Array(3)).map((item, i) => (
+                  <ListItem key={i} className={classes.listItem}>
+                    <Skeleton variant="circle" width={36} height={36}/>
+                    { open && <Skeleton style={{ marginLeft: 16 }} width="80%"/>}
+                  </ListItem>
+                ))
+              }
           </List>
           <Divider />
           <Typography className={classes.label}>Follow</Typography>
           <List className={classes.list}>
-            <Scrollbars autoHide>
-              {itemFollow.map(item => (
-                <ListItem key={item.id} button
-                  className={classes.listItem}
-                  style={{ paddingTop: 12, paddingBottom: 12 }}>
-                  <ListItemAvatar>
-                    {/* Change picture follow here */}
-                    { item.picture ?
-                      /*
-                      <Avatar className={classes.avatarImage}
-                        src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
-                      <Avatar className={classes.avatarImage}
-                        src={item.picture} />
-                      :
-                      <AccountCircleIcon classes={{ root: classes.avatar }} />
-                    }
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={<Typography className={classes.name} variant="body2">{item.name}</Typography>} />
+            { false ?
+              <Scrollbars autoHide>
+                {itemFollow.map(item => (
+                  <ListItem key={item.id} button
+                    className={classes.listItem}
+                    style={{ paddingTop: 12, paddingBottom: 12 }}>
+                    <ListItemAvatar>
+                      {/* Change picture follow here */}
+                      { item.picture ?
+                        /*
+                        <Avatar className={classes.avatarImage}
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
+                        <Avatar className={classes.avatarImage}
+                          src={item.picture} />
+                        :
+                        <AccountCircleIcon classes={{ root: classes.avatar }} />
+                      }
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={<Typography className={classes.name} variant="body2">{item.name}</Typography>} />
+                  </ListItem>
+                ))}
+              </Scrollbars>
+              :
+              Array.from(new Array(3)).map((item, i) => (
+                <ListItem key={i} className={classes.listItem}>
+                  <Skeleton variant="circle" width={36} height={36}/>
+                  { open && <Skeleton style={{ marginLeft: 16 }} width="80%"/>}
                 </ListItem>
-              ))}
-            </Scrollbars>
+              ))
+            }
           </List>
           <Divider />
         </Drawer>
+        :
+        <div className={classes.grid}>
+          <div style={{ width: '100%' }}>
+            <LabelText text="Friend" />
+            <List>
+              {
+                Array.from(new Array(3)).map((item, i) => (
+                  <ListItem key={i} className={classes.listItem}>
+                    <Skeleton variant="circle" width={36} height={36}/>
+                    <Skeleton style={{ marginLeft: 16 }} width="80%"/>
+                  </ListItem>
+                ))
+              }
+            </List>
+          </div>
+          <div style={{ width: '100%' }}>
+            <LabelText text="Follow" />
+            <List>
+              {
+                Array.from(new Array(3)).map((item, i) => (
+                  <ListItem key={i} className={classes.listItem}>
+                    <Skeleton variant="circle" width={36} height={36}/>
+                    <Skeleton style={{ marginLeft: 16 }} width="80%"/>
+                  </ListItem>
+                ))
+              }
+            </List>
+          </div>
+        </div>
       }
     </div>
   );

@@ -51,12 +51,10 @@ export default function Match(props){
 
   return(
     <Switch>
-      <RouteMatchBody exact
-        {...passingProps}
-        path={sess.typeid === 'admin' ? `/${sess.typeid}/match` : `/${sess.typeid}/match/:pageParam`} />
-      <RouteMatchEditor
-        {...passingProps}
-        path={sess.typeid === 'admin' ? `/${sess.typeid}/match/:matchparam` : `/${sess.typeid}/match/editor/:matchparam`} />
+      <RouteMatchBody exact path="/admin/match"
+        {...passingProps} />
+      <RouteMatchEditor path="/admin/match/:matchparam"
+        {...passingProps} />
     </Switch>
   );
 }

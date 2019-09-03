@@ -67,8 +67,7 @@ const useStyles = makeStyles(theme => ({
 export default function MatchEditor(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
-  const splitStr = props.computedMatch.params.matchparam.split('-')
-  const matchid = splitStr.length > 1? splitStr[1] : props.computedMatch.params.matchparam
+  const matchid = props.computedMatch && props.computedMatch.params.matchparam
   const [ data, setData ] = React.useState(null)
   const passingProps = {
     ...props,
@@ -79,7 +78,7 @@ export default function MatchEditor(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+      'loadmatch', {
         action: 'detail',
         matchid: matchid,
     }, (csrf, d) =>{

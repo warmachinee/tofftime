@@ -69,29 +69,45 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerMatchCard(props) {
   const classes = useStyles();
-  const { data } = props
+  const { API, data, isSupportWebp } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
 
   return(
     <Paper
       onClick={()=>console.log(data)}
       className={classes.root}
-      elevation={window.innerWidth >= 600 ? paperHover : 1}
-      onMouseEnter={()=>setPaperHover(3)}
-      onMouseLeave={()=>setPaperHover(0)}>
-      <img src={data.pic} className={classes.image} />
-      <Box className={classes.box}>
-        <Typography gutterBottom variant="body1" className={classes.title}>
-          {data.title}
-        </Typography>
-        <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-          <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
-          {data.location}
-        </Typography>
-        <Typography variant="caption" color="textSecondary">
-          {`${data.views + 'views'} • ${data.date}`}
-        </Typography>
-      </Box>
+      elevation={ ( data && window.innerWidth >= 600 ) ? paperHover : 1}
+      {...data?
+        {
+          onMouseEnter: ()=>setPaperHover(3),
+          onMouseLeave: ()=>setPaperHover(0),
+        } : null
+      }>
+      { ( data && data.matchphoto ) ?
+        <img className={classes.image}
+          src={API.getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
+        :
+        <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }}/>
+      }
+      { data ?
+        <Box className={classes.box}>
+          <Typography gutterBottom variant="body1" className={classes.title}>
+            {data.matchname}
+          </Typography>
+          <Typography gutterBottom display="block" variant="caption" className={classes.location}>
+            <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
+            {data.fieldname}
+          </Typography>
+          <Typography variant="caption" color="textSecondary">
+            {`${data.views + 'views'} • ${'date'/*API.handleGetDate(data.matchdate)*/}`}
+          </Typography>
+        </Box>
+        :
+        <Box className={classes.box}>
+          <Skeleton height={25} />
+          <Skeleton height={14} width="60%"/>
+        </Box>
+      }
     </Paper>
   );
 }

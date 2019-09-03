@@ -115,13 +115,12 @@ export default function MatchBody(props){
   const [ data, setData ] = React.useState(null)
   const [ dataClassed, setDataClassed ] = React.useState(null)
   const [ editting, setEditting ] = React.useState(false)
-  const pageid = props.computedMatch ? parseInt(props.computedMatch.params.pageParam) : null
 
   async function handleSetDisplay(d){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'displaymatchsystem' : 'mdisplaymatchsystem', {
+      'displaymatchsystem', {
         action: 'match',
         matchid: d.matchid
     }, (csrf, d) =>{
@@ -143,8 +142,8 @@ export default function MatchBody(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin'? 'loadmatch' : 'loadusersystem', {
-        ...(sess.typeid === 'admin')? { action: 'list' } : { action: 'creator' }
+      'loadmatch', {
+        action: 'list'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(!d.status){
@@ -176,7 +175,7 @@ export default function MatchBody(props){
           Match
         </Box>
       </Typography>
-      <CreateMatch pageid={pageid} setData={setData} setDataClassed={setDataClassed} {...props}/>
+      <CreateMatch setData={setData} setDataClassed={setDataClassed} {...props}/>
       <div style={{ display: 'flex', margin: '24px 16px 0 0' }}>
         <div style={{ flex: 1 }} />
         <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>
@@ -205,30 +204,23 @@ export default function MatchBody(props){
         }
 
         {data && !data.status && !editting && sess &&
-          [
-            ... (sess.typeid === 'admin')? data: API.handleSortArrayByDate(data, 'matchcreatedate', 'matchname')
-          ].map( (d, i) =>
+          data.map( (d, i) =>
             d &&
             <React.Fragment key={i}>
-              <Link to={
-                  sess.typeid === 'admin'?
-                  `/${sess.typeid}/match/${d.matchid}`
-                  :
-                  `/${sess.typeid}/match/editor/${pageid + '-' + d.matchid}`
-                } className={classes.linkElement}>
+              <Link to={`/admin/match/${d.matchid}`} className={classes.linkElement}>
                 <ListItem key={d.matchid} button>
                   { window.innerWidth >= 600 &&
                     <ListItemText className={classes.tableDate} classes={{ primary: classes.tableDateText }}
-                      primary={sess.typeid === 'admin'? d.date : API.handleDateToString(d.matchcreatedate)}/>
+                      primary={d.date}/>
                   }
-                  <ListItemText primary={sess.typeid === 'admin'? d.views : d.view} className={classes.tableView}/>
+                  <ListItemText primary={d.views} className={classes.tableView}/>
                   <ListItemText inset className={classes.tableTitle}
-                    primary={sess.typeid === 'admin'? d.title : d.matchname}
+                    primary={d.title}
                     secondary={
                       window.innerWidth < 800 &&
                       (
                         window.innerWidth >= 600?
-                        sess.typeid === 'admin'? d.location : d.fieldname
+                        d.location
                         :
                         <React.Fragment>
                           <Typography
@@ -237,15 +229,15 @@ export default function MatchBody(props){
                             variant="caption"
                             color="textPrimary"
                           >
-                            {sess.typeid === 'admin'? d.date : API.handleDateToString(d.matchcreatedate)}
+                            {d.date}
                           </Typography>
                           <br></br>
-                          {sess.typeid === 'admin'? d.location : d.fieldname}
+                          {d.location}
                         </React.Fragment>
                       )
                     }/>
                   { window.innerWidth >= 800 &&
-                    <ListItemText inset primary={sess.typeid === 'admin'? d.location : d.fieldname} className={classes.tableLocation}/>
+                    <ListItemText inset primary={d.location} className={classes.tableLocation}/>
                   }
                 </ListItem>
               </Link>
@@ -253,9 +245,7 @@ export default function MatchBody(props){
             </React.Fragment>
         )}
         { dataClassed && editting && sess &&
-          [
-            ... (sess.typeid === 'admin')? dataClassed: API.handleSortArrayByDate(dataClassed, 'matchcreatedate', 'matchname')
-          ].map( (d, i) =>
+          dataClassed.map( (d, i) =>
             d &&
             <React.Fragment key={i}>
               <ListItem key={d.matchid} style={{ ...d.display !== 1 && { opacity: .5 }}} button onClick={()=>handleSetDisplay(d)}>
@@ -267,8 +257,8 @@ export default function MatchBody(props){
                     disableRipple/>
                 </ListItemIcon>
                 <ListItemText className={classes.tableTitle}
-                  primary={sess.typeid === 'admin'? d.title : d.matchname}
-                  secondary={sess.typeid === 'admin'? d.location : d.fieldname}/>
+                  primary={d.title}
+                  secondary={d.location}/>
                 <ListItemText
                   style={{ textAlign: 'right' }}
                   primary={
@@ -278,7 +268,7 @@ export default function MatchBody(props){
                       variant="caption"
                       color="textPrimary"
                     >
-                      {sess.typeid === 'admin'? d.date : API.handleDateToString(d.matchcreatedate)}
+                      {d.date}
                     </Typography>
                   }/>
               </ListItem>

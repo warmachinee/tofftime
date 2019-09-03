@@ -37,6 +37,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import SettingsIcon from '@material-ui/icons/Settings';
 import MenuIcon from '@material-ui/icons/Menu';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle'
 
 import ic_logo from './img/logoX2.png'
 
@@ -207,9 +208,8 @@ function Header(props) {
 
   function handleNotifications(){
     if(sess && sess.status === 1){
-      const endpoint = API.webURL()
-      var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-      const socket = socketIOClient( hd + endpoint )
+      const endpoint = API.getWebURL()
+      const socket = socketIOClient(endpoint)
       socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
         console.log(messageNew);
       })
@@ -270,8 +270,8 @@ function Header(props) {
 
   React.useEffect(()=>{
     if(sess && sess.status === 1 && sess.typeid !== 'admin'){
-      //handleNotifications()
-      //handleFetchNotifications()
+      handleNotifications()
+      handleFetchNotifications()
     }
   },[ sess ])
 
@@ -304,7 +304,8 @@ function Header(props) {
                 <MenuIcon />
               </IconButton>
             }
-            { window.location.pathname === '/' ?
+            { /*
+              window.location.pathname === '/' ?
               (
                 <IconButton
                   edge="start"
@@ -324,7 +325,15 @@ function Header(props) {
                     <img src={ic_logo} className={classes.logoImg}/>
                   </IconButton>
                 </Link>
-              )
+              )*/
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <IconButton
+                  edge="start"
+                  className={classes.logo}
+                >
+                  <img src={ic_logo} className={classes.logoImg}/>
+                </IconButton>
+              </Link>
             }
             { window.innerWidth < 600 && <div className={classes.grow} /> }
             <Typography className={classes.title} variant="h6" noWrap>
@@ -363,8 +372,8 @@ function Header(props) {
                     <NotificationsIcon />
                   </IconButton>
                 </div>
-                { accountData &&
-                  <Link to={`/user/${sess.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                { ( accountData && sess.typeid !== 'admin' ) ?
+                  <Link to={`/user` /*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <IconButton
                       style={{ padding: 8 }}>
                       { accountData.photopath ?
@@ -373,6 +382,13 @@ function Header(props) {
                         :
                         <AccountIcon classes={{ root: classes.avatar }} />
                       }
+                    </IconButton>
+                  </Link>
+                  :
+                  <Link to={`/admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <IconButton
+                      style={{ padding: 8 }}>
+                      <SupervisedUserCircleIcon classes={{ root: classes.avatar }} />
                     </IconButton>
                   </Link>
                 }
@@ -414,7 +430,7 @@ function Header(props) {
 
           { sess && sess.status === 1 && sess.typeid !== 'admin' &&
             !/\/user/.test(window.location.pathname) &&
-            <Link to={`/user/${sess.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link to={`/user`/*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>User</MenuItem>
             </Link>
           }

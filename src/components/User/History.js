@@ -36,55 +36,36 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 36,
   },
   grid: {
-    padding: theme.spacing(1.5),
-    display: 'flex',
-    flexWrap: 'wrap',
-    WebkitFlexWrap: 'wrap',
     boxSizing: 'border-box',
-    justifyContent: 'space-around'
+    marginTop: 24
   },
-  listImage: {
+  listImageDown: {
     width: 36,
     marginRight: 0,
-    [theme.breakpoints.up(500)]: {
-      width: 48,
-      marginRight: 16,
-    },
   },
-  image: {
+  listImageUp: {
+    width: 48,
+    marginRight: 16,
+  },
+  imageDown: {
     width: 36,
-    height: 24,
-    backgroundColor: grey[900],
-    [theme.breakpoints.up(500)]: {
-      width: 48,
-      height: 36,
-    },
+    height: 36,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
+    cursor: 'pointer',
+    borderRadius: 4,
   },
-  listTitle: {
-    width: '100%',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-  },
-  listTitleShow: {
-    [theme.breakpoints.up(900)]: {
-      display: 'none',
-    },
-  },
-  listTitleHidden: {
-    [theme.breakpoints.down(900)]: {
-      display: 'none',
-    },
-  },
-  listDateShow: {
-    [theme.breakpoints.up(600)]: {
-      display: 'none',
-    },
-  },
-  listDateHidden: {
-    [theme.breakpoints.down(600)]: {
-      display: 'none',
-    },
+  imageUp: {
+    width: 48,
+    height: 48,
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
+    cursor: 'pointer',
+    borderRadius: 4,
   },
 
 }));
@@ -92,15 +73,23 @@ const useStyles = makeStyles(theme => ({
 
 export default function History(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken } = props
+  const { API, COLOR, token, setCSRFToken, open, userid } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
+    const sendObj = {
+      action: 'history'
+    }
+
+    if(userid){
+      Object.assign(sendObj, { targetuser: userid });
+    }
+
     await API.xhrPost(
       token? token : resToken.token,
       'loadusersystem' , {
-        action: 'history'
+        ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
       setData(d)
@@ -109,36 +98,63 @@ export default function History(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ props.userid ])
+
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
 
   return(
     <div className={classes.root}>
       <LabelText text="History" />
-      <List style={{ marginTop: 24, }}>
-        <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
-          <ListItemIcon className={classes.listImage}>
-            <div className={classes.image} />
-          </ListItemIcon>
-          <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-            className={classes.listDateHidden}
-            primary="date" />
-          <ListItemText className={classes.listTitle} style={{ color: 'white'}}
-            primary="Match" />
-          <ListItemText
-            className={clsx(classes.listTitle, classes.listTitleHidden)}
-            style={{ color: 'white'}}
-            primary="Location" />
-          <ListItemIcon>
-            <Typography variant="subtitle2" color="textSecondary" style={{ color: 'white'}}>
-              Handicap
-            </Typography>
-          </ListItemIcon>
-        </ListItem>
-      </List>
-      <Divider />
-      { data &&
-        data.map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
-      }
+      <div className={classes.grid}>
+        <List>
+          <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
+            <ListItemIcon
+              className={clsx({
+                [classes.listImageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
+                [classes.listImageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
+              })}>
+              <div className={clsx({
+                [classes.imageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
+                [classes.imageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
+              })} />
+            </ListItemIcon>
+            { ( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
+              <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
+                primary="date" />
+            }
+            <ListItemText style={{ color: 'white', width: 100 }}
+              primary="Match" />
+
+            { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
+              <ListItemText
+                style={{ width: 100, color: 'white' }}
+                primary="Location" />
+            }
+            <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
+              <Typography variant="subtitle2" color="textSecondary" style={{ color: 'white' }}>
+                { ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ? 'Handicap' : 'HC'}
+              </Typography>
+            </ListItemIcon>
+          </ListItem>
+        </List>
+        <Divider />
+        { data && data.length > 0 ?
+          data.map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
+          :
+          Array.from(new Array(2)).map( (d, i)=> <HistoryList key={i} {...props}/>)
+        }
+      </div>
     </div>
   );
 }

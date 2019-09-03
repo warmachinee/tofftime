@@ -13,21 +13,17 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    margin: 'auto',
-    minHeight: 'auto',
-    maxWidth: 450,
-    [theme.breakpoints.up(870)]: {
-      margin: theme.spacing(0, 3),
-      minHeight: 300,
-    },
-
   },
   paper: {
     padding: theme.spacing(3, 2),
+    margin: 'auto',
     marginTop: 36,
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: 0
+    borderRadius: 0,
+    minHeight: 300,
+    maxWidth: 450,
+    boxSizing: 'border-box'
   },
   imageGrid: {
     margin: 16,
@@ -53,36 +49,55 @@ const useStyles = makeStyles(theme => ({
 
 export default function OverviewProfile(props) {
   const classes = useStyles();
-  const { API, isSupportWebp, accountData } = props
+  const { API, token, setCSRFToken, isSupportWebp, accountData, userid } = props
+  const [ data, setData ] = React.useState(null)
+
+  async function handleFetchInfo(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadusersystem', {
+        action: 'info',
+        targetuser: userid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d[0])
+    })
+  }
 
   React.useEffect(()=>{
     //console.log(props.accountData);
-  },[ ])
+    if(userid){
+      handleFetchInfo()
+    }else{
+      setData(accountData)
+    }
+  },[ props.userid ])
 
   return (
     <div className={classes.root}>
-      { accountData?
+      { data?
         <Paper className={classes.paper}>
           <div className={classes.imageGrid}>
-            { accountData.photopath ?
+            { data.photopath ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
               :
               <AccountCircleIcon classes={{ root: classes.avatar }} />
             }
           </div>
           <Typography variant="h5" className={classes.name}>
-            {accountData.fullname} {accountData.lastname}
+            {data.fullname} {data.lastname}
           </Typography>
-          { accountData.nickname !== '-' ?
+          { data.nickname !== '-' ?
             <Typography gutterBottom variant="h6" className={classes.name}>
-              ({accountData.nickname})
+              ({data.nickname})
             </Typography>
             :
             <div style={{ height: 32 }} />
           }
           <Typography gutterBottom variant="subtitle2" className={classes.email}>
-            {accountData.email}
+            {data.email}
           </Typography>
         </Paper>
         :

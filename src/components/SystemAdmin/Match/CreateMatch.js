@@ -212,7 +212,7 @@ const datePickers = createMuiTheme({
 
 function CreateMatchBody(props){
   const classes = useStyles();
-  const { sess, setData, setDataClassed, token, setCSRFToken, handleSnackBar, setExpanded, pageid } = props
+  const { sess, setData, setDataClassed, token, setCSRFToken, handleSnackBar, setExpanded } = props
   const [ open, setOpen ] = React.useState(false);
   const imgRef = React.useRef(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -289,14 +289,13 @@ function CreateMatchBody(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem', {
+      'matchsystem', {
         action: 'create',
         matchname: matchName,
         fieldid: selectedField.fieldid,
         scorematch: parseInt(selectedMatchType),
         class: matchClass,
         matchdate: API.handleDateToString(selectedDate),
-        pageid: pageid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -317,7 +316,7 @@ function CreateMatchBody(props){
     if(selectedFile){
       formData.append('matchimage', selectedFile)
       const response = await API.fetchPostFile(
-        sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem',
+        'matchsystem',
         `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: d.matchid,
@@ -343,8 +342,8 @@ function CreateMatchBody(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin'? 'loadmatch' : 'loadusersystem', {
-        ...(sess.typeid === 'admin')? { action: 'list' } : { action: 'creator' }
+      'loadmatch', {
+        action: 'list'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(!d.status){

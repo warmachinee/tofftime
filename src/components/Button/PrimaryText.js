@@ -10,7 +10,6 @@ import {
 const Btn = withStyles(theme => ({
   root: {
     color: COLOR.primary[500],
-    fontWeight: 900,
     '&:hover': {
       backgroundColor: COLOR.primary[100],
     },

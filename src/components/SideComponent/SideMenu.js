@@ -5,6 +5,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import * as COLOR from './../../api/palette'
 
 import {
+  Button,
   Drawer,
   IconButton,
   Divider,
@@ -19,14 +20,34 @@ import {
 } from '@material-ui/core'
 
 import {
+  Person,
   Notifications,
   ChevronLeft,
   ChevronRight,
   Home,
   ExitToApp,
   AccountCircle,
-  Dashboard
+  Dashboard,
+  History,
+  Event,
+  AddCircleOutline,
+
 } from '@material-ui/icons';
+
+const ListPage = Loadable({
+  loader: () => import(/* webpackChunkName: "ListPage" */'./List/ListPage'),
+  loading: () => null
+});
+
+const ListFriend = Loadable({
+  loader: () => import(/* webpackChunkName: "ListFriend" */'./List/ListFriend'),
+  loading: () => null
+});
+
+const ListFollow = Loadable({
+  loader: () => import(/* webpackChunkName: "ListFollow" */'./List/ListFollow'),
+  loading: () => null
+});
 
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
@@ -49,7 +70,7 @@ const useStyles = makeStyles(theme => ({
     }),
   },
   drawerClose: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up(600)]: {
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
@@ -96,14 +117,44 @@ const useStyles = makeStyles(theme => ({
   confirmButton: {
     padding: theme.spacing(1, 4.5)
   },
+  userInfo: {
+    width: '100%',
+    padding: 16,
+    boxSizing: 'border-box',
+  },
+  avatarInfo: {
+    fontSize: 120
+  },
+  avatarImageInfo: {
+    width: 120,
+    height: 120,
+  },
+  userTitle: {
+    display: '-webkit-box',
+    overflow: 'hidden',
+    whiteSpace: 'normal',
+    textOverflow: 'ellipsis',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 1,
+    lineHeight: 1.4,
+    textAlign: 'center',
+  },
 
 }));
 
 export default function SideMenu(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, open, handleDrawerOpen, handleDrawerClose } = props
+  const { API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, open, handleDrawerOpen, handleDrawerClose, accountData } = props
   const [ pageList, setPageList ] = React.useState(null)
   const [ confirmLogout, setConfirmLogout ] = React.useState(false)
+  const [ expanded, setExpanded ] = React.useState({
+    friend: false,
+    follow: false
+  });
+
+  function handleExpand(type) {
+    setExpanded({ ...expanded, [type]: !expanded[type] });
+  }
 
   function toggleConfirmLogout(){
     setConfirmLogout(!confirmLogout)
@@ -130,20 +181,8 @@ export default function SideMenu(props) {
     })
   }
 
-  async function handleFetchPage(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadusersystem', {
-        action: 'pagelist'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setPageList(d)
-    })
-  }
-
   React.useEffect(()=>{
-    handleFetchPage()
+
   },[ ])
 
   const [ ,updateState ] = React.useState(null)
@@ -176,56 +215,108 @@ export default function SideMenu(props) {
         open={open}
         onClose={handleDrawerClose}
       >
-        <div className={classes.toolbar}>
-          <IconButton onClick={()=>open ? handleDrawerClose() : handleDrawerOpen()}>
-            {!open ? <ChevronRight /> : <ChevronLeft />}
-          </IconButton>
-        </div>
+        { /*
+          <div className={classes.toolbar}>
+            <IconButton onClick={()=>open ? handleDrawerClose() : handleDrawerOpen()}>
+              {!open ? <ChevronRight /> : <ChevronLeft />}
+            </IconButton>
+          </div>*/
+        }
+        { accountData &&
+          <React.Fragment>
+            <div className={classes.userInfo}>
+              <BTN.NoStyleLink to={`/user/profile/${accountData.userid}`}>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <IconButton style={{ padding: 0 }}>
+                    { accountData.photopath ?
+                      <Avatar
+                        style={{ transition: '.2s' }}
+                        className={clsx({
+                          [classes.avatarImageInfo]: open,
+                          [classes.avatarImage]: !open
+                        })}
+                        src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                      :
+                      <AccountCircle
+                        style={{ transition: '.2s', color: COLOR.grey[900] }}
+                        classes={{
+                          root: clsx({
+                            [classes.avatarInfo]: open,
+                            [classes.avatar]: !open
+                          })
+                        }} />
+                    }
+                  </IconButton>
+                </div>
+              </BTN.NoStyleLink>
+              { open &&
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <BTN.NoStyleLink to={`/user/profile/${accountData.userid}`}>
+                    <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
+                      <Typography variant="body1" className={classes.userTitle}>
+                        {accountData.fullname} {accountData.lastname}
+                      </Typography>
+                    </Button>
+                  </BTN.NoStyleLink>
+                  <BTN.NoStyleLink to={`/user/profile/${accountData.userid}`}>
+                    <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
+                      <Typography variant="caption" className={classes.userTitle}>
+                        {accountData.email}
+                      </Typography>
+                    </Button>
+                  </BTN.NoStyleLink>
+                </div>
+              }
+            </div>
+            <Divider />
+          </React.Fragment>
+        }
         <Divider />
-        <List>
-          <ListItem button className={classes.notiHidden}>
+        <List className={classes.notiHidden}>
+          <ListItem button>
             <ListItemIcon><Notifications /></ListItemIcon>
             <ListItemText primary="Notifications" />
           </ListItem>
-          <BTN.NoStyleLink to='/'>
-            <ListItem button>
-              <ListItemIcon><Home /></ListItemIcon>
-              <ListItemText primary="ToffTime" />
-            </ListItem>
-          </BTN.NoStyleLink>
+          <Divider />
+        </List>
+        <List>
+          <ListItem button>
+            <ListItemIcon>
+              <AddCircleOutline />
+            </ListItemIcon>
+            <ListItemText className={classes.listTitle} primary="Create Page" />
+          </ListItem>
+          <ListPage {...props} />
+        </List>
+        <Divider />
+        <List>
+          {/*
+            <BTN.NoStyleLink to='/'>
+              <ListItem button>
+                <ListItemIcon><Home /></ListItemIcon>
+                <ListItemText primary="ToffTime" />
+              </ListItem>
+            </BTN.NoStyleLink>*/
+          }
           { sess &&
-            <BTN.NoStyleLink to={`/user/${sess.userid}`}>
+            <BTN.NoStyleLink to={`/user` /*${sess.userid}*/}>
               <ListItem button>
                 <ListItemIcon><Dashboard /></ListItemIcon>
                 <ListItemText primary="Dashboard" />
               </ListItem>
             </BTN.NoStyleLink>
           }
+          <ListItem button>
+            <ListItemIcon><History /></ListItemIcon>
+            <ListItemText primary="History" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon><Event /></ListItemIcon>
+            <ListItemText primary="Upcoming" />
+          </ListItem>
         </List>
-        <Divider />
-        { pageList &&
-          <React.Fragment>
-            <List>
-              {
-                pageList.map( d =>
-                  <ListItem button key={d.pageid}>
-                    <ListItemIcon>
-                      { d.logo ?
-                        <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
-                        :
-                        <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }}/>
-                      }
-                    </ListItemIcon>
-                    <ListItemText className={classes.listTitle} primary={d.pagename} />
-                  </ListItem>
-                )
-              }
-            </List>
-            <Divider />
-          </React.Fragment>
-        }
-        <div style={{ flex: 1 }} />
+        <ListFriend expanded={expanded} handleExpand={handleExpand} state={expanded.friend} {...props} />
+        <ListFollow expanded={expanded} handleExpand={handleExpand} state={expanded.follow} {...props} />
         <Divider />
         <List>
           <ListItem button onClick={toggleConfirmLogout} className={classes.logout}>

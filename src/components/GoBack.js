@@ -56,7 +56,7 @@ export default function GoBack(props){
     </Link>
   </div>
   */
-  return(
+  return window.history.length > 1 && (
     <div style={{ width: '100%' }}>
       <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
         <ArrowBackIcon classes={{ root: classes.backIcon }}/>

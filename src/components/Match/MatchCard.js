@@ -69,34 +69,48 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchCard(props) {
   const classes = useStyles();
-  const { API, data, isSupportWebp } = props
+  const { API, BTN, data, isSupportWebp } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
 
   return(
     <Paper
-      onClick={()=>console.log(data)}
       className={classes.root}
-      elevation={window.innerWidth >= 600 ? paperHover : 1}
-      onMouseEnter={()=>setPaperHover(3)}
-      onMouseLeave={()=>setPaperHover(0)}>
-      { data.picture ?
-        <img className={classes.image}
-          src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+      elevation={ ( data && window.innerWidth >= 600 ) ? paperHover : 1}
+      {...data?
+        {
+          onMouseEnter: ()=>setPaperHover(3),
+          onMouseLeave: ()=>setPaperHover(0),
+        } : null
+      }>
+      { ( data && data.picture ) ?
+        <BTN.NoStyleLink to={`/match/${data.matchid}`}>
+          <img className={classes.image}
+            src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+        </BTN.NoStyleLink>
         :
         <Skeleton className={classes.image} style={{ margin: 0 }} />
       }
-      <Box className={classes.box}>
-        <Typography gutterBottom variant="body1" className={classes.title}>
-          {data.title}
-        </Typography>
-        <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-          <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
-          {data.location}
-        </Typography>
-        <Typography variant="caption" color="textSecondary">
-          {`${data.views + 'views'} • ${data.date}`}
-        </Typography>
-      </Box>
+      { data ?
+        <BTN.NoStyleLink to={`/match/${data.matchid}`}>
+          <Box className={classes.box}>
+            <Typography gutterBottom variant="body1" className={classes.title}>
+              {data.title}
+            </Typography>
+            <Typography gutterBottom display="block" variant="caption" className={classes.location}>
+              <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
+              {data.location}
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              {`${data.views + 'views'} • ${data.date}`}
+            </Typography>
+          </Box>
+        </BTN.NoStyleLink>
+        :
+        <Box className={classes.box}>
+          <Skeleton height={25} />
+          <Skeleton height={14} width="60%"/>
+        </Box>
+      }
     </Paper>
   );
 }

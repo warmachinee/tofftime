@@ -98,6 +98,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
+      chunksSortMode: 'none',
       filename: 'index.html',
       template: './templateHTML.html',
       meta: {

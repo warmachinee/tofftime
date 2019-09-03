@@ -1,4 +1,5 @@
 import React from 'react';
+import Loadable from 'react-loadable';
 import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import { primary } from './../../api/palette'
@@ -8,12 +9,14 @@ import CKEditor from '@ckeditor/ckeditor5-react';
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon-block';
 
 import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loading: () => null
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,19 +25,6 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
-  },
-  back: {
-    backgroundColor: 'white',
-    '&:hover': {
-      backgroundColor: fade(primary[600], 0.25),
-    },
-  },
-  backIcon: {
-    fontSize: '2rem',
-    color: primary[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '2.5rem',
-    },
   },
   img: {
     width: '100%',
@@ -97,45 +87,10 @@ export default function AnnounceDetail(props){
 
   return(
     <Paper className={classes.root}>
-      <div style={{ width: '100%' }}>
-        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      </div>
-      {
-        /*splitStr.length > 1 ?
-        (
-          <div>
-            <Typography variant="h2">
-              {data && data.message ? data.message : ''}
-            </Typography>
-            { data && data.photopath &&
-              <img className={classes.img}
-                src={
-                  API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )
-                } />
-            }
-            <DetailComponent announcedetail={data && data.messagedetail ? data.messagedetail : ''}/>
-          </div>
-        )
-        :
-        (
-          data &&
-          data.map( d =>
-            <div key={d.title}>
-              <Typography variant="h2">
-                {d.title}
-              </Typography>
-              { d.picture &&
-                <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-              }
-              <DetailComponent announcedetail={d.announcedetail}/>
-            </div>
-          )
-        )*/
-        data &&
+      <GoBack />
+      { data &&
         <div>
-          <Typography variant="h2">
+          <Typography gutterBottom variant="h3">
             {data.title}
           </Typography>
           { data.picture &&

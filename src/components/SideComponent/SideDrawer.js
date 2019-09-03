@@ -25,11 +25,11 @@ const useStyles = makeStyles({
     padding: 16
   },
   avatar: {
-    fontSize: 64
+    fontSize: 100
   },
   avatarImage: {
-    width: 64,
-    height: 64,
+    width: 100,
+    height: 100,
   },
   userTitle: {
     display: '-webkit-box',
@@ -102,7 +102,7 @@ export default function SideDrawer(props) {
         { sess && sess.status === 1 && sess.typeid !== 'admin' && accountData &&
           <React.Fragment>
             <div className={classes.userInfo}>
-              <BTN.NoStyleLink to={`/user/${sess.userid}`}>
+              <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
                 { accountData.photopath ?
                   <Avatar className={classes.avatarImage}
                     onClick={drawerClose}
@@ -111,12 +111,12 @@ export default function SideDrawer(props) {
                   <AccountIcon onClick={drawerClose} classes={{ root: classes.avatar }} />
                 }
               </BTN.NoStyleLink>
-              <BTN.NoStyleLink to={`/user/${sess.userid}`}>
+              <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
                 <Typography variant="body1" className={classes.userTitle}>
                   {accountData.fullname} {accountData.lastname}
                 </Typography>
               </BTN.NoStyleLink>
-              <BTN.NoStyleLink to={`/user/${sess.userid}`}>
+              <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
                 <Typography variant="caption" className={classes.userTitle}>
                   {accountData.email}
                 </Typography>
@@ -152,19 +152,19 @@ export default function SideDrawer(props) {
               <Divider />
               <ListItem button onClick={()=>handleScroll('match')}>
                 <ListItemIcon>
-                  <MailIcon />
+                  <div style={{ width: 24 }} />
                 </ListItemIcon>
                 <ListItemText primary="Match" />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('news')}>
                 <ListItemIcon>
-                  <MailIcon />
+                  <div style={{ width: 24 }} />
                 </ListItemIcon>
                 <ListItemText primary="News" />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('organizer')}>
                 <ListItemIcon>
-                  <MailIcon />
+                  <div style={{ width: 24 }} />
                 </ListItemIcon>
                 <ListItemText primary="Organizer" />
               </ListItem>

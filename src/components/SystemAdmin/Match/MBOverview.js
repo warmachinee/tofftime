@@ -224,8 +224,6 @@ function MBOverviewBody(props){
   const [ editting, handleEditting ] = React.useState(false)
   const [ open, setOpen ] = React.useState(false);
   const [ modalType, setModalType ] = React.useState('');
-  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-  const matchPicture = data?(data.picture && ( hd + API.webURL().substring(0, API.webURL().length - 1) + data.picture )):null
   const imgRef = React.useRef(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
 
@@ -316,7 +314,7 @@ function MBOverviewBody(props){
 
     await API.xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem', sendObj,
+      'matchsystem', sendObj,
       (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -337,7 +335,7 @@ function MBOverviewBody(props){
     if(selectedFile){
       formData.append('matchimage', selectedFile)
       const response = await API.fetchPostFile(
-        sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem',
+        'matchsystem',
         `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: parseInt(matchid),
@@ -366,7 +364,7 @@ function MBOverviewBody(props){
       const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
         token? token : resToken.token,
-        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+        'loadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -433,7 +431,7 @@ function MBOverviewBody(props){
               </MuiPickersUtilsProvider>
             </ThemeProvider>
           </div>
-          { ( selectedFile || matchPicture )?
+          { ( selectedFile || (data && data.picture) )?
             <div style={{ position: 'relative', marginTop: 16 }}
               onMouseEnter={()=>editting?handleFileHover(true):console.log()}
               onMouseLeave={()=>editting?handleFileHover(false):console.log()}>
@@ -444,7 +442,7 @@ function MBOverviewBody(props){
                   selectedFile && tempFile ?
                   tempFile
                   :
-                  ( isSupportWebp? matchPicture + '.webp': matchPicture + '.jpg' )
+                  API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
                 }/>
               { editting && imgRef.current &&
                 <div

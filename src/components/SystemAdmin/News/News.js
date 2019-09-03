@@ -129,8 +129,6 @@ export default function News(props){
   const [ editting, setEditting ] = React.useState(false)
   const [ edittingData, setEdittingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
-  const hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-  const currentWebURL = hd + API.webURL()
 
   const passingProps = {
     token: token,
@@ -246,12 +244,7 @@ export default function News(props){
                     d.picture?
                       <Avatar
                         alt={d.title}
-                        src={
-                          isSupportWebp?
-                          currentWebURL + d.picture + '.webp#' + new Date().toISOString()
-                          :
-                          currentWebURL + d.picture + '.jpg#' + new Date().toISOString()
-                        }
+                        src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
                       <ImageIcon className={classes.bigAvatar}/>
