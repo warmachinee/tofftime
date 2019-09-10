@@ -1,4 +1,5 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client'
 import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
@@ -9,6 +10,7 @@ import {
 import Skeleton from '@material-ui/lab/Skeleton';
 
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,6 +74,44 @@ export default function MatchCard(props) {
   const { API, BTN, data, isSupportWebp } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
 
+  function handleJoinMatch(){
+    if(sess && sess.status === 1){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.emit('match-request-client-message', {
+        action: 'join',
+        matchid: data.matchid,
+        userid: sess.userid,
+      })
+    }else{
+      window.location.pathname = '/login'
+    }
+  }
+
+  function handleGetButton(){
+    if(BTN && data){
+      switch (true) {
+        case data.permission === 'host' || data.permission === 'admin':
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
+              <BTN.NoStyleLink to={`/user/management/match/${data.matchid}`}>
+                <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+              </BTN.NoStyleLink>
+            </div>
+          )
+          break;
+        case data.permission === 'none' && data.matchstatus !== 1:
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+            </div>
+          )
+          break;
+        default:
+          return null
+      }
+    }
+  }
+
   return(
     <Paper
       className={classes.root}
@@ -91,26 +131,38 @@ export default function MatchCard(props) {
         <Skeleton className={classes.image} style={{ margin: 0 }} />
       }
       { data ?
-        <BTN.NoStyleLink to={`/match/${data.matchid}`}>
-          <Box className={classes.box}>
+        <Box className={classes.box}>
+          <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography gutterBottom variant="body1" className={classes.title}>
               {data.title}
             </Typography>
+          </BTN.NoStyleLink>
+          <Typography gutterBottom variant="body2"
+            style={{
+              color: data.typescore === 1 ? primary[700] : 'inherit',
+              fontWeight: data.typescore === 1 ? 900 : 400
+            }}>
+            { data.typescore === 1 ? 'Professional' : 'Amateur' }
+          </Typography>
+          <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
               <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
               {data.location}
             </Typography>
+          </BTN.NoStyleLink>
+          <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography variant="caption" color="textSecondary">
               {`${data.views + 'views'} • ${data.date}`}
             </Typography>
-          </Box>
-        </BTN.NoStyleLink>
+          </BTN.NoStyleLink>
+        </Box>
         :
         <Box className={classes.box}>
           <Skeleton height={25} />
           <Skeleton height={14} width="60%"/>
         </Box>
       }
+      {handleGetButton()}
     </Paper>
   );
 }

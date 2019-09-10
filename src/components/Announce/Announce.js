@@ -56,10 +56,6 @@ export default function Announce(props) {
       primary: d.response.slice(0, 1).concat(d.response.slice(3, d.response.length)),
       secondary: d.response.slice(1, 3)
     })
-    console.log({
-      primary: d.response.slice(0, 1).concat(d.response.slice(3, d.response.length)),
-      secondary: d.response.slice(1, 3)
-    });
   }
 
   React.useEffect(()=>{

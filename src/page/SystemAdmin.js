@@ -75,6 +75,23 @@ const RouteMatch = Loadable.Map({
   loading: () => null
 });
 
+const RouteCourse = Loadable.Map({
+  loader: {
+    Course: () => import(/* webpackChunkName: "Course" */'./../components/SystemAdmin/Course/Course'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Course.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteUser = Loadable.Map({
   loader: {
     User: () => import(/* webpackChunkName: "User" */'./../components/SystemAdmin/User/User'),
@@ -147,6 +164,7 @@ export default function SystemAdmin(props) {
     setCSRFToken: props.setCSRFToken,
     isSupportWebp: props.isSupportWebp,
     handleSnackBar: props.handleSnackBar,
+    location: props.location
   }
 
   React.useEffect(()=>{
@@ -184,23 +202,25 @@ export default function SystemAdmin(props) {
               Course
             </StyledButton>
           </Link>
-          <Link to={`/admin/user`} className={classes.linkElement}>
-            <StyledButton variant="contained" color="primary" className={classes.button}>
-              User
-            </StyledButton>
-          </Link>
-          <Link to={`/admin/page`} className={classes.linkElement}>
-            <StyledButton variant="contained" color="primary" className={classes.button}>
-              Page
-            </StyledButton>
-          </Link>
+          { /*
+            <Link to={`/admin/user`} className={classes.linkElement}>
+              <StyledButton variant="contained" color="primary" className={classes.button}>
+                User
+              </StyledButton>
+            </Link>
+            <Link to={`/admin/page`} className={classes.linkElement}>
+              <StyledButton variant="contained" color="primary" className={classes.button}>
+                Page
+              </StyledButton>
+            </Link>*/
+          }
         </div>
       </React.Fragment>
     )
   }
 
   return (
-    <div className={classes.root}>
+    <Paper className={classes.root}>
       { sess && sess.status === 1 &&
         <React.Fragment>
           <Route exact path={`/admin`} component={SystemComponent} />
@@ -208,9 +228,10 @@ export default function SystemAdmin(props) {
           <RouteNews path={`/admin/news`} {...passingProps}/>
           <RouteMatchList path={`/admin/matchlist`} {...passingProps}/>
           <RouteMatch path={`/admin/match`} {...passingProps}/>
+          <RouteCourse path={`/admin/course`} {...passingProps}/>
           <RouteUser path={`/admin/user`} {...passingProps}/>
         </React.Fragment>
       }
-    </div>
+    </Paper>
   );
 }

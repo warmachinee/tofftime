@@ -34,9 +34,14 @@ const UserOverview = Loadable({
   loading: () => null
 });
 
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: theme.spacing(3, 2)
+
   },
   searchBox: {
     width: '100%',
@@ -50,11 +55,11 @@ const useStyles = makeStyles(theme => ({
     textOverflow: 'ellipsis',
   },
   avatar: {
-    fontSize: 120
+    fontSize: 36
   },
   avatarImage: {
-    width: 120,
-    height: 120,
+    width: 36,
+    height: 36,
   },
 
 }));
@@ -70,7 +75,6 @@ export default function AddFriend(props) {
   const { API, BTN, sess, token, setCSRFToken } = props
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ data, setData ] = React.useState(null)
-  const [ pendingData, setPendingData ] = React.useState(null)
 
   function handleChangePerson(e){
     if(e){
@@ -92,40 +96,24 @@ export default function AddFriend(props) {
     if(sess){
       const socket = socketIOClient( API.getWebURL() )
       socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
-        console.log("Person : ", messageNew.result.infolist);
+        console.log(messageNew.result.infolist);
         setData(messageNew.result.infolist)
       })
     }
   }
 
-  async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadusersystem', {
-        action: 'friend',
-        fstatus: 'pending'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setPendingData(d)
-      //console.log('pending ', d);
-    })
-  }
-
   React.useEffect(()=>{
-    handleFetch()
     responsePerson()
-    /*
-    var json = '["968694-person-search-server-message",{"status":"success","result":{"infolist":[{"userid":317246,"nickname":"-","fullname":"Akira","lastname":"Osaka","photopath":null},{"userid":123456,"nickname":"-","fullname":"thanapat","lastname":"taweerat","photopath":null},{"userid":317029,"nickname":"-","fullname":"CHO HAN","lastname":"JIN","photopath":null},{"userid":511165,"nickname":"-","fullname":"Jack","lastname":"Dawson","photopath":null},{"userid":784669,"nickname":"-","fullname":"Alexander","lastname":"Vincent Mckay","photopath":null},{"userid":169226,"nickname":"-","fullname":"Batman2","lastname":"Banmat","photopath":null},{"userid":166164,"nickname":"-","fullname":"Giovanni","lastname":"Palazzoli","photopath":null},{"userid":661186,"nickname":"meaw","fullname":"Thanapat","lastname":"Taweerat","photopath":"/general/661186.webp"},{"userid":812454,"nickname":"P.R.E.M.io","fullname":"Sippakorn","lastname":"Suppapinyo","photopath":"/general/812454.webp"},{"userid":294738,"nickname":"-","fullname":"Khiangduen","lastname":"Ponconbury","photopath":"/general/294738.webp"}]}}]'
-    setData(JSON.parse(json)[1].result.infolist)*/
   },[ ])
 
   return (
     <div className={classes.root}>
+      <LabelText text="Search friend" />
       <ThemeProvider theme={theme}>
         <TextField
           autoFocus
           className={classes.searchBox}
+          style={{ marginTop: 24 }}
           variant="outlined"
           placeholder={ !searchUser? "Search player" : '' }
           value={searchUser}
@@ -151,11 +139,8 @@ export default function AddFriend(props) {
         />
       </ThemeProvider>
       <List>
-        { pendingData &&
-          pendingData.map( d => <ListPlayerItem pending key={d.userid} data={d} {...props} setPendingData={setPendingData}/> )
-        }
         { data &&
-          data.map( d => <ListPlayerItem key={d.userid} data={d} {...props} setPendingData={setPendingData}/> )
+          data.map( d => <ListPlayerItem key={d.userid} data={d} {...props} /> )
         }
       </List>
     </div>
@@ -164,8 +149,9 @@ export default function AddFriend(props) {
 
 function ListPlayerItem(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, data, pending, setPendingData } = props
+  const { API, BTN, COLOR, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, data } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
+  const [ status, setStatus ] = React.useState(data.status);
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -185,39 +171,59 @@ function ListPlayerItem(props) {
 
   function handleFriend(userid, action){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
-      console.log({
-        action: action,
-        userid: sess.userid,
-        targetid: userid
-      });
-      socket.emit('friend-client-message', {
-        action: action,
-        userid: sess.userid,
-        targetid: userid
-      })
+      responseConfirmFriend(sess.userid, userid)
       setTimeout(()=>{
-        handleFetch()
+        const socket = socketIOClient( API.getWebURL() )
+        socket.emit('friend-client-message', {
+          action: action,
+          userid: sess.userid,
+          targetid: userid
+        })
       },1000)
     }
   }
 
-  async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadusersystem', {
-        action: 'friend',
-        fstatus: 'pending'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setPendingData(d)
-    })
+  function responseConfirmFriend(sessid, targetid){
+    if(sessid && targetid){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
+        //console.log('resFri ', messageNew);
+        if(messageNew && messageNew.status === 'success' && messageNew.result && messageNew.result.status === 'success'){
+          handleClose()
+          if(messageNew.result.notidetail){
+            switch (messageNew.result.notidetail.action) {
+              case 'add request':
+                setStatus('pending')
+                break;
+              case 'un request':
+                setStatus(null)
+                break;
+              default:
+                setStatus(data.status)
+            }
+          }
+        }else{
+          setStatus(data.status)
+        }
+      })
+    }
   }
+
+  React.useEffect(()=>{
+    responseConfirmFriend()
+  },[ ])
 
   return (
     <React.Fragment>
       <ListItem button>
+        <ListItemIcon>
+          { data.photopath ?
+            <Avatar className={classes.avatarImage}
+              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+            :
+            <AccountCircle classes={{ root: classes.avatar }} />
+          }
+        </ListItemIcon>
         <ListItemText
           onClick={handleMenuClick}
           primary={
@@ -227,14 +233,26 @@ function ListPlayerItem(props) {
               </Typography>
             </React.Fragment>
           }
-          secondary={pending ? 'Pending' : '' }/>
-        <ListItemIcon>
-          <BTN.Primary
-            style={{ padding: 4 }}
-            onClick={()=>pending ? handleFriendClick(data.userid, 'un') : handleFriendClick(data.userid, 'add')}>
-            { pending ? 'Unfriend' : 'Add' }
-          </BTN.Primary>
-        </ListItemIcon>
+          secondary={
+            status === 'pending'? 'Pending' :
+            status === 'friend'? 'Friend' : ''
+          }/>
+        { status !== 'friend' &&
+          <ListItemIcon>
+            { status === 'pending'?
+              <BTN.Red style={{ padding: '4px 12px' }}
+                onClick={()=>handleFriendClick(data.userid, 'un')}>
+                Unfriend
+              </BTN.Red>
+              :
+              <BTN.Primary
+                style={{ padding: 4 }}
+                onClick={()=>handleFriendClick(data.userid, 'add')}>
+                Add
+              </BTN.Primary>
+            }
+          </ListItemIcon>
+        }
       </ListItem>
       <Divider />
       <UserOverview

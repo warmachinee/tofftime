@@ -4,7 +4,7 @@ function webURL(){
 }
 
 function getWebURL(){
-  const URL = ( /www/.test(window.location.href) )? 'https://www.' : 'https://' + webURL()
+  const URL = ( /www/.test(window.location.href)? 'https://www.' : 'https://' ) + webURL()
   return URL
 }
 
@@ -110,6 +110,10 @@ function xhrPost(token, url, obj, func){
       }else{
         //console.log(req.status);
       }
+      if (req.status === 403){
+        window.location.href = '/'
+      }
+      /*
       if (req.status === 504){
         if(count < 3){
           setTimeout(()=>{
@@ -120,7 +124,7 @@ function xhrPost(token, url, obj, func){
           console.log('Stopped');
         }
         count++;
-      }
+      }*/
     }
     const returnedObj = Object.assign({
       _csrf: token
@@ -298,22 +302,24 @@ function handleHoleSum(array, type){
 }
 
 function handleDateToString(d){
-  var thisD;
-  var day;
-  var month;
-  var dateStr;
-  if(typeof(d) === 'object'){
-    thisD = d
-    day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
-    month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
-    dateStr = thisD.getFullYear() + '-' + month + '-' + day
-  }else{
-    thisD = new Date(d)
-    day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
-    month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
-    dateStr = thisD.getFullYear() + '-' + month + '-' + day
+  if(d){
+    var thisD;
+    var day;
+    var month;
+    var dateStr;
+    if(typeof(d) === 'object'){
+      thisD = d
+      day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
+      month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
+      dateStr = thisD.getFullYear() + '-' + month + '-' + day
+    }else{
+      thisD = new Date(d)
+      day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
+      month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
+      dateStr = thisD.getFullYear() + '-' + month + '-' + day
+    }
+    return dateStr
   }
-  return dateStr
 }
 
 function handleStringToDate(d){
@@ -351,6 +357,33 @@ function handleGetUrlParam(){
   return parseInt(arrSplit[ length - 1 ])
 }
 
+function filterArr(arr1, arr2){
+  const returnArr = []
+  const finalArr = []
+  const newArr = []
+  const comparerArr = []
+  arr1.forEach( e1 =>{
+    newArr.push(e1.userid)
+  })
+
+  arr2.forEach( e2 =>{
+    comparerArr.push(e2.userid)
+  })
+  newArr.forEach( ne1 =>{
+    if(!comparerArr.includes(ne1)){
+      finalArr.push(ne1)
+    }
+  })
+  arr1.forEach( item =>{
+    finalArr.forEach( fe =>{
+      if(fe === item.userid){
+        returnArr.push(item)
+      }
+    })
+  })
+  return returnArr
+}
+
 export {
   webURL,
   getWebURL,
@@ -369,5 +402,7 @@ export {
   getTodayTime,
   handleScrolllTo,
   handleAmateurClass,
-  handleGetUrlParam
+  handleGetUrlParam,
+  filterArr,
+
 }

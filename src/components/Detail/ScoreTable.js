@@ -1,8 +1,10 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { primary, secondary, blueGrey, amber, green } from './../../api/palette'
 
+import Button from '@material-ui/core/Button'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -110,7 +112,7 @@ const StyledTableCell = withStyles(theme => ({
 function ScoreRow(props){
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false)
-  const { row, data, fieldData } = props
+  const { sess, BTN, row, data, fieldData } = props
   const wd = window.innerWidth
 
   const tableCell = {
@@ -131,21 +133,40 @@ function ScoreRow(props){
           <div style={{ width: 10 }}></div>
           {row.lastname}
         </div>
-
         { (wd >= 450) &&
           <React.Fragment>
-            <div className={classes.tableCell} style={tableCell}>{row.out}</div>
-            <div className={classes.tableCell} style={tableCell}>{row.in}</div>
-            <div className={classes.tableCell} style={tableCell}>{row.out + row.in}</div>
+            { wd >= 750 &&
+              <React.Fragment>
+                <div className={classes.tableCell} style={tableCell}>{row.out}</div>
+                <div className={classes.tableCell} style={tableCell}>{row.in}</div>
+              </React.Fragment>
+            }
+            { data.scorematch === 1 ?
+              <div className={classes.tableCell} style={tableCell}>{row.out + row.in}</div>
+              :
+              <div className={classes.tableCell} style={tableCell}>{row.hc}</div>
+            }
           </React.Fragment>
         }
-        <div className={classes.tableCell} style={tableCell}>{
-            row.par > 0? '+' + row.par:
-            row.par === 0?'E':row.par
-          }</div>
+        <div className={classes.tableCell} style={tableCell}>
+          { data.scorematch === 1 ?
+            (
+              row.par > 0? '+' + row.par : row.par === 0?'E':row.par
+            )
+            :
+            row.sf
+          }
+        </div>
       </ListItem>
       {!expanded && <Divider />}
       <Collapse in={expanded} unmountOnExit>
+        <div style={{ padding: '8px 24px' }}>
+          { BTN && row && sess && sess.status === 1 && sess.typeid !== 'admin' &&
+            <Link to={`/user/timeline/${row.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <BTN.PrimaryText>Profile</BTN.PrimaryText>
+            </Link>
+          }
+        </div>
         <div style={{
             overflow: 'auto', padding: '16px 0 16px 0',
             overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch'
@@ -231,7 +252,6 @@ function ScoreRow(props){
             </React.Fragment>
           }
         </div>
-
         <Divider />
       </Collapse>
     </React.Fragment>
@@ -317,12 +337,22 @@ export default function ScoreTable(props) {
                 <StyledTableHead style={{ color: 'white' }} component="th" scope="row">Name</StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>
-                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
-                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
-                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
+                    { (wd >= 750) &&
+                      <React.Fragment>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
+                      </React.Fragment>
+                    }
+                    { data.scorematch === 1 ?
+                      <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
+                      :
+                      <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
+                    }
                   </React.Fragment>
                 }
-                <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">PAR</StyledTableCell>
+                <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
+                  { data.scorematch === 1 ? 'PAR' : 'SF' }
+                </StyledTableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -352,9 +382,14 @@ export default function ScoreTable(props) {
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
+                    { data.scorematch === 0 &&
+                      <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
+                    }
                   </React.Fragment>
                 }
-                <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">PAR</StyledTableCell>
+                <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
+                  { data.scorematch === 1 ? 'PAR' : 'SF' }
+                </StyledTableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -366,7 +401,7 @@ export default function ScoreTable(props) {
           return ( d && d.classno === matchClass.classno )
         }).map(row => (
           row &&
-          <ScoreRow key={row.userid} row={row} data={data} fieldData={fieldData}/>
+          <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData}/>
         ))}
       </Paper>
     </div>

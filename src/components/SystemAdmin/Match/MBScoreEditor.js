@@ -27,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24
+    marginTop: 24,
+    boxSizing: 'border-box'
   },
   title: {
     color: primary[900],

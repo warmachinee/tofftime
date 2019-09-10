@@ -10,6 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -74,10 +77,12 @@ const theme = createMuiTheme({
 
 export default function MatchTeam(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, matchDetail, matchid, handleSnackBar } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, handleTeamClose } = props
   const [ currentTime, setCurrentTime ] = React.useState(API.getTodayTime())
+  const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ period, setPeriod ] = React.useState(0)
   const [ person, setPerson] = React.useState(0)
+  const [ autoGen, setAutoGen ] = React.useState(false)
 
   function handleKeyPress(e){
     if (e === 'Enter'){
@@ -87,26 +92,75 @@ export default function MatchTeam(props) {
 
   async function handleSchedule(){
     const resToken = token? token : await API.xhrGet('getcsrf')
+    const sendObj = {
+      action: ( matchDetail && matchDetail.team.length === 0 ) ? 'createschedule' : 'editschedule',
+      matchid: parseInt(matchid),
+      period: period,
+      starttime: currentTime,
+      person: person
+    }
+
+    if(autoGen){
+      Object.assign(sendObj, { gen: 'true' });
+    }
+
     await API.xhrPost(
       token? token : resToken.token,
-      'matchsection', {
-        action: ( matchDetail && matchDetail.length === 0 ) ? 'createschedule' : 'editschedule',
-        matchid: parseInt(matchid),
-        period: period,
-        starttime: currentTime,
-        person: person
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+        ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      console.log(d);
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? 'success' : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      if(d.status === 'success'){
+        handleTeamClose()
+      }
     })
   }
+
+  async function handleFetchMatchDetail(){
+    if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+          action: 'detail',
+          matchid: matchid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        if(
+          d.status !== 'team database error' ||
+          d.status !== 'wrong matchid' ||
+          d.status !== 'wrong action' ||
+          d.status !== 'wrong params'
+        ){
+          setMatchDetail(d)
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
+      })
+    }
+  }
+
+  React.useEffect(()=>{
+    handleFetchMatchDetail()
+  },[ ])
 
   return (
     <div className={classes.root}>
       <React.Fragment>
         <Typography component="div">
           <Box className={classes.title} fontWeight={600}>
-            { matchDetail && matchDetail.length === 0 ? 'Create Team' : 'Edit Team' }
+            { matchDetail && matchDetail.team.length === 0 ? 'Create Team' : 'Edit Team' }
           </Box>
         </Typography>
         <div style={{ marginTop: 24 }}>
@@ -125,7 +179,7 @@ export default function MatchTeam(props) {
                 variant="outlined"
                 label="Period"
                 helperText="0 - 59 minute"
-                value={period}
+                value={ !isNaN(period) ? period : '' }
                 onKeyPress={e =>handleKeyPress(e.key)}
                 onChange={e => setPeriod(parseInt(e.target.value))}
                 onFocus={e => e.target.select()}
@@ -136,17 +190,25 @@ export default function MatchTeam(props) {
                 variant="outlined"
                 label="Person"
                 helperText="Number of persons in the team"
-                value={person}
+                value={ !isNaN(person) ? person : '' }
                 onKeyPress={e =>handleKeyPress(e.key)}
                 onChange={e => setPerson(parseInt(e.target.value))}
                 onFocus={e => e.target.select()}
                 type="number"/>
             </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <FormControl component="fieldset">
+                <FormControlLabel
+                  control={<Switch checked={autoGen} onChange={()=>setAutoGen(!autoGen)} />}
+                  label="Auto gen time schedule"
+                />
+              </FormControl>
+            </div>
             <GreenButton
               fullWidth
               className={classes.createButton}
               onClick={handleSchedule}>
-              { matchDetail && matchDetail.length === 0 ? 'Create' : 'Confirm' }
+              { matchDetail && matchDetail.team.length === 0 ? 'Create' : 'Confirm' }
             </GreenButton>
           </ThemeProvider>
         </div>

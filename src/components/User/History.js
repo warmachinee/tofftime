@@ -149,8 +149,14 @@ export default function History(props) {
           </ListItem>
         </List>
         <Divider />
-        { data && data.length > 0 ?
-          data.map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
+        { data ?
+          ( data.length > 0 ?
+            data.map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
+            :
+            <div style={{
+                width: '100%', padding: '36px 0', textAlign: 'center',
+                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+          )
           :
           Array.from(new Array(2)).map( (d, i)=> <HistoryList key={i} {...props}/>)
         }

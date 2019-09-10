@@ -35,7 +35,8 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: grey[50],
     cursor: 'auto',
     marginTop: 24,
-    maxHeight: '100%'
+    maxHeight: '100%',
+    boxSizing: 'border-box'
   },
   searchBoxGrid: {
     marginTop: 16,
@@ -238,9 +239,11 @@ function MBScoreEditorContainer(props){
           { selected? selected.firstname + " " + selected.lastname : 'Select Player'}
         </GreenTextButton>
         { selected &&
-          <Link to={`/display/${matchid}/${selected.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <a href={`/display/${matchid}/${selected.userid}`}
+            target='_blank'
+            style={{ textDecoration: 'none', color: 'inherit' }}>
             <GreenTextButton>Match Display</GreenTextButton>
-          </Link>
+          </a>
         }
       </div>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -314,26 +317,33 @@ function MBScoreEditorContainer(props){
                     }
                     secondary={
                       matchDetail && matchDetail.class && window.innerWidth < 450 &&
-                      ( value.classno === 0 ?
+                      ( matchDetail.class.length > 0 ?
+                        ( value.classno === 0 ?
+                          <React.Fragment>
+                            <br></br>
+                            {"-"}
+                          </React.Fragment>
+                          :
+                          matchDetail.class.filter( d =>{
+                            return d.classno === value.classno
+                          }).map((d, i) =>
+                            d &&
+                            <React.Fragment key={i}>
+                              <br></br>
+                              {
+                                matchDetail.scorematch === 1 ?
+                                d.classname
+                                :
+                                String.fromCharCode(65 + value.classno - 1)
+                              }
+                            </React.Fragment>
+                          )
+                        )
+                        :
                         <React.Fragment>
                           <br></br>
-                          {"-"}
+                          {"No class"}
                         </React.Fragment>
-                        :
-                        matchDetail.class.filter( d =>{
-                          return d.classno === value.classno
-                        }).map((d, i) =>
-                          d &&
-                          <React.Fragment key={i}>
-                            <br></br>
-                            {
-                              matchDetail.scorematch === 1 ?
-                              d.classname
-                              :
-                              String.fromCharCode(65 + value.classno - 1)
-                            }
-                          </React.Fragment>
-                        )
                       )
                     } />
                   { window.innerWidth > 450 &&
@@ -341,20 +351,24 @@ function MBScoreEditorContainer(props){
                       primary={value.lastname}/>
                   }
                   { matchDetail && matchDetail.class && window.innerWidth > 450 &&
-                    ( value.classno === 0 ?
-                      <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
-                      :
-                      matchDetail.class.filter( d =>{
-                        return d.classno === value.classno
-                      }).map( d =>
-                        d &&
-                        <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={
-                          matchDetail.scorematch === 1 ?
-                          d.classname
-                          :
-                          String.fromCharCode(65 + value.classno - 1)
-                        } />
+                    ( matchDetail.class.length > 0 ?
+                      ( value.classno === 0 ?
+                        <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
+                        :
+                        matchDetail.class.filter( d =>{
+                          return d.classno === value.classno
+                        }).map( d =>
+                          d &&
+                          <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={
+                            matchDetail.scorematch === 1 ?
+                            d.classname
+                            :
+                            String.fromCharCode(65 + value.classno - 1)
+                          } />
+                        )
                       )
+                      :
+                      <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"No class"} />
                     )
                   }
                 </ListItem>
@@ -447,10 +461,16 @@ export default function MBScoreEditorBody(props){
     }
   }
 
-  function handleScoreDisplay(){
+  function handleScoreDisplay(newVal){
     return new Promise(resolve => {
-      var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-      const socket = socketIOClient( hd + API.webURL() )
+      console.log({
+        action: "showplayerscore",
+        matchid: matchid,
+        userid: oldSelected.userid,
+        newuserid: selected.userid,
+        holescore: arrScore,
+      });
+      const socket = socketIOClient( API.getWebURL() )
       socket.emit('player-show-client-message', {
         action: "showplayerscore",
         matchid: matchid,

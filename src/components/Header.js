@@ -257,22 +257,13 @@ function Header(props) {
     })
   }
 
-  async function handleFetchInfo(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadusersystem', {
-        action: 'info'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-    })
-  }
-
   React.useEffect(()=>{
+    /*
     if(sess && sess.status === 1 && sess.typeid !== 'admin'){
       handleNotifications()
       handleFetchNotifications()
     }
+    */
   },[ sess ])
 
   const [ ,updateState ] = React.useState(null)
@@ -365,13 +356,16 @@ function Header(props) {
             }
             { ( sess && sess.status === 1 ) &&
               <React.Fragment>
-                <div className={classes.afterLoginIcon}>
-                  <IconButton
-                    style={{ padding: 8 }}
-                    onClick={handleClickNoti}>
-                    <NotificationsIcon />
-                  </IconButton>
-                </div>
+                {
+                  /*
+                  <div className={classes.afterLoginIcon}>
+                    <IconButton
+                      style={{ padding: 8 }}
+                      onClick={handleClickNoti}>
+                      <NotificationsIcon />
+                    </IconButton>
+                  </div>*/
+                }
                 { ( accountData && sess.typeid !== 'admin' ) ?
                   <Link to={`/user` /*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <IconButton

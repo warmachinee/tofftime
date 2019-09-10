@@ -41,12 +41,12 @@ export default function UserOverview(props) {
   const {
     API, BTN, COLOR, isSupportWebp, anchorEl, handleClose,
     token, setCSRFToken,
-    data, handleFriend, toggleDialog, pending, setPendingData
+    data, handleFriend, alreadyFriend, handleAddFriendClose
   } = props
 
   function handleDoneAndClose(userid){
     handleClose()
-    toggleDialog()
+    handleAddFriendClose()
     //window.location.href = `/user/timeline/${userid}`
   }
 
@@ -57,22 +57,6 @@ export default function UserOverview(props) {
     }else{
       handleFriend(userid, 'un')
     }
-    setTimeout(()=>{
-      handleFetch()
-    },1000)
-  }
-
-  async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadusersystem', {
-        action: 'friend',
-        fstatus: 'pending'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setPendingData(d)
-    })
   }
 
   return (
@@ -108,8 +92,14 @@ export default function UserOverview(props) {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
           <BTN.PrimaryText style={{ padding: 4, width: '100%' }} onClick={handleClose}>Cancel</BTN.PrimaryText>
           <BTN.Primary style={{ padding: 4, width: '100%' }}
-            onClick={()=>pending ? handleFriendClick(data.userid, 'un') : handleFriendClick(data.userid, 'add')}>
-            { pending ? 'Unfriend' : 'Add' }
+            onClick={()=>
+              data.status === 'pending' ? handleFriendClick(data.userid, 'un') :
+              alreadyFriend ? handleFriendClick(data.userid, 'un') : handleFriendClick(data.userid, 'add')
+            }>
+            {
+              data.status === 'pending' ? 'Unfriend' :
+              alreadyFriend ? 'Unfriend' : 'Add'
+            }
           </BTN.Primary>
         </div>
       </div>

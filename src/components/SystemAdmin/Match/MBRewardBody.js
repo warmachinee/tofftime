@@ -26,7 +26,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24
+    marginTop: 24,
+    boxSizing: 'border-box'
   },
   indicator: {
     backgroundColor: primary[600],
@@ -385,7 +386,6 @@ export default function MBRewardBody(props){
           variant: d.status === 'success' ? 'success' : 'error',
           autoHideDuration: d.status === 'success'? 2000 : 5000
         })
-        setRewardEdit(0)
         try {
           handleFetch()
         }catch(err) { console.log(err.message) }

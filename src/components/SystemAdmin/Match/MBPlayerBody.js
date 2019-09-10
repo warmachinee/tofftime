@@ -64,6 +64,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
     marginTop: 24,
     overflow: 'auto',
+    boxSizing: 'border-box'
   },
   listText:{
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
@@ -215,7 +216,7 @@ export default function MBPlayerBody(props){
   const [ open, setOpen ] = React.useState(false);
   const [ displayModal, setDisplayModal ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
-  const [ matchDetail, setMatchDetail ] = React.useState([])
+  const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ checked, setChecked ] = React.useState([]);
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
@@ -510,17 +511,8 @@ export default function MBPlayerBody(props){
     }
   }
 
-  function tempFetch(){
-    var json = '[{"userid":659293,"firstname":"เอกชัย","lastname":"ปัตถาวโร ","classno":0,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"rank":0,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":637016,"firstname":"วานิช","lastname":"สมชาติ ","classno":1,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"rank":0,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":118486,"firstname":"วรรธนะ","lastname":"ทับทิมทอง","classno":1,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"rank":0,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":175937,"firstname":"ประทีป","lastname":"ค้ายาดี","classno":1,"teamno":0,"out":37,"in":36,"par":1,"sf":38,"net":70,"hc":3,"display":1,"rank":1,"score":[5,4,3,5,4,4,3,5,4,6,4,4,4,4,4,2,3,5]},{"userid":383134,"firstname":"สีไพร","lastname":"อภิสนธิ์","classno":1,"teamno":0,"out":37,"in":37,"par":2,"sf":37,"net":71,"hc":3,"display":1,"rank":2,"score":[4,4,3,5,4,3,4,5,5,5,3,4,4,4,4,3,5,5]},{"userid":422094,"firstname":"อธิวัฒน์","lastname":"แย้มเรืองรัตน์","classno":1,"teamno":0,"out":39,"in":35,"par":2,"sf":39,"net":69,"hc":5,"display":1,"rank":2,"score":[4,4,4,5,5,3,3,6,5,5,3,4,4,4,5,2,3,5]},{"userid":859661,"firstname":"พงศ์ภูมินทร์","lastname":"กล้าหาญ","classno":1,"teamno":0,"out":39,"in":36,"par":3,"sf":40,"net":68,"hc":7,"display":1,"rank":4,"score":[4,6,2,6,5,5,3,5,3,4,3,5,4,5,4,3,4,4]},{"userid":375128,"firstname":"วิชยะ","lastname":"ศรีนาคาร์","classno":1,"teamno":0,"out":38,"in":37,"par":3,"sf":37,"net":71,"hc":4,"display":1,"rank":4,"score":[4,5,3,5,5,4,3,5,4,6,3,4,5,4,4,3,4,4]},{"userid":380855,"firstname":"ประสิทธิ","lastname":"คำภูแสน","classno":1,"teamno":0,"out":39,"in":36,"par":3,"sf":41,"net":67,"hc":8,"display":1,"rank":4,"score":[5,5,4,4,5,5,2,4,5,7,3,4,4,3,4,3,4,4]},{"userid":560646,"firstname":"พูลลาภ","lastname":"เยือกเย็น","classno":1,"teamno":0,"out":38,"in":38,"par":4,"sf":37,"net":71,"hc":5,"display":1,"rank":7,"score":[6,5,3,4,4,4,3,5,4,5,3,5,5,4,4,3,4,5]},{"userid":825953,"firstname":"สัมพันธ์","lastname":"เรศมณเฑียร","classno":1,"teamno":0,"out":39,"in":37,"par":4,"sf":37,"net":71,"hc":5,"display":1,"rank":7,"score":[4,5,3,5,6,3,4,5,4,5,3,4,4,4,4,3,4,6]},{"userid":223893,"firstname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","classno":1,"teamno":0,"out":39,"in":38,"par":5,"sf":38,"net":70,"hc":7,"display":1,"rank":9,"score":[5,6,2,6,5,3,3,5,4,5,3,5,4,4,4,4,4,5]},{"userid":726183,"firstname":"ทินพันธ์","lastname":"พิลึก","classno":1,"teamno":0,"out":38,"in":41,"par":7,"sf":39,"net":69,"hc":10,"display":1,"rank":10,"score":[5,4,3,5,6,3,2,6,4,6,4,5,4,3,5,4,5,5]},{"userid":697510,"firstname":"วีรนันท์","lastname":"จันทร์เอียง","classno":1,"teamno":0,"out":40,"in":40,"par":8,"sf":36,"net":72,"hc":8,"display":1,"rank":11,"score":[4,5,4,6,4,4,3,6,4,5,3,4,6,5,5,3,4,5]},{"userid":186918,"firstname":"สุทธิพันธ์","lastname":"กิมสวัสดิ","classno":1,"teamno":0,"out":39,"in":42,"par":9,"sf":36,"net":72,"hc":9,"display":1,"rank":12,"score":[4,4,3,5,5,4,3,6,5,5,3,5,4,5,5,4,5,6]},{"userid":313675,"firstname":"วสันต์","lastname":"มีลาภ","classno":1,"teamno":0,"out":42,"in":39,"par":9,"sf":38,"net":70,"hc":11,"display":1,"rank":12,"score":[5,5,3,7,4,5,4,5,4,6,3,5,3,4,4,4,6,4]},{"userid":531500,"firstname":"ธนกฤต","lastname":"เครื่องสนุก","classno":1,"teamno":0,"out":47,"in":38,"par":13,"sf":36,"net":73,"hc":12,"display":1,"rank":14,"score":[4,5,4,8,4,4,5,6,7,6,2,5,4,4,4,4,4,5]},{"userid":686853,"firstname":"ภัศดา","lastname":"บุรณศิริ","classno":2,"teamno":0,"out":33,"in":34,"par":-5,"sf":41,"net":67,"hc":0,"display":1,"rank":1,"score":[4,4,2,4,4,3,3,5,4,5,3,4,4,4,4,3,3,4]},{"userid":298863,"firstname":"พรชัย","lastname":"เนียมหมื่นไวย์","classno":2,"teamno":0,"out":36,"in":34,"par":-2,"sf":41,"net":67,"hc":3,"display":1,"rank":2,"score":[4,5,3,4,4,3,4,5,4,5,3,5,3,4,3,2,4,5]},{"userid":290370,"firstname":"ดุสิต","lastname":"สมศักดิ์","classno":2,"teamno":0,"out":34,"in":38,"par":0,"sf":38,"net":70,"hc":2,"display":1,"rank":3,"score":[4,4,3,4,4,4,2,5,4,5,3,6,4,4,4,3,4,5]},{"userid":243286,"firstname":"พัสกร  ","lastname":"ยุพาวัฒนะ","classno":2,"teamno":0,"out":36,"in":37,"par":1,"sf":40,"net":68,"hc":5,"display":1,"rank":4,"score":[5,4,2,5,5,3,3,4,5,5,3,4,4,5,5,3,3,5]},{"userid":127642,"firstname":"ธงชัย","lastname":"แตงอ่อน","classno":2,"teamno":0,"out":40,"in":34,"par":2,"sf":38,"net":70,"hc":4,"display":1,"rank":5,"score":[5,4,3,5,5,5,3,6,4,5,2,4,4,4,4,2,4,5]},{"userid":121302,"firstname":"อานนท์ ","lastname":"โพธิ์ทอง","classno":2,"teamno":0,"out":37,"in":38,"par":3,"sf":38,"net":70,"hc":5,"display":1,"rank":6,"score":[5,4,3,5,4,3,3,5,5,4,4,5,4,4,4,3,5,5]},{"userid":584981,"firstname":"มนัส ","lastname":"สุขเย็น","classno":2,"teamno":0,"out":39,"in":36,"par":3,"sf":38,"net":70,"hc":5,"display":1,"rank":6,"score":[4,4,3,6,5,3,3,7,4,5,3,4,4,4,4,3,5,4]},{"userid":158541,"firstname":"Mike","lastname":"Missler","classno":2,"teamno":0,"out":37,"in":38,"par":3,"sf":36,"net":72,"hc":3,"display":1,"rank":6,"score":[4,4,3,5,5,4,3,5,4,5,3,4,4,4,5,3,4,6]},{"userid":395229,"firstname":"ธวัชชัย ","lastname":"ชายชาญ","classno":2,"teamno":0,"out":38,"in":38,"par":4,"sf":39,"net":69,"hc":7,"display":1,"rank":9,"score":[7,4,3,4,4,4,4,4,4,4,3,4,5,5,5,3,5,4]},{"userid":154714,"firstname":"ธวัช","lastname":"กุลสุวรรณ","classno":2,"teamno":0,"out":37,"in":39,"par":4,"sf":38,"net":70,"hc":6,"display":1,"rank":9,"score":[4,4,3,6,5,3,3,5,4,5,5,4,5,4,4,3,3,6]},{"userid":428247,"firstname":"นิรันทร์","lastname":"ฉัตรไกรศรี","classno":2,"teamno":0,"out":39,"in":38,"par":5,"sf":37,"net":71,"hc":6,"display":1,"rank":11,"score":[4,4,3,6,4,5,3,5,5,6,3,5,4,5,4,3,4,4]},{"userid":722638,"firstname":"พิทักษ์ ","lastname":"ศรีตะวัน","classno":2,"teamno":0,"out":39,"in":38,"par":5,"sf":36,"net":72,"hc":5,"display":1,"rank":11,"score":[4,5,3,5,4,5,4,5,4,5,3,5,4,5,4,3,4,5]},{"userid":735952,"firstname":"ธานนิทร์","lastname":"เหลืองภูมิยุทธ ","classno":2,"teamno":0,"out":39,"in":41,"par":8,"sf":37,"net":71,"hc":9,"display":1,"rank":13,"score":[5,4,4,4,5,4,3,5,5,5,3,4,4,5,6,3,5,6]},{"userid":958766,"firstname":"ธนู","lastname":"พุทธสุวรรณ","classno":2,"teamno":0,"out":38,"in":43,"par":9,"sf":38,"net":70,"hc":11,"display":1,"rank":14,"score":[5,4,3,5,3,5,3,5,5,6,4,3,4,5,7,2,5,7]},{"userid":432045,"firstname":"เยี่ยม","lastname":"สุขัง","classno":2,"teamno":0,"out":42,"in":39,"par":9,"sf":37,"net":71,"hc":10,"display":1,"rank":14,"score":[6,4,3,6,4,5,4,5,5,6,3,6,4,4,3,3,5,5]},{"userid":381888,"firstname":"ประคอง","lastname":"วระพันธุ์","classno":2,"teamno":0,"out":40,"in":41,"par":9,"sf":37,"net":71,"hc":10,"display":1,"rank":14,"score":[5,4,3,4,4,5,3,6,6,6,3,4,4,5,6,3,4,6]},{"userid":870523,"firstname":"ดิชพงศ์","lastname":"วงศ์คำจันทร์","classno":2,"teamno":0,"out":41,"in":40,"par":9,"sf":37,"net":71,"hc":10,"display":1,"rank":14,"score":[4,6,3,5,4,4,4,6,5,4,5,5,4,4,4,4,4,6]},{"userid":283135,"firstname":"วรพล ","lastname":"อ่อนนุช","classno":2,"teamno":0,"out":42,"in":40,"par":10,"sf":37,"net":71,"hc":11,"display":1,"rank":18,"score":[4,3,3,6,5,4,5,6,6,5,5,4,4,5,5,3,4,5]},{"userid":961801,"firstname":"วิรัตน์","lastname":"แป้นดี","classno":2,"teamno":0,"out":42,"in":40,"par":10,"sf":37,"net":71,"hc":11,"display":1,"rank":18,"score":[6,5,3,4,6,5,3,5,5,5,4,5,4,5,4,4,4,5]},{"userid":525973,"firstname":"วิริยะ ","lastname":"ใจชื่น","classno":2,"teamno":0,"out":44,"in":39,"par":11,"sf":38,"net":70,"hc":13,"display":1,"rank":20,"score":[6,4,2,7,5,4,5,5,6,6,3,4,4,5,4,2,4,7]},{"userid":171247,"firstname":"วิชัย ","lastname":"ศรีระผา","classno":2,"teamno":0,"out":43,"in":40,"par":11,"sf":35,"net":73,"hc":10,"display":1,"rank":20,"score":[5,6,3,5,4,4,4,8,4,5,5,4,4,4,5,3,5,5]},{"userid":452902,"firstname":"ภิรมย์","lastname":"ไพบูลย์ ","classno":2,"teamno":0,"out":42,"in":42,"par":12,"sf":38,"net":72,"hc":12,"display":1,"rank":22,"score":[5,5,3,9,3,4,3,6,4,5,5,6,4,5,4,5,4,4]},{"userid":289142,"firstname":"สุชาติ ","lastname":"ทะวะบุตร","classno":2,"teamno":0,"out":45,"in":42,"par":15,"sf":37,"net":73,"hc":14,"display":1,"rank":23,"score":[5,6,3,9,5,4,3,6,4,7,3,4,4,6,6,3,3,6]},{"userid":570929,"firstname":"สมนัส","lastname":"จันทนะ","classno":3,"teamno":0,"out":39,"in":38,"par":5,"sf":40,"net":68,"hc":9,"display":1,"rank":1,"score":[5,6,2,4,5,4,4,5,4,6,3,6,4,3,4,3,3,6]},{"userid":344566,"firstname":"ประทีป ","lastname":"แก้ววงษา ","classno":3,"teamno":0,"out":44,"in":37,"par":9,"sf":36,"net":72,"hc":9,"display":1,"rank":2,"score":[5,5,3,6,6,4,4,6,5,6,3,4,4,4,4,3,4,5]},{"userid":349921,"firstname":"สนอง ","lastname":"ช้างเนียม","classno":3,"teamno":0,"out":46,"in":39,"par":13,"sf":36,"net":72,"hc":13,"display":1,"rank":3,"score":[5,5,4,5,6,4,4,7,6,7,3,4,4,5,4,3,4,5]},{"userid":362257,"firstname":"ทวีโชค ","lastname":"พุทธชน","classno":3,"teamno":0,"out":41,"in":45,"par":14,"sf":36,"net":72,"hc":14,"display":1,"rank":4,"score":[6,4,4,5,5,4,3,5,5,7,4,5,4,6,4,3,5,7]}]'
-    setData(JSON.parse(json))
-
-    var json1 = '{"title":"SNT 4-2019","date":"04/07/2019","picture":"/matchlist/watermill.jpg","location":"Watermill GOLF&GARDENS","locationid":631932,"createdate":"04/07/2019","scorematch":0,"matchtype":0,"display":1,"status":1,"class":[{"classno":1,"classname":"S"},{"classno":2,"classname":"SS"},{"classno":3,"classname":"GS"}],"team":[],"playoff":[0,0,0]}'
-    setMatchDetail(JSON.parse(json1))
-  }
-
   React.useEffect(()=>{
     handleFetch()
-    //tempFetch()
   },[ open, displayModal ])
 
   const [ ,updateState ] = React.useState(null)
@@ -536,7 +528,7 @@ export default function MBPlayerBody(props){
     }
   },[ window.innerWidth ])
 
-  return(
+  return matchDetail && (
     <div className={classes.root}>
       <List className={classes.listRoot}>
         <ListItem className={classes.controls}>
@@ -717,7 +709,7 @@ export default function MBPlayerBody(props){
             </ListItemIcon>
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
-            { data && !data.status && matchDetail &&
+            { data && !data.status && matchDetail && matchDetail.class &&
               [
                 ...searchUser? handleSearch() : data
               ].slice(0, dataSliced).map(value => {
@@ -770,28 +762,35 @@ export default function MBPlayerBody(props){
                                 {value.lastname}
                               </Typography>
                             }
-                            { matchDetail && matchDetail.class && window.innerWidth < 600 &&
-                              ( value.classno === 0 ?
+                            { window.innerWidth < 600 &&
+                              ( matchDetail.class.length > 0?
+                                ( value.classno === 0 ?
+                                  <React.Fragment>
+                                    <br></br>
+                                    {"-"}
+                                  </React.Fragment>
+                                  :
+                                  matchDetail.class.filter( d =>{
+                                    return d.classno === value.classno
+                                  }).map((d, i) =>
+                                    d &&
+                                    <React.Fragment key={i}>
+                                      <br></br>
+                                      {
+                                        matchDetail.scorematch === 1 ?
+                                        d.classname
+                                        :
+                                        String.fromCharCode(65 + value.classno - 1)
+                                      }
+
+                                    </React.Fragment>
+                                  )
+                                )
+                                :
                                 <React.Fragment>
                                   <br></br>
-                                  {"-"}
+                                  {"No class"}
                                 </React.Fragment>
-                                :
-                                matchDetail.class.filter( d =>{
-                                  return d.classno === value.classno
-                                }).map((d, i) =>
-                                  d &&
-                                  <React.Fragment key={i}>
-                                    <br></br>
-                                    {
-                                      matchDetail.scorematch === 1 ?
-                                      d.classname
-                                      :
-                                      String.fromCharCode(65 + value.classno - 1)
-                                    }
-
-                                  </React.Fragment>
-                                )
                               )
                             }
                             { value.note &&
@@ -805,26 +804,31 @@ export default function MBPlayerBody(props){
                         <ListItemText className={classes.listText}
                           primary={value.lastname}/>
                       }
-                      { matchDetail && matchDetail.class && window.innerWidth > 600 &&
-                        ( value.classno === 0 ?
-                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                            primary={"-"} />
-                          :
-                          matchDetail.class.filter( d =>{
-                            return d.classno === value.classno
-                          }).map( d =>
-                            d &&
-                            <ListItemText
-                              key={d.classname + `(${value.userid})`}
-                              style={{ justifyContent: 'center' }}
-                              className={classes.listClass}
-                              primary={
-                                matchDetail.scorematch === 1 ?
-                                d.classname
-                                :
-                                String.fromCharCode(65 + value.classno - 1)
-                              } />
+
+                      { window.innerWidth > 600 &&
+                        ( matchDetail.class.length > 0 ?
+                          ( value.classno === 0 ?
+                            <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                              primary={"-"} />
+                            :
+                            matchDetail.class.filter( d =>{
+                              return d.classno === value.classno
+                            }).map( d =>
+                              d &&
+                              <ListItemText key={d.classname + `(${value.userid})`}
+                                style={{ justifyContent: 'center' }}
+                                className={classes.listClass}
+                                primary={
+                                  matchDetail.scorematch === 1 ?
+                                  d.classname
+                                  :
+                                  String.fromCharCode(65 + d.classno - 1)
+                                } />
+                            )
                           )
+                          :
+                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                            primary={"No class"} />
                         )
                       }
                       <ListItemIcon style={{ justifyContent: 'flex-end' }}>

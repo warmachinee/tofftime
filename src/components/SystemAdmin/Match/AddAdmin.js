@@ -127,7 +127,7 @@ const theme = createMuiTheme({
 
 function ListMenu(props) {
   const classes = useStyles();
-  const { sess, admin, token, setCSRFToken, matchid, handleSnackBar, setData, value } = props
+  const { sess, admin, token, setCSRFToken, matchid, handleSnackBar, setData, value, setDataAdmin } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
   function handleClick(event) {
@@ -150,7 +150,7 @@ function ListMenu(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       try {
-        handleLoadUser()
+        handleFetch()
       }catch(err) { console.log(err.message) }
     })
   }
@@ -182,6 +182,22 @@ function ListMenu(props) {
         }
       })
     }
+  }
+
+  async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+        action: 'admin',
+        matchid: matchid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setDataAdmin(d)
+      try {
+        handleLoadUser()
+      }catch(err) { console.log(err.message) }
+    })
   }
 
   return (
@@ -298,7 +314,7 @@ export default function AddAdmin(props){
       }catch(err) { console.log(err.message) }
     })
   }
-  
+
   async function handleLoadUser(){
     if(matchid){
       const resToken = token? token : await API.xhrGet('getcsrf')
@@ -333,17 +349,19 @@ export default function AddAdmin(props){
 
   return(
     <div className={classes.root}>
-      <div className={classes.createGrid}>
-        <GreenTextButton
-          variant="outlined"
-          className={classes.createButton}
-          onClick={()=>setCreateState(!createState)}>
-          <ExpandMoreIcon
-            className={classes.expandIcon}
-            style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
-          Create Player
-        </GreenTextButton>
-      </div>
+      { sess && sess.type === 'admin' &&
+        <div className={classes.createGrid}>
+          <GreenTextButton
+            variant="outlined"
+            className={classes.createButton}
+            onClick={()=>setCreateState(!createState)}>
+            <ExpandMoreIcon
+              className={classes.expandIcon}
+              style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
+            Create Player
+          </GreenTextButton>
+        </div>
+      }
       <Collapse in={createState} timeout="auto" unmountOnExit>
         <div className={classes.textFieldGrid}>
           <ThemeProvider theme={theme}>

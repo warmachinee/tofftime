@@ -31,6 +31,11 @@ const TemplateDialog = Loadable({
   loading: () => <LDCircular />
 });
 
+const MatchStepper = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchStepper" */'./../../User/Panel/Match/MatchStepper'),
+  loading: () => <LDCircular />
+});
+
 const Location = Loadable({
   loader: () => import(/* webpackChunkName: "Location" */'./Location'),
   loading: () => <LDCircular />
@@ -43,7 +48,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: 'auto',
     backgroundColor: grey[50],
-    cursor: 'pointer'
+    cursor: 'pointer',
+    boxSizing: 'border-box'
   },
   grid: {
     marginTop: 24,
@@ -220,11 +226,32 @@ function CreateMatchBody(props){
   const [ matchName, setMatchName ] = React.useState('');
   const [ matchClass, setMatchClass ] = React.useState(0);
   const [ selectedField, setSelectedField ] = React.useState('');
-  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('0');
+  const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
+  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState('1');
   const [ selectedDate, setSelectedDate ] = React.useState(new Date());
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
+
+  const passingFunction = {
+    matchName: matchName,
+    matchClass: matchClass,
+    selectedField: selectedField,
+    selectedFieldVersion: selectedFieldVersion,
+    selectedPrivacy: selectedPrivacy,
+    selectedMatchType: selectedMatchType,
+    selectedDate: selectedDate,
+    selectedFile: selectedFile,
+    tempFile: tempFile,
+    setMatchName: setMatchName,
+    setMatchClass: setMatchClass,
+    setSelectedField: setSelectedField,
+    handlePrivacy: handlePrivacy,
+    handleMatchType: handleMatchType,
+    handleDateChange: handleDateChange,
+    handlePicture: handlePicture,
+    setSelectedFieldVersion: setSelectedFieldVersion
+  }
 
   const handleOpen = () => {
     setOpen(true);
@@ -286,16 +313,25 @@ function CreateMatchBody(props){
   }
 
   async function handleCreate(){
+    const sendObj = {
+      action: 'create',
+      matchname: matchName,
+      fieldid: selectedField.fieldid,
+      scorematch: parseInt(selectedMatchType),
+      class: matchClass,
+      privacy: selectedPrivacy,
+      matchdate: API.handleDateToString(selectedDate),
+    }
+
+    if(selectedFieldVersion !== 1){
+      Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
+    }
+    console.log(sendObj);
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
       'matchsystem', {
-        action: 'create',
-        matchname: matchName,
-        fieldid: selectedField.fieldid,
-        scorematch: parseInt(selectedMatchType),
-        class: matchClass,
-        matchdate: API.handleDateToString(selectedDate),
+        ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -369,6 +405,7 @@ function CreateMatchBody(props){
         <div className={classes.gridChild1}>
           <ThemeProvider theme={theme}>
             <TextField
+              autoFocus
               className={classes.margin}
               label="Match name"
               value={matchName || ''}
@@ -390,17 +427,19 @@ function CreateMatchBody(props){
                 />
               </MuiPickersUtilsProvider>
             </ThemeProvider>
-            <ThemeProvider theme={theme}>
-              <TextField
-                style={{ width: 108, marginTop: 'auto', marginLeft: 16 }}
-                label="Class"
-                value={matchClass}
-                type="number"
-                variant="outlined"
-                onChange={e =>setMatchClass(parseInt(e.target.value))}
-                onFocus={e => e.target.select()}
-              />
-            </ThemeProvider>
+            { selectedMatchType === '1' &&
+              <ThemeProvider theme={theme}>
+                <TextField
+                  style={{ width: 108, marginTop: 'auto', marginLeft: 16 }}
+                  label="Class"
+                  value={matchClass}
+                  type="number"
+                  variant="outlined"
+                  onChange={e =>setMatchClass(parseInt(e.target.value))}
+                  onFocus={e => e.target.select()}
+                />
+              </ThemeProvider>
+            }
           </div>
           { selectedFile && tempFile?
             <div style={{ position: 'relative', marginTop: 16 }}
@@ -457,27 +496,30 @@ function CreateMatchBody(props){
               style={{ textTransform: 'none' }}>
               { selectedField ? selectedField.fieldname : 'Select Location' }
             </StyledTextButton>
-            {/*
-              <FormControl component="fieldset" className={classes.margin}
-                style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}>
-                <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
-                <RadioGroup value={selectedPrivacy} onChange={handlePrivacy} row>
-                  <FormControlLabel
-                    value={'0'}
-                    control={<GreenRadio />}
-                    label="Public"
-                    labelPlacement="end"
-                  />
-                  <FormControlLabel
-                    value={'1'}
-                    control={<GreenRadio />}
-                    label="Private"
-                    labelPlacement="end"
-                  />
-                </RadioGroup>
-              </FormControl>*/
-            }
-
+            <FormControl component="fieldset" className={classes.margin}
+              style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}>
+              <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
+              <RadioGroup value={selectedPrivacy} onChange={handlePrivacy} row>
+                <FormControlLabel
+                  value={'public'}
+                  control={<GreenRadio />}
+                  label="Public"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  value={'friend'}
+                  control={<GreenRadio />}
+                  label="Friend"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  value={'private'}
+                  control={<GreenRadio />}
+                  label="Private"
+                  labelPlacement="end"
+                />
+              </RadioGroup>
+            </FormControl>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}>
               <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
@@ -510,9 +552,9 @@ function CreateMatchBody(props){
       <TemplateDialog open={open} handleClose={handleClose}>
         <Location
           {...props}
+          {...passingFunction}
           handleClose={handleClose}
-          selectedField={selectedField}
-          setSelectedField={setSelectedField} />
+           />
       </TemplateDialog>
     </div>
   );
@@ -520,7 +562,7 @@ function CreateMatchBody(props){
 
 export default function CreateMatch(props){
   const classes = useStyles();
-  const { setData, token, setCSRFToken, handleSnackBar } = props
+  const { sess, setData, token, setCSRFToken, handleSnackBar } = props
   const [ expanded, setExpanded ] = React.useState(false)
 
   function expandHandler(){
@@ -542,9 +584,15 @@ export default function CreateMatch(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CreateMatchBody
-          {...props}
-          setExpanded={setExpanded}/>
+        { sess && sess.typeid === 'admin' ?
+          <CreateMatchBody
+            {...props}
+            setExpanded={setExpanded}/>
+          :
+          <MatchStepper
+            {...props}
+            setExpanded={setExpanded} />
+        }
       </Collapse>
     </Paper>
   );

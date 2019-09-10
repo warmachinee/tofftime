@@ -45,6 +45,31 @@ const SideMenu = Loadable({
   loading: () => null
 });
 
+const NotificationsDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "NotificationsDialog" */ './../components/User/NotificationsDialog'),
+  loading: () => null
+});
+
+const HistoryDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "HistoryDialog" */ './../components/User/HistoryDialog'),
+  loading: () => null
+});
+
+const UpcomingDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "UpcomingDialog" */ './../components/User/UpcomingDialog'),
+  loading: () => null
+});
+
+const CreatePage = Loadable({
+  loader: () => import(/* webpackChunkName: "CreatePage" */ './../components/User/Panel/CreatePage'),
+  loading: () => null
+});
+
+const CreateMatchDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "CreateMatchDialog" */ './../components/User/Panel/CreateMatchDialog'),
+  loading: () => null
+});
+
 const RouteProfile = Loadable.Map({
   loader: {
     Profile: () => import(/* webpackChunkName: "Profile" */'./../components/User/Profile'),
@@ -68,6 +93,23 @@ const RouteTimeline = Loadable.Map({
   },
   render(loaded, props) {
     let Component = loaded.Timeline.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props}/>
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
+const RouteManagement = Loadable.Map({
+  loader: {
+    Management: () => import(/* webpackChunkName: "Management" */'./../components/User/Panel/Management'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Management.default;
     return (
       <Route
         {...props}
@@ -114,6 +156,13 @@ export default function UserPage(props) {
     token, setCSRFToken, drawerState, drawerClose
   } = props
   const [ open, setOpen ] = React.useState( window.innerWidth >= 900 );
+  const [ addFriendState, setAddFriendState ] = React.useState(false);
+  const [ notiState, setNotiState ] = React.useState(false);
+  const [ createPageState, setCreatePageState ] = React.useState(false);
+  const [ createMatchState, setCreateMatchState ] = React.useState(false);
+  const [ historyState, setHistoryState ] = React.useState(false);
+  const [ upcomingState, setUpcomingState ] = React.useState(false);
+  const [ notiData, setNotiData ] = React.useState(null);
 
   const passingProps = {
     API: props.API,
@@ -129,6 +178,62 @@ export default function UserPage(props) {
     handleSnackBar: props.handleSnackBar
   }
 
+  const dialogProps = {
+    open: open,
+    handleDrawerClick: handleDrawerClick,
+    handleDrawerOpen: handleDrawerOpen,
+    handleDrawerClose: handleDrawerClose,
+    addFriendState: addFriendState,
+    toggleAddFriend: toggleAddFriend,
+    handleAddFriendClose: handleAddFriendClose,
+    notiState: notiState,
+    toggleNoti: toggleNoti,
+    createPageState: createPageState,
+    toggleCreatePage: toggleCreatePage,
+    createMatchState: createMatchState,
+    toggleCreateMatch: toggleCreateMatch,
+    handleCreateMatchClose: handleCreateMatchClose,
+    historyState: historyState,
+    toggleHistory: toggleHistory,
+    upcomingState: upcomingState,
+    toggleUpcoming: toggleUpcoming
+  }
+
+  function toggleAddFriend(){
+    setAddFriendState(!addFriendState)
+  }
+
+  function handleAddFriendClose(){
+    setAddFriendState(false)
+  }
+
+  function toggleNoti(){
+    setNotiState(!notiState)
+    if(notiState){
+      handleReadNoti()
+    }
+  }
+
+  function toggleCreatePage(){
+    setCreatePageState(!createPageState)
+  }
+
+  function toggleHistory(){
+    setHistoryState(!historyState)
+  }
+
+  function toggleUpcoming(){
+    setUpcomingState(!upcomingState)
+  }
+
+  function toggleCreateMatch(){
+    setCreateMatchState(!createMatchState)
+  }
+
+  function handleCreateMatchClose(){
+    setCreateMatchState(false)
+  }
+
   function handleDrawerClick(){
     setOpen(!open)
   }
@@ -141,25 +246,16 @@ export default function UserPage(props) {
     setOpen(false);
   }
 
-  /*
-  function handleChangeField(e){
-    if(sess){
-      const socket = socketIOClient( API.getWebURL() )
-      socket.emit('search-client-message', {
-        action: "field",
-        userid: sess.userid,
-        text: e.target.value
-      })
-    }
-  }
-
-  function responseField(){
-    const socket = socketIOClient( API.getWebURL() )
-    socket.on(`${sess.userid}-field-search-server-message`, (messageNew) => {
-      console.log("field : ", messageNew.result.infolist);
+  async function handleReadNoti(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'uusersystem', {
+        action: 'readnotification'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
     })
   }
-  */
 
   async function handleFetchInfo(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -170,44 +266,56 @@ export default function UserPage(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleAccountData(d[0])
-      console.log(d[0]);
     })
   }
 
   React.useEffect(()=>{
     if(sess && sess.status === 1 && sess.typeid !== 'admin'){
       handleFetchInfo()
-      //responseField()
     }
-    if(sess && sess.status !== 1){
-      window.location.pathname = '/'
+    if(sess && sess.status === 1 && sess.typeid === 'admin'){
+      window.location.pathname = '/admin'
     }
-    console.log(props);
   },[ sess, props.location ])
 
   return (
     <div className={classes.root}>
-      <UserHeader {...props} open={open} handleDrawerClick={handleDrawerClick}/>
-      <SideMenu {...props} open={open} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose}/>
+      <UserHeader {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData}/>
+      <SideMenu {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData} />
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        { true ?
-          <React.Fragment>
-            { true ?
-              <Route exact path="/user" render={()=> <UserDashboard {...props} open={open}/>} />
-              :
-              <Route exact path={"/"} render={()=> <UserDashboard {...props} open={open}/>} />
-            }
-            <RouteProfile path="/user/profile/:userid"
-              {...passingProps} />
-            <RouteTimeline path="/user/timeline/:userid"
-              {...passingProps} location={props.location} />
-          </React.Fragment>
-          :
-          <RouteProfile exact path="/"
-            {...props} />
-        }
+
+        <Route exact path="/user" render={()=> <UserDashboard {...props} {...dialogProps}/>} />
+        <RouteProfile path="/user/profile/:userid"
+          {...passingProps} />
+        <RouteTimeline path="/user/timeline/:userid"
+          {...passingProps} location={props.location} />
+        <RouteManagement path="/user/management"
+          {...passingProps} {...dialogProps} location={props.location} />
+
       </main>
+
+      <NotificationsDialog
+        {...props}
+        {...dialogProps}
+        notiData={notiData}
+        setNotiData={setNotiData} />
+
+      <HistoryDialog
+        {...props}
+        {...dialogProps} />
+
+      <UpcomingDialog
+        {...props}
+        {...dialogProps} />
+
+      <CreatePage
+        {...props}
+        {...dialogProps}  />
+
+      <CreateMatchDialog
+        {...props}
+        {...dialogProps} />
     </div>
   );
 }
@@ -215,14 +323,6 @@ export default function UserPage(props) {
 function UserDashboard(props){
   const classes = useStyles();
   const { sess, open } = props
-
-  /*
-  React.useEffect(()=>{
-    if(props.computedMatch && sess){
-      console.log(props.computedMatch);
-      console.log('sess : ', parseInt(sess.userid), ' userid : ', props.computedMatch.params.userid);
-    }
-  },[ ])*/
 
   return(
     <React.Fragment>

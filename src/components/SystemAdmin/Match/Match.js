@@ -39,22 +39,56 @@ const RouteMatchEditor = Loadable.Map({
 });
 
 export default function Match(props){
-  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess } = props
 
   const passingProps = {
-    sess: sess,
-    token: token,
-    setCSRFToken: setCSRFToken,
-    handleSnackBar: handleSnackBar,
-    isSupportWebp: isSupportWebp
+    API: props.API,
+    COLOR: props.COLOR,
+    BTN: props.BTN,
+    sess: props.sess,
+    handleSess: props.handleSess,
+    accountData: props.accountData,
+    handleAccountData: props.handleAccountData,
+    token: props.token,
+    setCSRFToken: props.setCSRFToken,
+    isSupportWebp: props.isSupportWebp,
+    handleSnackBar: props.handleSnackBar,
+    location: props.location,
+    ...(sess && sess.typeid !== 'admin' && {
+      open: props.open,
+      handleDrawerClick: props.handleDrawerClick,
+      handleDrawerOpen: props.handleDrawerOpen,
+      handleDrawerClose: props.handleDrawerClose,
+      notiState: props.notiState,
+      toggleNoti: props.toggleNoti,
+      createPageState: props.createPageState,
+      toggleCreatePage: props.toggleCreatePage,
+      createMatchState: props.createMatchState,
+      toggleCreateMatch: props.toggleCreateMatch,
+      historyState: props.historyState,
+      toggleHistory: props.toggleHistory,
+      upcomingState: props.upcomingState,
+      toggleUpcoming: props.toggleUpcoming
+    })
   }
 
   return(
     <Switch>
-      <RouteMatchBody exact path="/admin/match"
-        {...passingProps} />
-      <RouteMatchEditor path="/admin/match/:matchparam"
-        {...passingProps} />
+      { ( sess && sess.status === 1 && sess.typeid === 'admin' ) ?
+        <React.Fragment>
+          <RouteMatchBody exact path="/admin/match"
+            {...passingProps} />
+          <RouteMatchEditor path="/admin/match/:matchparam"
+            {...passingProps} />
+        </React.Fragment>
+        :
+        <React.Fragment>
+          <RouteMatchBody exact path="/user/management/match"
+            {...passingProps} />
+          <RouteMatchEditor path="/user/management/match/:matchparam"
+            {...passingProps} />
+        </React.Fragment>
+      }
     </Switch>
   );
 }

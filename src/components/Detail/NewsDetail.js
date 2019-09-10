@@ -26,6 +26,15 @@ const useStyles = makeStyles(theme => ({
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
   },
+  content: {
+    margin: '0 5%',
+    [theme.breakpoints.up(500)]: {
+      margin: '0 5%',
+    },
+    [theme.breakpoints.up(700)]: {
+      margin: '0 72px',
+    },
+  },
   img: {
     width: '100%',
     color: 'black',
@@ -82,8 +91,8 @@ export default function NewsDetail(props){
       handleFetch(newsid)
     }*/
     newsid = parseInt(props.computedMatch.params.detailparam)
-    console.log(props);
     handleFetch(newsid)
+    window.scrollTo(0, 0)
   },[ ])
 
   return(
@@ -125,7 +134,7 @@ export default function NewsDetail(props){
           )
         )*/
         data &&
-        <div>
+        <div className={classes.content}>
           <Typography gutterBottom variant="h3">
             {data.title}
           </Typography>

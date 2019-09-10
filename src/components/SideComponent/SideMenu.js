@@ -3,6 +3,7 @@ import Loadable from 'react-loadable';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import * as COLOR from './../../api/palette'
+import ic_logo from './../img/logoX2.png'
 
 import {
   Button,
@@ -16,6 +17,7 @@ import {
   Avatar,
   Typography,
   Box,
+  Badge,
 
 } from '@material-ui/core'
 
@@ -30,6 +32,8 @@ import {
   Dashboard,
   History,
   Event,
+  Flag,
+  SettingsApplications,
   AddCircleOutline,
 
 } from '@material-ui/icons';
@@ -85,6 +89,10 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-end',
     padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
+  },
+  logoImg: {
+    height: 24,
+    width: 24
   },
   logout: {
     '&:hover': {
@@ -144,7 +152,11 @@ const useStyles = makeStyles(theme => ({
 
 export default function SideMenu(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, open, handleDrawerOpen, handleDrawerClose, accountData } = props
+  const {
+    API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, open,
+    handleDrawerOpen, handleDrawerClose, accountData,
+    notiData, toggleNoti, toggleHistory, toggleUpcoming, toggleCreatePage, toggleCreateMatch
+  } = props
   const [ pageList, setPageList ] = React.useState(null)
   const [ confirmLogout, setConfirmLogout ] = React.useState(false)
   const [ expanded, setExpanded ] = React.useState({
@@ -272,17 +284,35 @@ export default function SideMenu(props) {
           </React.Fragment>
         }
         <Divider />
-        <List className={classes.notiHidden}>
-          <ListItem button>
-            <ListItemIcon><Notifications /></ListItemIcon>
+        <List>
+          <ListItem button onClick={toggleNoti} className={classes.notiHidden}>
+            <ListItemIcon>
+              { notiData && notiData.length > 0?
+                <Badge badgeContent={
+                    notiData.filter( item =>{
+                      return item.read === 'unread'
+                    }).length
+                  } color="secondary">
+                  <Notifications />
+                </Badge>
+                :
+                <Notifications />
+              }
+            </ListItemIcon>
             <ListItemText primary="Notifications" />
+          </ListItem>
+          <ListItem button onClick={toggleCreateMatch}>
+            <ListItemIcon>
+              <AddCircleOutline />
+            </ListItemIcon>
+            <ListItemText className={classes.listTitle} primary="Create Match" />
           </ListItem>
           <Divider />
         </List>
         <List>
-          <ListItem button>
+          <ListItem button onClick={toggleCreatePage}>
             <ListItemIcon>
-              <AddCircleOutline />
+              <Flag />
             </ListItemIcon>
             <ListItemText className={classes.listTitle} primary="Create Page" />
           </ListItem>
@@ -290,13 +320,15 @@ export default function SideMenu(props) {
         </List>
         <Divider />
         <List>
-          {/*
+          { ( open ? window.innerWidth < 840 : window.innerWidth < 600 ) &&
             <BTN.NoStyleLink to='/'>
               <ListItem button>
-                <ListItemIcon><Home /></ListItemIcon>
+                <ListItemIcon>
+                  <img src={ic_logo} className={classes.logoImg}/>
+                </ListItemIcon>
                 <ListItemText primary="ToffTime" />
               </ListItem>
-            </BTN.NoStyleLink>*/
+            </BTN.NoStyleLink>
           }
           { sess &&
             <BTN.NoStyleLink to={`/user` /*${sess.userid}*/}>
@@ -306,11 +338,17 @@ export default function SideMenu(props) {
               </ListItem>
             </BTN.NoStyleLink>
           }
-          <ListItem button>
+          <BTN.NoStyleLink to={`/user/management`}>
+            <ListItem button>
+              <ListItemIcon><SettingsApplications /></ListItemIcon>
+              <ListItemText primary="Management" />
+            </ListItem>
+          </BTN.NoStyleLink>
+          <ListItem button onClick={toggleHistory}>
             <ListItemIcon><History /></ListItemIcon>
             <ListItemText primary="History" />
           </ListItem>
-          <ListItem button>
+          <ListItem button onClick={toggleUpcoming}>
             <ListItemIcon><Event /></ListItemIcon>
             <ListItemText primary="Upcoming" />
           </ListItem>

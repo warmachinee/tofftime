@@ -32,11 +32,13 @@ const useStyles = makeStyles(theme => ({
     overflowScrolling: 'touch',
     WebkitOverflowScrolling: 'touch',
     width: '100%',
+    boxSizing: 'border-box'
   },
   close: {
     position: 'absolute',
     top: 8,
-    right: 8
+    right: 8,
+    zIndex: 2
   },
   closeIcon: {
     fontSize: '2rem',

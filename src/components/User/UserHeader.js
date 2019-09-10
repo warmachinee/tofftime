@@ -12,7 +12,9 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  Button
+  Button,
+  Badge,
+
 } from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
@@ -112,8 +114,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function UserHeader(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, accountData, open, handleDrawerClick } = props
+  const {
+    API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess,
+    accountData, notiData, setNotiData, open, handleDrawerClick, toggleNoti
+  } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
+
   const theme = useTheme();
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -144,13 +150,14 @@ export default function UserHeader(props) {
   }
 
   function handleNotifications(){
-    if(sess && sess.status === 1){
-      const endpoint = API.getWebURL()
-      const socket = socketIOClient(endpoint)
-      socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
-        console.log(messageNew);
-      })
-    }
+    const endpoint = API.getWebURL()
+    const socket = socketIOClient(endpoint)
+    socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
+      //console.log('RTnotification', messageNew);
+      if(messageNew){
+        handleFetchNotifications()
+      }
+    })
   }
 
   async function handleFetchNotifications(){
@@ -161,7 +168,8 @@ export default function UserHeader(props) {
         action: 'notification'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      console.log('notification', d);
+      setNotiData(d)
+      //console.log('notification', d);
     })
   }
 
@@ -170,7 +178,7 @@ export default function UserHeader(props) {
       handleNotifications()
       handleFetchNotifications()
     }
-  },[ sess ])
+  },[ sess, props.notiState ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -202,14 +210,16 @@ export default function UserHeader(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <IconButton
-              edge="start"
-              className={classes.logo}
-            >
-              <img src={ic_logo} className={classes.logoImg}/>
-            </IconButton>
-          </Link>
+          { ( open ? window.innerWidth >= 840 : window.innerWidth > 600 ) &&
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <IconButton
+                edge="start"
+                className={classes.logo}
+              >
+                <img src={ic_logo} className={classes.logoImg}/>
+              </IconButton>
+            </Link>
+          }
           { /*
             <IconButton
               edge="start"
@@ -219,8 +229,18 @@ export default function UserHeader(props) {
             */
           }
           <div style={{ flex: 1 }} />
-          <IconButton className={classes.notiHidden}>
-            <NotificationsIcon />
+          <IconButton className={classes.notiHidden} onClick={toggleNoti}>
+            { notiData && notiData.length > 0?
+              <Badge badgeContent={
+                  notiData.filter( item =>{
+                    return item.read === 'unread'
+                  }).length
+                } color="secondary">
+                <NotificationsIcon />
+              </Badge>
+              :
+              <NotificationsIcon />
+            }
           </IconButton>
           <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
           { accountData &&

@@ -88,7 +88,10 @@ export default function SideDrawer(props) {
   }
 
   React.useEffect(()=>{
-    if(sess && sess.status === 1 && sess.typeid !== 'admin'){
+    if(
+      sess && sess.status === 1 && sess.typeid !== 'admin' &&
+      !/\/user/.test(window.location.pathname)
+    ){
       handleFetchInfo()
     }
   },[ sess ])
@@ -129,14 +132,13 @@ export default function SideDrawer(props) {
           </React.Fragment>
         }
         <List>
-          { sess && sess.status === 1 &&
+          { /*sess && sess.status === 1 &&
             <ListItem button>
               <ListItemIcon>
                 <NotificationsIcon />
               </ListItemIcon>
               <ListItemText primary="Notification" />
             </ListItem>
-            /*
             <Button size="small" onClick={()=>API.handleScrolllTo('match')}>Match</Button>
             <Button size="small" onClick={()=>API.handleScrolllTo('news')}>News</Button>
             <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>Organizer</Button>

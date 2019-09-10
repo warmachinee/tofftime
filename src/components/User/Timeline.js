@@ -39,6 +39,7 @@ export default function Timeline(props) {
   const [ param, setParam ] = React.useState(null)
 
   React.useEffect(()=>{
+    window.scrollTo(0, 0)
     if(props.location){
       const match = matchPath( props.location.pathname, {
         path: "/user/timeline/:userid",

@@ -25,6 +25,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 24,
+    boxSizing: 'border-box',
     [theme.breakpoints.up(500)]: {
       padding: theme.spacing(1, 2),
     }
@@ -114,7 +115,7 @@ function PlayoffContainer(props){
   function handleUpdatePlayoff(selected){
     var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
     const socket = socketIOClient( hd + API.webURL() )
-    socket.emit('client-message', {
+    socket.emit('admin-match-client-message', {
       action: "updateplayoff",
       matchid: matchid,
       userid: selected.userid,
@@ -149,9 +150,9 @@ function PlayoffContainer(props){
 
   async function handleFetch(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
+      const resToken = await API.xhrGet('getcsrf')
       await API.xhrPost(
-        token? token : resToken.token,
+        resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'playoff',
           matchid: matchid

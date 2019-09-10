@@ -120,7 +120,7 @@ export default function MatchBody(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'displaymatchsystem', {
+      sess.typeid === 'admin' ? 'displaymatchsystem' : 'mdisplaymatchsystem', {
         action: 'match',
         matchid: d.matchid
     }, (csrf, d) =>{
@@ -142,10 +142,11 @@ export default function MatchBody(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'loadmatch', {
-        action: 'list'
+      sess.typeid === 'admin' ? 'loadmatch' : 'loadusersystem', {
+        ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'creator' }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
+      console.log(d);
       if(!d.status){
         arrData.push(
           ...d.filter( d =>{
@@ -207,7 +208,9 @@ export default function MatchBody(props){
           data.map( (d, i) =>
             d &&
             <React.Fragment key={i}>
-              <Link to={`/admin/match/${d.matchid}`} className={classes.linkElement}>
+              <Link to={
+                  sess.typeid === 'admin' ? `/admin/match/${d.matchid}` : `/user/management/match/${d.matchid}`
+                } className={classes.linkElement}>
                 <ListItem key={d.matchid} button>
                   { window.innerWidth >= 600 &&
                     <ListItemText className={classes.tableDate} classes={{ primary: classes.tableDateText }}

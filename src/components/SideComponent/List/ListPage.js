@@ -52,21 +52,23 @@ export default function ListPage(props) {
 
   React.useEffect(()=>{
     handleFetchPage()
-  },[ ])
+  },[ props.createPageState ])
 
   return pageList && (
     pageList.map( d =>
-      <ListItem button key={d.pageid}>
-        <ListItemIcon>
-          { d.logo ?
-            <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
-            :
-            <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }}/>
-          }
-        </ListItemIcon>
-        <ListItemText className={classes.listTitle} primary={d.pagename} />
-      </ListItem>
+      <BTN.NoStyleLink to={`/user/page/${d.pageid}`} key={d.pageid}>
+        <ListItem button>
+          <ListItemIcon>
+            { d.logo ?
+              <Avatar className={classes.avatarImage}
+                src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+              :
+              <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }}/>
+            }
+          </ListItemIcon>
+          <ListItemText className={classes.listTitle} primary={d.pagename} />
+        </ListItem>
+      </BTN.NoStyleLink>
     )
   )
 }

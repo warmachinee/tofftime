@@ -8,6 +8,16 @@ import { ThemeProvider } from '@material-ui/styles';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import * as COLOR from './../../api/palette'
 
+const TemplateDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loading: () => null
+});
+
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../LabelText'),
+  loading: () => null
+});
+
 import {
   Paper,
   Avatar,
@@ -174,6 +184,7 @@ export default function Profile(props) {
   const classes = useStyles();
   const { API, BTN, sess, isSupportWebp, token, setCSRFToken, handleAccountData, accountData, handleSnackBar } = props
   const [ editting, setEditting ] = React.useState(false)
+  const [ changePasswordState, setChangePasswordState ] = React.useState(false)
   const [ edittingData, setEdittingData ] = React.useState({
     fullname: accountData && accountData.fullname ? accountData.fullname : '',
     lastname: accountData && accountData.lastname ? accountData.lastname : '',
@@ -182,10 +193,21 @@ export default function Profile(props) {
     gender: accountData && accountData.gender ? accountData.gender : '',
     birthdate: accountData && accountData.birthdate ? new Date(accountData.birthdate) : null,
     favgolf: accountData && accountData.favgolf ? accountData.favgolf : '',
+    password: '',
+    changePassword: '',
+    confirmPassword: '',
+  })
+  const [ errorPassword, setErrorPassword ] = React.useState({
+    oldNew: false,
+    changeConfirm: false
   })
 
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
+
+  function toggleChangePassword(){
+    setChangePasswordState(!changePasswordState)
+  }
 
   function toggleEditting(){
     setEditting(!editting)
@@ -230,12 +252,6 @@ export default function Profile(props) {
     }
   }
 
-  function handleKeyPressConfirm(e){
-    if(e.key === 'Enter'){
-      handleSave()
-    }
-  }
-
   async function handleSave(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     const sendObj = {
@@ -263,6 +279,7 @@ export default function Profile(props) {
     }
 
     if(accountData.birthdate){
+      console.log(accountData.birthdate, edittingData.birthdate);
       if(API.handleDateToString(accountData.birthdate) !== API.handleDateToString(edittingData.birthdate)){
         Object.assign(sendObj, { birthdate: API.handleDateToString(edittingData.birthdate) });
       }
@@ -274,7 +291,34 @@ export default function Profile(props) {
       Object.assign(sendObj, { loftdrive: edittingData.favgolf });
     }
 
+    if(edittingData.password !== edittingData.changePassword){
+      setErrorPassword({
+        ...errorPassword,
+        oldNew: false,
+      })
+      if(edittingData.changePassword === edittingData.confirmPassword){
+        Object.assign(sendObj, { originalpass: edittingData.changePassword });
+        setErrorPassword({
+          oldNew: false,
+          changeConfirm: false
+        })
+      }else{
+        setErrorPassword({
+          ...errorPassword,
+          changeConfirm: true,
+        })
+      }
+    }
+
+    if(edittingData.password === edittingData.changePassword){
+      setErrorPassword({
+        ...errorPassword,
+        oldNew: true,
+      })
+    }
+
     if(Object.keys(sendObj).length > 1){
+
       await API.xhrPost(
         token? token : resToken.token,
         'uusersystem', {
@@ -345,21 +389,14 @@ export default function Profile(props) {
   }
 
   React.useEffect(()=>{
-    if(sess && sess.status === 1 && sess.typeid !== 'admin'){
-      if(!accountData){
-        handleFetchInfo()
-      }
+    if(!(sess && accountData)){
+      handleFetchInfo()
     }
     if(sess && sess.status !== 1){
       window.location.pathname = '/'
     }
-    console.log('Profile ', props);
-    /*
-    var json = '[{"userid":812454,"email":"warmachineza01@gmail.com","tel":"-","gender":"-","birthdate":null,"nickname":"-","fullname":"Sippakorn","lastname":"Suppapinyo","favgolf":"-","photopath":"/general/812454.webp"}]'
-    handleAccountData(JSON.parse(json)[0])
-    */
   },[ ])
-  
+
   return (
     <div className={classes.root}>
       { accountData &&
@@ -456,6 +493,7 @@ export default function Profile(props) {
               }
             </div>
           }
+
           { editting &&
             <List>
               <ListItem>
@@ -475,6 +513,15 @@ export default function Profile(props) {
             <Typography variant="subtitle2" className={classes.email}>
               email : {accountData.email}
             </Typography>
+          }
+          { sess && sess.typeid === 'user' &&
+            <List className={classes.listItem}>
+              <ListItem button onClick={toggleChangePassword}>
+                <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
+                  Change password
+                </Typography>
+              </ListItem>
+            </List>
           }
           { editting ?
             <List>
@@ -585,6 +632,47 @@ export default function Profile(props) {
           </div>
         </Paper>
       }
+      <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth={500}>
+        <LabelText text="Change password" />
+        <div style={{ marginTop: 24, marginBottom: 24 }}>
+          <TextField
+            autoFocus={changePasswordState}
+            fullWidth
+            label="Old password"
+            variant="outlined"
+            type="password"
+            className={classes.margin}
+            onChange={e => setEdittingData({ ...edittingData, password: e.target.value})}
+            onKeyPress={e =>handleKeyPress(e)}
+            onFocus={e => e.target.select()}
+          />
+          <TextField
+            fullWidth
+            label="New password"
+            variant="outlined"
+            type="password"
+            error={errorPassword.oldNew}
+            helperText={errorPassword.oldNew && "New password is same as old password."}
+            className={classes.margin}
+            onChange={e => setEdittingData({ ...edittingData, changePassword: e.target.value})}
+            onKeyPress={e =>handleKeyPress(e)}
+            onFocus={e => e.target.select()}
+          />
+          <TextField
+            fullWidth
+            label="Confirm password"
+            variant="outlined"
+            type="password"
+            error={errorPassword.changeConfirm}
+            helperText={errorPassword.changeConfirm && "Confirm password is not same as new password."}
+            className={classes.margin}
+            onChange={e => setEdittingData({ ...edittingData, confirmPassword: e.target.value})}
+            onKeyPress={e =>handleKeyPress(e)}
+            onFocus={e => e.target.select()}
+          />
+        <BTN.Primary style={{ padding: '16px 36px', width: '100%', marginTop: 24 }} onClick={handleSave}>Confirm</BTN.Primary>
+        </div>
+      </TemplateDialog>
     </div>
   );
 }

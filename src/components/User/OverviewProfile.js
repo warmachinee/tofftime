@@ -66,7 +66,6 @@ export default function OverviewProfile(props) {
   }
 
   React.useEffect(()=>{
-    //console.log(props.accountData);
     if(userid){
       handleFetchInfo()
     }else{

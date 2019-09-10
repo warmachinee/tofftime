@@ -30,13 +30,13 @@ function TabContainer(props) {
     <React.Fragment>
       <div style={{ display: 'flex' }}>
         <div style={{ flex: 1 }} />
-        { !reward.status &&
+        {
+          !reward.status &&
           <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} />
         }
-
         <PrintPDF data={data} userscore={userscore} matchClass={matchClass}/>
       </div>
-      <ScoreTable data={data} userscore={userscore} matchClass={matchClass}/>
+      <ScoreTable {...props} data={data} userscore={userscore} matchClass={matchClass}/>
     </React.Fragment>
   )
 }
@@ -87,7 +87,7 @@ export default function Scoreboard(props) {
   async function handleFetch(){
     await API.xhrPost(
       props.token,
-      'loadmatch', {
+      'loadmatchsystem', {
         action: 'reward',
         matchid: matchid
     }, (csrf, d) =>{
@@ -135,6 +135,9 @@ export default function Scoreboard(props) {
                 } />
             )
           }
+          { data.scorematch === 0 &&
+            <StyledTab label={"No class"} />
+          }
         </StyledTabs>
       </Paper>
       { matchClass && reward &&
@@ -143,11 +146,14 @@ export default function Scoreboard(props) {
             <React.Fragment key={i}>
               {
                 value === i &&
-                <TabContainer key={d.classname} data={data} userscore={userscore} matchClass={d} reward={reward}></TabContainer>
+                <TabContainer {...props} key={d.classname} data={data} userscore={userscore} matchClass={d} reward={reward}></TabContainer>
               }
             </React.Fragment>
           );
         })
+      }
+      { data.scorematch === 0 && matchClass && reward && ( value === matchClass.length ) &&
+        <TabContainer {...props} data={data} userscore={userscore} matchClass={{classno: 0, classname: 'No class'}} reward={reward}></TabContainer>
       }
     </div>
   );

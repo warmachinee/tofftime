@@ -47,7 +47,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24
+    marginTop: 24,
+    boxSizing: 'border-box'
   },
   margin: {
     width: '100%',
@@ -305,7 +306,7 @@ function MBOverviewBody(props){
     }
 
     if(selectedPrivacy){
-      Object.assign(sendObj, { privacy: parseInt(selectedPrivacy) });
+      Object.assign(sendObj, { privacy: selectedPrivacy });
     }
 
     if(selectedMatchType){
@@ -314,7 +315,7 @@ function MBOverviewBody(props){
 
     await API.xhrPost(
       token? token : resToken.token,
-      'matchsystem', sendObj,
+      sess.typeid === 'admin'? 'matchsystem' : 'mmatchsystem', sendObj,
       (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -335,7 +336,7 @@ function MBOverviewBody(props){
     if(selectedFile){
       formData.append('matchimage', selectedFile)
       const response = await API.fetchPostFile(
-        'matchsystem',
+        sess.typeid === 'admin'? 'matchsystem' : 'mmatchsystem',
         `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: parseInt(matchid),
@@ -344,6 +345,7 @@ function MBOverviewBody(props){
       const res = await API.xhrGet('getcsrf')
       setCSRFToken( res.token )
       status = response.status
+      console.log('MBOverview edit picture ', status);
     }else{
       setCSRFToken(csrf)
     }
@@ -364,7 +366,7 @@ function MBOverviewBody(props){
       const resToken = token? token : await API.xhrGet('getcsrf')
       await API.xhrPost(
         token? token : resToken.token,
-        'loadmatch', {
+        sess.typeid === 'admin'? 'loadmatch' :'mloadmatch', {
           action: 'detail',
           matchid: matchid
       }, (csrf, d) =>{
@@ -392,7 +394,7 @@ function MBOverviewBody(props){
     handleFetch()
   },[ ])
 
-  return(
+  return data && data.status !== 'wrong params' && (
     <div style={{ padding: 8, marginTop: 24, marginLeft: 'auto', marginRight: 'auto', maxWidth: 900 }}>
       { !editting &&
         <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>Edit</GreenTextButton>
@@ -501,56 +503,72 @@ function MBOverviewBody(props){
               className={classes.button}
               variant="outlined"
               onClick={()=>handleOpen('class')}>
-              { data?( data.class && !data.class.status &&
-                ( data.class.length >= 2 ? ( data.class.length + ' Classes' ):( data.class.length + ' Class' ) )):'Class'
+              { data?
+                ( data.class && !data.class.status &&
+                  (
+                    data.class.length >= 2 ?
+                    ( data.class.length + (data.scorematch === 1 ? ' Classes' : ' Flight') )
+                    :
+                    ( data.class.length + (data.scorematch === 1 ? ' Class' : ' Flight') )
+                  )
+                ):
+                (data.scorematch === 1 ? ' Class' : ' Flight')
               }
             </GreenTextButton>
             <FormControl component="fieldset" className={classes.margin}
-              style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
+              style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}
               disabled={!editting}>
               <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
               <RadioGroup
                 value={
-                  data?( selectedPrivacy? selectedPrivacy : data.matchtype.toString() ):'0'
+                  data?( selectedPrivacy? selectedPrivacy : data.privacy ):'public'
                 }
                 onChange={handlePrivacy} row>
                 <FormControlLabel
-                  value={'0'}
+                  value={'public'}
                   control={<GreenRadio />}
                   label="Public"
                   labelPlacement="end"
                 />
                 <FormControlLabel
-                  value={'1'}
+                  value={'friend'}
+                  control={<GreenRadio />}
+                  label="Friend"
+                  labelPlacement="end"
+                />
+                <FormControlLabel
+                  value={'private'}
                   control={<GreenRadio />}
                   label="Private"
                   labelPlacement="end"
                 />
               </RadioGroup>
             </FormControl>
-            <FormControl component="fieldset" className={classes.margin}
-              style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
-              disabled={!editting}>
-              <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
-              <RadioGroup
-                value={
-                  data?( selectedMatchType? selectedMatchType : data.scorematch.toString() ):'1'
-                }
-                onChange={handleMatchType} row>
-                <FormControlLabel
-                  value={'1'}
-                  control={<GreenRadio />}
-                  label="Pro"
-                  labelPlacement="end"
-                />
-                <FormControlLabel
-                  value={'0'}
-                  control={<GreenRadio />}
-                  label="Amateur"
-                  labelPlacement="end"
-                />
-              </RadioGroup>
-            </FormControl>
+            { /*
+              <FormControl component="fieldset" className={classes.margin}
+                style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
+                disabled={!editting}>
+                <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
+                <RadioGroup
+                  value={
+                    data?( selectedMatchType? selectedMatchType : data.scorematch.toString() ):'1'
+                  }
+                  onChange={handleMatchType} row>
+                  <FormControlLabel
+                    value={'1'}
+                    control={<GreenRadio />}
+                    label="Pro"
+                    labelPlacement="end"
+                  />
+                  <FormControlLabel
+                    value={'0'}
+                    control={<GreenRadio />}
+                    label="Amateur"
+                    labelPlacement="end"
+                  />
+                </RadioGroup>
+              </FormControl>*/
+            }
           </ThemeProvider>
         </div>
       </div>

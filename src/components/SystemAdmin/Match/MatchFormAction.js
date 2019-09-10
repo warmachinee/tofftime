@@ -104,6 +104,7 @@ export default function MatchTeam(props) {
       userid: [ sess.userid, selectedUser.userid],
       confirmaction: action,
     })
+    handleClose()
   }
 
   return (
@@ -114,7 +115,7 @@ export default function MatchTeam(props) {
         </Typography>
         { ( selectedUser && selectedUser.photopath ) ?
           <img align="left" className={classes.image}
-            src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+            src={API.getPictureUrl(selectedUser.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>
           :
           <div className={classes.matchImgTemp}
             style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>

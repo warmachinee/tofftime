@@ -70,25 +70,17 @@ const useStyles = makeStyles(theme => ({
   },
   imageGrid: {
     display: 'flex',
-    flexDirection: 'column',
-    [theme.breakpoints.up(700)]: {
-      flexDirection: 'row',
-    },
+    justifyContent: 'center'
   },
   image: {
     width: '100%',
+    maxWidth: 800,
+    height: window.innerWidth * .45,
     color: 'black',
     backgroundColor: '#ccc',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
-    marginRight: 0,
-    marginBottom: 8,
     backgroundPosition: 'center',
-    [theme.breakpoints.up(900)]: {
-      width: '60%',
-      marginRight: 16,
-      marginBottom: 8,
-    },
   },
   imageLD: {
     display: 'flex',
@@ -137,8 +129,9 @@ const useStyles = makeStyles(theme => ({
 
 function MatchDetailBody(props) {
   const classes = useStyles();
-  const { data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
+  const { BTN, data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
   const [ expanded, setExpanded ] = React.useState(true)
+  const [ matchDetail, setMatchDetail ] = React.useState(null)
 
   function expandHandler(){
     setExpanded(!expanded)
@@ -146,7 +139,6 @@ function MatchDetailBody(props) {
 
   React.useEffect(()=>{
     window.scrollTo(0, 0)
-    console.log(props.data, props.userscore);
   },[ ])
 
   return (
@@ -157,11 +149,30 @@ function MatchDetailBody(props) {
       <div className={classes.content}>
         {/*--------------------Match Attribute--------------------*/}
         <React.Fragment>
-          <Tooltip title={data?data.title:'Match Title'} placement="top-start">
+          <Tooltip gutterBottom title={data?data.title:'Match Title'} placement="top-start">
             <Typography classes={{ root: classes.title }} variant="h5">
               {data?data.title:'Match Title'}
             </Typography>
           </Tooltip>
+          <Typography gutterBottom variant="h6" color="textSecondary">
+            { data &&
+              (
+                data.scorematch === 1 ? 'Pro' : 'Amateur'
+              )
+            }
+          </Typography>
+          <div style={{ display: 'flex' }}>
+            { BTN && data && data.team && data.team.length > 0 &&
+              <BTN.NoStyleLink to={`/schedule/${matchid}`}>
+                <BTN.PrimaryText>Schedule</BTN.PrimaryText>
+              </BTN.NoStyleLink>
+            }
+            { matchid && BTN &&
+              <BTN.NoStyleLink to={`/matchform/${matchid}`}>
+                <BTN.PrimaryText>Form</BTN.PrimaryText>
+              </BTN.NoStyleLink>
+            }
+          </div>
           <Typography component="div">
             <Box className={classes.date} fontFamily="Monospace">
               {data?data.date:'date'}
@@ -173,10 +184,39 @@ function MatchDetailBody(props) {
               {data?data.location:'Location'} {data? '(' + data.locationversion + ')':''}
             </Box>
           </Typography>
-          <div>
+          <div className={classes.imageGrid}>
             { data && data.picture &&
               <img align="left" className={classes.image}
                 src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+            }
+          </div>
+          <div style={{ marginTop: 16 }}>
+            { data && data.scorematch === 0 && data.class &&
+              data.class.map( (d, i) =>{
+                if(i === data.class.length - 1 ){
+                  return(
+                    <div style={{ display: 'flex' }} key={d.classno}>
+                      <Typography style={{ fontWeight: 600, marginRight: 12 }} variant="body1">
+                        Flight {API.handleAmateurClass(d.classno)}
+                      </Typography>
+                      <Typography>
+                        handicap {d.classname} - up
+                      </Typography>
+                    </div>
+                  )
+                }else{
+                  return (
+                    <div style={{ display: 'flex' }} key={d.classno}>
+                      <Typography style={{ fontWeight: 600, marginRight: 12 }} variant="body1">
+                        Flight {API.handleAmateurClass(d.classno)}
+                      </Typography>
+                      <Typography>
+                        handicap {d.classname} - {parseInt(data.class[i + 1].classname) - 1}
+                      </Typography>
+                    </div>
+                  )
+                }
+              })
             }
           </div>
           {/*
@@ -213,7 +253,6 @@ function MatchDetailBody(props) {
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             { data && userscore &&
               <Scoreboard {...props} matchClass={data && data.class} />
-
             }
           </Collapse>
         </React.Fragment>

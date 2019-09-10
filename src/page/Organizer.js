@@ -37,8 +37,10 @@ export default function Organizer(props) {
   const { sess } = props
 
   React.useEffect(()=>{
-    console.log(props);
-  },[ ])
+    if(props.location){
+      props.setLocationPath(props.location.pathname)
+    }
+  },[ props.location ])
 
   return (
     <div className={classes.root}>

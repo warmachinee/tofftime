@@ -27,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: grey[50],
     cursor: 'pointer',
-    marginTop: 24
+    marginTop: 24,
+    boxSizing: 'border-box'
   },
   title: {
     color: primary[900],
@@ -58,7 +59,7 @@ export default function MBSchedule(props){
     <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Match Schedule
+          Invite and Schedule
         </Box>
       </Typography>
       <IconButton

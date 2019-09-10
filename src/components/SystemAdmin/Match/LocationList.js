@@ -1,4 +1,5 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
@@ -10,12 +11,17 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import IconButton from '@material-ui/core/IconButton';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
@@ -96,6 +102,29 @@ const useStyles = makeStyles(theme => ({
   deleteIcon: {
     color: primary[600]
   },
+  listImage: {
+    width: 36,
+    marginRight: 0,
+    [theme.breakpoints.up(500)]: {
+      width: 48,
+      marginRight: 16,
+    },
+  },
+  image: {
+    width: 36,
+    height: 36,
+    backgroundColor: grey[300],
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+    objectFit: 'cover',
+    cursor: 'pointer',
+    borderRadius: 4,
+    [theme.breakpoints.up(500)]: {
+      width: 48,
+      height: 48,
+    },
+  },
 
 }));
 
@@ -162,19 +191,37 @@ export default function LocationList(props){
     setEdittingField(d)
   }
 
-  async function handleLoadField(d){
+  function handleChangeField(e){
+    if(e){
+      setSearchField(e.target.value)
+      if(sess){
+        const socket = socketIOClient( API.getWebURL() )
+        socket.emit('search-client-message', {
+          action: "field",
+          userid: sess.userid,
+          text: e.target.value
+        })
+      }
+    }else{
+      setSearchField('')
+    }
+  }
+
+  function responseField(){
+    if(sess){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.on(`${sess.userid}-field-search-server-message`, (messageNew) => {
+        setData(messageNew.result.infolist)
+      })
+    }
+  }
+
+  async function handleLoadField(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadfield' : 'loadusersystem', {
-        ...(sess.typeid === 'admin')?
-        {
-          action: 'matchlist'
-        } :
-        {
-          action: 'fieldlist',
-          type: 0
-        }
+        ...(sess.typeid === 'admin')? { action: 'list' } : { action: 'fieldlist' }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
@@ -188,7 +235,8 @@ export default function LocationList(props){
       sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
         action: 'delete',
         fieldid: selectedDeleteItem.fieldid,
-        usertarget: selectedDeleteItem.hostid
+        usertarget: selectedDeleteItem.hostid,
+        realdel: 'true'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -197,23 +245,28 @@ export default function LocationList(props){
         variant: d.status === 'success' ? d.status : 'error',
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
+      if(d.status === 'success'){
+        handleClose()
+      }
     })
   }
 
   React.useEffect(()=>{
     handleLoadField()
-  },[ ])
+    responseField()
+  },[ open, editting ])
 
   return(
     <div>
       <div className={classes.searchGrid}>
         <ThemeProvider theme={theme}>
           <TextField
+            autoFocus
             className={classes.searchBox}
             variant="outlined"
             placeholder={ !searchField? "Search" : '' }
             value={searchField}
-            onChange={e =>setSearchField(e.target.value)}
+            onChange={handleChangeField}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -223,7 +276,7 @@ export default function LocationList(props){
               endAdornment: (
                 <InputAdornment position="end">
                   { searchField?
-                    <IconButton onClick={()=>setSearchField('')}>
+                    <IconButton onClick={()=>handleChangeField(null)}>
                       <ClearIcon color="inherit" fontSize="small"/>
                     </IconButton>
                     :
@@ -245,36 +298,18 @@ export default function LocationList(props){
       <List className={classes.list}>
         <Divider />
         { data &&
-          data.filter((item)=>{
-              return (
-                (item.fieldname.search(searchField) !== -1) ||
-                (item.fieldname.toLowerCase().search(searchField.toLowerCase()) !== -1)
-              )
-            }).map( d =>{
+          data.map( d =>{
             return d && (
-              <React.Fragment key={d.fieldid}>
-                <ListItem
-                  button
-                  style={{
-                    transition: '.2s',
-                    color: primary[900],
-                    ...(selectedField && selectedField.fieldid === d.fieldid) && { backgroundColor:  grey[400] }
-                  }}
-                  onClick={()=>setSelectedField(d)}>
-                  <ListItemText primary={d.fieldname}/>
-                  { editting &&
-                    <ListItemSecondaryAction>
-                      <IconButton onClick={()=>handleEdit(d)}>
-                        <CreateIcon classes={{ root: classes.createIcon }}/>
-                      </IconButton>
-                      <IconButton onClick={()=>handleOpen(d)}>
-                        <DeleteIcon classes={{ root: classes.deleteIcon }}/>
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  }
-                </ListItem>
-                <Divider />
-              </React.Fragment>
+              <ListField
+                key={d.fieldid}
+                {...props}
+                data={d}
+                selectedField={selectedField}
+                setSelectedField={setSelectedField}
+                handleEdit={handleEdit}
+                handleOpen={handleOpen}
+                editting={editting}
+                />
             );
           })
         }
@@ -301,5 +336,102 @@ export default function LocationList(props){
         </div>
       </TemplateDialog>
     </div>
+  );
+}
+
+function ListField(props){
+  const classes = useStyles();
+  const {
+    API, sess, token, setCSRFToken, isSupportWebp,
+    selectedField, setSelectedField, selectedFieldVersion, setSelectedFieldVersion,
+    data, handleEdit, handleOpen, editting
+  } = props
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
+  const [ fieldVersion, setFieldVersion ] = React.useState(null)
+
+  function handleClick(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
+
+  function handleSelectField(d, event){
+    handleFetchLoadFieldVersion(data.fieldid)
+    if(d.fieldversion > 1){
+      handleClick(event)
+    }else{
+      setSelectedField(data)
+      setSelectedFieldVersion(1)
+    }
+  }
+
+  function selectVersion(d){
+    handleClose()
+    setSelectedField(data)
+    setSelectedFieldVersion(d)
+  }
+
+  async function handleFetchLoadFieldVersion(fieldid){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
+        action: 'versioncount',
+        fieldid: fieldid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setFieldVersion(d)
+    })
+  }
+
+  return (
+    <React.Fragment>
+      <ListItem
+        button
+        style={{
+          transition: '.2s',
+          color: primary[900],
+          ...(selectedField && selectedField.fieldid === data.fieldid) && { backgroundColor:  grey[400] }
+        }}
+        onClick={e =>handleSelectField(data, e)}>
+        <ListItemIcon className={classes.listImage}>
+          { data.photopath ?
+            <img className={classes.image}
+              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
+            :
+            <Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate />
+          }
+        </ListItemIcon>
+        <ListItemText primary={data.fieldname}
+          {...(sess && sess.typeid !== 'admin' && data.fieldversion > 1)? { secondary: data.fieldversion + ' version' } : null } />
+        { editting &&
+          <ListItemSecondaryAction>
+            <IconButton onClick={()=>handleEdit(data)}>
+              <CreateIcon classes={{ root: classes.createIcon }}/>
+            </IconButton>
+            <IconButton onClick={()=>handleOpen(data)}>
+              <DeleteIcon classes={{ root: classes.deleteIcon }}/>
+            </IconButton>
+          </ListItemSecondaryAction>
+        }
+      </ListItem>
+      <Divider />
+      { data && data.fieldversion > 1 &&
+        <Menu
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          { fieldVersion &&
+            fieldVersion.map( d =>
+              <MenuItem key={d.createdate} onClick={()=>selectVersion(d)}>{'Version ' + d.version}</MenuItem>
+            )
+          }
+        </Menu>
+      }
+    </React.Fragment>
   );
 }

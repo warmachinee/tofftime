@@ -217,7 +217,7 @@ export default function MatchClass(props) {
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'matchsection', {
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classadd',
         matchid: matchid,
         classname: text
@@ -239,7 +239,7 @@ export default function MatchClass(props) {
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'matchsection', {
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classedit',
         matchid: matchid,
         classname: arrEdit,
@@ -262,7 +262,7 @@ export default function MatchClass(props) {
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'matchsection', {
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classremove',
         matchid: matchid,
         classno: parseInt(d)
@@ -288,7 +288,7 @@ export default function MatchClass(props) {
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'loadmatch', {
+      sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
         action: 'detail',
         matchid: matchid
     }, (csrf, d) =>{

@@ -67,6 +67,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
     marginTop: 24,
     overflow: 'auto',
+    boxSizing: 'border-box'
   },
   listText:{
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
@@ -217,7 +218,7 @@ const theme = createMuiTheme({
 
 export default function MBScheduleBody(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ edittingTeam, setEdittingTeam ] = React.useState(false);
   const [ addState, setAddState ] = React.useState(false);
   const [ teamState, setTeamState ] = React.useState(false);
@@ -312,7 +313,6 @@ export default function MBScheduleBody(props){
     } else {
       newChecked.splice(currentIndex, 1);
     }
-
     setChecked(newChecked);
   };
 
@@ -360,9 +360,7 @@ export default function MBScheduleBody(props){
   }
 
   function handleResponseForm(){
-    const endpoint = API.webURL()
-    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-    const socket = socketIOClient( hd + endpoint )
+    const socket = socketIOClient( API.getWebURL() )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
       setData(API.handleSortArrayByDate(messageNew, 'createdate', 'fullname'))
     })
@@ -388,7 +386,7 @@ export default function MBScheduleBody(props){
         })
         setChecked([])
         try {
-          handleFetch()
+          handleFetchSchedule()
         }catch(err) { console.log(err.message) }
       })
     }
@@ -433,12 +431,9 @@ export default function MBScheduleBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setMatchDetail(d.teamname)
         setData(d.userscore)
-        /*
-        console.log(d.teamname);
-        console.log(d.userscore);*/
       })
+      await handleFetchMatchDetail()
     }
   }
 
@@ -454,6 +449,7 @@ export default function MBScheduleBody(props){
         setCSRFToken(csrf)
         setData(API.handleSortArrayByDate(d.resultform, 'createdate', 'fullname'))
       })
+      await handleFetchMatchDetail()
     }
   }
 
@@ -481,6 +477,32 @@ export default function MBScheduleBody(props){
 
   return(
     <div className={classes.root}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        { BTN &&
+          <React.Fragment>
+            <a href={`/matchform/${matchid}`}
+              target='_blank'
+              style={{ textDecoration: 'none', color: 'inherit' }}>
+              <GreenTextButton className={classes.controlsEditButton}>
+                Form
+              </GreenTextButton>
+            </a>
+            <a href={`/schedule/${matchid}`}
+              target='_blank'
+              style={{ textDecoration: 'none', color: 'inherit' }}>
+              <GreenTextButton className={classes.controlsEditButton}>
+                <ClassIcon
+                  style={{ left:
+                    window.innerWidth > 500? 0 :
+                    window.innerWidth > 450? '20%':'10%'
+                  }}
+                  className={classes.controlsEditButtonIcon} />
+                Schedule
+              </GreenTextButton>
+            </a>
+          </React.Fragment>
+        }
+      </div>
       <List className={classes.listRoot}>
         <ListItem className={classes.controls}>
           <RedButton className={classes.iconButton} variant="contained"
@@ -494,13 +516,12 @@ export default function MBScheduleBody(props){
             style={{ marginLeft: window.innerWidth > 700? 16 : 0, marginTop: window.innerWidth > 700? 0 : 16, }}
             onClick={handleTeamOpen}
             variant="outlined">
-            { matchDetail && matchDetail.length > 0?
+            { matchDetail && matchDetail.team && matchDetail.team.length > 0?
               (
-                matchDetail.team && !matchDetail.team.status &&
-                ( 'Edit Team' + '( ' + matchDetail.team.length + ' )' )
+                'Edit Team' + '( ' + matchDetail.team.length + ' )'
               )
               :
-              'Edit Team'
+              'Create Team'
             }
           </GreenTextButton>
           <div style={{ flex: 1 }} />
@@ -517,13 +538,7 @@ export default function MBScheduleBody(props){
               </React.Fragment>
               :
               <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
-                <ClassIcon
-                  style={{ left:
-                    window.innerWidth > 500? 0 :
-                    window.innerWidth > 450? '20%':'10%'
-                  }}
-                  className={classes.controlsEditButtonIcon} />
-                {window.innerWidth >= 450? 'Set Player Team' : 'Set Team'}
+                Edit Schedule
               </GreenTextButton>
             }
           </div>
@@ -533,7 +548,7 @@ export default function MBScheduleBody(props){
             <React.Fragment>
               <div style={{ display: 'flex' }}>
                 <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
-                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedTeam !== 0 ? 'Selected Team : ' : 'Select Team :' }</div>
+                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedTeam !== 0 ? 'Selected Time : ' : 'Select Time :' }</div>
               </div>
               <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
                 { selectedTeam !== 0?
@@ -544,7 +559,7 @@ export default function MBScheduleBody(props){
                     d &&
                     <React.Fragment key={d.teamname}>{d.teamname}</React.Fragment>
                   )
-                  : <React.Fragment>No team selected</React.Fragment>
+                  : <React.Fragment>-</React.Fragment>
                 }
               </GreenTextButton>
             </React.Fragment>
@@ -796,8 +811,8 @@ export default function MBScheduleBody(props){
       </TemplateDialog>
       <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth={500}>
         <MatchTeam
-          {...props}
-          matchDetail={matchDetail}/>
+          handleTeamClose={handleTeamClose}
+          {...props} />
       </TemplateDialog>
       <TemplateDialog open={formState} handleClose={handleFormClose} maxWidth={500}>
         <MatchFormAction

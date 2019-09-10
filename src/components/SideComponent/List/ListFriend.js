@@ -1,4 +1,5 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
@@ -18,7 +19,7 @@ import {
   AccountCircle,
   ExpandLess,
   ExpandMore,
-  AddCircleOutline,
+  Search,
 
 } from '@material-ui/icons';
 
@@ -60,44 +61,43 @@ const useStyles = makeStyles(theme => ({
 
 export default function ListFriend(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, accountData, state, expanded, handleExpand } = props
+  const {
+    API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, accountData,
+    state, expanded, handleExpand, toggleAddFriend, handleAddFriendClose, addFriendState
+  } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
-
-  function toggleDialog(){
-    setOpen(!open)
-  }
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
-        action: 'friend'
+        action: 'friend',
+        fstatus: 'friend'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
-      console.log('ListFriend ', d);
     })
   }
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ props.addFriendState, props.notiState ])
 
   return (
     <React.Fragment>
       <Divider />
       <List>
         <ListItem button
-          onClick={()=>( data && data.length > 0 ) ? handleExpand('friend') : toggleDialog()}>
+          onClick={()=>( data && data.length > 0 ) ? handleExpand('friend') : toggleAddFriend()}>
           <ListItemIcon>
             { ( data && data.length > 0 ) ?
               (
                 expanded.friend ? <ExpandLess /> : <ExpandMore />
               )
               :
-              <AddCircleOutline />
+              <Search />
             }
           </ListItemIcon>
           <ListItemText primary={( data && data.length > 0 ) ? 'Friend' : 'Add friend'} />
@@ -105,22 +105,24 @@ export default function ListFriend(props) {
       </List>
       <Collapse in={state} timeout="auto" style={{ minHeight: 'auto' }}>
         <List component="div" disablePadding>
-          <ListItem button
-            onClick={()=>toggleDialog()}>
-            <ListItemIcon>
-              <AddCircleOutline />
-            </ListItemIcon>
-            <ListItemText primary="Add friend" />
-          </ListItem>
+          { data && data.length > 0 &&
+            <ListItem button
+              onClick={()=>toggleAddFriend()}>
+              <ListItemIcon>
+                <Search />
+              </ListItemIcon>
+              <ListItemText primary="Add friend" />
+            </ListItem>
+          }
           { data &&
             data.map( d =>
-              <ListFriendItem key={d} data={d} {...props} toggleDialog={toggleDialog}/>
+              <ListFriendItem key={d.userid} data={d} {...props} handleAddFriendClose={handleAddFriendClose} setData={setData}/>
             )
           }
         </List>
       </Collapse>
-      <TemplateDialog open={open} handleClose={toggleDialog}>
-        <AddFriend {...props} toggleDialog={toggleDialog}/>
+      <TemplateDialog open={addFriendState} handleClose={handleAddFriendClose}>
+        <AddFriend {...props} handleAddFriendClose={handleAddFriendClose}/>
       </TemplateDialog>
     </React.Fragment>
   )
@@ -128,7 +130,7 @@ export default function ListFriend(props) {
 
 function ListFriendItem(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, data } = props
+  const { API, BTN, COLOR, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, data, setData } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
   function handleMenuClick(event) {
@@ -141,18 +143,43 @@ function ListFriendItem(props) {
 
   function handleFriend(userid, action){
     if(sess){
+      responseConfirmFriend(sess.userid, userid)
+      setTimeout(()=>{
+        const socket = socketIOClient( API.getWebURL() )
+        socket.emit('friend-client-message', {
+          action: action,
+          userid: sess.userid,
+          targetid: userid
+        })
+      },1000)
+    }
+  }
+
+  function responseConfirmFriend(sessid, targetid){
+    if(sessid && targetid){
       const socket = socketIOClient( API.getWebURL() )
-      console.log({
-        action: action,
-        userid: sess.userid,
-        targetid: userid
-      });
-      socket.emit('friend-client-message', {
-        action: action,
-        userid: sess.userid,
-        targetid: userid
+      socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
+        if(messageNew && messageNew.status === 'success' && messageNew.result && messageNew.result.status === 'success'){
+          handleClose()
+          setTimeout(()=>{
+            handleFetch()
+          }, 1000)
+        }
       })
     }
+  }
+
+  async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadusersystem', {
+        action: 'friend',
+        fstatus: 'friend'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+    })
   }
 
   return (
@@ -160,9 +187,9 @@ function ListFriendItem(props) {
       <ListItem button
         onClick={handleMenuClick}>
         <ListItemIcon>
-          { false ?
+          { data.photopath ?
             <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(false) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
             :
             <AccountCircle classes={{ root: classes.avatar }} />
           }
@@ -171,12 +198,14 @@ function ListFriendItem(props) {
           primary={
             <React.Fragment>
               <Typography className={classes.name} variant="body2">
-                {"fullnamefullname"} {"lastnamelastnamelastname"}
+                {data.fullname} {data.lastname}
               </Typography>
             </React.Fragment>
-          } />
+          }
+          secondary={ data.nickname !== '-'? data.nickname : '' } />
       </ListItem>
       <UserOverview
+        alreadyFriend
         {...props}
         anchorEl={anchorEl}
         handleClose={handleClose}

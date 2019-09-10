@@ -93,9 +93,7 @@ export default function ScoreDisplay(props){
   const [ host, setHost ] = React.useState(null)
 
   function handleFetch(){
-    const endpoint = API.webURL()
-    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-    const socket = socketIOClient( hd + endpoint )
+    const socket = socketIOClient( API.getWebURL() )
     const userid = hostUserid? hostUserid : parseInt(props.computedMatch.params.userid)
     socket.on(`${matchid}-${userid}-show-server-message`, (messageNew) => {
       if(messageNew.status === 'success'){

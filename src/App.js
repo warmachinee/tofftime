@@ -73,6 +73,40 @@ const RouteMatchDetail = Loadable.Map({
   loading: () => null
 });
 
+const RouteSchedule = Loadable.Map({
+  loader: {
+    Schedule: () => import(/* webpackChunkName: "Schedule" */'./components/Detail/Schedule'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Schedule.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
+const RouteMatchFormResult = Loadable.Map({
+  loader: {
+    MatchFormResult: () => import(/* webpackChunkName: "MatchFormResult" */'./components/Detail/MatchFormResult'),
+  },
+  render(loaded, props) {
+    let Component = loaded.MatchFormResult.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteUserPage = Loadable.Map({
   loader: {
     UserPage: () => import(/* webpackChunkName: "UserPage" */'./page/UserPage'),
@@ -193,12 +227,14 @@ const Footer = Loadable({
   loading: () => null
 });
 
-
 import UserPage from './page/UserPage'
-import Organizer from './page/Organizer'
-import SystemAdmin from './page/SystemAdmin'
 import Profile from './components/User/Profile'
-import SignIn from './page/SignIn'
+import Management from './components/User/Panel/Management'
+import MatchFormResult from './components/Detail/MatchFormResult'
+import LocationEditor from './components/SystemAdmin/Match/LocationEditor'
+import CourseBody from './components/SystemAdmin/Course/CourseBody'
+import MatchBody from './components/SystemAdmin/Match/MatchBody'
+
 
 export default function App() {
   const [ token, setCSRFToken ] = React.useState(null)
@@ -211,7 +247,7 @@ export default function App() {
     state: false,
     message: null,
     variant: null,
-    autoHideDuration: 2000
+    autoHideDuration: 2000,
   })
   const [ snackBarL, handleSnackBarL ] = React.useState({
     state: false,
@@ -222,6 +258,7 @@ export default function App() {
     sTOTAL: 0,
     sPAR: 0
   })
+  const [ locationPath, setLocationPath ] = React.useState(null)
 
   const passingProps = {
     API: API,
@@ -235,6 +272,9 @@ export default function App() {
     setCSRFToken: setCSRFToken,
     isSupportWebp: isSupportWebp,
     handleSnackBar: handleSnackBar,
+    locationPath: locationPath,
+    setLocationPath: setLocationPath,
+
   }
 
   function toggleDrawer(){
@@ -270,15 +310,19 @@ export default function App() {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSess(d)
-      console.log(d);
     })
     await detectWebp()
   }
 
   React.useEffect(()=>{
     handleGetUserinfo()
-    //handleSess({ status: 1 })
   },[ ])
+
+  const [ ,updateState ] = React.useState(null)
+
+  React.useEffect(()=>{
+    updateState({})
+  },[ locationPath ])
 
   return (
     <div style={{ backgroundColor: '#f5f7f8' }}>
@@ -286,14 +330,12 @@ export default function App() {
         <Header
           {...passingProps}
           drawerOpen={toggleDrawer}
-          handleOpen={toggleDialog}
-          handleSess={handleSess} />
+          handleOpen={toggleDialog} />
       }
 
       {
         true ?
         <Switch>
-          {/*-------------------- Page --------------------*/}
           <RouteMain exact path="/"
             {...passingProps} />
           <RouteUserPage path="/user"
@@ -302,7 +344,6 @@ export default function App() {
             {...passingProps} />
           <RouteSystemAdmin path="/admin"
             {...passingProps} />
-          {/*-------------------- Detail --------------------*/}
           <RouteAnnounceDetail path="/announce/:detailparam"
             {...passingProps} />
           <RouteNewsDetail path="/news/:detailparam"
@@ -310,16 +351,18 @@ export default function App() {
           <RouteMatchDetail path="/match/:matchid"
             {...passingProps}
             handleSnackBarL={handleSnackBarL} />
-          {/*-------------------- Other --------------------*/}
+          <RouteSchedule path="/schedule/:matchid"
+            {...passingProps} />
+          <RouteMatchFormResult path="/matchform/:matchid"
+            {...passingProps} />
           <RouteSignIn path="/login"
             {...passingProps} />
           <RouteScoreDisplay path="/display/:matchid/:userid"
             {...passingProps} />
-          {/*-------------------- No match path --------------------*/}
           <Route component={NoMatch} />
         </Switch>
         :
-        <UserPage
+        <MatchBody
           {...passingProps} />
       }
 
@@ -342,6 +385,7 @@ export default function App() {
           autoHideDuration: 2000
         })}
         message={snackBar.message} />
+
       <SnackBarLong
         autoHideDuration={15000}
         open={snackBarL.state}
@@ -361,6 +405,7 @@ export default function App() {
         sTOTAL={snackBarL.sTOTAL}
         sPAR={snackBarL.sPAR}
         />
+
       <Dialog
         {...passingProps}
         open={open}

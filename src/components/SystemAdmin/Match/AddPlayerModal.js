@@ -1,5 +1,4 @@
 import React from 'react';
-import Fuse from 'fuse.js';
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
@@ -18,7 +17,9 @@ import Collapse from '@material-ui/core/Collapse';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
+import Avatar from '@material-ui/core/Avatar';
 
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -96,6 +97,18 @@ const useStyles = makeStyles(theme => ({
   addCircleIcon: {
     color: primary[600]
   },
+  avatar: {
+    fontSize: 36
+  },
+  avatarImage: {
+    width: 36,
+    height: 36,
+  },
+  name: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+  },
 
 }))
 
@@ -126,30 +139,13 @@ const theme = createMuiTheme({
 
 export default function AddPlayerModal(props){
   const classes = useStyles();
-  const { playerAction, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { playerAction, sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp } = props
 
   const [ data, setData ] = React.useState(null)
   const [ createState, setCreateState ] = React.useState(false)
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ fullname, setFullname ] = React.useState('')
   const [ lastname, setLastname ] = React.useState('')
-
-  function handleSearch(){
-    if(data){
-      var options = {
-        shouldSort: true,
-        caseSensitive: true,
-        minMatchCharLength: 2,
-        keys: [
-          "fullname",
-          "lastname"
-        ]
-      }
-      var fuse = new Fuse(data, options)
-      var result = fuse.search(searchUser)
-      return result
-    }
-  }
 
   function handleInviteUser(d){
     var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
@@ -158,10 +154,10 @@ export default function AddPlayerModal(props){
     socket.emit('match-request-client-message', {
       action: "invite",
       matchid: matchid,
-      userid: [ sess.userid, d.userid],
+      userid: [ sess.userid, d.userid ],
     })
   }
-  
+
   async function handleCreatePlayer(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
@@ -242,23 +238,50 @@ export default function AddPlayerModal(props){
     }
   }
 
+  function handleChangePerson(e){
+    if(e){
+      setSearchUser(e.target.value)
+      if(sess){
+        const socket = socketIOClient( API.getWebURL() )
+        socket.emit('search-client-message', {
+          action: "person",
+          userid: sess.userid,
+          text: e.target.value
+        })
+      }
+    }else{
+      setSearchUser('')
+    }
+  }
+
+  function responsePlayer(){
+    if(sess){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
+        setData(messageNew.result.infolist)
+      })
+    }
+  }
+
   React.useEffect(()=>{
-    handleLoadUser()
+    responsePlayer()
   },[ ])
 
   return(
     <div className={classes.root}>
-      <div className={classes.createGrid}>
-        <GreenTextButton
-          variant="outlined"
-          className={classes.createButton}
-          onClick={()=>setCreateState(!createState)}>
-          <ExpandMoreIcon
-            className={classes.expandIcon}
-            style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
-          Create Player
-        </GreenTextButton>
-      </div>
+      { sess.typeid === 'admin' &&
+        <div className={classes.createGrid}>
+          <GreenTextButton
+            variant="outlined"
+            className={classes.createButton}
+            onClick={()=>setCreateState(!createState)}>
+            <ExpandMoreIcon
+              className={classes.expandIcon}
+              style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
+            Create Player
+          </GreenTextButton>
+        </div>
+      }
       <Collapse in={createState} timeout="auto" unmountOnExit>
         <div className={classes.textFieldGrid}>
           <ThemeProvider theme={theme}>
@@ -291,12 +314,11 @@ export default function AddPlayerModal(props){
       <ThemeProvider theme={theme}>
         <TextField
           autoFocus
-          disabled={data === null}
           className={classes.searchBox}
           variant="outlined"
           placeholder={ !searchUser? "Search player" : '' }
           value={searchUser}
-          onChange={e =>setSearchUser(e.target.value)}
+          onChange={handleChangePerson}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -306,7 +328,7 @@ export default function AddPlayerModal(props){
             endAdornment: (
               <InputAdornment position="end">
                 { searchUser?
-                  <IconButton onClick={()=>setSearchUser('')}>
+                  <IconButton onClick={()=>handleChangePerson(null)}>
                     <ClearIcon color="inherit" fontSize="small"/>
                   </IconButton>
                   :
@@ -319,23 +341,35 @@ export default function AddPlayerModal(props){
       </ThemeProvider>
       <List className={classes.root}>
         { data && !data.status &&
-          handleSearch().map(value => {
+          data.map(value => {
               return value && (
                 <React.Fragment key={value.firstname + `(${value.userid})`}>
                   <ListItem role={undefined} dense button
                     onClick={()=>playerAction === 'add' ? handleAddUser(value) : handleInviteUser(value)}>
-                    <ListItemIcon className={classes.listItemIcon}>
-                      <AddCircleIcon classes={{ root: classes.addCircleIcon }}/>
+                    <ListItemIcon>
+                      { value.photopath ?
+                        <Avatar className={classes.avatarImage}
+                          src={API.getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        :
+                        <AccountCircleIcon classes={{ root: classes.avatar }} />
+                      }
                     </ListItemIcon>
-                    <ListItemText className={classes.listText} primary={value.fullname} />
-                    <ListItemText className={classes.listText} primary={value.lastname} />
+                    <ListItemText
+                      primary={
+                        <React.Fragment>
+                          <Typography className={classes.name} variant="body2">
+                            {value.fullname} {value.lastname}
+                          </Typography>
+                        </React.Fragment>
+                      }
+                      secondary={ value.nickname !== '-'? value.nickname : '' } />
                   </ListItem>
                   <Divider />
                 </React.Fragment>
               );
           })
         }
-        { searchUser && handleSearch().length === 0 &&
+        { searchUser && data && data.length === 0 &&
           <ListItem>
             <Typography component="div" style={{ width: '100%' }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
