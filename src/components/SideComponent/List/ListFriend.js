@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
 export default function ListFriend(props) {
   const classes = useStyles();
   const {
-    API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, accountData,
+    API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess,
     state, expanded, handleExpand, toggleAddFriend, handleAddFriendClose, addFriendState
   } = props
   const [ data, setData ] = React.useState(null)

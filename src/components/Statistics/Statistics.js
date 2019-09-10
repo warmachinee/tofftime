@@ -72,7 +72,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Statistics(props) {
   const classes = useStyles();
-  const { API, isSupportWebp, accountData, token, setCSRFToken, open, userid } = props
+  const { API, isSupportWebp, token, setCSRFToken, open, userid } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){

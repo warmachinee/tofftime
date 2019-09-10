@@ -124,6 +124,23 @@ const RouteUserPage = Loadable.Map({
   loading: () => null
 });
 
+const RoutePageOrganizer = Loadable.Map({
+  loader: {
+    PageOrganizer: () => import(/* webpackChunkName: "PageOrganizer" */'./components/User/PageOrganizer'),
+  },
+  render(loaded, props) {
+    let Component = loaded.PageOrganizer.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props}/>
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteOrganizer = Loadable.Map({
   loader: {
     Organizer: () => import(/* webpackChunkName: "Organizer" */'./page/Organizer'),
@@ -231,10 +248,6 @@ import UserPage from './page/UserPage'
 import Profile from './components/User/Profile'
 import Management from './components/User/Panel/Management'
 import MatchFormResult from './components/Detail/MatchFormResult'
-import LocationEditor from './components/SystemAdmin/Match/LocationEditor'
-import CourseBody from './components/SystemAdmin/Course/CourseBody'
-import MatchBody from './components/SystemAdmin/Match/MatchBody'
-
 
 export default function App() {
   const [ token, setCSRFToken ] = React.useState(null)
@@ -242,6 +255,7 @@ export default function App() {
   const [ drawerState, setDrawerState ] = React.useState(false);
   const [ sess, handleSess ] = React.useState(null)
   const [ accountData, handleAccountData ] = React.useState(null)
+  const [ pageData, handlePageData ] = React.useState(null)
   const [ isSupportWebp, handleSupportWebp ] = React.useState(false)
   const [ snackBar, handleSnackBar ] = React.useState({
     state: false,
@@ -267,6 +281,8 @@ export default function App() {
     sess: sess,
     handleSess: handleSess,
     accountData: accountData,
+    pageData: pageData,
+    handlePageData: handlePageData,
     handleAccountData: handleAccountData,
     token: token,
     setCSRFToken: setCSRFToken,
@@ -326,7 +342,7 @@ export default function App() {
 
   return (
     <div style={{ backgroundColor: '#f5f7f8' }}>
-      { !/\/user/.test(window.location.pathname) &&
+      { !/\/user|\/organizer/.test(window.location.pathname) &&
         <Header
           {...passingProps}
           drawerOpen={toggleDrawer}
@@ -339,6 +355,8 @@ export default function App() {
           <RouteMain exact path="/"
             {...passingProps} />
           <RouteUserPage path="/user"
+            {...passingProps} />
+          <RoutePageOrganizer path="/organizer/:pageid"
             {...passingProps} />
           <RouteOrganizer path="/page/:pageid"
             {...passingProps} />
@@ -362,11 +380,11 @@ export default function App() {
           <Route component={NoMatch} />
         </Switch>
         :
-        <MatchBody
+        <MatchEditor
           {...passingProps} />
       }
 
-      { sess && sess.status !== 1 && /\/user|\/admin/.test(window.location.pathname) &&
+      { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&
         <Redirect to={`/`} />
       }
 
@@ -417,7 +435,7 @@ export default function App() {
         drawerState={drawerState}
         drawerClose={toggleDrawer} />
 
-      { !/\/user/.test(window.location.pathname) &&
+      { !/\/user|\/organizer/.test(window.location.pathname) &&
         <Footer />
       }
     </div>

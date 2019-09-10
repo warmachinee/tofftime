@@ -140,11 +140,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   controlsEditButtonIcon: {
-    position: 'absolute',
-    [theme.breakpoints.up(500)]: {
-      position: 'relative',
-      marginRight: 8,
-    },
+    marginRight: 8,
   },
   controlsSecondary: {
     cursor: 'auto',
@@ -366,6 +362,38 @@ export default function MBScheduleBody(props){
     })
   }
 
+  async function handleFetchSwitchHostForm(){
+    if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+          action: 'switchhostform',
+          matchid: matchid,
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        if(d.status === 'success'){
+          handleSnackBar({
+            state: true,
+            message: d.action,
+            variant: 'success',
+            autoHideDuration: 5000
+          })
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: d.status === 'success' ? 'success' : 'error',
+            autoHideDuration: d.status === 'success'? 2000 : 5000
+          })
+        }
+        try {
+          handleFetchSchedule()
+        }catch(err) { console.log(err.message) }
+      })
+    }
+  }
+
   async function handleSetTeam(userid, teamno){
     if(matchid){
       const resToken = token? token : await API.xhrGet('getcsrf')
@@ -491,12 +519,7 @@ export default function MBScheduleBody(props){
               target='_blank'
               style={{ textDecoration: 'none', color: 'inherit' }}>
               <GreenTextButton className={classes.controlsEditButton}>
-                <ClassIcon
-                  style={{ left:
-                    window.innerWidth > 500? 0 :
-                    window.innerWidth > 450? '20%':'10%'
-                  }}
-                  className={classes.controlsEditButtonIcon} />
+                <ClassIcon className={classes.controlsEditButtonIcon} />
                 Schedule
               </GreenTextButton>
             </a>
@@ -543,6 +566,16 @@ export default function MBScheduleBody(props){
             }
           </div>
         </ListItem>
+        { edittingTeam &&
+          <ListItem style={{ justifyContent: 'flex-end' }}>
+            <GreenTextButton
+              className={classes.button}
+              onClick={handleFetchSwitchHostForm}
+              variant="outlined">
+              Switch Host
+            </GreenTextButton>
+          </ListItem>
+        }
         <ListItem className={classes.controlsSecondary}>
           { edittingTeam &&
             <React.Fragment>

@@ -73,7 +73,7 @@ export default function OrganizerOverview(props) {
           { true ?
             /*
             <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
+              src={API.getPictureUrl(false) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
             <Avatar className={classes.avatarImage}
               src="https://singhaelitegolf.com/wp-content/uploads/2014/03/SINGHA-Logo.jpg"/>
             :

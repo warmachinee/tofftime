@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function ListFollow(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, accountData, state, expanded, handleExpand } = props
+  const { API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, state, expanded, handleExpand } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){

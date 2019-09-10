@@ -39,7 +39,7 @@ const RouteMatchEditor = Loadable.Map({
 });
 
 export default function Match(props){
-  const { sess } = props
+  const { sess, pageOrganizer, pageData } = props
 
   const passingProps = {
     API: props.API,
@@ -54,6 +54,9 @@ export default function Match(props){
     isSupportWebp: props.isSupportWebp,
     handleSnackBar: props.handleSnackBar,
     location: props.location,
+    pageid: props.pageid,
+    pageOrganizer: props.pageOrganizer,
+    pageData: props.pageData,
     ...(sess && sess.typeid !== 'admin' && {
       open: props.open,
       handleDrawerClick: props.handleDrawerClick,
@@ -83,9 +86,11 @@ export default function Match(props){
         </React.Fragment>
         :
         <React.Fragment>
-          <RouteMatchBody exact path="/user/management/match"
+          <RouteMatchBody exact
+            path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`}
             {...passingProps} />
-          <RouteMatchEditor path="/user/management/match/:matchparam"
+          <RouteMatchEditor
+            path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/:matchparam`}
             {...passingProps} />
         </React.Fragment>
       }

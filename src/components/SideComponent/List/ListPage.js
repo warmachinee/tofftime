@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function ListPage(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, accountData } = props
+  const { API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, pageid } = props
   const [ pageList, setPageList ] = React.useState(null)
 
   async function handleFetchPage(){
@@ -55,8 +55,10 @@ export default function ListPage(props) {
   },[ props.createPageState ])
 
   return pageList && (
-    pageList.map( d =>
-      <BTN.NoStyleLink to={`/user/page/${d.pageid}`} key={d.pageid}>
+    pageList.filter( item =>{
+      return item.pageid !== pageid
+    }).map( d =>
+      <BTN.NoStyleLink to={`/organizer/${d.pageid}`} key={d.pageid}>
         <ListItem button>
           <ListItemIcon>
             { d.logo ?

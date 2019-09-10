@@ -153,6 +153,7 @@ export default function UserPage(props) {
   const classes = useStyles();
   const {
     COLOR, API, BTN, isSupportWebp, sess, handleSess, accountData, handleAccountData,
+    pageOrganizer, pageData,
     token, setCSRFToken, drawerState, drawerClose
   } = props
   const [ open, setOpen ] = React.useState( window.innerWidth >= 900 );
@@ -175,7 +176,9 @@ export default function UserPage(props) {
     token: props.token,
     setCSRFToken: props.setCSRFToken,
     isSupportWebp: props.isSupportWebp,
-    handleSnackBar: props.handleSnackBar
+    handleSnackBar: props.handleSnackBar,
+    pageOrganizer: props.pageOrganizer,
+    pageData: props.pageData,
   }
 
   const dialogProps = {
@@ -273,6 +276,9 @@ export default function UserPage(props) {
     if(sess && sess.status === 1 && sess.typeid !== 'admin'){
       handleFetchInfo()
     }
+    if (pageOrganizer && !sess) {
+      handleFetchInfo()
+    }
     if(sess && sess.status === 1 && sess.typeid === 'admin'){
       window.location.pathname = '/admin'
     }
@@ -280,19 +286,23 @@ export default function UserPage(props) {
 
   return (
     <div className={classes.root}>
-      <UserHeader {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData}/>
+      <UserHeader {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData} />
       <SideMenu {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData} />
       <main className={classes.content}>
         <div className={classes.toolbar} />
 
-        <Route exact path="/user" render={()=> <UserDashboard {...props} {...dialogProps}/>} />
-        <RouteProfile path="/user/profile/:userid"
-          {...passingProps} />
-        <RouteTimeline path="/user/timeline/:userid"
-          {...passingProps} location={props.location} />
-        <RouteManagement path="/user/management"
+        <Route exact path={ pageOrganizer ? "/organizer" : "/user" }
+          render={()=> <UserDashboard {...props} {...dialogProps}/>} />
+        { !pageOrganizer &&
+          <React.Fragment>
+            <RouteProfile path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/:userid`}
+              {...passingProps} />
+            <RouteTimeline path="/user/timeline/:userid"
+              {...passingProps} location={props.location} />
+          </React.Fragment>
+        }
+        <RouteManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}
           {...passingProps} {...dialogProps} location={props.location} />
-
       </main>
 
       <NotificationsDialog
@@ -338,12 +348,6 @@ function UserDashboard(props){
 
       <History {...props} open={open}/>
 
-      {/* sess && sess.status === 1 && sess.typeid !== 'admin' &&
-        props.computedMatch &&
-        parseInt(props.computedMatch.params.userid) !== parseInt(sess.userid) &&
-        <Redirect to={`/user`/${sess.userid}} />
-        */
-      }
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&
         <Redirect to={`/admin`} />
       }

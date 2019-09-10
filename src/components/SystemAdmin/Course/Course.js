@@ -35,6 +35,9 @@ export default function Course(props){
     isSupportWebp: props.isSupportWebp,
     handleSnackBar: props.handleSnackBar,
     location: props.location,
+    pageid: props.pageid,
+    pageOrganizer: props.pageOrganizer,
+    pageData: props.pageData,
     ...(sess && sess.typeid !== 'admin' && {
       open: props.open,
       handleDrawerClick: props.handleDrawerClick,

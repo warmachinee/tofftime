@@ -82,7 +82,7 @@ const StyledButton = withStyles(theme => ({
 
 export default function Management(props) {
   const classes = useStyles();
-  const { sess } = props
+  const { sess, pageOrganizer, pageData } = props
 
   const passingProps = {
     API: props.API,
@@ -97,6 +97,9 @@ export default function Management(props) {
     isSupportWebp: props.isSupportWebp,
     handleSnackBar: props.handleSnackBar,
     location: props.location,
+    pageid: props.pageid,
+    pageOrganizer: props.pageOrganizer,
+    pageData: props.pageData,
     ...(sess && sess.typeid !== 'admin' && {
       open: props.open,
       handleDrawerClick: props.handleDrawerClick,
@@ -119,12 +122,12 @@ export default function Management(props) {
     return (sess && sess.status === 1) && (
       <React.Fragment>
         <div style={{ marginTop: 36 }}>
-          <Link to={`/user/management/match`} className={classes.linkElement}>
+          <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Match
             </StyledButton>
           </Link>
-          <Link to={`/user/management/course`} className={classes.linkElement}>
+          <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Course
             </StyledButton>
@@ -155,9 +158,9 @@ export default function Management(props) {
     <Paper className={classes.root}>
       { (sess && sess.status === 1) &&
         <React.Fragment>
-          <Route exact path={`/user/management`} component={SystemComponent} />
-          <RouteMatch path={`/user/management/match`} {...passingProps}/>
-          <RouteCourse path={`/user/management/course`} {...passingProps}/>
+          <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`} component={SystemComponent} />
+          <RouteMatch path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} {...passingProps}/>
+          <RouteCourse path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} {...passingProps}/>
           {/*<RouteUser path={`/user/mangament/user`} {...passingProps}/>*/}
         </React.Fragment>
       }

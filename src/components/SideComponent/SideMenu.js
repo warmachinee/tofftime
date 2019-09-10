@@ -155,7 +155,8 @@ export default function SideMenu(props) {
   const {
     API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, open,
     handleDrawerOpen, handleDrawerClose, accountData,
-    notiData, toggleNoti, toggleHistory, toggleUpcoming, toggleCreatePage, toggleCreateMatch
+    notiData, toggleNoti, toggleHistory, toggleUpcoming, toggleCreatePage, toggleCreateMatch,
+    pageOrganizer, pageData
   } = props
   const [ pageList, setPageList ] = React.useState(null)
   const [ confirmLogout, setConfirmLogout ] = React.useState(false)
@@ -192,10 +193,6 @@ export default function SideMenu(props) {
       handleSess(d)
     })
   }
-
-  React.useEffect(()=>{
-
-  },[ ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -234,49 +231,81 @@ export default function SideMenu(props) {
             </IconButton>
           </div>*/
         }
-        { accountData &&
+        { ( accountData || pageData ) &&
           <React.Fragment>
             <div className={classes.userInfo}>
-              <BTN.NoStyleLink to={`/user/profile/${accountData.userid}`}>
+              <BTN.NoStyleLink
+                to={`/user/profile/${accountData.userid}`}>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                   <IconButton style={{ padding: 0 }}>
-                    { accountData.photopath ?
-                      <Avatar
-                        style={{ transition: '.2s' }}
-                        className={clsx({
-                          [classes.avatarImageInfo]: open,
-                          [classes.avatarImage]: !open
-                        })}
-                        src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                    { pageOrganizer ?
+                      (
+                        pageData.logo ?
+                        <Avatar
+                          style={{ transition: '.2s' }}
+                          className={clsx({
+                            [classes.avatarImageInfo]: open,
+                            [classes.avatarImage]: !open
+                          })}
+                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        :
+                        <AccountCircle
+                          style={{ transition: '.2s', color: COLOR.grey[900] }}
+                          classes={{
+                            root: clsx({
+                              [classes.avatarInfo]: open,
+                              [classes.avatar]: !open
+                            })
+                          }} />
+                      )
                       :
-                      <AccountCircle
-                        style={{ transition: '.2s', color: COLOR.grey[900] }}
-                        classes={{
-                          root: clsx({
-                            [classes.avatarInfo]: open,
-                            [classes.avatar]: !open
-                          })
-                        }} />
+                      (
+                        accountData.photopath ?
+                        <Avatar
+                          style={{ transition: '.2s' }}
+                          className={clsx({
+                            [classes.avatarImageInfo]: open,
+                            [classes.avatarImage]: !open
+                          })}
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        :
+                        <AccountCircle
+                          style={{ transition: '.2s', color: COLOR.grey[900] }}
+                          classes={{
+                            root: clsx({
+                              [classes.avatarInfo]: open,
+                              [classes.avatar]: !open
+                            })
+                          }} />
+                      )
                     }
                   </IconButton>
                 </div>
               </BTN.NoStyleLink>
               { open &&
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <BTN.NoStyleLink to={`/user/profile/${accountData.userid}`}>
+                  <BTN.NoStyleLink
+                    to={`/user/profile/${accountData.userid}`}>
                     <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
                       <Typography variant="body1" className={classes.userTitle}>
-                        {accountData.fullname} {accountData.lastname}
+                        { pageOrganizer ?
+                          <React.Fragment>{pageData.pagename}</React.Fragment>
+                          :
+                          <React.Fragment>{accountData.fullname} {accountData.lastname}</React.Fragment>
+                        }
                       </Typography>
                     </Button>
                   </BTN.NoStyleLink>
-                  <BTN.NoStyleLink to={`/user/profile/${accountData.userid}`}>
-                    <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
-                      <Typography variant="caption" className={classes.userTitle}>
-                        {accountData.email}
-                      </Typography>
-                    </Button>
-                  </BTN.NoStyleLink>
+                  { !pageOrganizer &&
+                    <BTN.NoStyleLink
+                      to={`/user/profile/${accountData.userid}`}>
+                      <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
+                        <Typography variant="caption" className={classes.userTitle}>
+                          {accountData.email}
+                        </Typography>
+                      </Button>
+                    </BTN.NoStyleLink>
+                  }
                 </div>
               }
             </div>
@@ -309,6 +338,21 @@ export default function SideMenu(props) {
           </ListItem>
           <Divider />
         </List>
+        { pageOrganizer && accountData &&
+          <BTN.NoStyleLink to='/user'>
+            <ListItem button>
+              <ListItemIcon>
+                { accountData.photopath ?
+                  <Avatar className={classes.avatarImage}
+                    src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                  :
+                  <AccountCircle classes={{ root: classes.avatar }} />
+                }
+              </ListItemIcon>
+              <ListItemText primary="User" />
+            </ListItem>
+          </BTN.NoStyleLink>
+        }
         <List>
           <ListItem button onClick={toggleCreatePage}>
             <ListItemIcon>
@@ -331,14 +375,14 @@ export default function SideMenu(props) {
             </BTN.NoStyleLink>
           }
           { sess &&
-            <BTN.NoStyleLink to={`/user` /*${sess.userid}*/}>
+            <BTN.NoStyleLink to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}>
               <ListItem button>
                 <ListItemIcon><Dashboard /></ListItemIcon>
                 <ListItemText primary="Dashboard" />
               </ListItem>
             </BTN.NoStyleLink>
           }
-          <BTN.NoStyleLink to={`/user/management`}>
+          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}>
             <ListItem button>
               <ListItemIcon><SettingsApplications /></ListItemIcon>
               <ListItemText primary="Management" />

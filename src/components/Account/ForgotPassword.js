@@ -50,7 +50,6 @@ const theme = createMuiTheme({
   },
 });
 
-
 export default function SignInComponent(props){
   const classes = useStyles();
   const { API, COLOR, BTN, token, setCSRFToken, handleSnackBar } = props

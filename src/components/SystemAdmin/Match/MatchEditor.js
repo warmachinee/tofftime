@@ -141,6 +141,8 @@ export default function MatchEditor(props){
         handleFetch(parseInt(match.params.matchparam))
         setParam(parseInt(match.params.matchparam))
       }
+      console.log(match);
+      console.log(props);
     }
 
   },[ /*props.location*/ ])

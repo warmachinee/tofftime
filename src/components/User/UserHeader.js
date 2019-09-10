@@ -116,7 +116,8 @@ export default function UserHeader(props) {
   const classes = useStyles();
   const {
     API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess,
-    accountData, notiData, setNotiData, open, handleDrawerClick, toggleNoti
+    accountData, notiData, setNotiData, open, handleDrawerClick, toggleNoti,
+    pageOrganizer, pageData
   } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
@@ -243,16 +244,27 @@ export default function UserHeader(props) {
             }
           </IconButton>
           <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
-          { accountData &&
+          { ( accountData || pageData ) &&
             <React.Fragment>
               { window.innerWidth < 600 ?
                 <React.Fragment>
                   <IconButton className={classes.accountAvatar} onClick={handleClick}>
-                    { accountData.photopath ?
-                      <Avatar className={classes.avatarImage}
-                        src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                    { pageOrganizer ?
+                      (
+                        pageData.logo ?
+                        <Avatar className={classes.avatarImage}
+                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        :
+                        <AccountIcon classes={{ root: classes.avatar }} />
+                      )
                       :
-                      <AccountIcon classes={{ root: classes.avatar }} />
+                      (
+                        accountData.photopath ?
+                        <Avatar className={classes.avatarImage}
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        :
+                        <AccountIcon classes={{ root: classes.avatar }} />
+                      )
                     }
                   </IconButton>
                   <Typography variant="subtitle1" noWrap className={classes.accountTitle} onClick={handleClick}
@@ -264,24 +276,39 @@ export default function UserHeader(props) {
                 </React.Fragment>
                 :
                 <React.Fragment>
-                  <Link to={`/user/profile/${accountData.userid}/`}
+                  <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/profile/${ pageOrganizer ? pageData.pageid : accountData.userid }/`}
                     style={{ textDecoration: 'none', color: 'inherit' }}>
                     <IconButton className={classes.accountAvatar}>
-                      { accountData.photopath ?
-                        <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                      { pageOrganizer ?
+                        (
+                          pageData.logo ?
+                          <Avatar className={classes.avatarImage}
+                            src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          :
+                          <AccountIcon classes={{ root: classes.avatar }} />
+                        )
                         :
-                        <AccountIcon classes={{ root: classes.avatar }} />
+                        (
+                          accountData.photopath ?
+                          <Avatar className={classes.avatarImage}
+                            src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          :
+                          <AccountIcon classes={{ root: classes.avatar }} />
+                        )
                       }
                     </IconButton>
                   </Link>
-                  <Link to={`/user/profile/${accountData.userid}/`}
+                  <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/profile/${ pageOrganizer ? pageData.pageid : accountData.userid }/`}
                     style={{ textDecoration: 'none', color: 'inherit', }}>
                     <Typography variant="subtitle1" noWrap className={classes.accountTitle}
                       style={{
                         transition: '.2s', ...open? { width: 0 } : { width: 150 }
                       }}>
-                      {accountData.fullname} {accountData.lastname}
+                      { pageOrganizer ?
+                        <React.Fragment>{pageData.pagename}</React.Fragment>
+                        :
+                        <React.Fragment>{accountData.fullname} {accountData.lastname}</React.Fragment>
+                      }
                     </Typography>
                   </Link>
                 </React.Fragment>
@@ -298,14 +325,20 @@ export default function UserHeader(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        { accountData &&
+        { /\/organizer/.test(window.location.pathname) &&
+          <Link to='/user'
+            style={{ textDecoration: 'none', color: 'inherit' }}>
+            <MenuItem onClick={handleClose}>User</MenuItem>
+          </Link>
+        }
+        { ( accountData || pageData ) &&
           ( /\/user\/profile/.test(window.location.pathname) ?
-          <Link to={`/user`/*${accountData.userid}*/}
+          <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>Dashboard</MenuItem>
           </Link>
           :
-          <Link to={`/user/profile/${accountData.userid}/`}
+          <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/profile/${ pageOrganizer ? pageData.pageid : accountData.userid }/`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>Profile</MenuItem>
           </Link>

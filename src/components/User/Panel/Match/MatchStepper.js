@@ -42,7 +42,7 @@ const labelSteps = [
 export default function MatchStepper(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const { API, BTN, token, setCSRFToken, handleSnackBar, handleCreateMatchClose } = props
+  const { API, BTN, token, setCSRFToken, handleSnackBar, handleCreateMatchClose, pageOrganizer, pageData } = props
   const [ activeStep, setActiveStep ] = React.useState(0);
   const maxSteps = labelSteps.length;
   const [ matchName, setMatchName ] = React.useState('');
@@ -147,6 +147,10 @@ export default function MatchStepper(props) {
 
     if(selectedFieldVersion !== 1){
       Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
+    }
+
+    if(pageOrganizer){
+      Object.assign(sendObj, { pageid: pageData.pageid });
     }
 
     const resToken = token? token : await API.xhrGet('getcsrf')
