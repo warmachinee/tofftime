@@ -37,7 +37,8 @@ const useStyles = makeStyles(theme => ({
   },
   grid: {
     boxSizing: 'border-box',
-    marginTop: 24
+    marginTop: 24,
+    padding: 12
   },
   listImageDown: {
     width: 36,
@@ -73,7 +74,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function History(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, open, userid } = props
+  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -92,7 +93,15 @@ export default function History(props) {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
-      setData(d)
+      if(pageOrganizer){
+        setData(d.filter( item =>{
+          return item.pageid !== 0
+        }))
+      }else{
+        setData(d.filter( item =>{
+          return item.pageid === 0
+        }))
+      }
     })
   }
 

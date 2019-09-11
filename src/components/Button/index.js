@@ -1,4 +1,5 @@
 import Primary from './Primary'
+import PrimaryOutlined from './PrimaryOutlined'
 import PrimaryText from './PrimaryText'
 import Red from './Red'
 import Grey from './Grey'
@@ -7,6 +8,7 @@ import NoStyleLink from './NoStyleLink'
 
 export {
   Primary,
+  PrimaryOutlined,
   PrimaryText,
   Red,
   Grey,

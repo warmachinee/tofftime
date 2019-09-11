@@ -20,6 +20,11 @@ const Statistics = Loadable({
   loading: () => null
 });
 
+const PageOrganizerOverview = Loadable({
+  loader: () => import(/* webpackChunkName: "PageOrganizerOverview" */ './../components/User/PageOrganizerOverview'),
+  loading: () => null
+});
+
 const Upcoming = Loadable({
   loader: () => import(/* webpackChunkName: "Upcoming" */ './../components/User/Upcoming'),
   loading: () => null
@@ -291,7 +296,7 @@ export default function UserPage(props) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
 
-        <Route exact path={ pageOrganizer ? "/organizer" : "/user" }
+        <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
           render={()=> <UserDashboard {...props} {...dialogProps}/>} />
         { !pageOrganizer &&
           <React.Fragment>
@@ -332,7 +337,7 @@ export default function UserPage(props) {
 
 function UserDashboard(props){
   const classes = useStyles();
-  const { sess, open } = props
+  const { sess, open, pageOrganizer } = props
 
   return(
     <React.Fragment>
@@ -343,9 +348,11 @@ function UserDashboard(props){
         </div>
         <FriendFollowList {...props}/>*/
       }
+      { pageOrganizer &&
+        <PageOrganizerOverview {...props} />
+      }
       <Statistics {...props} />
       <Upcoming {...props} />
-
       <History {...props} open={open}/>
 
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&

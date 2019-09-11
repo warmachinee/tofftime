@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Organizer(props) {
   const classes = useStyles();
-  const { sess } = props
+  const { API, sess, token, setCSRFToken, BTN } = props
 
   React.useEffect(()=>{
     if(props.location){
@@ -44,10 +44,14 @@ export default function Organizer(props) {
 
   return (
     <div className={classes.root}>
-      <OrganizerAnnounce {...props} />
-      <OrganizerOverview {...props} />
-      <OrganizerMatchList {...props} />
-      <OrganizerNews {...props} />
+      { props.computedMatch &&
+        <React.Fragment>
+          <OrganizerAnnounce {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
+          <OrganizerOverview {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
+          <OrganizerMatchList {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
+          <OrganizerNews {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
+        </React.Fragment>
+      }
     </div>
   );
 }

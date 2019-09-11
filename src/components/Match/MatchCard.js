@@ -99,7 +99,7 @@ export default function MatchCard(props) {
             </div>
           )
           break;
-        case data.permission === 'none' && data.matchstatus !== 1:
+        case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
               <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>

@@ -62,7 +62,7 @@ export default function Course(props){
         <RouteCourseBody exact path="/admin/course"
           {...passingProps} />
         :
-        <RouteCourseBody exact path="/user/management/course"
+        <RouteCourseBody exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`}
           {...passingProps} />
       }
     </Switch>

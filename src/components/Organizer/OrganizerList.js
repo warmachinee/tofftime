@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   }
 
 }));
-
+/*
 const data = [
   {
     id: 1,
@@ -87,10 +87,21 @@ const data = [
     pic: 'https://upload.wikimedia.org/wikipedia/en/4/45/Lahinch_Golf_Club_crest.png'
   },
 ]
+*/
+const data = [
+  {
+    pageid: 651376,
+    logo: "/pages/651376/651376"
+  },
+  {
+    pageid: 658041,
+    logo: "/pages/658041/658041"
+  }
+]
 
 export default function OrganizerList(props) {
   const classes = useStyles();
-  const { BTN } = props
+  const { API, token, setCSRFToken, BTN, isSupportWebp } = props
 
   return (
     <div id="el_organizer" className={classes.root}>
@@ -98,10 +109,10 @@ export default function OrganizerList(props) {
       <div className={classes.grid}>
         { data.map(
           d =>
-          <BTN.NoStyleLink to={`/page/${d.id}`} key={d.id} className={classes.marginAuto}>
-            { d.pic ?
+          <BTN.NoStyleLink to={`/page/${d.pageid}`} key={d.pageid} className={classes.marginAuto}>
+            { d.logo ?
               <IconButton className={classes.iconButton}>
-                <Avatar className={classes.avatar} src={d.pic}/>
+                <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
               </IconButton>
               :
               <IconButton className={classes.iconButton}>

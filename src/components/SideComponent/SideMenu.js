@@ -339,19 +339,22 @@ export default function SideMenu(props) {
           <Divider />
         </List>
         { pageOrganizer && accountData &&
-          <BTN.NoStyleLink to='/user'>
-            <ListItem button>
-              <ListItemIcon>
-                { accountData.photopath ?
-                  <Avatar className={classes.avatarImage}
-                    src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
-                  :
-                  <AccountCircle classes={{ root: classes.avatar }} />
-                }
-              </ListItemIcon>
-              <ListItemText primary="User" />
-            </ListItem>
-          </BTN.NoStyleLink>
+          <React.Fragment>
+            <BTN.NoStyleLink to='/user'>
+              <ListItem button>
+                <ListItemIcon>
+                  { accountData.photopath ?
+                    <Avatar className={classes.avatarImage}
+                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                    :
+                    <AccountCircle classes={{ root: classes.avatar }} />
+                  }
+                </ListItemIcon>
+                <ListItemText primary="User" />
+              </ListItem>
+            </BTN.NoStyleLink>
+            <Divider />
+          </React.Fragment>
         }
         <List>
           <ListItem button onClick={toggleCreatePage}>

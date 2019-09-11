@@ -17,6 +17,8 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 1200,
     width: '100%',
     margin: 'auto',
+    padding: 12,
+    boxSizing: 'border-box'
   },
   paper: {
     marginTop: 16,
@@ -54,44 +56,24 @@ const useStyles = makeStyles(theme => ({
   followers: {
     color: grey[500]
   },
-  followButton: {
-    marginRight: 8,
-    marginTop: 16
+  panelButton: {
+    marginRight: 16
   },
-
 }));
 
-export default function OrganizerOverview(props) {
+export default function PageOrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, pageid } = props
+  const { API, BTN, sess, pageData, isSupportWebp } = props
   const [ isFollow, setIsFollow ] = React.useState(false)
-  const [ data, setData ] = React.useState(null)
-
-  async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'ploadpage' , {
-        action: 'detail',
-        pageid: pageid,
-    }, function(csrf, d){
-      setCSRFToken(csrf)
-      setData(d[0])
-    })
-  }
-
-  React.useEffect(()=>{
-    handleFetch()
-  },[ ])
 
   return (
     <div className={classes.root}>
-      { data &&
+      { pageData &&
         <Paper className={classes.paper}>
           <div className={classes.imageGrid}>
-            { data.logo ?
+            { pageData.logo ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(data.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
               :
               <AccountCircleIcon classes={{ root: classes.avatar }} />
             }
@@ -99,28 +81,19 @@ export default function OrganizerOverview(props) {
           <div className={classes.pageDetailGrid}>
             <div className={classes.pageDetail}>
               <Typography gutterBottom variant="h5" className={classes.pageTitle}>
-                {data.pagename}
+                {pageData.pagename}
               </Typography>
               <Typography gutterBottom variant="body2" className={classes.followers}>
-                {data.subscriber} followers
+                {pageData.subscriber} followers
               </Typography>
             </div>
           </div>
-          <div className={classes.followButton}>
-            { isFollow ?
-              <BTN.Following size="large" onClick={()=>setIsFollow(!isFollow)}>Following</BTN.Following>
-              :
-              <BTN.Primary size="large"
-                onClick={()=>setIsFollow(!isFollow)}>
-                Follow
-                <div style={{ marginLeft: 12 }}>
-                  {data.subscriber}
-                </div>
-              </BTN.Primary>
-            }
-          </div>
         </Paper>
       }
+      <Paper className={classes.paper}>
+        <BTN.PrimaryOutlined className={classes.panelButton}>Set admin</BTN.PrimaryOutlined>
+        <BTN.PrimaryOutlined className={classes.panelButton}>Post</BTN.PrimaryOutlined>
+      </Paper>
     </div>
   );
 }

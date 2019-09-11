@@ -380,7 +380,7 @@ export default function App() {
           <Route component={NoMatch} />
         </Switch>
         :
-        <MatchEditor
+        <UserPage
           {...passingProps} />
       }
 

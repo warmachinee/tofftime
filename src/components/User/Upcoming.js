@@ -89,7 +89,7 @@ const dataTemp = [
 
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken, userid, createMatchState } = props
+  const { API, token, setCSRFToken, userid, createMatchState, pageOrganizer } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -108,7 +108,15 @@ export default function Upcoming(props) {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
-      setData(d)
+      if(pageOrganizer){
+        setData(d.filter( item =>{
+          return item.pageid !== 0
+        }))
+      }else{
+        setData(d.filter( item =>{
+          return item.pageid === 0
+        }))
+      }
     })
   }
 

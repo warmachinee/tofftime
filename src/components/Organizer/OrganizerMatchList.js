@@ -87,24 +87,29 @@ const dataTemp = [
 
 export default function OrganizerMatchList(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken } = props
+  const { API, sess, token, setCSRFToken, pageid } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'loadmatchsystem' , {
-        action: 'matchlist'
+      'ploadpage' , {
+        action: 'postlist',
+        pageid: pageid,
+        userid: sess.userid,
+        type: 'match'
     }, function(csrf, d){
       setCSRFToken(csrf)
-      setData(d)
+      console.log(d);
+      //setData(d)
     })
   }
 
   React.useEffect(()=>{
-    //handleFetch()
-    setData(dataTemp)
+    if(sess){
+      handleFetch()
+    }
   },[ ])
 
   return(
