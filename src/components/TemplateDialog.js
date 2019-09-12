@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 export default function TemplateDialog(props) {
   const classes = useStyles();
   const [ modalStyle ] = React.useState(getModalStyle);
-  const { open, handleClose, getRef, fullScreen } = props
+  const { open, handleClose, getRef, fullScreen, elementId } = props
   const container = React.useRef(null);
 
   const [ ,updateState ] = React.useState(null)
@@ -71,7 +71,7 @@ export default function TemplateDialog(props) {
           open={open}
           onClose={handleClose}
         >
-          <div id="template-dialog"
+          <div id={ elementId ? elementId : "template-dialog"}
             style={{
               ...modalStyle,
               maxWidth: fullScreen? '100%' : ( props.maxWidth? props.maxWidth : 600 ),

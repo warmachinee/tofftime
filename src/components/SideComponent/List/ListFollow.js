@@ -54,7 +54,6 @@ export default function ListFollow(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
-      console.log('ListFollow ', d);
     })
   }
 
@@ -77,24 +76,26 @@ export default function ListFollow(props) {
         <List component="div" disablePadding>
           { data &&
             data.map( d =>
-              <ListItem button key={d}>
-                <ListItemIcon>
-                  { false ?
-                    <Avatar className={classes.avatarImage}
-                      src={API.getPictureUrl(false) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
-                    :
-                    <AccountCircle classes={{ root: classes.avatar }} />
-                  }
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <React.Fragment>
-                      <Typography className={classes.name} variant="body2">
-                        {"follownamefollownamefollownamefollownamefollowname"}
-                      </Typography>
-                    </React.Fragment>
-                  } />
-              </ListItem>
+              <BTN.NoStyleLink to={`page/${d.pageid}`} key={d.pageid}>
+                <ListItem button>
+                  <ListItemIcon>
+                    { d.logo ?
+                      <Avatar className={classes.avatarImage}
+                        src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                      :
+                      <AccountCircle classes={{ root: classes.avatar }} />
+                    }
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <React.Fragment>
+                        <Typography className={classes.name} variant="body2">
+                          {d.pagename}
+                        </Typography>
+                      </React.Fragment>
+                    } />
+                </ListItem>
+              </BTN.NoStyleLink>
             )
           }
         </List>

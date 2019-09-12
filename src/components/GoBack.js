@@ -44,7 +44,6 @@ export default function GoBack(props){
       diff = goBackDetail? 2 : 1
       rootSearchLength = root.search(rootSplit[rootSplit.length - diff])
     }
-    //console.log(root, " : ",rootSplit, " : ", root.substring(0, rootSearchLength));
     return root.substring(0, rootSearchLength)
   }
   /*

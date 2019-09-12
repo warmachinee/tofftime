@@ -30,15 +30,21 @@ const TemplateDialog = Loadable({
   loading: () => <LDCircular />
 });
 
-const NewsEditor = Loadable({
-  loader: () => import(/* webpackChunkName: "NewsEditor" */'./NewsEditor'),
-  loading: () => <LDCircular />
-});
-
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../../GoBack'),
   loading: () => <LDCircular />
 });
+
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../../LabelText'),
+  loading: () => <LDCircular />
+});
+
+const PageOrganizerPostEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "PageOrganizerPostEditor" */ './PageOrganizerPostEditor'),
+  loading: () => <LDCircular />
+});
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -119,9 +125,9 @@ const GreenTextButton = withStyles(theme => ({
   },
 }))(Button);
 
-export default function News(props){
+export default function PagePost(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageData } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
@@ -130,19 +136,12 @@ export default function News(props){
   const [ edittingData, setEdittingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
 
-  const passingProps = {
-    token: token,
-    setCSRFToken: setCSRFToken,
-    handleSnackBar: handleSnackBar,
-    isSupportWebp: isSupportWebp
-  }
-
   function handleOpen(action){
     setClickAction(action)
     setOpen(!open)
   }
 
-  function handleSelectNews(d){
+  function handleSelectPagePost(d){
     handleOpen('edit')
     setEdittingData(d)
   }
@@ -171,9 +170,10 @@ export default function News(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'newsmain', {
-        action: 'delete',
-        newsid: data.newsid
+      'ppagesection', {
+        action: 'deletepost',
+        pageid: pageData.pageid,
+        postid: data.postid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -193,23 +193,28 @@ export default function News(props){
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${token? token : resToken.token}&action=newslist`
-    )
-    setCSRFToken(d.token)
-    setData(d.response)
+    await API.xhrPost(
+      token? token : resToken.token,
+      'ploadpage', {
+        action: 'postlist',
+        pageid: pageData.pageid,
+        userid: sess.userid,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+    })
   }
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ open, confirmDeleteState ])
 
   return(
     <div className={classes.root}>
       <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          News
+          Page post
         </Box>
       </Typography>
       <div style={{ display: 'flex' }}>
@@ -230,34 +235,39 @@ export default function News(props){
           <ListItemAvatar style={{ marginRight: 16 }}>
             <div style={{ margin: 10, width: 60, height: 24 }}></div>
           </ListItemAvatar>
-          <StyledText primary="News" />
+          <StyledText primary="Post" />
         </ListItem>
       </List>
       <List className={classes.listRoot}>
         { data && !data.status &&
           API.handleSortArrayByDate(data, 'createdate', 'title').map( d =>{
             return d &&
-            <React.Fragment key={d.newsid}>
+            <React.Fragment key={d.postid}>
               <ListItem>
                 <ListItemAvatar style={{ marginRight: 16 }}>
                   {
-                    d.picture?
+                    d.photopath?
                       <Avatar
-                        alt={d.title}
-                        src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
+                        alt={d.message}
+                        src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
                       <ImageIcon className={classes.bigAvatar}/>
                   }
                 </ListItemAvatar>
-                <ListItemText className={classes.listDetail} primary={d.title} secondary={d.subtitle}/>
+                <ListItemText className={classes.listDetail} primary={d.message}
+                  secondary={
+                    <Typography variant="subtitle2" color="textSecondary" style={{ textTransform: 'capitalize' }}>
+                      {d.type}
+                    </Typography>
+                  }/>
                 <ListItemIcon>
                   { editting?
                     <IconButton onClick={()=>handleDeleteItem(d)}>
                       <DeleteIcon classes={{ root: classes.greenIcon }}/>
                     </IconButton>
                     :
-                    <IconButton onClick={()=>handleSelectNews(d)}>
+                    <IconButton onClick={()=>handleSelectPagePost(d)}>
                       <CreateIcon />
                     </IconButton>
                   }
@@ -268,12 +278,10 @@ export default function News(props){
         })}
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
-        <NewsEditor
-          {...passingProps}
-          clickAction={clickAction}
-          handleClose={handleClose}
-          setData={setData}
-          edittingData={edittingData} />
+        <div>
+          <LabelText text={ clickAction === 'edit' ? "Edit post" : "Create post"} />
+          <PageOrganizerPostEditor {...props} clickAction={clickAction} edittingData={edittingData} />
+        </div>
       </TemplateDialog>
       <TemplateDialog
         maxWidth={400}
@@ -283,7 +291,7 @@ export default function News(props){
             Are you sure you want to delete?
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
-            ( News : { selectedDeleteItem && selectedDeleteItem.title } )
+            ( Page post : { selectedDeleteItem && selectedDeleteItem.message } )
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>

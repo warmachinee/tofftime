@@ -12,6 +12,12 @@ import {
   ListItemIcon,
   Typography,
   Divider,
+  Paper,
+  InputLabel,
+  MenuItem,
+  FormHelperText,
+  FormControl,
+  Select,
 
 } from '@material-ui/core'
 
@@ -68,14 +74,19 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
     borderRadius: 4,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 
 }));
 
 
 export default function History(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer } = props
+  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
+  const [ scoreType, setScoreType ] = React.useState('total')
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -95,7 +106,7 @@ export default function History(props) {
       setCSRFToken(csrf)
       if(pageOrganizer){
         setData(d.filter( item =>{
-          return item.pageid !== 0
+          return item.pageid === pageData.pageid
         }))
       }else{
         setData(d.filter( item =>{
@@ -126,6 +137,21 @@ export default function History(props) {
     <div className={classes.root}>
       <LabelText text="History" />
       <div className={classes.grid}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 12px' }}>
+          <Paper style={{ padding: '0 12px' }}>
+            <FormControl className={classes.formControl}>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={scoreType}
+                onChange={e => setScoreType(e.target.value)}
+              >
+                <MenuItem value={'total'}>Total</MenuItem>
+                <MenuItem value={'0'}>Amateur</MenuItem>
+                <MenuItem value={'1'}>Pro</MenuItem>
+              </Select>
+            </FormControl>
+          </Paper>
+        </div>
         <List>
           <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
             <ListItemIcon
@@ -159,8 +185,22 @@ export default function History(props) {
         </List>
         <Divider />
         { data ?
-          ( data.length > 0 ?
-            data.map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
+          ( [
+              ...(scoreType === 'total') ?
+              data
+              :
+              data.filter( item =>{
+                return parseInt(scoreType) === item.scorematch
+              })
+            ].length > 0 ?
+            [
+              ...(scoreType === 'total') ?
+              data
+              :
+              data.filter( item =>{
+                return parseInt(scoreType) === item.scorematch
+              })
+            ].map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
             :
             <div style={{
                 width: '100%', padding: '36px 0', textAlign: 'center',

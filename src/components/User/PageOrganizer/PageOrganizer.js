@@ -2,12 +2,12 @@ import React from 'react';
 import Loadable from 'react-loadable';
 
 const UserPage = Loadable({
-  loader: () => import(/* webpackChunkName: "UserPage" */ './../../page/UserPage'),
+  loader: () => import(/* webpackChunkName: "UserPage" */ './../../../page/UserPage'),
   loading: () => null
 });
 
 export default function PageOrganizer(props) {
-  const { API, sess, token, setCSRFToken, handleAccountData, pageData, handlePageData } = props
+  const { API, sess, token, setCSRFToken, handleAccountData, pageData, handlePageData, editPageRefresh } = props
 
   async function handleFetch(){
     if(sess){
@@ -23,7 +23,6 @@ export default function PageOrganizer(props) {
           ...d[0],
           pageid: parseInt(props.computedMatch.params.pageid)
         })
-        console.log(d[0]);
       })
     }
   }
@@ -51,6 +50,10 @@ export default function PageOrganizer(props) {
       window.location.pathname = '/admin'
     }
   }, [ sess, props.location ])
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ editPageRefresh ])
 
   return pageData && (
     <UserPage

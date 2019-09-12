@@ -73,6 +73,23 @@ const RouteMatchDetail = Loadable.Map({
   loading: () => null
 });
 
+const RouteOrganizerAnnounceDetail = Loadable.Map({
+  loader: {
+    OrganizerAnnounceDetail: () => import(/* webpackChunkName: "OrganizerAnnounceDetail" */'./components/Detail/OrganizerAnnounceDetail'),
+  },
+  render(loaded, props) {
+    let Component = loaded.OrganizerAnnounceDetail.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteSchedule = Loadable.Map({
   loader: {
     Schedule: () => import(/* webpackChunkName: "Schedule" */'./components/Detail/Schedule'),
@@ -126,7 +143,7 @@ const RouteUserPage = Loadable.Map({
 
 const RoutePageOrganizer = Loadable.Map({
   loader: {
-    PageOrganizer: () => import(/* webpackChunkName: "PageOrganizer" */'./components/User/PageOrganizer'),
+    PageOrganizer: () => import(/* webpackChunkName: "PageOrganizer" */'./components/User/PageOrganizer/PageOrganizer'),
   },
   render(loaded, props) {
     let Component = loaded.PageOrganizer.default;
@@ -244,11 +261,6 @@ const Footer = Loadable({
   loading: () => null
 });
 
-import UserPage from './page/UserPage'
-import Profile from './components/User/Profile'
-import Management from './components/User/Panel/Management'
-import MatchFormResult from './components/Detail/MatchFormResult'
-
 export default function App() {
   const [ token, setCSRFToken ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
@@ -273,6 +285,7 @@ export default function App() {
     sPAR: 0
   })
   const [ locationPath, setLocationPath ] = React.useState(null)
+  const [ editPageRefresh, setEditPageRefresh ] = React.useState(new Date().toISOString())
 
   const passingProps = {
     API: API,
@@ -290,6 +303,8 @@ export default function App() {
     handleSnackBar: handleSnackBar,
     locationPath: locationPath,
     setLocationPath: setLocationPath,
+    editPageRefresh: editPageRefresh,
+    setEditPageRefresh: setEditPageRefresh,
 
   }
 
@@ -349,40 +364,36 @@ export default function App() {
           handleOpen={toggleDialog} />
       }
 
-      {
-        true ?
-        <Switch>
-          <RouteMain exact path="/"
-            {...passingProps} />
-          <RouteUserPage path="/user"
-            {...passingProps} />
-          <RoutePageOrganizer path="/organizer/:pageid"
-            {...passingProps} />
-          <RouteOrganizer path="/page/:pageid"
-            {...passingProps} />
-          <RouteSystemAdmin path="/admin"
-            {...passingProps} />
-          <RouteAnnounceDetail path="/announce/:detailparam"
-            {...passingProps} />
-          <RouteNewsDetail path="/news/:detailparam"
-            {...passingProps} />
-          <RouteMatchDetail path="/match/:matchid"
-            {...passingProps}
-            handleSnackBarL={handleSnackBarL} />
-          <RouteSchedule path="/schedule/:matchid"
-            {...passingProps} />
-          <RouteMatchFormResult path="/matchform/:matchid"
-            {...passingProps} />
-          <RouteSignIn path="/login"
-            {...passingProps} />
-          <RouteScoreDisplay path="/display/:matchid/:userid"
-            {...passingProps} />
-          <Route component={NoMatch} />
-        </Switch>
-        :
-        <UserPage
+      <Switch>
+        <RouteMain exact path="/"
           {...passingProps} />
-      }
+        <RouteUserPage path="/user"
+          {...passingProps} />
+        <RoutePageOrganizer path="/organizer/:pageid"
+          {...passingProps} />
+        <RouteOrganizer path="/page/:pageid"
+          {...passingProps} />
+        <RouteSystemAdmin path="/admin"
+          {...passingProps} />
+        <RouteAnnounceDetail path="/announce/:detailparam"
+          {...passingProps} />
+        <RouteNewsDetail path="/news/:detailparam"
+          {...passingProps} />
+        <RouteMatchDetail path="/match/:matchid"
+          {...passingProps}
+          handleSnackBarL={handleSnackBarL} />
+        <RouteOrganizerAnnounceDetail path="/post/:pageid/:postid"
+          {...passingProps} />
+        <RouteSchedule path="/schedule/:matchid"
+          {...passingProps} />
+        <RouteMatchFormResult path="/matchform/:matchid"
+          {...passingProps} />
+        <RouteSignIn path="/login"
+          {...passingProps} />
+        <RouteScoreDisplay path="/display/:matchid/:userid"
+          {...passingProps} />
+        <Route component={NoMatch} />
+      </Switch>
 
       { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&
         <Redirect to={`/`} />

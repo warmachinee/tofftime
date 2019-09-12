@@ -17,8 +17,8 @@ const OrganizerMatchList = Loadable({
   loading: () => null
 });
 
-const OrganizerNews = Loadable({
-  loader: () => import(/* webpackChunkName: "OrganizerNews" */ './../components/Organizer/OrganizerNews'),
+const OrganizerPost = Loadable({
+  loader: () => import(/* webpackChunkName: "OrganizerPost" */ './../components/Organizer/OrganizerPost'),
   loading: () => null
 });
 
@@ -34,12 +34,28 @@ const useStyles = makeStyles(theme => ({
 
 export default function Organizer(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, BTN } = props
+  const { API, sess, token, setCSRFToken, handleSnackBar, BTN } = props
 
   React.useEffect(()=>{
     if(props.location){
       props.setLocationPath(props.location.pathname)
     }
+    /*
+    if(sess && sess.status !== 1){
+      handleSnackBar({
+        state: true,
+        message: 'Please login before to continue.',
+        variant: 'error',
+        autoHideDuration: 10000,
+      })
+      setTimeout(()=>{
+        window.location.pathname = '/login'
+      }, 11000)
+    }else{
+      if(props.location){
+        props.setLocationPath(props.location.pathname)
+      }
+    }*/
   },[ props.location ])
 
   return (
@@ -49,7 +65,7 @@ export default function Organizer(props) {
           <OrganizerAnnounce {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
           <OrganizerOverview {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
           <OrganizerMatchList {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
-          <OrganizerNews {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
+          <OrganizerPost {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
         </React.Fragment>
       }
     </div>

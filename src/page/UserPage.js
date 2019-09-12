@@ -21,7 +21,7 @@ const Statistics = Loadable({
 });
 
 const PageOrganizerOverview = Loadable({
-  loader: () => import(/* webpackChunkName: "PageOrganizerOverview" */ './../components/User/PageOrganizerOverview'),
+  loader: () => import(/* webpackChunkName: "PageOrganizerOverview" */ './../components/User/PageOrganizer/PageOrganizerOverview'),
   loading: () => null
 });
 
@@ -72,6 +72,16 @@ const CreatePage = Loadable({
 
 const CreateMatchDialog = Loadable({
   loader: () => import(/* webpackChunkName: "CreateMatchDialog" */ './../components/User/Panel/CreateMatchDialog'),
+  loading: () => null
+});
+
+const PageOrganizerSetAdmin = Loadable({
+  loader: () => import(/* webpackChunkName: "PageOrganizerSetAdmin" */ './../components/User/PageOrganizer/PageOrganizerSetAdmin'),
+  loading: () => null
+});
+
+const PageOrganizerCreatePost = Loadable({
+  loader: () => import(/* webpackChunkName: "PageOrganizerCreatePost" */ './../components/User/PageOrganizer/PageOrganizerCreatePost'),
   loading: () => null
 });
 
@@ -168,6 +178,8 @@ export default function UserPage(props) {
   const [ createMatchState, setCreateMatchState ] = React.useState(false);
   const [ historyState, setHistoryState ] = React.useState(false);
   const [ upcomingState, setUpcomingState ] = React.useState(false);
+  const [ setAdminState, setSetAdminState ] = React.useState(false);
+  const [ createPostState, setCreatePostState ] = React.useState(false);
   const [ notiData, setNotiData ] = React.useState(null);
 
   const passingProps = {
@@ -184,6 +196,8 @@ export default function UserPage(props) {
     handleSnackBar: props.handleSnackBar,
     pageOrganizer: props.pageOrganizer,
     pageData: props.pageData,
+    editPageRefresh: props.editPageRefresh,
+    setEditPageRefresh: props.setEditPageRefresh,
   }
 
   const dialogProps = {
@@ -204,7 +218,21 @@ export default function UserPage(props) {
     historyState: historyState,
     toggleHistory: toggleHistory,
     upcomingState: upcomingState,
-    toggleUpcoming: toggleUpcoming
+    toggleUpcoming: toggleUpcoming,
+    setAdminState: setAdminState,
+    toggleSetAdmin: toggleSetAdmin,
+    createPostState: createPostState,
+    setCreatePostState: setCreatePostState,
+    toggleCreatePost: toggleCreatePost,
+
+  }
+
+  function toggleSetAdmin(){
+    setSetAdminState(!setAdminState)
+  }
+
+  function toggleCreatePost(){
+    setCreatePostState(!createPostState)
   }
 
   function toggleAddFriend(){
@@ -287,6 +315,7 @@ export default function UserPage(props) {
     if(sess && sess.status === 1 && sess.typeid === 'admin'){
       window.location.pathname = '/admin'
     }
+    window.scrollTo(0, 0)
   },[ sess, props.location ])
 
   return (
@@ -298,13 +327,11 @@ export default function UserPage(props) {
 
         <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
           render={()=> <UserDashboard {...props} {...dialogProps}/>} />
+        <RouteProfile path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer ? '' : ':userid' }`}
+          {...passingProps} />
         { !pageOrganizer &&
-          <React.Fragment>
-            <RouteProfile path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/:userid`}
-              {...passingProps} />
-            <RouteTimeline path="/user/timeline/:userid"
-              {...passingProps} location={props.location} />
-          </React.Fragment>
+          <RouteTimeline path="/user/timeline/:userid"
+            {...passingProps} location={props.location} />
         }
         <RouteManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}
           {...passingProps} {...dialogProps} location={props.location} />
@@ -329,6 +356,14 @@ export default function UserPage(props) {
         {...dialogProps}  />
 
       <CreateMatchDialog
+        {...props}
+        {...dialogProps} />
+
+      <PageOrganizerSetAdmin
+        {...props}
+        {...dialogProps} />
+
+      <PageOrganizerCreatePost
         {...props}
         {...dialogProps} />
     </div>

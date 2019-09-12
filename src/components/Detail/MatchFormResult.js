@@ -93,7 +93,6 @@ export default function MatchFormResult(props) {
     const matchid = parseInt(props.computedMatch.params.matchid)
     const socket = socketIOClient( API.getWebURL() )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
-      console.log('Matchform ', messageNew);
       setData(messageNew)
     })
   }

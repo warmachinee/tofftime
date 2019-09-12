@@ -377,7 +377,7 @@ export default function MatchClass(props) {
         }
         { lists && classAction === 'edit' && data &&
           arrEdit.map( (d, i) =>{
-            return d && (
+            return (
               <ListItem key={i}>
                 <ThemeProvider theme={theme}>
                   <TextField

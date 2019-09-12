@@ -106,7 +106,7 @@ export default function EditDisplayModal(props){
       //handleFetch()
     }
   }
-  
+
   async function handleEditNote(){
     if(matchid){
       const resToken = token? token : await API.xhrGet('getcsrf')
@@ -119,7 +119,6 @@ export default function EditDisplayModal(props){
           usertarget: selectedPlayer.userid,
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        console.log(d);
         handleSnackBar({
           state: true,
           message: d.status,

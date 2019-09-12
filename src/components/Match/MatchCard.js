@@ -88,7 +88,7 @@ export default function MatchCard(props) {
   }
 
   function handleGetButton(){
-    if(BTN && data){
+    if(BTN && data && data.matchstatus === 0){
       switch (true) {
         case data.permission === 'host' || data.permission === 'admin':
           return (

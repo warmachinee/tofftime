@@ -235,7 +235,7 @@ export default function SideMenu(props) {
           <React.Fragment>
             <div className={classes.userInfo}>
               <BTN.NoStyleLink
-                to={`/user/profile/${accountData.userid}`}>
+                to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                   <IconButton style={{ padding: 0 }}>
                     { pageOrganizer ?
@@ -285,7 +285,7 @@ export default function SideMenu(props) {
               { open &&
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <BTN.NoStyleLink
-                    to={`/user/profile/${accountData.userid}`}>
+                    to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}>
                     <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
                       <Typography variant="body1" className={classes.userTitle}>
                         { pageOrganizer ?

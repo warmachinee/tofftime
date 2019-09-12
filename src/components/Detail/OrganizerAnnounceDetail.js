@@ -46,23 +46,47 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-export default function AnnounceDetail(props){
+export default function OrganizerAnnounceDetail(props){
   const classes = useStyles();
   const { API, sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
+    const pageid = parseInt(props.computedMatch.params.pageid)
+    const postid = parseInt(props.computedMatch.params.postid)
     const resToken = token? token : await API.xhrGet('getcsrf')
-    const announceid = parseInt(props.computedMatch.params.detailparam)
-    const d = await API.xhrGet('loadgeneral',
-    `?_csrf=${token? token : resToken.token}&action=announcedetail&announceid=${announceid}`
-    )
-    setCSRFToken(d.token)
-    setData(d.response[0])
+    await API.xhrPost(
+      token? token : resToken.token,
+      'mloadpage', {
+        action: 'postdetail',
+        pageid: pageid,
+        postid: postid,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+    })
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    if(props.computedMatch){
+      handleFetch()
+    }
+    /*
+    if(sess && sess.status !== 1){
+      handleSnackBar({
+        state: true,
+        message: 'Please login before to continue.',
+        variant: 'error',
+        autoHideDuration: 10000,
+      })
+      setTimeout(()=>{
+        window.location.pathname = '/login'
+      }, 11000)
+    }else{
+      if(props.computedMatch){
+        handleFetch()
+      }
+    }*/
     window.scrollTo(0, 0)
   },[ ])
 
@@ -72,12 +96,12 @@ export default function AnnounceDetail(props){
       { data &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h3">
-            {data.title}
+            {data.message}
           </Typography>
-          { data.picture &&
-            <img className={classes.img} src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+          { data.photopath &&
+            <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
-          <DetailComponent announcedetail={data.announcedetail}/>
+          <DetailComponent messagedetail={data.messagedetail}/>
         </div>
       }
     </Paper>
@@ -85,11 +109,11 @@ export default function AnnounceDetail(props){
 }
 
 function DetailComponent(props){
-  const { announcedetail } = props
+  const { messagedetail } = props
 
   return(
     <div className="ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline ck-read-only">
-      {ReactHtmlParser(announcedetail)}
+      {ReactHtmlParser(messagedetail)}
     </div>
   );
 }

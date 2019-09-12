@@ -170,7 +170,10 @@ const theme = createMuiTheme({
 
 export default function LocationList(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, setPageState, setEdittingField } = props
+  const {
+    sess, token, setCSRFToken, pageOrganizer,
+    selectedField, setSelectedField, handleSnackBar, setPageState, setEdittingField
+  } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ searchField, setSearchField ] = React.useState('')
@@ -226,7 +229,10 @@ export default function LocationList(props){
     await API.xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadfield' : 'loadusersystem', {
-        ...(sess.typeid === 'admin')? { action: 'list' } : { action: 'fieldlist' }
+        ...(sess.typeid === 'admin')? { action: 'list' } : {
+          action: 'fieldlist',
+          ...pageOrganizer && { type: 1 }
+        }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)

@@ -185,7 +185,7 @@ export default function AddPlayerModal(props){
         action: 'userlist'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setData(d)
+      setData(d.userscore)
     })
   }
 

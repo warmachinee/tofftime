@@ -117,7 +117,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CourseBody(props){
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { API, BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ searchField, setSearchField ] = React.useState('')
@@ -186,7 +186,10 @@ export default function CourseBody(props){
     await API.xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadfield' : 'loadusersystem', {
-        ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'fieldlist' }
+        ...(sess.typeid === 'admin') ? { action: 'list' } : {
+          action: 'fieldlist',
+          ...pageOrganizer && { type: 1 }
+        }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)

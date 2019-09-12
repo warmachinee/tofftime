@@ -95,9 +95,11 @@ export default function OverviewProfile(props) {
             :
             <div style={{ height: 32 }} />
           }
-          <Typography gutterBottom variant="subtitle2" className={classes.email}>
-            {data.email}
-          </Typography>
+          { !userid &&
+            <Typography gutterBottom variant="subtitle2" className={classes.email}>
+              {data.email}
+            </Typography>
+          }
         </Paper>
         :
         <Paper className={classes.paper}>

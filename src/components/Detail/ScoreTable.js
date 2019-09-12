@@ -112,7 +112,7 @@ const StyledTableCell = withStyles(theme => ({
 function ScoreRow(props){
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false)
-  const { sess, BTN, row, data, fieldData } = props
+  const { sess, BTN, row, data, index, fieldData, sortBy } = props
   const wd = window.innerWidth
 
   const tableCell = {
@@ -125,7 +125,13 @@ function ScoreRow(props){
       <ListItem button className={classes.listItem}
         key={row.userid}
         onClick={()=>setExpanded(!expanded)}>
-        <div className={classes.tableRank} style={tableCell}>{row.rank}</div>
+        <div className={classes.tableRank} style={tableCell}>
+          { ( sortBy === 'sf' && data.scorematch === 0 ) ?
+            index + 1
+            :
+            row.rank
+          }
+        </div>
         <div
           style={{ width: '100%', display: 'flex' }}
           className={classes.tableHead}>
@@ -151,10 +157,10 @@ function ScoreRow(props){
         <div className={classes.tableCell} style={tableCell}>
           { data.scorematch === 1 ?
             (
-              row.par > 0? '+' + row.par : row.par === 0?'E':row.par
+              row.par > 0? '+' + row.par : row.par === 0?'E' : row.par
             )
             :
-            row.sf
+            ( sortBy === 'net' ? row.net : row.sf )
           }
         </div>
       </ListItem>
@@ -260,7 +266,7 @@ function ScoreRow(props){
 
 export default function ScoreTable(props) {
   const classes = useStyles();
-  const { data, userscore, matchClass } = props
+  const { data, userscore, matchClass, sortBy } = props
   const inputEl = React.useRef(null);
   const [ op, setOp ] = React.useState(true)
   const [ widthEl, setWidthEl ] = React.useState(0)
@@ -351,7 +357,11 @@ export default function ScoreTable(props) {
                   </React.Fragment>
                 }
                 <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
-                  { data.scorematch === 1 ? 'PAR' : 'SF' }
+                  {
+                    data.scorematch === 1 ?
+                    'PAR' :
+                    ( sortBy === 'net' ? 'NET' : 'SF' )
+                  }
                 </StyledTableCell>
               </TableRow>
             </TableBody>
@@ -388,7 +398,11 @@ export default function ScoreTable(props) {
                   </React.Fragment>
                 }
                 <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
-                  { data.scorematch === 1 ? 'PAR' : 'SF' }
+                  {
+                    data.scorematch === 1 ?
+                    'PAR' :
+                    ( sortBy === 'net' ? 'NET' : 'SF' )
+                  }
                 </StyledTableCell>
               </TableRow>
             </TableBody>
@@ -397,11 +411,11 @@ export default function ScoreTable(props) {
       </Zoom>
       {/*--------------------End Table Head--------------------*/}
       <Paper className={classes.root}>
-        { userscore && userscore.filter((d)=>{
+        { userscore && userscore.filter( d =>{
           return ( d && d.classno === matchClass.classno )
-        }).map(row => (
+        }).map( ( row, i ) => (
           row &&
-          <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData}/>
+          <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i}/>
         ))}
       </Paper>
     </div>

@@ -171,7 +171,7 @@ function ListMenu(props) {
           d.status !== 'wrong params'
         ){
           handleClose()
-          setData(d)
+          setData(d.userscore)
         }else{
           handleSnackBar({
             state: true,
@@ -330,7 +330,7 @@ export default function AddAdmin(props){
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
         ){
-          setData(d)
+          setData(d.userscore)
         }else{
           handleSnackBar({
             state: true,

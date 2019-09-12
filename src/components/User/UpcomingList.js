@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function UpcomingList(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, open, userid } = props
+  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -92,7 +92,15 @@ export default function UpcomingList(props) {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
-      setData(d)
+      if(pageOrganizer){
+        setData(d.filter( item =>{
+          return item.pageid === pageData.pageid
+        }))
+      }else{
+        setData(d.filter( item =>{
+          return item.pageid === 0
+        }))
+      }
     })
   }
 

@@ -238,13 +238,13 @@ export default function Announcement(props){
           API.handleSortArrayByDate(data, 'createdate', 'title').map( d =>{
             return d &&
             <React.Fragment key={d.announceid}>
-              <ListItem button>
+              <ListItem>
                 <ListItemAvatar style={{ marginRight: 16 }}>
                   {
                     d.picture?
                       <Avatar
                         alt={d.title}
-                        src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
+                        src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
                       <ImageIcon className={classes.bigAvatar}/>

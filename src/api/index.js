@@ -31,6 +31,7 @@ const urlLink = {
   views: getWebURL() + '/session/views',
   loadgeneral: getWebURL() + '/main/loadgeneral',
   loadmatchsystem: getWebURL() + '/main/loadmatchsystem',
+  mloadpage: getWebURL() + '/main/loadpage',
   //--------------------Account--------------------
   login: getWebURL() + '/users/login',
   facebooklogin: getWebURL() + '/session/auth/facebook',
@@ -150,19 +151,6 @@ function fetchPostFile(url, extendURL, obj, formData){
     const json = await res.json()
     resolve(json);
   });
-}
-
-function TestFunc(){
-  var obj = [
-    { a: 1, createdate: 1},
-    { a: 2, date3: 4},
-    { a: 3, date2: 18}
-  ]
-  for(var i = 0;i < obj.length;i++){
-    console.log(Object.getOwnPropertyNames(obj[i]).find( d =>{
-      return /date/.test(d)
-    }));
-  }
 }
 
 function handleSortArrayByDate(data, primary, secondary){
@@ -340,7 +328,9 @@ function getTodayTime(){
 
 function handleScrolllTo(element){
   var elmnt = document.getElementById("el_" + element);
-  elmnt.scrollIntoView();
+  var header = document.getElementById("el_header")
+  //elmnt.scrollIntoView(true);
+  window.scrollTo(0, elmnt.offsetTop - header.offsetHeight)
 }
 
 function handleAmateurClass(classno){

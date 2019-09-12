@@ -20,7 +20,7 @@ const RouteCourseBody = Loadable.Map({
 });
 
 export default function Course(props){
-  const { sess } = props
+  const { sess, pageOrganizer, pageData } = props
 
   const passingProps = {
     API: props.API,
@@ -52,7 +52,12 @@ export default function Course(props){
       historyState: props.historyState,
       toggleHistory: props.toggleHistory,
       upcomingState: props.upcomingState,
-      toggleUpcoming: props.toggleUpcoming
+      toggleUpcoming: props.toggleUpcoming,
+      setAdminState: props.setAdminState,
+      toggleSetAdmin: props.toggleSetAdmin,
+      createPostState: props.createPostState,
+      setCreatePostState: props.setCreatePostState,
+      toggleCreatePost: props.toggleCreatePost,
     })
   }
 

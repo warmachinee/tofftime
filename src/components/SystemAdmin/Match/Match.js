@@ -71,7 +71,12 @@ export default function Match(props){
       historyState: props.historyState,
       toggleHistory: props.toggleHistory,
       upcomingState: props.upcomingState,
-      toggleUpcoming: props.toggleUpcoming
+      toggleUpcoming: props.toggleUpcoming,
+      setAdminState: props.setAdminState,
+      toggleSetAdmin: props.toggleSetAdmin,
+      createPostState: props.createPostState,
+      setCreatePostState: props.setCreatePostState,
+      toggleCreatePost: props.toggleCreatePost,
     })
   }
 

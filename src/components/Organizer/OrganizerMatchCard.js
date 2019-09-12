@@ -69,12 +69,11 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerMatchCard(props) {
   const classes = useStyles();
-  const { API, data, isSupportWebp } = props
+  const { API, BTN, data, isSupportWebp } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
 
   return(
     <Paper
-      onClick={()=>console.log(data)}
       className={classes.root}
       elevation={ ( data && window.innerWidth >= 600 ) ? paperHover : 1}
       {...data?
@@ -83,23 +82,45 @@ export default function OrganizerMatchCard(props) {
           onMouseLeave: ()=>setPaperHover(0),
         } : null
       }>
-      { ( data && data.matchphoto ) ?
-        <img className={classes.image}
-          src={API.getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
-        :
-        <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }}/>
+      { data &&
+        (
+          ( data.messagedetail && data.photopath ) ?
+          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+            <img className={classes.image}
+              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+          </BTN.NoStyleLink>
+          :
+          (
+            ( data.messagedetail && data.messagedetail[0].photopath ) ?
+            <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+              <img className={classes.image}
+                src={API.getPictureUrl(data.messagedetail[0].photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            </BTN.NoStyleLink>
+            :
+            <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }}/>
+          )
+        )
       }
-      { data ?
+      { ( data && data.messagedetail )?
         <Box className={classes.box}>
-          <Typography gutterBottom variant="body1" className={classes.title}>
-            {data.matchname}
-          </Typography>
-          <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-            <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
-            {data.fieldname}
-          </Typography>
+          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+            <Typography gutterBottom variant="body1" className={classes.title}>
+              {data.message}
+            </Typography>
+          </BTN.NoStyleLink>
+          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+            <Typography gutterBottom display="block" variant="caption" className={classes.location}>
+              {data.messagedetail[0].matchname}
+            </Typography>
+          </BTN.NoStyleLink>
+          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+            <Typography gutterBottom display="block" variant="caption" className={classes.location}>
+              <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
+              {data.messagedetail[0].fieldname + `(${data.messagedetail[0].fieldversion})`}
+            </Typography>
+          </BTN.NoStyleLink>
           <Typography variant="caption" color="textSecondary">
-            {`${data.views + 'views'} • ${'date'/*API.handleGetDate(data.matchdate)*/}`}
+            {/*${data.views + 'views'} • */`${API.handleGetDate(data.messagedetail[0].matchdate)}`}
           </Typography>
         </Box>
         :

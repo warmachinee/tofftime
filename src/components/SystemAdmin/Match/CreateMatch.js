@@ -326,7 +326,7 @@ function CreateMatchBody(props){
     if(selectedFieldVersion !== 1){
       Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
     }
-    console.log(sendObj);
+    
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,

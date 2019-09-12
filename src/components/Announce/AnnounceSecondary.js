@@ -101,32 +101,6 @@ export default function AnnounceSecondary(props) {
   const classes = useStyles();
   const { API, BTN, data, isSupportWebp } = props
 
-  async function fetchJsonPlaceholder(){
-    /*
-    const res = await fetch('https://jsonplaceholder.typicode.com/photos')
-    const json = await res.json()
-    */
-
-    const d = [
-      {
-        id: 1,
-        title: 'Brooke Henderson of Canada acknowledges the crowd prior to teeing off on the 1st hole during the third round of the CP Women\'s Open at Magna Golf Club on August 24, 2019 in Aurora, Canada',
-        pic: 'https://www.lpga.com/-/media/images/lpga/tournaments/canadian-pacific-womens-open/2019/rd3/henderson_b1163633647.jpg?w=980'
-      },
-      {
-        id: 2,
-        title: 'ข่าวกอล์ฟ ปีทองของเธอ “โค จิน ยอง” ปิดจ๊อบแชมป์แคนาเดียน “โปรเม” จบที่ 9',
-        pic: 'https://www.b4thematch.com/wp-content/uploads/2019/08/562000008410401.jpg'
-      },
-    ]
-    setData(d)
-  }
-
-  React.useEffect(()=>{
-    //console.log(props);
-    //fetchJsonPlaceholder()
-  },[ ])
-
   return (
     <div className={classes.root}>
       { ( data && data.length > 0 ) ?

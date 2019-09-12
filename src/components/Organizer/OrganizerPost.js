@@ -3,15 +3,18 @@ import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import {
+  Grid, Box, Typography,
+} from '@material-ui/core';
 
-const OrganizerMatchCard = Loadable({
-  loader: () => import(/* webpackChunkName: "OrganizerMatchCard" */ './OrganizerMatchCard'),
-  loading: () => null
-});
 
 const LabelText = Loadable({
   loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loading: () => null
+});
+
+const OrganizerPostCard = Loadable({
+  loader: () => import(/* webpackChunkName: "OrganizerPostCard" */ './OrganizerPostCard'),
   loading: () => null
 });
 
@@ -23,18 +26,18 @@ const useStyles = makeStyles(theme => ({
     margin: 'auto',
   },
   grid: {
-    marginTop: 24,
     padding: theme.spacing(1.5),
-    display: 'flex',
-    flexWrap: 'wrap',
-    WebkitFlexWrap: 'wrap',
+    display: 'grid',
     boxSizing: 'border-box',
-    justifyContent: 'space-around'
+    gridTemplateColumns: 'auto',
+    [theme.breakpoints.up(1000)]: {
+      gridTemplateColumns: 'auto auto',
+    },
   },
 
 }));
 
-export default function OrganizerMatchList(props) {
+export default function OrganizerPost(props) {
   const classes = useStyles();
   const { API, sess, token, setCSRFToken, pageid } = props
   const [ data, setData ] = React.useState(null)
@@ -46,7 +49,7 @@ export default function OrganizerMatchList(props) {
       'mloadpage' , {
         action: 'postlist',
         pageid: pageid,
-        type: 'match'
+        type: 'post'
     }, function(csrf, d){
       setCSRFToken(csrf)
       setData(d)
@@ -59,16 +62,21 @@ export default function OrganizerMatchList(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text="Match list" />
+      <LabelText text="Post"/>
       <div className={classes.grid}>
-        { ( data && data.length > 0 ) ?
-          data.map( d => <OrganizerMatchCard key={d.postid} data={d} {...props} />)
+        { data?
+          ( data.length > 0 ?
+            data.map( d => <OrganizerPostCard key={d.postid} {...props} data={d}/> )
+            :
+            <div style={{
+                width: '100%', padding: '36px 0', textAlign: 'center',
+                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+          )
           :
-          <div style={{
-              width: '100%', padding: '36px 0', textAlign: 'center',
-              fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+          Array.from(new Array(3)).map((d, i) => <OrganizerPostCard key={i} loading/>)
         }
       </div>
+
     </div>
   );
 }

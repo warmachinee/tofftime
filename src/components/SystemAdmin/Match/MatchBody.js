@@ -197,7 +197,7 @@ function ListComponent(props){
 
 export default function MatchBody(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleSnackBar, pageOrganizer } = props
+  const { sess, token, setCSRFToken, handleSnackBar, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
   const [ dataClassed, setDataClassed ] = React.useState(null)
   const [ editting, setEditting ] = React.useState(false)
@@ -307,7 +307,7 @@ export default function MatchBody(props){
       if(sess.typeid !== 'admin'){
         if(pageOrganizer){
           setData(d.filter( item =>{
-            return item.pageid !== 0
+            return item.pageid === pageData.pageid
           }))
         }else{
           setData(d.filter( item =>{
@@ -322,7 +322,6 @@ export default function MatchBody(props){
 
   React.useEffect(()=>{
     handleFetch()
-    console.log(props);
   },[ ])
 
   return(
@@ -376,7 +375,11 @@ export default function MatchBody(props){
             <React.Fragment key={i}>
               { !editting ?
                 <Link className={classes.linkElement}
-                  to={sess.typeid === 'admin' ? `/admin/match/${d.matchid}` : `/user/management/match/${d.matchid}`}>
+                  to={
+                    sess.typeid === 'admin' ?
+                    `/admin/match/${d.matchid}` :
+                    `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${d.matchid}`
+                  }>
                   <ListComponent data={d} />
                 </Link>
                 :

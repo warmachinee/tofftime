@@ -76,6 +76,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     maxWidth: 800,
     height: window.innerWidth * .45,
+    maxHeight: 450,
     color: 'black',
     backgroundColor: '#ccc',
     backgroundSize: 'cover',
@@ -136,10 +137,6 @@ function MatchDetailBody(props) {
   function expandHandler(){
     setExpanded(!expanded)
   }
-
-  React.useEffect(()=>{
-    window.scrollTo(0, 0)
-  },[ ])
 
   return (
     <Paper className={classes.root}>

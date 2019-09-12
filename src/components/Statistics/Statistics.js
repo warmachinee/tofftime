@@ -8,7 +8,13 @@ import {
   Grid,
   Paper,
   Avatar,
-  Typography
+  Typography,
+  InputLabel,
+  MenuItem,
+  FormHelperText,
+  FormControl,
+  Select,
+
 } from '@material-ui/core';
 
 import {
@@ -23,7 +29,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     boxSizing: 'border-box',
     margin: 'auto',
-    marginTop: 36,
     padding: 12
   },
   rootUp: {
@@ -32,7 +37,6 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     boxSizing: 'border-box',
     margin: 'auto',
-    marginTop: 36,
     padding: 12
   },
   paper: {
@@ -67,6 +71,10 @@ const useStyles = makeStyles(theme => ({
   value: {
     alignSelf: 'center',
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 
 }));
 
@@ -74,6 +82,7 @@ export default function Statistics(props) {
   const classes = useStyles();
   const { API, isSupportWebp, token, setCSRFToken, open, userid } = props
   const [ data, setData ] = React.useState(null)
+  const [ statType, setStatType ] = React.useState('total')
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -83,6 +92,10 @@ export default function Statistics(props) {
 
     if(userid){
       Object.assign(sendObj, { targetuser: userid });
+    }
+
+    if(statType !== 'total'){
+      Object.assign(sendObj, { scoretype: parseInt(statType) });
     }
 
     await API.xhrPost(
@@ -97,7 +110,7 @@ export default function Statistics(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ props.userid ])
+  },[ props.userid, statType ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -113,51 +126,68 @@ export default function Statistics(props) {
   },[ window.innerWidth ])
 
   return (
-    <div
-      className={clsx({
-        [classes.rootDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-        [classes.rootUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-      })}
-      style={{
-        ...( open ? window.innerWidth >= 1090 : window.innerWidth >= 850 )?
-        {justifyContent: 'center' } : {justifyContent: 'space-between' } }}>
-      <Paper className={classes.paper}
+    <React.Fragment>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 36, padding: '0 12px' }}>
+        <Paper style={{ padding: '0 12px' }}>
+          <FormControl className={classes.formControl}>
+            <InputLabel>Type</InputLabel>
+            <Select
+              value={statType}
+              onChange={e => setStatType(e.target.value)}
+            >
+              <MenuItem value={'total'}>Total</MenuItem>
+              <MenuItem value={'0'}>Amateur</MenuItem>
+              <MenuItem value={'1'}>Pro</MenuItem>
+            </Select>
+          </FormControl>
+        </Paper>
+      </div>
+      <div
+        className={clsx({
+          [classes.rootDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+          [classes.rootUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+        })}
         style={{
-          ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
-          { marginLeft: 'auto', marginRight: 'auto' } : null,
-        }}>
-        <div className={classes.statLabel}>
-          <GolfCourse className={classes.icon} />
-          <Typography variant="body1" className={classes.typo}>Matches</Typography>
-        </div>
-        <div className={classes.valueGrid}>
-          { data &&
-            <Typography variant="h3" classes={{ root: classes.value }}>
-              {/*data.matchcount ? data.matchcount : '-'*/}
-              {data.matchcount}
-            </Typography>
-          }
-        </div>
-      </Paper>
-      <Paper className={classes.paper}
-        style={{
-          ...( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
-          { marginLeft: 24 } : { marginTop: 16 },
-          ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
-          { marginLeft: 'auto', marginRight: 'auto' } : null,
-        }}>
-        <div className={classes.statLabel}>
-          <AssignmentInd className={classes.icon} />
-          <Typography variant="body1" className={classes.typo}>Handicap</Typography>
-        </div>
-        <div className={classes.valueGrid}>
-          { data &&
-            <Typography variant="h3" classes={{ root: classes.value }}>
-              { data.hc ? data.hc.toFixed(2) : '-' }
-            </Typography>
-          }
-        </div>
-      </Paper>
-    </div>
+          ...( open ? window.innerWidth >= 1090 : window.innerWidth >= 850 )?
+          {justifyContent: 'center' } : {justifyContent: 'space-between' } }}>
+        <Paper className={classes.paper}
+          style={{
+            ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+            { marginLeft: 'auto', marginRight: 'auto' } : null,
+          }}>
+          <div className={classes.statLabel}>
+            <GolfCourse className={classes.icon} />
+            <Typography variant="body1" className={classes.typo}>Matches</Typography>
+          </div>
+          <div className={classes.valueGrid}>
+            { data &&
+              <Typography variant="h3" classes={{ root: classes.value }}>
+                {/*data.matchcount ? data.matchcount : '-'*/}
+                {data.matchcount}
+              </Typography>
+            }
+          </div>
+        </Paper>
+        <Paper className={classes.paper}
+          style={{
+            ...( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+            { marginLeft: 24 } : { marginTop: 16 },
+            ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+            { marginLeft: 'auto', marginRight: 'auto' } : null,
+          }}>
+          <div className={classes.statLabel}>
+            <AssignmentInd className={classes.icon} />
+            <Typography variant="body1" className={classes.typo}>Handicap</Typography>
+          </div>
+          <div className={classes.valueGrid}>
+            { data &&
+              <Typography variant="h3" classes={{ root: classes.value }}>
+                { data.hc ? data.hc.toFixed(2) : '-' }
+              </Typography>
+            }
+          </div>
+        </Paper>
+      </div>
+    </React.Fragment>
   );
 }

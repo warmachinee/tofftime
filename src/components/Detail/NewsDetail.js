@@ -50,25 +50,9 @@ export default function NewsDetail(props){
   const classes = useStyles();
   const { API, sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
-  //const splitStr = props.computedMatch.params.detailparam.split('-')
 
-  async function handleFetchPost(newsid, pageid){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'ploadpage', {
-        action: 'postdetail',
-        pageid: pageid,
-        postid: newsid,
-        userid: sess.userid
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setData(d)
-      console.log('postdetail', d);
-    })
-  }
-
-  async function handleFetch(newsid){
+  async function handleFetch(){
+    const newsid = parseInt(props.computedMatch.params.detailparam)
     const resToken = token? token : await API.xhrGet('getcsrf')
     const d = await API.xhrGet('loadgeneral',
     `?_csrf=${token? token : resToken.token}&action=newsdetail&newsid=${newsid}`
@@ -78,20 +62,7 @@ export default function NewsDetail(props){
   }
 
   React.useEffect(()=>{
-    let newsid;
-    let pageid;
-    /*
-    console.log(splitStr);
-    if(splitStr.length > 1){
-      pageid = parseInt(splitStr[0])
-      newsid = parseInt(splitStr[1])
-      handleFetchPost(newsid, pageid)
-    }else{
-      newsid = parseInt(props.computedMatch.params.detailparam)
-      handleFetch(newsid)
-    }*/
-    newsid = parseInt(props.computedMatch.params.detailparam)
-    handleFetch(newsid)
+    handleFetch()
     window.scrollTo(0, 0)
   },[ ])
 

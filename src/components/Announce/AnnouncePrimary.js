@@ -143,47 +143,6 @@ export default function AnnouncePrimary(props) {
     }
   }
 
-  async function fetchJsonPlaceholder(){
-    /*
-    const res = await fetch('https://jsonplaceholder.typicode.com/photos')
-    const json = await res.json()
-    */
-
-    const d = [
-      {
-        id: 1,
-        title: 'Sanford International Golf Tournament 15-17 Dec. 2019',
-        pic: 'https://i.ytimg.com/vi/7aZotHcV6HQ/maxresdefault.jpg'
-      },
-      {
-        id: 2,
-        title: 'Rory brings the fight, wins the FedExCup McIlroy becomes the second player to earn multiple FedExCup titles',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_fill,f_auto,g_center,q_auto,w_1320/v1/pgatour/editorial/2019/08/25/mcilroy-trophy-1320-samgreenwood.jpg'
-      },
-      {
-        id: 3,
-        title: 'Brooks, Xander, JT come up short to Rory',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_fill,f_auto,g_center,h_478,q_auto,w_850/v1/pgatour/editorial/2019/08/25/koepka-847-streeterlecka.jpg'
-      },
-      {
-        id: 4,
-        title: 'Winner\'s bag: Rory McIlroy, TOUR Championship',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_fill,f_auto,g_center,h_478,q_auto,w_850/v1/pgatour/editorial/2019/08/25/mcilroy-witb-847-streeterlecka.jpg'
-      },
-      {
-        id: 5,
-        title: 'BMW continuing title sponsorship of BMW Championship',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_limit,q_auto,w_308/v1/pgatour/editorial/2019/08/16/bmwchampionship-847-stanbadz.jpg'
-      },
-    ]
-    setData(d)
-  }
-
-  React.useEffect(()=>{
-    //console.log(props);
-    //fetchJsonPlaceholder()
-  },[ ])
-
   const [ ,updateState ] = React.useState(null)
 
   function resizeHandler(){
@@ -216,7 +175,7 @@ export default function AnnouncePrimary(props) {
                 }
               </BTN.NoStyleLink>
               <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
-                <div className={classes.label} onClick={()=>console.log(data)}>{d.title}</div>
+                <div className={classes.label}>{d.title}</div>
               </BTN.NoStyleLink>
             </div>
           )

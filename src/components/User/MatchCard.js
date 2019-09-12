@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchCard(props) {
   const classes = useStyles();
-  const { API, BTN, sess, data, isSupportWebp, chkUserid } = props
+  const { API, BTN, sess, data, isSupportWebp, chkUserid, pageOrganizer, pageData } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
 
   function handleJoinMatch(){
@@ -90,7 +90,8 @@ export default function MatchCard(props) {
         case data.permission === 'host' || data.permission === 'admin':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
-              <BTN.NoStyleLink to={`/user/management/match/${data.matchid}`}>
+              <BTN.NoStyleLink
+                to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${data.matchid}`}>
                 <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
               </BTN.NoStyleLink>
             </div>

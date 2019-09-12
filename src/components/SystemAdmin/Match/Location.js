@@ -93,7 +93,7 @@ const GreenTextButton = withStyles(theme => ({
 
 export default function Location(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, handleClose } = props
+  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, handleClose, selectedFieldVersion } = props
   const [ pageState, setPageState ] = React.useState('select')
   const [ edittingField, setEdittingField ] = React.useState(null)
 
@@ -126,6 +126,7 @@ export default function Location(props) {
               </Box>
               <Box style={{ width: '60%' }} className={classes.title} m={1}>
                 {selectedField ? selectedField.fieldname : 'none'}
+                {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
               </Box>
             </div>
             <Box className={classes.notice} m={1}>

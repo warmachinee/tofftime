@@ -18,13 +18,22 @@ const LabelText = Loadable({
   loading: () => null
 });
 
+const EditPage = Loadable({
+  loader: () => import(/* webpackChunkName: "EditPage" */'./PageOrganizer/EditPage'),
+  loading: () => null
+});
+
 import {
   Paper,
   Avatar,
   Typography,
   IconButton,
   TextField,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
   FormControl,
+  FormLabel,
   InputLabel,
   Select,
   MenuItem,
@@ -182,7 +191,7 @@ function TextMaskCustom(props) {
 
 export default function Profile(props) {
   const classes = useStyles();
-  const { API, BTN, sess, isSupportWebp, token, setCSRFToken, handleAccountData, accountData, handleSnackBar } = props
+  const { API, BTN, sess, isSupportWebp, token, setCSRFToken, handleAccountData, accountData, handleSnackBar, pageOrganizer, pageData } = props
   const [ editting, setEditting ] = React.useState(false)
   const [ changePasswordState, setChangePasswordState ] = React.useState(false)
   const [ edittingData, setEdittingData ] = React.useState({
@@ -193,6 +202,7 @@ export default function Profile(props) {
     gender: accountData && accountData.gender ? accountData.gender : '',
     birthdate: accountData && accountData.birthdate ? new Date(accountData.birthdate) : null,
     favgolf: accountData && accountData.favgolf ? accountData.favgolf : '',
+    privacy: accountData && accountData.privacy ? accountData.privacy : 'public',
     password: '',
     changePassword: '',
     confirmPassword: '',
@@ -278,8 +288,11 @@ export default function Profile(props) {
       Object.assign(sendObj, { lastname: edittingData.lastname });
     }
 
+    if(accountData.privacy !== edittingData.privacy){
+      Object.assign(sendObj, { privacy: edittingData.privacy });
+    }
+
     if(accountData.birthdate){
-      console.log(accountData.birthdate, edittingData.birthdate);
       if(API.handleDateToString(accountData.birthdate) !== API.handleDateToString(edittingData.birthdate)){
         Object.assign(sendObj, { birthdate: API.handleDateToString(edittingData.birthdate) });
       }
@@ -384,6 +397,7 @@ export default function Profile(props) {
         gender: d[0].gender ? d[0].gender : '',
         birthdate: d[0].birthdate ? new Date(d[0].birthdate) : null,
         favgolf: d[0].favgolf ? d[0].favgolf : '',
+        privacy: d[0].privacy ? d[0].privacy : 'public',
       })
     })
   }
@@ -399,280 +413,338 @@ export default function Profile(props) {
 
   return (
     <div className={classes.root}>
-      { accountData &&
+      { pageOrganizer ?
         <Paper className={classes.paper}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div>
             <IconButton onClick={()=>window.history.go(-1)}>
               <ChevronLeftIcon fontSize="large"/>
             </IconButton>
-            <BTN.PrimaryText onClick={toggleEditting}>{ editting ? 'Done' : 'Edit'}</BTN.PrimaryText>
           </div>
-          <div className={classes.imageGrid}>
-            { editting ?
-              <IconButton>
-                <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                { accountData.photopath ?
-                  <Avatar className={classes.avatarImage}
-                    src={
-                      selectedFile ?
-                      tempFile
-                      :
-                      API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
-                    }/>
-                  :
-                  ( selectedFile ?
-                    <Avatar className={classes.avatarImage} src={tempFile}/>
-                    :
-                    <AccountCircleIcon classes={{ root: classes.avatar }} />
-                  )
-                }
-                <div style={{ position: 'absolute', color: 'black', bottom: -8, display: 'flex' }}>
-                  <EditIcon fontSize="small"/>
-                  <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>Upload</Typography>
-                </div>
+          { pageData &&
+            <EditPage {...props} />
+          }
+        </Paper>
+        :
+        ( accountData &&
+          <Paper className={classes.paper}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <IconButton onClick={()=>window.history.go(-1)}>
+                <ChevronLeftIcon fontSize="large"/>
               </IconButton>
-              :
-              (
-                <div style={{ padding: 12 }}>
-                  {
-                    accountData.photopath ?
+              <BTN.PrimaryText onClick={toggleEditting}>{ editting ? 'Done' : 'Edit'}</BTN.PrimaryText>
+            </div>
+            <div className={classes.imageGrid}>
+              { editting ?
+                <IconButton>
+                  <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                  { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
-                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                      src={
+                        selectedFile ?
+                        tempFile
+                        :
+                        API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+                      }/>
                     :
-                    <AccountCircleIcon classes={{ root: classes.avatar }} />
+                    ( selectedFile ?
+                      <Avatar className={classes.avatarImage} src={tempFile}/>
+                      :
+                      <AccountCircleIcon classes={{ root: classes.avatar }} />
+                    )
                   }
-                </div>
-              )
-            }
-          </div>
-          { editting ?
-            <List style={{ marginTop: 16 }}>
-              <ListItem>
-                <TextField
-                  fullWidth
-                  label="First name"
-                  className={classes.margin}
-                  value={edittingData.fullname}
-                  onChange={e => setEdittingData({ ...edittingData, fullname: e.target.value})}
-                  onKeyPress={e =>handleKeyPress(e)}
-                  onFocus={e => e.target.select()}
-                />
-              </ListItem>
-              <ListItem>
-                <TextField
-                  fullWidth
-                  label="Last name"
-                  className={classes.margin}
-                  value={edittingData.lastname}
-                  onChange={e => setEdittingData({ ...edittingData, lastname: e.target.value})}
-                  onKeyPress={e =>handleKeyPress(e)}
-                  onFocus={e => e.target.select()}
-                />
-              </ListItem>
-            </List>
-            :
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                WebkitFlexWrap: 'wrap',
-                boxSizing: 'border-box',
-                justifyContent: 'center'
-              }}>
-              <Typography variant="h5" className={classes.name} style={{ marginRight: 8 }}>
-                {accountData.fullname} {accountData.lastname}
-              </Typography>
-              { accountData.nickname !== '-' ?
-                <Typography gutterBottom variant="h6" className={classes.name}>
-                  {' • '}( {accountData.nickname} )
-                </Typography>
+                  <div style={{ position: 'absolute', color: 'black', bottom: -8, display: 'flex' }}>
+                    <EditIcon fontSize="small"/>
+                    <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>Upload</Typography>
+                  </div>
+                </IconButton>
                 :
-                <Typography gutterBottom variant="h6" className={classes.name}>
-                  (No nickname)
-                </Typography>
+                (
+                  <div style={{ padding: 12 }}>
+                    <BTN.NoStyleLink to={`/user/timeline/${accountData.userid}`}>
+                      {
+                        accountData.photopath ?
+                        <Avatar className={classes.avatarImage}
+                          style={{ cursor: 'pointer' }}
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        :
+                        <AccountCircleIcon
+                          style={{ cursor: 'pointer' }}
+                          classes={{ root: classes.avatar }} />
+                      }
+                    </BTN.NoStyleLink>
+                  </div>
+                )
               }
             </div>
-          }
-
-          { editting &&
-            <List>
-              <ListItem>
-                <TextField
-                  fullWidth
-                  label="Nickname"
-                  className={classes.margin}
-                  value={edittingData.displayname}
-                  onChange={e => setEdittingData({ ...edittingData, displayname: e.target.value})}
-                  onKeyPress={e =>handleKeyPress(e)}
-                  onFocus={e => e.target.select()}
-                />
-              </ListItem>
-            </List>
-          }
-          { !editting &&
-            <Typography variant="subtitle2" className={classes.email}>
-              email : {accountData.email}
-            </Typography>
-          }
-          { sess && sess.typeid === 'user' &&
-            <List className={classes.listItem}>
-              <ListItem button onClick={toggleChangePassword}>
-                <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                  Change password
-                </Typography>
-              </ListItem>
-            </List>
-          }
-          { editting ?
-            <List>
-              <ListItem style={{
+            { editting ?
+              <List style={{ marginTop: 16 }}>
+                <ListItem>
+                  <TextField
+                    fullWidth
+                    label="First name"
+                    className={classes.margin}
+                    value={edittingData.fullname}
+                    onChange={e => setEdittingData({ ...edittingData, fullname: e.target.value})}
+                    onKeyPress={e =>handleKeyPress(e)}
+                    onFocus={e => e.target.select()}
+                  />
+                </ListItem>
+                <ListItem>
+                  <TextField
+                    fullWidth
+                    label="Last name"
+                    className={classes.margin}
+                    value={edittingData.lastname}
+                    onChange={e => setEdittingData({ ...edittingData, lastname: e.target.value})}
+                    onKeyPress={e =>handleKeyPress(e)}
+                    onFocus={e => e.target.select()}
+                  />
+                </ListItem>
+              </List>
+              :
+              <div
+                style={{
                   display: 'flex',
                   flexWrap: 'wrap',
                   WebkitFlexWrap: 'wrap',
                   boxSizing: 'border-box',
+                  justifyContent: 'center'
                 }}>
-                <Select
-                  className={classes.margin}
-                  value={edittingData.gender}
-                  onChange={e => setEdittingData({ ...edittingData, gender: e.target.value})}
-                  input={<OutlinedInput />}
-                >
-                  <MenuItem value='-'>{'Gender'}</MenuItem>
-                  <MenuItem value='male'>Male</MenuItem>
-                  <MenuItem value='female'>Female</MenuItem>
-                </Select>
-                <div style={{ width: 24 }} />
-                <OutlinedInput
-                  className={classes.margin}
-                  inputComponent={TextMaskCustom}
-                  value={edittingData.tel}
-                  placeholder="Phone number"
-                  onChange={e => handlePhoneNumber(e.target.value)}
-                  onKeyPress={e =>handleKeyPress(e)}
-                />
-              </ListItem>
-            </List>
-            :
-            <List className={classes.listItem}>
-              <ListItem>
-                <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                  Gender : {accountData.gender}
+                <Typography variant="h5" className={classes.name} style={{ marginRight: 8 }}>
+                  {accountData.fullname} {accountData.lastname}
                 </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="subtitle1" className={classes.name}>
-                  Phone number : {accountData.tel}
-                </Typography>
-              </ListItem>
-            </List>
-          }
-          { editting ?
-            <List>
-              <ListItem>
-                <ThemeProvider theme={datePickers}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <KeyboardDatePicker
-                      clearable
-                      disableFuture
-                      className={classes.margin}
-                      label="Birthday"
-                      openTo="year"
-                      inputVariant="outlined"
-                      format="dd/MM/yyyy"
-                      value={edittingData.birthdate}
-                      onChange={date => setEdittingData({ ...edittingData, birthdate: date})}
-                      onKeyPress={e =>handleKeyPress(e)}
-                    />
-                  </MuiPickersUtilsProvider>
-                </ThemeProvider>
-              </ListItem>
-            </List>
-            :
-            <List className={classes.listItem}>
-              <ListItem>
-                <Typography variant="subtitle1" className={classes.name}>
-                  Age : {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
-                </Typography>
-              </ListItem>
-              <ListItem>
-                <Typography variant="subtitle1" className={classes.name}>
-                  Birth date : {accountData.birthdate && API.handleDateToString(accountData.birthdate)}
-                </Typography>
-              </ListItem>
-            </List>
-          }
-          { editting ?
-            <List>
-              <ListItem>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  className={classes.margin}
-                  label="Golf favorite equipment"
-                  value={edittingData.favgolf}
-                  onChange={e => setEdittingData({ ...edittingData, favgolf: e.target.value})}
-                  onKeyPress={e =>handleKeyPress(e)}
-                  onFocus={e => e.target.select()}
-                />
-              </ListItem>
-            </List>
-            :
-            <List className={classes.listItem}>
-              <ListItem>
-                <Typography variant="subtitle1" className={classes.name}>
-                  Equipment : {accountData.favgolf}
-                </Typography>
-              </ListItem>
-            </List>
-          }
-          <div style={{ display: 'flex', marginTop: 36, justifyContent: 'flex-end' }}>
-            { editting &&
-              <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>Save</BTN.Primary>
+                { accountData.nickname !== '-' ?
+                  <Typography gutterBottom variant="h6" className={classes.name}>
+                    {' • '}( {accountData.nickname} )
+                  </Typography>
+                  :
+                  <Typography gutterBottom variant="h6" className={classes.name}>
+                    (No nickname)
+                  </Typography>
+                }
+              </div>
             }
-          </div>
-        </Paper>
+
+            { editting &&
+              <List>
+                <ListItem>
+                  <TextField
+                    fullWidth
+                    label="Nickname"
+                    className={classes.margin}
+                    value={edittingData.displayname}
+                    onChange={e => setEdittingData({ ...edittingData, displayname: e.target.value})}
+                    onKeyPress={e =>handleKeyPress(e)}
+                    onFocus={e => e.target.select()}
+                  />
+                </ListItem>
+              </List>
+            }
+            { !editting &&
+              <Typography variant="subtitle2" className={classes.email}>
+                email : {accountData.email}
+              </Typography>
+            }
+            { editting ?
+              <FormControl component="fieldset" className={classes.margin}
+                style={{
+                  width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid',
+                  padding: '4px 16px 8px 24px',
+                  borderRadius: 4, boxSizing: 'border-box'
+                }}>
+                <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
+                <RadioGroup value={edittingData.privacy} onChange={e => setEdittingData({ ...edittingData, privacy: e.target.value})} row>
+                  <FormControlLabel
+                    value={'public'}
+                    control={<Radio />}
+                    label="Public"
+                    labelPlacement="end"
+                  />
+                  <FormControlLabel
+                    value={'friend'}
+                    control={<Radio />}
+                    label="Friend"
+                    labelPlacement="end"
+                  />
+                  <FormControlLabel
+                    value={'private'}
+                    control={<Radio />}
+                    label="Private"
+                    labelPlacement="end"
+                  />
+                </RadioGroup>
+              </FormControl>
+              :
+              <List className={classes.listItem}>
+                <ListItem>
+                  <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
+                    Privacy : {accountData.privacy}
+                  </Typography>
+                </ListItem>
+              </List>
+            }
+            { sess && sess.typeid === 'user' &&
+              <List className={classes.listItem}>
+                <ListItem button onClick={toggleChangePassword}>
+                  <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
+                    Change password
+                  </Typography>
+                </ListItem>
+              </List>
+            }
+            { editting ?
+              <List>
+                <ListItem style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    WebkitFlexWrap: 'wrap',
+                    boxSizing: 'border-box',
+                  }}>
+                  <Select
+                    className={classes.margin}
+                    value={edittingData.gender}
+                    onChange={e => setEdittingData({ ...edittingData, gender: e.target.value})}
+                    input={<OutlinedInput />}
+                  >
+                    <MenuItem value='-'>{'Gender'}</MenuItem>
+                    <MenuItem value='male'>Male</MenuItem>
+                    <MenuItem value='female'>Female</MenuItem>
+                  </Select>
+                  <div style={{ width: 24 }} />
+                  <OutlinedInput
+                    className={classes.margin}
+                    inputComponent={TextMaskCustom}
+                    value={edittingData.tel}
+                    placeholder="Phone number"
+                    onChange={e => handlePhoneNumber(e.target.value)}
+                    onKeyPress={e =>handleKeyPress(e)}
+                  />
+                </ListItem>
+              </List>
+              :
+              <List className={classes.listItem}>
+                <ListItem>
+                  <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
+                    Gender : {accountData.gender}
+                  </Typography>
+                </ListItem>
+                <ListItem>
+                  <Typography variant="subtitle1" className={classes.name}>
+                    Phone number : {accountData.tel}
+                  </Typography>
+                </ListItem>
+              </List>
+            }
+            { editting ?
+              <List>
+                <ListItem>
+                  <ThemeProvider theme={datePickers}>
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                      <KeyboardDatePicker
+                        clearable
+                        disableFuture
+                        className={classes.margin}
+                        label="Birthday"
+                        openTo="year"
+                        inputVariant="outlined"
+                        format="dd/MM/yyyy"
+                        value={edittingData.birthdate}
+                        onChange={date => setEdittingData({ ...edittingData, birthdate: date})}
+                        onKeyPress={e =>handleKeyPress(e)}
+                      />
+                    </MuiPickersUtilsProvider>
+                  </ThemeProvider>
+                </ListItem>
+              </List>
+              :
+              <List className={classes.listItem}>
+                <ListItem>
+                  <Typography variant="subtitle1" className={classes.name}>
+                    Age : {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
+                  </Typography>
+                </ListItem>
+                <ListItem>
+                  <Typography variant="subtitle1" className={classes.name}>
+                    Birth date : {accountData.birthdate && API.handleDateToString(accountData.birthdate)}
+                  </Typography>
+                </ListItem>
+              </List>
+            }
+            { editting ?
+              <List>
+                <ListItem>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    className={classes.margin}
+                    label="Golf favorite equipment"
+                    value={edittingData.favgolf}
+                    onChange={e => setEdittingData({ ...edittingData, favgolf: e.target.value})}
+                    onKeyPress={e =>handleKeyPress(e)}
+                    onFocus={e => e.target.select()}
+                  />
+                </ListItem>
+              </List>
+              :
+              <List className={classes.listItem}>
+                <ListItem>
+                  <Typography variant="subtitle1" className={classes.name}>
+                    Equipment : {accountData.favgolf}
+                  </Typography>
+                </ListItem>
+              </List>
+            }
+            <div style={{ display: 'flex', marginTop: 36, justifyContent: 'flex-end' }}>
+              { editting &&
+                <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>Save</BTN.Primary>
+              }
+            </div>
+          </Paper>
+        )
       }
-      <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth={500}>
-        <LabelText text="Change password" />
-        <div style={{ marginTop: 24, marginBottom: 24 }}>
-          <TextField
-            autoFocus={changePasswordState}
-            fullWidth
-            label="Old password"
-            variant="outlined"
-            type="password"
-            className={classes.margin}
-            onChange={e => setEdittingData({ ...edittingData, password: e.target.value})}
-            onKeyPress={e =>handleKeyPress(e)}
-            onFocus={e => e.target.select()}
-          />
-          <TextField
-            fullWidth
-            label="New password"
-            variant="outlined"
-            type="password"
-            error={errorPassword.oldNew}
-            helperText={errorPassword.oldNew && "New password is same as old password."}
-            className={classes.margin}
-            onChange={e => setEdittingData({ ...edittingData, changePassword: e.target.value})}
-            onKeyPress={e =>handleKeyPress(e)}
-            onFocus={e => e.target.select()}
-          />
-          <TextField
-            fullWidth
-            label="Confirm password"
-            variant="outlined"
-            type="password"
-            error={errorPassword.changeConfirm}
-            helperText={errorPassword.changeConfirm && "Confirm password is not same as new password."}
-            className={classes.margin}
-            onChange={e => setEdittingData({ ...edittingData, confirmPassword: e.target.value})}
-            onKeyPress={e =>handleKeyPress(e)}
-            onFocus={e => e.target.select()}
-          />
-        <BTN.Primary style={{ padding: '16px 36px', width: '100%', marginTop: 24 }} onClick={handleSave}>Confirm</BTN.Primary>
-        </div>
-      </TemplateDialog>
+      { !pageOrganizer &&
+        <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth={500}>
+          <LabelText text="Change password" />
+          <div style={{ marginTop: 24, marginBottom: 24 }}>
+            <TextField
+              autoFocus={changePasswordState}
+              fullWidth
+              label="Old password"
+              variant="outlined"
+              type="password"
+              className={classes.margin}
+              onChange={e => setEdittingData({ ...edittingData, password: e.target.value})}
+              onKeyPress={e =>handleKeyPress(e)}
+              onFocus={e => e.target.select()}
+            />
+            <TextField
+              fullWidth
+              label="New password"
+              variant="outlined"
+              type="password"
+              error={errorPassword.oldNew}
+              helperText={errorPassword.oldNew && "New password is same as old password."}
+              className={classes.margin}
+              onChange={e => setEdittingData({ ...edittingData, changePassword: e.target.value})}
+              onKeyPress={e =>handleKeyPress(e)}
+              onFocus={e => e.target.select()}
+            />
+            <TextField
+              fullWidth
+              label="Confirm password"
+              variant="outlined"
+              type="password"
+              error={errorPassword.changeConfirm}
+              helperText={errorPassword.changeConfirm && "Confirm password is not same as new password."}
+              className={classes.margin}
+              onChange={e => setEdittingData({ ...edittingData, confirmPassword: e.target.value})}
+              onKeyPress={e =>handleKeyPress(e)}
+              onFocus={e => e.target.select()}
+            />
+            <BTN.Primary style={{ padding: '16px 36px', width: '100%', marginTop: 24 }} onClick={handleSave}>Confirm</BTN.Primary>
+          </div>
+        </TemplateDialog>
+      }
     </div>
   );
 }

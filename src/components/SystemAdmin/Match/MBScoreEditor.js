@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 24,
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   },
   title: {
     color: primary[900],
@@ -69,7 +69,7 @@ export default function MBScoreEditor(props){
         <ExpandMoreIcon />
       </IconButton>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <MBScoreEditorBody {...props}/>
+        <MBScoreEditorBody {...props} />
       </Collapse>
     </Paper>
   );

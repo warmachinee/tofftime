@@ -36,60 +36,9 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-const dataTemp = [
-  {
-    matchid: 1,
-    picture: 'https://media.golfdigest.com/photos/5856b814ba03cefc46ca223f/master/w_768/2017-79-Olympia-Fields-CC-hole-18.jpg',
-    title: 'Olympia Tour 01 - 2019',
-    location: 'Olympia Fields Country Club (North)',
-    views: 300,
-    date: '15/09/2019',
-  },
-  {
-    matchid: 2,
-    picture: 'https://cdn.cybergolf.com/images/721/North-Bellingham-GC_book-tee-times-databutton-web.jpg',
-    title: 'Bellingham 2019 Tour',
-    location: 'North Bellingham Golf Course',
-    views: 500,
-    date: '23/10/2019',
-  },
-  {
-    matchid: 3,
-    picture: 'https://www.hillsboroughgolf.com/wp-content/uploads/sites/5394/2015/09/golf-2.png',
-    title: 'LPGA tour 3 - 2019',
-    location: 'Hillsborough Golf and Country Club',
-    views: 900,
-    date: '31/10/2019',
-  },
-  {
-    matchid: 4,
-    picture: 'https://www.visitrenotahoe.com/wp-content/uploads/2017/07/BarracudaHeader.jpg',
-    title: 'Barracuda Championship 2019',
-    location: 'Fieldstone Golf Club - Auburn Hills, MI',
-    views: 1600,
-    date: '07/11/2019',
-  },
-  {
-    matchid: 5,
-    picture: 'https://www.mercedes-benz.co.in/passengercars/the-brand/mercedes-trophy-india/mercedes-trophy-/Homepage/multimedia-systems/_jcr_content/highlightcontainer/par/highlighttile.MQ6.0.20181101084019.jpeg',
-    title: 'MercedesTrophy 2019',
-    location: 'Birch Creek Golf Course',
-    views: 300,
-    date: '02/01/2020',
-  },
-  {
-    matchid: 6,
-    picture: 'https://radioimg.s3.amazonaws.com/995themountain/styles/delta__775x515/s3/s3fs-public/General/GolfTour_2017_carousel-Raccoon%20Creek.jpg?itok=m4r3zosx',
-    title: 'Mountain Golf Tour at Raccoon Creek Golf Course',
-    location: 'Washoe Golf Course',
-    views: 300,
-    date: '08/03/2020',
-  },
-];
-
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken, userid, createMatchState, pageOrganizer } = props
+  const { API, token, setCSRFToken, userid, createMatchState, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -110,7 +59,7 @@ export default function Upcoming(props) {
       setCSRFToken(csrf)
       if(pageOrganizer){
         setData(d.filter( item =>{
-          return item.pageid !== 0
+          return item.pageid === pageData.pageid
         }))
       }else{
         setData(d.filter( item =>{

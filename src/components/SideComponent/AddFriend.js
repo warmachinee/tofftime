@@ -96,7 +96,6 @@ export default function AddFriend(props) {
     if(sess){
       const socket = socketIOClient( API.getWebURL() )
       socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
-        console.log(messageNew.result.infolist);
         setData(messageNew.result.infolist)
       })
     }
@@ -187,7 +186,6 @@ function ListPlayerItem(props) {
     if(sessid && targetid){
       const socket = socketIOClient( API.getWebURL() )
       socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
-        //console.log('resFri ', messageNew);
         if(messageNew && messageNew.status === 'success' && messageNew.result && messageNew.result.status === 'success'){
           handleClose()
           if(messageNew.result.notidetail){

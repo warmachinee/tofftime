@@ -115,12 +115,12 @@ export default function SideDrawer(props) {
                 }
               </BTN.NoStyleLink>
               <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
-                <Typography variant="body1" className={classes.userTitle}>
+                <Typography variant="body1" className={classes.userTitle} onClick={drawerClose}>
                   {accountData.fullname} {accountData.lastname}
                 </Typography>
               </BTN.NoStyleLink>
               <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
-                <Typography variant="caption" className={classes.userTitle}>
+                <Typography variant="caption" className={classes.userTitle} onClick={drawerClose}>
                   {accountData.email}
                 </Typography>
               </BTN.NoStyleLink>

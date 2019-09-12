@@ -7,6 +7,11 @@ import { primary } from './../../api/palette'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 import ScoreTable from './ScoreTable'
 import PrintPDF from './../export/PrintPDF'
@@ -18,23 +23,42 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     backgroundColor: theme.palette.background.paper,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+
 }));
 
 function TabContainer(props) {
   const classes = useStyles()
-  const { data, userscore, matchClass, matchid, reward } = props
+  const { data, userscore, matchClass, matchid, reward, sortBy, setSortBy } = props
+
   const rewardSelected = !reward.status && reward.status !== 'reward not create' && reward.status !== 'need to login admin account' && reward.filter( item =>{
     return (item.classno === matchClass.classno && item)
   })
+
   return (
     <React.Fragment>
       <div style={{ display: 'flex' }}>
-        <div style={{ flex: 1 }} />
         {
           !reward.status &&
           <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} />
         }
         <PrintPDF data={data} userscore={userscore} matchClass={matchClass}/>
+        <div style={{ flex: 1 }} />
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel>Sort by</InputLabel>
+            <Select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value)}
+            >
+              <MenuItem value={'net'}>Net</MenuItem>
+              <MenuItem value={'sf'}>SF</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
       </div>
       <ScoreTable {...props} data={data} userscore={userscore} matchClass={matchClass}/>
     </React.Fragment>

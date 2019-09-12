@@ -20,11 +20,6 @@ import {
 
 } from '@material-ui/icons';
 
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../TemplateDialog'),
-  loading: () => null
-});
-
 const LabelText = Loadable({
   loader: () => import(/* webpackChunkName: "LabelText" */ './../../LabelText'),
   loading: () => null
@@ -32,7 +27,7 @@ const LabelText = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
-
+    padding: theme.spacing(1.5)
   },
   margin: {
     width: '100%',
@@ -118,9 +113,10 @@ const theme = createMuiTheme({
   },
 });
 
-export default function CreatePage(props) {
+export default function EditPage(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, createPageState, toggleCreatePage } = props
+  const { API, token, setCSRFToken, handleSnackBar, isSupportWebp, pageData, setEditPageRefresh  } = props
+  const [ data, setData ] = React.useState(null);
   const [ pageName, setPageName ] = React.useState('')
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
@@ -158,28 +154,30 @@ export default function CreatePage(props) {
 
   function handleKeyPress(e){
     if(e.key === 'Enter'){
-      handleCreatePage()
+      handleEditPage()
     }
   }
 
-  async function handleCreatePage(){
+  async function handleEditPage(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
       'ppagesystem', {
-        action: 'create',
-        pagename: pageName
+        action: 'edit',
+        pageid: pageData.pageid,
+        pagename: pageName,
+        color: ''
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleCreatePicture(csrf, d)
+      handleEditPicture(csrf, d)
     })
   }
 
-  async function handleCreatePicture(csrf, d){
+  async function handleEditPicture(csrf, d){
     const formData = new FormData()
     const sendObj = {
       action: 'edit',
-      pageid: d.pageid,
+      pageid: pageData.pageid,
       photopath: true
     }
     if(selectedFile){
@@ -194,7 +192,7 @@ export default function CreatePage(props) {
         autoHideDuration: response.status === 'success'? 2000 : 5000
       })
       if(response.status === 'success'){
-        toggleCreatePage()
+        setEditPageRefresh(new Date().toISOString())
       }
     }else{
       setCSRFToken(csrf)
@@ -205,95 +203,94 @@ export default function CreatePage(props) {
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       if(d.status === 'success'){
-        toggleCreatePage()
+        setEditPageRefresh(new Date().toISOString())
       }
     }
   }
 
+  React.useEffect(()=>{
+    setPageName(pageData.pagename)
+    if(pageData.logo){
+      setTempFile(API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ))
+    }
+  }, [ ])
+
   return (
-    <TemplateDialog open={createPageState} handleClose={toggleCreatePage} maxWidth={450}>
-      <div className={classes.root}>
-        {/*
-          <Typography component="div" style={{ marginBottom: 24 }}>
-            <Box className={classes.title} fontWeight={600} m={1}>
-              Create page
-            </Box>
-          </Typography>*/
-        }
-        <LabelText text="Create page" />
-        <div style={{ marginTop: 24 }}>
-          <ThemeProvider theme={theme}>
-            <TextField
-              autoFocus
-              className={classes.margin}
-              label="Page name"
-              variant="outlined"
-              autoComplete="email"
-              onChange={(e)=>setPageName(e.target.value)}
-              onKeyPress={e =>handleKeyPress(e)}
-            />
-          </ThemeProvider>
-          { ( selectedFile )?
-            <div style={{
-                position: 'relative', marginTop: 16, marginBottom: 24,
-                display: 'flex', flexDirection: 'column', justifyContent: 'center'
-              }}
-              onMouseEnter={()=>handleFileHover(true)}
-              onMouseLeave={()=>handleFileHover(false)}>
-              <Typography variant="caption">{selectedFile.name}</Typography>
-              <img ref={imgRef}
-                style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
-                className={classes.matchImg}
-                src={tempFile}/>
-              { imgRef.current &&
-                <div
-                  style={{
-                    display: 'flex',
-                    position: 'absolute',
-                    height: imgRef.current.offsetHeight,
-                    width: imgRef.current.offsetWidth,
-                    top: 0, left: 0,
-                  }}>
-                  <div style={{ flex: 1 }} />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ flex: 1 }} />
-                    <StyledIconButton className={classes.matchFile}>
-                      <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUpload fontSize="large" style={{ color: primary[400] }}/>
-                    </StyledIconButton>
-                    <div style={{ flex: 1 }} />
-                  </div>
-                  <div style={{ flex: 1 }} />
-                </div>
-              }
-            </div>
-            :
-            <div
-              style={{
-                position: 'relative', marginTop: 16, marginBottom: 24,
-                display: 'flex', flexDirection: 'column', justifyContent: 'center'
-              }}>
-              <Typography variant="caption" style={{ textAlign: 'center' }}>Upload image</Typography>
-              <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
+    <div className={classes.root}>
+      <LabelText text="Edit page" />
+      <div style={{ marginTop: 24 }}>
+        <ThemeProvider theme={theme}>
+          <TextField
+            autoFocus
+            className={classes.margin}
+            label="Page name"
+            value={pageName}
+            variant="outlined"
+            autoComplete="email"
+            onChange={(e)=>setPageName(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
+          />
+        </ThemeProvider>
+        { ( selectedFile || tempFile )?
+          <div style={{
+              position: 'relative', marginTop: 16, marginBottom: 24,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center'
+            }}
+            onMouseEnter={()=>handleFileHover(true)}
+            onMouseLeave={()=>handleFileHover(false)}>
+            <Typography variant="caption">{selectedFile && selectedFile.name}</Typography>
+            <img ref={imgRef}
+              style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
+              className={classes.matchImg}
+              src={tempFile}/>
+            { imgRef.current &&
+              <div
+                style={{
+                  display: 'flex',
+                  position: 'absolute',
+                  height: imgRef.current.offsetHeight,
+                  width: imgRef.current.offsetWidth,
+                  top: 0, left: 0,
+                }}>
                 <div style={{ flex: 1 }} />
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUpload fontSize="large" style={{ color: primary[500] }}/>
+                    <CloudUpload fontSize="large" style={{ color: primary[400] }}/>
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>
                 <div style={{ flex: 1 }} />
               </div>
+            }
+          </div>
+          :
+          <div
+            style={{
+              position: 'relative', marginTop: 16, marginBottom: 24,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center'
+            }}>
+            <Typography variant="caption" style={{ textAlign: 'center' }}>Upload image</Typography>
+            <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
+              <div style={{ flex: 1 }} />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flex: 1 }} />
+                <StyledIconButton className={classes.matchFile}>
+                  <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                  <CloudUpload fontSize="large" style={{ color: primary[500] }}/>
+                </StyledIconButton>
+                <div style={{ flex: 1 }} />
+              </div>
+              <div style={{ flex: 1 }} />
             </div>
-          }
-          <GreenButton variant="contained" color="primary" className={classes.button}
-            onClick={handleCreatePage}>
-            Create
-          </GreenButton>
-        </div>
+          </div>
+        }
+        <GreenButton variant="contained" color="primary" className={classes.button}
+          onClick={handleEditPage}>
+          Save
+        </GreenButton>
       </div>
-    </TemplateDialog>
+    </div>
   );
 }

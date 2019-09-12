@@ -127,6 +127,7 @@ export default function AnnouncementEditor(props) {
   const { token, setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData, isSupportWebp, setData } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
+  const [ dataDetail, setDataDetail ] = React.useState(null)
   const [ borderOnFocus, setBorderOnFocus ] = React.useState(`1px solid ${grey[400]}`)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
@@ -176,10 +177,6 @@ export default function AnnouncementEditor(props) {
 
   function handleCKEditorOnChange(data){
     setDetail(data)
-    const root = document.getElementById('template-dialog')
-    if(ckeditorEl && root){
-      root.scrollTo(0, ckeditorEl.current.offsetTop + ckeditorEl.current.clientHeight)
-    }
   }
 
   function handleCKEditorOnFocus(){
@@ -324,6 +321,7 @@ export default function AnnouncementEditor(props) {
     setCSRFToken(d.token)
     setTitle(d.response[0].title)
     setDetail(d.response[0].announcedetail)
+    setDataDetail(d.response[0])
   }
 
   async function handleFetch(){
@@ -413,21 +411,16 @@ export default function AnnouncementEditor(props) {
             onChange={e => setTitle(e.target.value)}
             onKeyPress={e =>handleKeyPress(e.key)}
             onFocus={e => e.target.select()} />
-            { clickAction === 'edit' ?
-              ( detail && <div>Fill content here</div> )
-              :
-              <div>Fill content here</div>
-            }
+          <div>Fill content here</div>
           <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2 }}>
             { clickAction === 'edit' ?
-              ( detail &&
+              ( dataDetail && dataDetail.announcedetail &&
                 <CKEditor
                   data={detail}
                   editor={ BalloonEditor }
                   onChange={ ( event, editor ) => {
                     const data = editor.getData();
                     handleCKEditorOnChange(data)
-                    //console.log( { event, editor, data } );
                   }}
                   onFocus={handleCKEditorOnFocus}
                   onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
@@ -440,11 +433,9 @@ export default function AnnouncementEditor(props) {
                 onChange={ ( event, editor ) => {
                   const data = editor.getData();
                   handleCKEditorOnChange(data)
-                  //console.log( { event, editor, data } );
                 }}
                 onFocus={handleCKEditorOnFocus}
                 onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
-                on
               />
             }
           </div>

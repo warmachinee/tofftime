@@ -230,6 +230,7 @@ function MBOverviewBody(props){
 
   const [ selectedMatchName, setSelectedMatchName ] = React.useState('');
   const [ selectedField, setSelectedField ] = React.useState(null);
+  const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState(null);
   const [ selectedMatchType, setSelectedMatchType ] = React.useState(null);
   const [ selectedDate, setSelectedDate ] = React.useState(null);
@@ -301,6 +302,10 @@ function MBOverviewBody(props){
       Object.assign(sendObj, { fieldid: selectedField.fieldid });
     }
 
+    if(selectedFieldVersion !== 1){
+      Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
+    }
+
     if(selectedMatchName.length){
       Object.assign(sendObj, { matchname: selectedMatchName });
     }
@@ -345,7 +350,6 @@ function MBOverviewBody(props){
       const res = await API.xhrGet('getcsrf')
       setCSRFToken( res.token )
       status = response.status
-      console.log('MBOverview edit picture ', status);
     }else{
       setCSRFToken(csrf)
     }
@@ -497,6 +501,7 @@ function MBOverviewBody(props){
               style={{ textTransform: 'none' }}
               onClick={()=>handleOpen('location')}>
               { data?( selectedField? selectedField.fieldname : data.location ):'Location' }
+              {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
             </GreenTextButton>
             <GreenTextButton
               disabled={!editting}
@@ -589,6 +594,8 @@ function MBOverviewBody(props){
             {...props}
             selectedField={selectedField}
             setSelectedField={setSelectedField}
+            selectedFieldVersion={selectedFieldVersion}
+            setSelectedFieldVersion={setSelectedFieldVersion}
             handleClose={handleClose}/>
         </TemplateDialog>
       }

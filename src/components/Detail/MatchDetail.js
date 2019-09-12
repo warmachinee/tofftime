@@ -16,7 +16,9 @@ export default function MatchDetail(props){
   const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, handleSnackBarL } = props
   const endpoint = API.getWebURL()
   const [ data, setData ] = React.useState(null)
+  const [ rawUserscore, setRawUserscore ] = React.useState(null)
   const [ userscore, setUserscore ] = React.useState(null)
+  const [ sortBy, setSortBy ] = React.useState('net')
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -37,11 +39,12 @@ export default function MatchDetail(props){
       }else{
         setData(d)
         setUserscore(d.userscore)
+        setRawUserscore(d)
       }
     })
   }
 
-  function response(){
+  function response(action){
     const matchid = parseInt(props.computedMatch.params.matchid)
     const socket = socketIOClient(endpoint)
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
@@ -57,7 +60,8 @@ export default function MatchDetail(props){
             sPAR: messageNew.hostdetail.par
           })
         }
-        setUserscore(messageNew.result)
+        setUserscore(messageNew.result.userscore)
+        setRawUserscore(messageNew.result)
       }
     })
   }
@@ -67,11 +71,19 @@ export default function MatchDetail(props){
     handleFetch()
   },[ ])
 
+  React.useEffect(()=>{
+    if(rawUserscore){
+      setUserscore( sortBy === 'net' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)
+    }
+  },[ sortBy ])
+
   return(
     <MatchDetailBody
       {...props}
       data={data}
       userscore={userscore}
+      sortBy={sortBy}
+      setSortBy={setSortBy}
       matchid={parseInt(props.computedMatch.params.matchid)} />
   );
 }

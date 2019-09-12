@@ -24,6 +24,7 @@ export default function PrintPDF(props){
   const userData = userscore.filter((d)=>{
     return d.classno === matchClass.classno
   })
+
   return(
     <Button onClick={()=>handleDownload(data, userData, matchClass.classname)} color="primary">PDF</Button>
   );

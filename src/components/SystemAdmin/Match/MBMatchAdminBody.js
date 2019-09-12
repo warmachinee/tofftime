@@ -114,7 +114,6 @@ function ListMenu(props) {
         setaction: role
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      console.log(d);
       handleSnackBar({
         state: true,
         message: d.status,

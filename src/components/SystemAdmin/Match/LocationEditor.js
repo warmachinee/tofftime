@@ -223,7 +223,10 @@ function HCPPanel(props){
 
 export default function LocationEditor(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, setPageState, edittingField, setEdittingField, pageid } = props
+  const {
+    sess, token, setCSRFToken, isSupportWebp, handleSnackBar,
+    setPageState, edittingField, setEdittingField, pageOrganizer, pageData
+  } = props
   const [ location, setLocation ] = React.useState(null)
   const [ holeScore, setHoleScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
   const [ hcpScore, setHCPScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
@@ -296,7 +299,7 @@ export default function LocationEditor(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     const sendObj = {
       action: sess.typeid === 'admin' ? 'create' : 'createcustom',
-      fieldtype: 0,
+      fieldtype: pageOrganizer ? pageData.pageid : 0,
     };
 
     if(sess.typeid === 'admin'){
@@ -333,7 +336,6 @@ export default function LocationEditor(props){
         sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
           ...sendObj
       }, (csrf, d) =>{
-        console.log(d);
         setCSRFToken(csrf)
         handleSnackBar({
           state: true,
@@ -371,7 +373,6 @@ export default function LocationEditor(props){
       const d = await API.fetchPostFile(
         sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem',
         `?_csrf=${token? token : resToken.token}`, sendObj, formData)
-      console.log(d);
       handleSnackBar({
         state: true,
         message: d.status,

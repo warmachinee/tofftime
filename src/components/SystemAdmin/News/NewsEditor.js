@@ -128,6 +128,7 @@ export default function NewsEditor(props) {
   const [ title, setTitle ] = React.useState('')
   const [ subtitle, setSubtitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
+  const [ dataDetail, setDataDetail ] = React.useState(null)
   const [ borderOnFocus, setBorderOnFocus ] = React.useState(`1px solid ${grey[400]}`)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
@@ -177,10 +178,6 @@ export default function NewsEditor(props) {
 
   function handleCKEditorOnChange(data){
     setDetail(data)
-    const root = document.getElementById('template-dialog')
-    if(ckeditorEl && root){
-      root.scrollTo(0, ckeditorEl.current.offsetTop + ckeditorEl.current.clientHeight)
-    }
   }
 
   function handleCKEditorOnFocus(){
@@ -346,6 +343,7 @@ export default function NewsEditor(props) {
     setTitle(d.response[0].title)
     setSubtitle(d.response[0].subtitle)
     setDetail(d.response[0].newsdetail)
+    setDataDetail(d.response[0])
   }
 
   React.useEffect(()=>{
@@ -431,21 +429,16 @@ export default function NewsEditor(props) {
             onChange={e => setSubtitle(e.target.value)}
             onKeyPress={e =>handleKeyPress(e.key)}
             onFocus={e => e.target.select()}/>
-          { clickAction === 'edit' ?
-            ( detail && <div>Fill content here</div>)
-            :
-            <div>Fill content here</div>
-          }
+          <div>Fill content here</div>
           <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2 }}>
             { clickAction === 'edit' ?
-              ( detail &&
+              ( dataDetail && dataDetail.newsdetail &&
                 <CKEditor
                   data={detail}
                   editor={ BalloonEditor }
                   onChange={ ( event, editor ) => {
                     const data = editor.getData();
                     handleCKEditorOnChange(data)
-                    //console.log( { event, editor, data } );
                   }}
                   onFocus={handleCKEditorOnFocus}
                   onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
@@ -458,7 +451,6 @@ export default function NewsEditor(props) {
                 onChange={ ( event, editor ) => {
                   const data = editor.getData();
                   handleCKEditorOnChange(data)
-                  //console.log( { event, editor, data } );
                 }}
                 onFocus={handleCKEditorOnFocus}
                 onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}

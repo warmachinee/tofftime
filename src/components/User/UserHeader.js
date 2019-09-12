@@ -154,7 +154,6 @@ export default function UserHeader(props) {
     const endpoint = API.getWebURL()
     const socket = socketIOClient(endpoint)
     socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
-      //console.log('RTnotification', messageNew);
       if(messageNew){
         handleFetchNotifications()
       }
@@ -170,7 +169,6 @@ export default function UserHeader(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setNotiData(d)
-      //console.log('notification', d);
     })
   }
 
@@ -276,7 +274,8 @@ export default function UserHeader(props) {
                 </React.Fragment>
                 :
                 <React.Fragment>
-                  <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/profile/${ pageOrganizer ? pageData.pageid : accountData.userid }/`}
+                  <Link
+                    to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
                     style={{ textDecoration: 'none', color: 'inherit' }}>
                     <IconButton className={classes.accountAvatar}>
                       { pageOrganizer ?
@@ -298,7 +297,7 @@ export default function UserHeader(props) {
                       }
                     </IconButton>
                   </Link>
-                  <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/profile/${ pageOrganizer ? pageData.pageid : accountData.userid }/`}
+                  <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
                     style={{ textDecoration: 'none', color: 'inherit', }}>
                     <Typography variant="subtitle1" noWrap className={classes.accountTitle}
                       style={{
@@ -333,12 +332,12 @@ export default function UserHeader(props) {
         }
         { ( accountData || pageData ) &&
           ( /\/user\/profile/.test(window.location.pathname) ?
-          <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }`}
+          <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>Dashboard</MenuItem>
           </Link>
           :
-          <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/profile/${ pageOrganizer ? pageData.pageid : accountData.userid }/`}
+          <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>Profile</MenuItem>
           </Link>

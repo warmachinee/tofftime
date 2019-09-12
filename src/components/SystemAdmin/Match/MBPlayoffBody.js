@@ -348,7 +348,8 @@ export default function MBPlayoffBody(props){
       </Paper>
       <div className={classes.list}>
         <List>
-          { matchDetail && matchDetail.class &&
+          { data && !data.status &&
+            matchDetail && matchDetail.class &&
             matchDetail.class.map( (c, i) =>{
               const filtered = c && data.filter( item =>{
                 return ( item && item.classno === c.classno )

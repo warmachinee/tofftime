@@ -64,7 +64,6 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-
 export default function HistoryList(props) {
   const classes = useStyles();
   const { API, BTN, COLOR, token, setCSRFToken, data, isSupportWebp, open } = props

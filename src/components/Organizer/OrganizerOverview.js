@@ -67,22 +67,40 @@ export default function OrganizerOverview(props) {
   const [ isFollow, setIsFollow ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
 
+  async function handleToggleFollow(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'uusersystem' , {
+        action: 'pagefollow',
+        pageid: pageid,
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+    })
+    await handleFetch()
+  }
+
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'ploadpage' , {
+      ( sess && sess.status === 1 ) ? 'ploadpage' : 'mloadpage' , {
         action: 'detail',
         pageid: pageid,
     }, function(csrf, d){
       setCSRFToken(csrf)
       setData(d[0])
+      if(d[1].subscribe){
+        setIsFollow(true)
+      }else{
+        setIsFollow(false)
+      }
     })
   }
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ sess ])
 
   return (
     <div className={classes.root}>
@@ -102,23 +120,38 @@ export default function OrganizerOverview(props) {
                 {data.pagename}
               </Typography>
               <Typography gutterBottom variant="body2" className={classes.followers}>
-                {data.subscriber} followers
+                {data.subscriber} { 'follower' + ( data.subscriber > 1 ? 's' : '')}
               </Typography>
             </div>
           </div>
-          <div className={classes.followButton}>
-            { isFollow ?
-              <BTN.Following size="large" onClick={()=>setIsFollow(!isFollow)}>Following</BTN.Following>
-              :
-              <BTN.Primary size="large"
-                onClick={()=>setIsFollow(!isFollow)}>
-                Follow
-                <div style={{ marginLeft: 12 }}>
-                  {data.subscriber}
-                </div>
-              </BTN.Primary>
-            }
-          </div>
+          { data && sess && ( data.hostid !== sess.userid ) &&
+            <div className={classes.followButton}>
+              { ( sess.status !== 1 )?
+                <BTN.NoStyleLink to="/login">
+                  <BTN.Primary size="large">
+                    Follow
+                    <div style={{ marginLeft: 12 }}>
+                      {data.subscriber}
+                    </div>
+                  </BTN.Primary>
+                </BTN.NoStyleLink>
+                :
+                <React.Fragment>
+                  { isFollow ?
+                    <BTN.Following size="large" onClick={handleToggleFollow}>Following</BTN.Following>
+                    :
+                    <BTN.Primary size="large"
+                      onClick={handleToggleFollow}>
+                      Follow
+                      <div style={{ marginLeft: 12 }}>
+                        {data.subscriber}
+                      </div>
+                    </BTN.Primary>
+                  }
+                </React.Fragment>
+              }
+            </div>
+          }
         </Paper>
       }
     </div>

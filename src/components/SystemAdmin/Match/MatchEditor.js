@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchEditor(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData } = props
   const [ param, setParam ] = React.useState(null)
   const [ data, setData ] = React.useState(null)
   const passingProps = {
@@ -135,14 +135,14 @@ export default function MatchEditor(props){
   React.useEffect(()=>{
     if(props.location){
       const match = matchPath( props.location.pathname, {
-        path: sess.typeid === 'admin' ? "/admin/match/:matchparam" : "/user/management/match/:matchparam",
+        path: sess.typeid === 'admin' ?
+        "/admin/match/:matchparam" :
+        `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/:matchparam`
       });
       if(match){
         handleFetch(parseInt(match.params.matchparam))
         setParam(parseInt(match.params.matchparam))
       }
-      console.log(match);
-      console.log(props);
     }
 
   },[ /*props.location*/ ])

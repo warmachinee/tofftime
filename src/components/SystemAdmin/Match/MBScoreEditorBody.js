@@ -85,10 +85,10 @@ const useStyles = makeStyles(theme => ({
   },
   textfield: {
     margin: 8,
+    minWidth: 64
   },
   textfieldGrid: {
     display: 'flex',
-    minWidth: 700
   },
   text: {
     color: primary[600],
@@ -227,7 +227,7 @@ function MBScoreEditorContainer(props){
   },[ window.innerWidth ])
 
   return(
-    <div>
+    <div id="mb-scoreeditor-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto', marginBottom: 16 }}>
         <GreenTextButton
           className={classes.selectPlayerButton}
@@ -422,6 +422,7 @@ export default function MBScoreEditorBody(props){
   const [ selected, setSelected ] = React.useState(null)
   const [ oldSelected, setOldSelected ] = React.useState(null)
   const [ arrScore, setArrScore ] = React.useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+  const [ gridWidth, setGridWidth ] = React.useState(0)
 
   async function handleSelectPlayer(newVal){
     if(selected && oldSelected){
@@ -463,13 +464,6 @@ export default function MBScoreEditorBody(props){
 
   function handleScoreDisplay(newVal){
     return new Promise(resolve => {
-      console.log({
-        action: "showplayerscore",
-        matchid: matchid,
-        userid: oldSelected.userid,
-        newuserid: selected.userid,
-        holescore: arrScore,
-      });
       const socket = socketIOClient( API.getWebURL() )
       socket.emit('player-show-client-message', {
         action: "showplayerscore",
@@ -489,7 +483,6 @@ export default function MBScoreEditorBody(props){
   }, [ arrScore, oldSelected, selected ])
 
   function handleUpdateScore(){
-    //console.log('userid : ', oldSelected.firstname, " : ", 'newuserid : ', selected.firstname);
     var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
     const socket = socketIOClient( hd + API.webURL() )
     socket.emit('admin-match-client-message', {
@@ -520,7 +513,7 @@ export default function MBScoreEditorBody(props){
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
         ){
-          setData(d)
+          setData(d.userscore)
           try {
             handleFetchMatchDetail()
           }catch(err) { console.log(err.message) }
@@ -574,11 +567,23 @@ export default function MBScoreEditorBody(props){
     }
   },[ selected ])
 
+  React.useEffect(()=>{
+    var eleRef = document.getElementById('mb-scoreeditor-container')
+    if(eleRef){
+      setGridWidth(eleRef.offsetWidth)
+    }
+
+  },[ document.getElementById('mb-scoreeditor-container') ])
+
   return(
     <div className={classes.root}>
-      <MBScoreEditorContainer {...props} data={data} matchDetail={matchDetail} selected={selected} handleSelectPlayer={handleSelectPlayer}/>
+      <MBScoreEditorContainer {...props} data={data} matchDetail={matchDetail}
+        selected={selected} handleSelectPlayer={handleSelectPlayer} />
       <ThemeProvider theme={theme}>
-        <div style={{ overflow: 'auto', marginTop: 24, marginBottom: 24 }}>
+        <div style={{
+            overflow: 'auto', marginTop: 24, marginBottom: 24,
+            width: gridWidth
+          }}>
           <div className={classes.textfieldGrid}>
             {tempArr.slice(0, 9).map( d =>
               <TextField

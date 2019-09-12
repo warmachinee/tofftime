@@ -175,7 +175,7 @@ function HideOnScroll(props) {
   const trigger = useScrollTrigger({ target: window ? window() : undefined });
 
   return (
-    <Slide appear={false} direction="down" in={!trigger}>
+    <Slide appear={true} direction="down" in={!trigger}>
       {children}
     </Slide>
   );
@@ -203,16 +203,6 @@ function Header(props) {
       props.handleOpen()
     }else{
       props.handleOpen()
-    }
-  }
-
-  function handleNotifications(){
-    if(sess && sess.status === 1){
-      const endpoint = API.getWebURL()
-      const socket = socketIOClient(endpoint)
-      socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
-        console.log(messageNew);
-      })
     }
   }
 
@@ -245,27 +235,6 @@ function Header(props) {
     }
   }
 
-  async function handleFetchNotifications(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'loadusersystem', {
-        action: 'notification'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      console.log('notification', d);
-    })
-  }
-
-  React.useEffect(()=>{
-    /*
-    if(sess && sess.status === 1 && sess.typeid !== 'admin'){
-      handleNotifications()
-      handleFetchNotifications()
-    }
-    */
-  },[ sess ])
-
   const [ ,updateState ] = React.useState(null)
 
   function resizeHandler(){
@@ -284,6 +253,7 @@ function Header(props) {
       <CssBaseline />
       <HideOnScroll {...props}>
         <AppBar
+          id="el_header"
           style={{ backgroundColor: COLOR.grey[50] }}
           classes={{
             colorDefault: classes.appBar,
@@ -400,6 +370,7 @@ function Header(props) {
           </Toolbar>
         </AppBar>
       </HideOnScroll>
+
       <Toolbar />
       <Portal container={container.current}>
         <Menu

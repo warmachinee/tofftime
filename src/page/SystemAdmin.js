@@ -167,10 +167,6 @@ export default function SystemAdmin(props) {
     location: props.location
   }
 
-  React.useEffect(()=>{
-    console.log(props);
-  },[ ])
-
   function SystemComponent(){
     return sess && sess.status === 1 && (
       <React.Fragment>

@@ -97,55 +97,41 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function OrganizerNewsCard(props) {
+export default function OrganizerPostCard(props) {
   const classes = useStyles();
   const { API, BTN, isSupportWebp, data, loading } = props
-  const [ paperHover, setPaperHover ] = React.useState(0)
-  const [ pictureURL, setPictureURL ] = React.useState(data ? data.picture : null)
-  
+  const [ pictureURL, setPictureURL ] = React.useState(data ? data.photopath : null)
+
   return(
     <Paper
       className={classes.root}
-      elevation={window.innerWidth >= 600 ? paperHover : 1}
-      onMouseEnter={()=>setPaperHover(3)}
-      onMouseLeave={()=>setPaperHover(0)}>
+      elevation={1}>
       <div className={classes.imageGrid}>
         { ( !loading && pictureURL ) ?
-          <BTN.NoStyleLink to={`/news/${data.newsid}`}>
-            {
-              /*
-              <img
-                className={classes.image}
-                src={API.getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
-                onError={()=>setPictureURL(null)} />*/
-            }
-            <img
-              className={classes.image}
-              src={pictureURL} />
-          </BTN.NoStyleLink>
+          <img
+            className={classes.image}
+            src={API.getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
+            onError={()=>setPictureURL(null)} />
           :
-          <Skeleton className={classes.skeleton} style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }}/>
+          <Skeleton disableAnimate className={classes.skeleton}
+            style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }}/>
         }
       </div>
       <Box className={classes.box}>
         { !loading ?
-          <BTN.NoStyleLink to={`/news/${data.newsid}`}>
+          <React.Fragment>
             <Typography gutterBottom variant="h6" className={classes.title}>
-              {data.title}
+              {data.message}
             </Typography>
             <Typography gutterBottom display="block" variant="caption" color="textSecondary" className={classes.date}>
               { API.handleGetDate(data.createdate)}
             </Typography>
-            <Typography variant="body2" color="textSecondary" className={classes.subtitle}>
-              {data.subtitle}
-            </Typography>
-          </BTN.NoStyleLink>
+          </React.Fragment>
           :
           <React.Fragment>
             <Skeleton width="100%" height={28}/>
             <Skeleton width="20%" height={14}/>
             <Skeleton width="70%"/>
-            <Skeleton width="90%"/>
             <Skeleton width="90%"/>
           </React.Fragment>
         }

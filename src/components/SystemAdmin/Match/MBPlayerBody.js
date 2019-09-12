@@ -356,7 +356,6 @@ export default function MBPlayerBody(props){
   }
 
   function handleSelectedPlayer(d){
-    console.log(d);
     setSelectedPlayer(d)
     handleDisplayModalOpen()
   }
@@ -466,7 +465,7 @@ export default function MBPlayerBody(props){
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
         ){
-          setData(d)
+          setData(d.userscore)
           try {
             handleFetchMatchDetail()
           }catch(err) { console.log(err.message) }

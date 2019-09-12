@@ -117,10 +117,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function AnnouncePrimaryPage(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, data } = props
+  const { API, BTN, isSupportWebp, data, pageid } = props
   const [ index, setIndex ] = React.useState(0)
-
-  //const [ data, setData ] = React.useState(null)
 
   function handleChangeIndex(index) {
     setIndex(index)
@@ -142,47 +140,6 @@ export default function AnnouncePrimaryPage(props) {
     }
   }
 
-  async function fetchJsonPlaceholder(){
-    /*
-    const res = await fetch('https://jsonplaceholder.typicode.com/photos')
-    const json = await res.json()
-    */
-
-    const d = [
-      {
-        id: 1,
-        title: 'Sanford International Golf Tournament 15-17 Dec. 2019',
-        pic: 'https://i.ytimg.com/vi/7aZotHcV6HQ/maxresdefault.jpg'
-      },
-      {
-        id: 2,
-        title: 'Rory brings the fight, wins the FedExCup McIlroy becomes the second player to earn multiple FedExCup titles',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_fill,f_auto,g_center,q_auto,w_1320/v1/pgatour/editorial/2019/08/25/mcilroy-trophy-1320-samgreenwood.jpg'
-      },
-      {
-        id: 3,
-        title: 'Brooks, Xander, JT come up short to Rory',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_fill,f_auto,g_center,h_478,q_auto,w_850/v1/pgatour/editorial/2019/08/25/koepka-847-streeterlecka.jpg'
-      },
-      {
-        id: 4,
-        title: 'Winner\'s bag: Rory McIlroy, TOUR Championship',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_fill,f_auto,g_center,h_478,q_auto,w_850/v1/pgatour/editorial/2019/08/25/mcilroy-witb-847-streeterlecka.jpg'
-      },
-      {
-        id: 5,
-        title: 'BMW continuing title sponsorship of BMW Championship',
-        pic: 'https://pga-tour-res.cloudinary.com/image/upload/c_limit,q_auto,w_308/v1/pgatour/editorial/2019/08/16/bmwchampionship-847-stanbadz.jpg'
-      },
-    ]
-    setData(d)
-  }
-
-  React.useEffect(()=>{
-    //console.log(props);
-    //fetchJsonPlaceholder()
-  },[ ])
-
   const [ ,updateState ] = React.useState(null)
 
   function resizeHandler(){
@@ -201,24 +158,21 @@ export default function AnnouncePrimaryPage(props) {
       <AutoPlaySwipeableViews
         interval={10000}
         enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
-        { data?
+        { data ?
           data.map(d =>
-            <div key={d.announceid}>
-              <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
-                { d.picture ?
+            <div key={d.postid}>
+              <BTN.NoStyleLink to={`/post/${pageid}/${d.postid}`}>
+                { d.photopath ?
                   <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
-                    src={d.picture} />
-                  /*
-                  <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
-                    src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />*/
+                    src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
                   :
                   <Skeleton
                     className={classes.skeleton}
                     style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300] }} />
                 }
               </BTN.NoStyleLink>
-              <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
-                <div className={classes.label} onClick={()=>console.log(data)}>{d.title}</div>
+              <BTN.NoStyleLink to={`/post/${pageid}/${d.postid}`}>
+                <div className={classes.label}>{d.message}</div>
               </BTN.NoStyleLink>
             </div>
           )

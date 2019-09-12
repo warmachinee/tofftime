@@ -105,7 +105,7 @@ function ListNotiItem(props) {
         )
         break;
       case data.type === 'friend' && data.action === 'accept':
-        return <div />
+        return null
         break;
       case data.type === 'match' && data.action === 'join':
         return (
@@ -132,13 +132,13 @@ function ListNotiItem(props) {
         )
         break;
       case data.type === 'match' && data.action === 'accept':
-        return <div />
+        return null
         break;
       case data.type === 'match' && data.action === 'acceptfrominvte':
-        return <div />
+        return null
         break;
       default:
-        return <div />
+        return null
     }
   }
 
@@ -226,7 +226,12 @@ function ListNotiItem(props) {
           } />
         { window.innerWidth >= 600 &&
           <ListItemIcon>
-            {handleGetButton()}
+            {
+              handleGetButton() ?
+              handleGetButton()
+              :
+              <div />
+            }
           </ListItemIcon>
         }
       </ListItem>

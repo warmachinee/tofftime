@@ -41,6 +41,23 @@ const RouteCourse = Loadable.Map({
   loading: () => null
 });
 
+const RoutePostManagement = Loadable.Map({
+  loader: {
+    PostManagement: () => import(/* webpackChunkName: "PostManagement" */'./../PageOrganizer/PostManagement'),
+  },
+  render(loaded, props) {
+    let Component = loaded.PostManagement.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
@@ -114,7 +131,12 @@ export default function Management(props) {
       historyState: props.historyState,
       toggleHistory: props.toggleHistory,
       upcomingState: props.upcomingState,
-      toggleUpcoming: props.toggleUpcoming
+      toggleUpcoming: props.toggleUpcoming,
+      setAdminState: props.setAdminState,
+      toggleSetAdmin: props.toggleSetAdmin,
+      createPostState: props.createPostState,
+      setCreatePostState: props.setCreatePostState,
+      toggleCreatePost: props.toggleCreatePost,
     })
   }
 
@@ -132,6 +154,13 @@ export default function Management(props) {
               Course
             </StyledButton>
           </Link>
+          { pageOrganizer &&
+            <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} className={classes.linkElement}>
+              <StyledButton variant="contained" color="primary" className={classes.button}>
+                Post
+              </StyledButton>
+            </Link>
+          }
           {/*
             <Link to={`/user/mangament/course`} className={classes.linkElement}>
               <StyledButton variant="contained" color="primary" className={classes.button}>
@@ -160,7 +189,10 @@ export default function Management(props) {
         <React.Fragment>
           <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`} component={SystemComponent} />
           <RouteMatch path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} {...passingProps}/>
-          <RouteCourse path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} {...passingProps}/>
+          <RouteCourse path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} {...passingProps} />
+          { pageOrganizer &&
+            <RoutePostManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} {...passingProps}/>
+          }
           {/*<RouteUser path={`/user/mangament/user`} {...passingProps}/>*/}
         </React.Fragment>
       }
