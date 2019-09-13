@@ -261,6 +261,8 @@ const Footer = Loadable({
   loading: () => null
 });
 
+import UserPage from './page/UserPage'
+
 export default function App() {
   const [ token, setCSRFToken ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
@@ -364,36 +366,43 @@ export default function App() {
           handleOpen={toggleDialog} />
       }
 
-      <Switch>
-        <RouteMain exact path="/"
-          {...passingProps} />
-        <RouteUserPage path="/user"
-          {...passingProps} />
-        <RoutePageOrganizer path="/organizer/:pageid"
-          {...passingProps} />
-        <RouteOrganizer path="/page/:pageid"
-          {...passingProps} />
-        <RouteSystemAdmin path="/admin"
-          {...passingProps} />
-        <RouteAnnounceDetail path="/announce/:detailparam"
-          {...passingProps} />
-        <RouteNewsDetail path="/news/:detailparam"
-          {...passingProps} />
-        <RouteMatchDetail path="/match/:matchid"
-          {...passingProps}
-          handleSnackBarL={handleSnackBarL} />
-        <RouteOrganizerAnnounceDetail path="/post/:pageid/:postid"
-          {...passingProps} />
-        <RouteSchedule path="/schedule/:matchid"
-          {...passingProps} />
-        <RouteMatchFormResult path="/matchform/:matchid"
-          {...passingProps} />
-        <RouteSignIn path="/login"
-          {...passingProps} />
-        <RouteScoreDisplay path="/display/:matchid/:userid"
-          {...passingProps} />
-        <Route component={NoMatch} />
-      </Switch>
+      { true ?
+        <Switch>
+          <RouteMain exact path="/"
+            {...passingProps} />
+          <RouteOrganizer path="/page/:pageid"
+            {...passingProps} />
+
+          <RouteUserPage path="/user"
+            {...passingProps} />
+          <RoutePageOrganizer path="/organizer/:pageid"
+            {...passingProps} />
+          <RouteSystemAdmin path="/admin"
+            {...passingProps} />
+
+          <RouteAnnounceDetail path="/announce/:detailparam"
+            {...passingProps} />
+          <RouteNewsDetail path="/news/:detailparam"
+            {...passingProps} />
+          <RouteMatchDetail path="/match/:matchid"
+            {...passingProps}
+            handleSnackBarL={handleSnackBarL} />
+          <RouteOrganizerAnnounceDetail path="/post/:pageid/:postid"
+            {...passingProps} />
+
+          <RouteSchedule path="/schedule/:matchid"
+            {...passingProps} />
+          <RouteMatchFormResult path="/matchform/:matchid"
+            {...passingProps} />
+          <RouteSignIn path="/login"
+            {...passingProps} />
+          <RouteScoreDisplay path="/display/:matchid/:userid"
+            {...passingProps} />
+          <Route component={NoMatch} />
+        </Switch>
+        :
+        <UserPage {...passingProps} />
+      }
 
       { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&
         <Redirect to={`/`} />

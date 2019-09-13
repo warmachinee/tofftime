@@ -325,8 +325,13 @@ export default function UserPage(props) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
 
-        <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
-          render={()=> <UserDashboard {...props} {...dialogProps}/>} />
+        { true ?
+          <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
+            render={()=> <UserDashboard {...props} {...dialogProps}/>} />
+          :
+          <Route exact path={`/`}
+            render={()=> <UserDashboard {...props} {...dialogProps}/>} />
+        }
         <RouteProfile path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer ? '' : ':userid' }`}
           {...passingProps} />
         { !pageOrganizer &&
@@ -366,6 +371,7 @@ export default function UserPage(props) {
       <PageOrganizerCreatePost
         {...props}
         {...dialogProps} />
+
     </div>
   );
 }

@@ -227,7 +227,11 @@ export default function MatchBody(props){
   }
 
   function handleConfirmDelete(){
-    handleConfirmPasswordState(true)
+    if( !(sess.typeid === 'f-auth' || sess.typeid === 'g-auth')){
+      handleConfirmPasswordState(true)
+    }else{
+      handleFetchRemove()
+    }
   }
 
   function handleKeyPress(e){
@@ -237,28 +241,35 @@ export default function MatchBody(props){
   }
 
   async function handleFetchRemove(){
-    if(removeData.matchid && confirmPassword){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
-        token? token : resToken.token,
-        sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem', {
-          action: 'delete',
-          matchid: removeData.matchid,
-          password: confirmPassword
-      }, (csrf, d) =>{
-        handleSnackBar({
-          state: true,
-          message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
-        })
-        setCSRFToken(csrf)
-        try {
-          handleConfirmPasswordCancel()
-          handleFetch()
-        }catch(err) { console.log(err.message) }
-      })
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    const sendObj = {
+      action: 'delete',
+      matchid: removeData.matchid,
     }
+
+    if( !(sess.typeid === 'f-auth' || sess.typeid === 'g-auth')){
+      Object.assign(sendObj, { password: confirmPassword });
+    }else{
+      Object.assign(sendObj, { password: '1234' });
+    }
+
+    await API.xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem', {
+        ...sendObj
+    }, (csrf, d) =>{
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? 'success' : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      setCSRFToken(csrf)
+      try {
+        handleConfirmPasswordCancel()
+        handleFetch()
+      }catch(err) { console.log(err.message) }
+    })
   }
 
   async function handleSetDisplay(d){

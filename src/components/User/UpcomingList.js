@@ -92,14 +92,16 @@ export default function UpcomingList(props) {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
-      if(pageOrganizer){
-        setData(d.filter( item =>{
-          return item.pageid === pageData.pageid
-        }))
-      }else{
-        setData(d.filter( item =>{
-          return item.pageid === 0
-        }))
+      if(!/wrong/.test(d.status)){
+        if(pageOrganizer){
+          setData(d.filter( item =>{
+            return item.pageid === pageData.pageid
+          }))
+        }else{
+          setData(d.filter( item =>{
+            return item.pageid === 0
+          }))
+        }
       }
     })
   }

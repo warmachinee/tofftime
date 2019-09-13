@@ -18,6 +18,9 @@ import {
   FormHelperText,
   FormControl,
   Select,
+  Checkbox,
+  Input,
+  Chip,
 
 } from '@material-ui/core'
 
@@ -45,6 +48,20 @@ const useStyles = makeStyles(theme => ({
     boxSizing: 'border-box',
     marginTop: 24,
     padding: 12
+  },
+  gridChild: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: '100%',
+    marginTop: 36,
+    padding: '0 12px',
+    boxSizing: 'border-box',
+  },
+  gridFlexDirectionUp: {
+    flexDirection: 'row'
+  },
+  gridFlexDirectionDown: {
+    flexDirection: 'column'
   },
   listImageDown: {
     width: 36,
@@ -74,19 +91,72 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
     borderRadius: 4,
   },
-  formControl: {
+  controlPaperUp: {
+    padding: '0 12px',
+  },
+  controlPaperDown: {
+    padding: '0 12px',
+    width: '100%',
+    maxWidth: 350,
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
+  settingStatUp: {
+    marginRight: 8,
+  },
+  settingStatDown: {
+    marginBottom: 8,
+  },
+  formControlUp: {
     margin: theme.spacing(1),
     minWidth: 120,
+    maxWidth: 300,
+  },
+  formControlDown: {
+    margin: theme.spacing(1),
+    width: '100%',
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
   },
 
 }));
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const matchTypeNames = [
+  'indy',
+  'unofficial',
+  'official',
+];
 
 export default function History(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer, pageData } = props
+  const { API, COLOR, token, setCSRFToken, accountData, open, userid, userData, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
-  const [ scoreType, setScoreType ] = React.useState('total')
+  const [ statType, setStatType ] = React.useState('total')
+  const [ checked, setChecked ] = React.useState([]);
+
+  function handleChange(event) {
+    var value = event.target.value
+    if(event.target.value.length > 0){
+      setChecked(event.target.value);
+      value = event.target.value
+    }else{
+      setChecked(['indy']);
+      value = ['indy']
+    }
+  }
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -96,6 +166,9 @@ export default function History(props) {
 
     if(userid){
       Object.assign(sendObj, { targetuser: userid });
+      setChecked(userData.historystat)
+    }else{
+      setChecked(accountData.historystat)
     }
 
     await API.xhrPost(
@@ -104,20 +177,24 @@ export default function History(props) {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
-      if(pageOrganizer){
-        setData(d.filter( item =>{
-          return item.pageid === pageData.pageid
-        }))
-      }else{
-        setData(d.filter( item =>{
-          return item.pageid === 0
-        }))
+      if(!/wrong/.test(d.status)){
+        if(pageOrganizer){
+          setData(d.filter( item =>{
+            return item.pageid === pageData.pageid
+          }))
+        }else{
+          setData(d.filter( item =>{
+            return item.pageid === 0
+          }))
+        }
       }
     })
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    if (!(userData && userData.privacy === 'private')){
+      handleFetch()
+    }
   },[ props.userid ])
 
   const [ ,updateState ] = React.useState(null)
@@ -137,19 +214,71 @@ export default function History(props) {
     <div className={classes.root}>
       <LabelText text="History" />
       <div className={classes.grid}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 12px' }}>
-          <Paper style={{ padding: '0 12px' }}>
-            <FormControl className={classes.formControl}>
-              <InputLabel>Type</InputLabel>
+        <div
+          className={clsx(classes.gridChild,{
+            [classes.gridFlexDirectionDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+            [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+          })}>
+          <Paper
+            className={clsx(
+              {
+                [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+                [classes.controlPaperUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+              },
+              {
+                [classes.settingStatDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+                [classes.settingStatUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+              }
+            )}>
+            <FormControl className={clsx({
+              [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+              [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+            })}>
+              <InputLabel>Match</InputLabel>
               <Select
-                value={scoreType}
-                onChange={e => setScoreType(e.target.value)}
+                multiple
+                value={checked}
+                onChange={handleChange}
+                input={<Input id="select-multiple-checkbox" />}
+                renderValue={selected => (
+                  <div className={classes.chips}>
+                    { selected.map(value => (
+                      <Chip key={value} label={value} className={classes.chip} />
+                    ))}
+                  </div>
+                )}
+                MenuProps={MenuProps}
               >
-                <MenuItem value={'total'}>Total</MenuItem>
-                <MenuItem value={'0'}>Amateur</MenuItem>
-                <MenuItem value={'1'}>Pro</MenuItem>
+                { matchTypeNames.map(name => (
+                  <MenuItem key={name} value={name}>
+                    <Checkbox checked={checked.indexOf(name) > -1} />
+                    <ListItemText style={{ textTransform: 'capitalize' }} primary={name} />
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
+          </Paper>
+          <Paper
+            className={clsx({
+              [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+              [classes.controlPaperUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+            })}>
+            <form autoComplete="off">
+              <FormControl className={clsx({
+                [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+                [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+              })}>
+                <InputLabel>Type</InputLabel>
+                <Select
+                  value={statType}
+                  onChange={e => setStatType(e.target.value)}
+                >
+                  <MenuItem value={'total'}>Total</MenuItem>
+                  <MenuItem value={'0'}>Amateur</MenuItem>
+                  <MenuItem value={'1'}>Pro</MenuItem>
+                </Select>
+              </FormControl>
+            </form>
           </Paper>
         </div>
         <List>
@@ -185,22 +314,19 @@ export default function History(props) {
         </List>
         <Divider />
         { data ?
-          ( [
-              ...(scoreType === 'total') ?
-              data
-              :
+          (
+            (
               data.filter( item =>{
-                return parseInt(scoreType) === item.scorematch
-              })
-            ].length > 0 ?
-            [
-              ...(scoreType === 'total') ?
-              data
-              :
-              data.filter( item =>{
-                return parseInt(scoreType) === item.scorematch
-              })
-            ].map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
+                return checked.some( d =>{ return item.type === d })
+              }).filter( item =>{
+                return (statType === 'total') ? ( true ) : ( parseInt(statType) === item.scorematch )
+              }).length > 0
+            ) ?
+            data.filter( item =>{
+              return checked.some( d =>{ return item.type === d })
+            }).filter( item =>{
+              return (statType === 'total') ? ( true ) : ( parseInt(statType) === item.scorematch )
+            }).map( d => <HistoryList key={d.matchid} data={d} {...props}/>)
             :
             <div style={{
                 width: '100%', padding: '36px 0', textAlign: 'center',

@@ -43,7 +43,7 @@ export default function CreateMatchDialog(props) {
     <TemplateDialog open={createMatchState} handleClose={toggleCreateMatch}>
       <div>
         <LabelText text="Create Match"/>
-        <MatchStepper {...props} />
+        <MatchStepper {...props} dialogStepper/>
       </div>
     </TemplateDialog>
   );

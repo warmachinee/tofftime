@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { grey } from './../../api/palette'
+import { primary, grey } from './../../api/palette'
 
 import {
   Paper,
@@ -8,7 +8,13 @@ import {
   Typography
 } from '@material-ui/core';
 
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import {
+  AccountCircle,
+  Lock,
+  Person,
+  Public,
+
+} from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,13 +50,48 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: grey[400]
   },
+  privacyGrid: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  privacyIcon: {
+    fontSize: 28
+  },
 
 }));
 
 export default function OverviewProfile(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken, isSupportWebp, accountData, userid } = props
+  const { API, token, setCSRFToken, isSupportWebp, accountData, userData, userid } = props
   const [ data, setData ] = React.useState(null)
+
+  function handleGetPrivacyIcon(){
+    switch (true) {
+      case data.privacy === 'public':
+        return (
+          <div style={{ display: 'flex' }}>
+            <Public style={{ color: grey[800], marginRight: 8 }} className={classes.privacyIcon} />
+            <Typography variant="body1" style={{ marginTop: 'auto' }}>Public</Typography>
+          </div>
+        )
+        break;
+      case data.privacy === 'friend':
+        return (
+          <div style={{ display: 'flex' }}>
+            <Person style={{ color: grey[800], marginRight: 8 }} className={classes.privacyIcon} />
+            <Typography variant="body1" style={{ marginTop: 'auto' }}>Friend</Typography>
+          </div>
+        )
+        break;
+      default:
+        return (
+          <div style={{ display: 'flex' }}>
+            <Lock style={{ color: grey[800], marginRight: 8 }} className={classes.privacyIcon} />
+            <Typography variant="body1" style={{ marginTop: 'auto' }}>Private</Typography>
+          </div>
+        )
+    }
+  }
 
   async function handleFetchInfo(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -66,12 +107,16 @@ export default function OverviewProfile(props) {
   }
 
   React.useEffect(()=>{
-    if(userid){
-      handleFetchInfo()
+    if(userid && userData){
+      if(userid === userData.userid){
+        setData(userData)
+      }else{
+        handleFetchInfo()
+      }
     }else{
       setData(accountData)
     }
-  },[ props.userid ])
+  },[ userid ])
 
   return (
     <div className={classes.root}>
@@ -82,7 +127,7 @@ export default function OverviewProfile(props) {
               <Avatar className={classes.avatarImage}
                 src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
               :
-              <AccountCircleIcon classes={{ root: classes.avatar }} />
+              <AccountCircle classes={{ root: classes.avatar }} />
             }
           </div>
           <Typography variant="h5" className={classes.name}>
@@ -95,6 +140,9 @@ export default function OverviewProfile(props) {
             :
             <div style={{ height: 32 }} />
           }
+          <div className={classes.privacyGrid}>
+            {handleGetPrivacyIcon()}
+          </div>
           { !userid &&
             <Typography gutterBottom variant="subtitle2" className={classes.email}>
               {data.email}
@@ -104,7 +152,7 @@ export default function OverviewProfile(props) {
         :
         <Paper className={classes.paper}>
           <div className={classes.imageGrid}>
-            <AccountCircleIcon classes={{ root: classes.avatar }} />
+            <AccountCircle classes={{ root: classes.avatar }} />
           </div>
           <Typography variant="h5" className={classes.name}>
             Fullname Lastname

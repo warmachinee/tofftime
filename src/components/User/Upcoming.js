@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken, userid, createMatchState, pageOrganizer, pageData } = props
+  const { API, token, setCSRFToken, userid, userData, createMatchState, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -57,20 +57,24 @@ export default function Upcoming(props) {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
-      if(pageOrganizer){
-        setData(d.filter( item =>{
-          return item.pageid === pageData.pageid
-        }))
-      }else{
-        setData(d.filter( item =>{
-          return item.pageid === 0
-        }))
+      if(!/wrong/.test(d.status)){
+        if(pageOrganizer){
+          setData(d.filter( item =>{
+            return item.pageid === pageData.pageid
+          }))
+        }else{
+          setData(d.filter( item =>{
+            return item.pageid === 0
+          }))
+        }
       }
     })
   }
 
   React.useEffect(()=>{
-    handleFetch()
+    if (!(userData && userData.privacy === 'private')){
+      handleFetch()
+    }
   },[ userid, createMatchState ])
 
   return(

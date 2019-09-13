@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import { grey } from './../../api/palette'
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { primary, grey } from './../../api/palette'
 
 import {
   Container,
@@ -14,6 +14,10 @@ import {
   FormHelperText,
   FormControl,
   Select,
+  ListItemText,
+  Checkbox,
+  Input,
+  Chip,
 
 } from '@material-ui/core';
 
@@ -23,6 +27,23 @@ import {
 } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
+  grid: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: '100%',
+    maxWidth: 740,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginTop: 36,
+    padding: '0 12px',
+    boxSizing: 'border-box',
+  },
+  gridFlexDirectionUp: {
+    flexDirection: 'row'
+  },
+  gridFlexDirectionDown: {
+    flexDirection: 'column'
+  },
   rootDown: {
     width: '100%',
     display: 'flex',
@@ -71,18 +92,106 @@ const useStyles = makeStyles(theme => ({
   value: {
     alignSelf: 'center',
   },
-  formControl: {
+  controlPaperUp: {
+    padding: '0 12px',
+  },
+  controlPaperDown: {
+    padding: '0 12px',
+    width: '100%',
+    maxWidth: 350,
+    marginLeft: 'auto',
+    marginRight: 'auto'
+  },
+  settingStatUp: {
+    marginRight: 8,
+  },
+  settingStatDown: {
+    marginBottom: 8,
+  },
+  formControlUp: {
     margin: theme.spacing(1),
     minWidth: 120,
+    maxWidth: 300,
+  },
+  formControlDown: {
+    margin: theme.spacing(1),
+    width: '100%',
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+    textTransform: 'capitalize'
   },
 
 }));
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const matchTypeNames = [
+  'indy',
+  'unofficial',
+  'official',
+];
+
 export default function Statistics(props) {
   const classes = useStyles();
-  const { API, isSupportWebp, token, setCSRFToken, open, userid } = props
+  const { API, isSupportWebp, token, setCSRFToken, handleAccountData, open, accountData, userid, userData } = props
   const [ data, setData ] = React.useState(null)
-  const [ statType, setStatType ] = React.useState('total')
+  const [ checked, setChecked ] = React.useState([]);
+
+  function handleChange(event) {
+    var value = event.target.value
+    if(event.target.value.length > 0){
+      setChecked(event.target.value);
+      value = event.target.value
+    }else{
+      setChecked(['indy']);
+      value = ['indy']
+    }
+    handleTickStat(value)
+  }
+
+  async function handleTickStat(value){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    const sendObj = {
+      action: 'editprofile',
+      historystat: value
+    }
+    await API.xhrPost(
+      token? token : resToken.token,
+      'uusersystem', {
+        ...sendObj
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+    })
+    await handleFetchInfo()
+    await handleFetch()
+  }
+
+  async function handleFetchInfo(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadusersystem', {
+        action: 'info'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleAccountData(d[0])
+      setChecked(d[0].historystat)
+    })
+  }
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -92,10 +201,6 @@ export default function Statistics(props) {
 
     if(userid){
       Object.assign(sendObj, { targetuser: userid });
-    }
-
-    if(statType !== 'total'){
-      Object.assign(sendObj, { scoretype: parseInt(statType) });
     }
 
     await API.xhrPost(
@@ -109,8 +214,11 @@ export default function Statistics(props) {
   }
 
   React.useEffect(()=>{
-    handleFetch()
-  },[ props.userid, statType ])
+    if(!(userData && userData.privacy === 'private')){
+      handleFetch()
+      setChecked(accountData.historystat)
+    }
+  },[ userid ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -127,17 +235,47 @@ export default function Statistics(props) {
 
   return (
     <React.Fragment>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 36, padding: '0 12px' }}>
-        <Paper style={{ padding: '0 12px' }}>
-          <FormControl className={classes.formControl}>
-            <InputLabel>Type</InputLabel>
+      <div className={clsx(classes.grid,{
+        [classes.gridFlexDirectionDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+        [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+      })}>
+        <Paper
+          className={clsx(
+            {
+              [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+              [classes.controlPaperUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+            },
+            {
+              [classes.settingStatDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+              [classes.settingStatUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+            }
+          )}>
+          <FormControl className={clsx({
+            [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+            [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+          })}>
+            <InputLabel>Match</InputLabel>
             <Select
-              value={statType}
-              onChange={e => setStatType(e.target.value)}
+              multiple
+              disabled={Boolean(userid)}
+              value={checked}
+              onChange={handleChange}
+              input={<Input id="select-multiple-checkbox" />}
+              renderValue={selected => (
+                <div className={classes.chips}>
+                  { selected.map(value => (
+                    <Chip key={value} label={value} className={classes.chip} />
+                  ))}
+                </div>
+              )}
+              MenuProps={MenuProps}
             >
-              <MenuItem value={'total'}>Total</MenuItem>
-              <MenuItem value={'0'}>Amateur</MenuItem>
-              <MenuItem value={'1'}>Pro</MenuItem>
+              { matchTypeNames.map(name => (
+                <MenuItem key={name} value={name}>
+                  <Checkbox checked={checked.indexOf(name) > -1} />
+                  <ListItemText style={{ textTransform: 'capitalize' }} primary={name} />
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Paper>
@@ -154,6 +292,7 @@ export default function Statistics(props) {
           style={{
             ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
             { marginLeft: 'auto', marginRight: 'auto' } : null,
+            marginTop: 'auto'
           }}>
           <div className={classes.statLabel}>
             <GolfCourse className={classes.icon} />
@@ -162,8 +301,7 @@ export default function Statistics(props) {
           <div className={classes.valueGrid}>
             { data &&
               <Typography variant="h3" classes={{ root: classes.value }}>
-                {/*data.matchcount ? data.matchcount : '-'*/}
-                {data.matchcount}
+                {data.matchnum}
               </Typography>
             }
           </div>

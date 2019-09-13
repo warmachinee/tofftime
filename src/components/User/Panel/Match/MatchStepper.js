@@ -42,7 +42,10 @@ const labelSteps = [
 export default function MatchStepper(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const { API, BTN, token, setCSRFToken, handleSnackBar, handleCreateMatchClose, pageOrganizer, pageData } = props
+  const {
+    API, BTN, token, setCSRFToken, handleSnackBar,
+    dialogStepper, handleCreateMatchClose, setExpanded, pageOrganizer, pageData
+  } = props
   const [ activeStep, setActiveStep ] = React.useState(0);
   const maxSteps = labelSteps.length;
   const [ matchName, setMatchName ] = React.useState('');
@@ -197,7 +200,11 @@ export default function MatchStepper(props) {
       autoHideDuration: status === 'success'? 2000 : 5000
     })
     if(status === 'success'){
-      handleCreateMatchClose()
+      if(dialogStepper){
+        handleCreateMatchClose()
+      }else{
+        setExpanded(false)
+      }
     }
   }
 
