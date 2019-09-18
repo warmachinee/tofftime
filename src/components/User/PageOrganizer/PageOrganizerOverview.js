@@ -87,7 +87,7 @@ const theme = createMuiTheme({
 
 export default function PageOrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, token, setCSRFToken, handleSnackBar, sess, pageData, isSupportWebp, toggleSetAdmin, toggleCreatePost } = props
+  const { API, BTN, token, setCSRFToken, handleSnackBar, sess, pageData, isSupportWebp, toggleSetAdmin, toggleCreateMatch, toggleCreatePost } = props
   const [ isFollow, setIsFollow ] = React.useState(false)
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
   const [ confirmPasswordState, handleConfirmPasswordState ] = React.useState(false)
@@ -183,10 +183,14 @@ export default function PageOrganizerOverview(props) {
         </Paper>
       }
       <Paper className={classes.paper}>
-        <BTN.Primary className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreatePost}>
-          <AddCircle style={{ marginLeft: 4, marginRight: 8 }}/>
-          { ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
+        <BTN.Primary className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreateMatch}>
+          <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
+          { ( sess && sess.language === 'EN' ) ? "Create match" : 'สร้างการแข่งขัน' }
         </BTN.Primary>
+        <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreatePost}>
+          <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
+          { ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
+        </BTN.PrimaryOutlined>
         <BTN.PrimaryOutlined className={classes.panelButton} onClick={toggleSetAdmin}>
           { ( sess && sess.language === 'EN' ) ? "Set admin" : 'แต่งตั้งผู้ดูแล' }
         </BTN.PrimaryOutlined>

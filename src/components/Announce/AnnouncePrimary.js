@@ -161,22 +161,34 @@ export default function AnnouncePrimary(props) {
       <AutoPlaySwipeableViews
         interval={10000}
         enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
-        { data?
-          data.map(d =>
-            <div key={d.announceid}>
-              <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
-                { d.picture ?
-                  <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
-                    src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
-                  :
-                  <Skeleton
-                    className={classes.skeleton}
-                    style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300] }} />
-                }
-              </BTN.NoStyleLink>
-              <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
-                <div className={classes.label}>{d.title}</div>
-              </BTN.NoStyleLink>
+        { data ?
+          ( data.length > 0 ?
+            data.map(d =>
+              <div key={d.announceid}>
+                <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
+                  { d.picture ?
+                    <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
+                      src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                    :
+                    <Skeleton
+                      className={classes.skeleton}
+                      style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300] }} />
+                  }
+                </BTN.NoStyleLink>
+                <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
+                  <div className={classes.label}>{d.title}</div>
+                </BTN.NoStyleLink>
+              </div>
+            )
+            :
+            <div
+              style={{
+                height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300],
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
+                width: '100%', borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>
+                <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 600 }}>
+                  No data
+                </div>
             </div>
           )
           :

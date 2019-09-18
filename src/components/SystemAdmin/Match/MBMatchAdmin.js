@@ -1,22 +1,31 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
-import { primary, grey } from './../../../api/palette'
+import { primary, grey, red } from './../../../api/palette'
 
-import Paper from '@material-ui/core/Paper';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 import { LDCircular } from './../../loading/LDCircular'
 
-const MBMatchAdminBody = Loadable({
-  loader: () => import(/* webpackChunkName: "MBMatchAdminBody" */'./MBMatchAdminBody'),
+const TemplateDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loading: () => <LDCircular />
+});
+
+const AddAdmin = Loadable({
+  loader: () => import(/* webpackChunkName: "AddAdmin" */'./AddAdmin'),
   loading: () => <LDCircular />
 });
 
@@ -25,53 +34,248 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box'
   },
-  title: {
-    color: primary[900],
-    fontSize: 18
+  listLabel: {
+    cursor: 'auto',
+    backgroundColor: grey[900],
+    borderRadius: 4
   },
-  expandIcon: {
-    position: 'absolute',
-    right: 16,
-    top: 8,
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
+  listText: {
+    margin: theme.spacing(1, 0),
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    width: '100%',
+    textAlign: 'left'
+  },
+  listStatus: {
+    margin: theme.spacing(1, 0),
+    width: '40%',
+    display: 'flex', justifyContent: 'flex-start'
+  },
+  menuButton: {
+    textTransform: 'capitalize',
+    padding: '6px 8px',
+    left: -8
+  },
+  controls: {
+    position: 'relative',
+    cursor: 'auto',
+    display: 'block',
+    [theme.breakpoints.up(700)]: {
+      display: 'flex',
+    },
+  },
+  addAdminButton: {
+    marginTop: 'auto',
+    padding: '8px 16px 8px 0',
+    width: '100%',
+    color: theme.palette.getContrastText(red[600]),
+    backgroundColor: red[600],
+    '&:hover': {
+      backgroundColor: red[800],
+    },
+    [theme.breakpoints.up(700)]: {
+      width: 'auto'
+    },
   },
 
 }))
 
-export default function MBMatchAdmin(props){
-  const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar } = props
-  const [ expanded, setExpanded ] = React.useState(false)
+const StyledText = withStyles(theme => ({
+  primary: {
+    color: 'white',
+  },
+}))(ListItemText);
 
-  function expandHandler(){
-    setExpanded(!expanded)
+function ListMenu(props) {
+  const classes = useStyles();
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, setMBData, primary } = props
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
+
+  function getAdminRole(role){
+    switch (true) {
+      case role === 'host':
+        return ( sess && sess.language === 'EN' ) ? "Host" : 'เจ้าของการแข่งขัน'
+        break;
+      case role === 'admin':
+        return ( sess && sess.language === 'EN' ) ? "Admin" : 'ผู้ดูแล'
+        break;
+      default:
+        return ( sess && sess.language === 'EN' ) ? "Member" : 'สมาชิก'
+    }
   }
 
-  return(
-    <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
-      <Typography component="div">
-        <Box className={classes.title} fontWeight={600} m={1}>
-          Match admin
-        </Box>
-      </Typography>
-      <IconButton
-        className={classes.expandIcon}
-        style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
-        onClick={expandHandler}
+  function handleClick(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
+
+  async function handleSelectRole(val, role){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+        action: 'setadmin',
+        matchid: matchid,
+        userid: val.userid,
+        setaction: role
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      if(d.status === 'success'){
+        handleFetchUserList()
+      }
+    })
+  }
+
+  async function handleFetchUserList(){
+    if(matchid){
+      const resToken = token? token : await API.xhrGet('getcsrf')
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+          action: 'admin',
+          matchid: matchid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleClose()
+        setMBData(d)
+      })
+    }
+  }
+
+  return (
+    <div>
+      { primary.permission !== 'host' ?
+        <Button className={classes.menuButton} onClick={handleClick}>
+          {getAdminRole(primary.permission)}
+        </Button>
+        :
+        <div style={{ textTransform: 'capitalize' }}>{getAdminRole(primary.permission)}</div>
+      }
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
       >
-        <ExpandMoreIcon />
-      </IconButton>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <MBMatchAdminBody {...props}/>
-      </Collapse>
-    </Paper>
+        <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>{ ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }</MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
+export default function MBMatchAdmin(props){
+  const classes = useStyles();
+  const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
+  const [ open, setOpen ] = React.useState(false);
+  const [ data, setData ] = React.useState(null)
+
+  function handleOpen(){
+    setOpen(true);
+  };
+
+  function handleClose(){
+    setOpen(false);
+  };
+
+  async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+        action: 'admin',
+        matchid: matchid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setData(d)
+    })
+  }
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ ])
+
+  return(
+    <div className={classes.root}>
+      <ListItem className={classes.controls}>
+        <Button className={classes.addAdminButton} variant="contained"
+          onClick={handleOpen}>
+          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+          { ( sess && sess.language === 'EN' ) ? "Add admin" : 'เพิ่มแอดมิน' }
+        </Button>
+        <div style={{ flex: 1 }} />
+      </ListItem>
+      <List style={{ cursor: 'auto' }}>
+        <ListItem className={classes.listLabel}>
+          <StyledText className={classes.listText}
+            primary={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' } />
+          { window.innerWidth >= 600 &&
+            <StyledText className={classes.listText}
+              primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
+          }
+          <StyledText className={classes.listStatus}
+            primary={ ( sess && sess.language === 'EN' ) ? "Role" : 'ตำแหน่ง' } />
+        </ListItem>
+        { data &&
+          data.map( d =>
+          <React.Fragment key={d.userid}>
+            <ListItem>
+              <ListItemText className={classes.listText}
+                primary={
+                  ( window.innerWidth >= 450 && window.innerWidth < 600 )?
+                  <div style={{ display: 'flex' }}>
+                    { d.fullname }<div style={{ width: 20 }}></div>{ d.lastname }
+                  </div>
+                  : d.fullname
+                }
+                secondary={
+                  window.innerWidth < 450 &&
+                  <React.Fragment>
+                    <br></br>
+                    <Typography
+                      component="span"
+                      variant="body1"
+                      color="textPrimary"
+                    >
+                      { d.lastname }
+                    </Typography>
+                  </React.Fragment>
+                }
+                />
+              { window.innerWidth >= 600 &&
+                <ListItemText className={classes.listText} primary={ d.lastname } />
+              }
+              <ListItemText className={classes.listStatus}
+                primary={
+                  <ListMenu
+                    {...props}
+                    primary={d}
+                    data={data}
+                    setMBData={setData} />
+                } />
+            </ListItem>
+            <Divider />
+          </React.Fragment>
+        )}
+      </List>
+      <TemplateDialog open={open} handleClose={handleClose}>
+        <AddAdmin
+          {...props}
+          admin={data}
+          setDataAdmin={setData}
+          handleClose={handleClose} />
+      </TemplateDialog>
+    </div>
   );
 }

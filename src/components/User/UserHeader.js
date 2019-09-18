@@ -333,7 +333,7 @@ export default function UserHeader(props) {
           <Link to='/user'
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>
-              { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้' }
+              { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้งาน' }
             </MenuItem>
           </Link>
         }

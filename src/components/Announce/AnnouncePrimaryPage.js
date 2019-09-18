@@ -159,21 +159,33 @@ export default function AnnouncePrimaryPage(props) {
         interval={10000}
         enableMouseEvents index={index} onChangeIndex={handleChangeIndex}>
         { data ?
-          data.map(d =>
-            <div key={d.postid}>
-              <BTN.NoStyleLink to={`/post/${pageid}/${d.postid}`}>
-                { d.photopath ?
-                  <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
-                    src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-                  :
-                  <Skeleton
-                    className={classes.skeleton}
-                    style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300] }} />
-                }
-              </BTN.NoStyleLink>
-              <BTN.NoStyleLink to={`/post/${pageid}/${d.postid}`}>
-                <div className={classes.label}>{d.message}</div>
-              </BTN.NoStyleLink>
+          ( data.length > 0 ?
+            data.map(d =>
+              <div key={d.postid}>
+                <BTN.NoStyleLink to={`/post/${pageid}/${d.postid}`}>
+                  { d.photopath ?
+                    <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
+                      src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                    :
+                    <Skeleton
+                      className={classes.skeleton}
+                      style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300] }} />
+                  }
+                </BTN.NoStyleLink>
+                <BTN.NoStyleLink to={`/post/${pageid}/${d.postid}`}>
+                  <div className={classes.label}>{d.message}</div>
+                </BTN.NoStyleLink>
+              </div>
+            )
+            :
+            <div
+              style={{
+                height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300],
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
+                width: '100%', borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>
+                <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 600 }}>
+                  No data
+                </div>
             </div>
           )
           :

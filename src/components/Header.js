@@ -407,7 +407,7 @@ function Header(props) {
             !/\/user/.test(window.location.pathname) &&
             <Link to={`/user`/*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
-                { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้' }
+                { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้งาน' }
               </MenuItem>
             </Link>
           }

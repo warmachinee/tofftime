@@ -85,6 +85,21 @@ const PageOrganizerCreatePost = Loadable({
   loading: () => null
 });
 
+const OrganizerAnnounce = Loadable({
+  loader: () => import(/* webpackChunkName: "OrganizerAnnounce" */ './../components/Organizer/OrganizerAnnounce'),
+  loading: () => null
+});
+
+const OrganizerPost = Loadable({
+  loader: () => import(/* webpackChunkName: "OrganizerPost" */ './../components/Organizer/OrganizerPost'),
+  loading: () => null
+});
+
+const OrganizerMatchList = Loadable({
+  loader: () => import(/* webpackChunkName: "OrganizerMatchList" */ './../components/Organizer/OrganizerMatchList'),
+  loading: () => null
+});
+
 const RouteProfile = Loadable.Map({
   loader: {
     Profile: () => import(/* webpackChunkName: "Profile" */'./../components/User/Profile'),
@@ -377,7 +392,7 @@ export default function UserPage(props) {
 
 function UserDashboard(props){
   const classes = useStyles();
-  const { sess, open, pageOrganizer, pageList } = props
+  const { COLOR, sess, open, pageOrganizer, pageList } = props
 
   return(
     <React.Fragment>
@@ -389,7 +404,15 @@ function UserDashboard(props){
         <FriendFollowList {...props}/>*/
       }
       { pageOrganizer &&
-        <PageOrganizerOverview {...props} />
+        <React.Fragment>
+          <PageOrganizerOverview {...props} />
+          <div style={{ padding: 12, position: 'relative', boxSizing: 'border-box' }}>
+            <OrganizerAnnounce {...props} />
+            <OrganizerMatchList {...props} />
+            <OrganizerPost {...props} />
+          </div>
+          <div style={{ height: 4, backgroundColor: COLOR.grey[600], margin: '48px 12px', borderRadius: 4 }} />
+        </React.Fragment>
       }
       { !pageOrganizer &&
         <Statistics {...props} />

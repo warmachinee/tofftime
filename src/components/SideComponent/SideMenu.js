@@ -379,7 +379,7 @@ export default function SideMenu(props) {
                     <AccountCircle classes={{ root: classes.avatar }} />
                   }
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้' } />
+                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้งาน' } />
               </ListItem>
             </BTN.NoStyleLink>
             <Divider />

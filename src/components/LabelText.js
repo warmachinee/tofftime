@@ -6,10 +6,10 @@ import {
 } from '@material-ui/core';
 
 export default function LabelText(props){
-  const { text = 'No text' } = props
+  const { text = 'No text', paddingTop = 16, paddingLeft = 12 } = props
 
   return(
-    <div style={{ paddingTop: 16, paddingLeft: 12 }}>
+    <div style={{ paddingTop: paddingTop, paddingLeft: paddingLeft }}>
       <Typography variant="h5"
         style={{
           borderBottom: `4px solid ${primary[600]}`,

@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerAnnounce(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, pageid } = props
+  const { API, sess, token, setCSRFToken, pageid, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -28,7 +28,7 @@ export default function OrganizerAnnounce(props) {
       token? token : resToken.token,
       'mloadpage' , {
         action: 'postlist',
-        pageid: pageid,
+        pageid: pageOrganizer ? pageData.pageid : pageid,
         type: 'announce'
     }, function(csrf, d){
       setCSRFToken(csrf)

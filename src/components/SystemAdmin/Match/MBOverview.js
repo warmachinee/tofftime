@@ -7,8 +7,6 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import * as API from './../../../api'
 import { primary, grey } from './../../../api/palette'
 
-import Paper from '@material-ui/core/Paper';
-import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -20,7 +18,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import { LDCircular } from './../../loading/LDCircular'
@@ -45,10 +42,12 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 24,
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    maxWidth: 900
   },
   margin: {
     width: '100%',
@@ -135,7 +134,7 @@ const useStyles = makeStyles(theme => ({
   editButton: {
     position: 'absolute',
     right: 16,
-    top: 80,
+    top: 8,
     zIndex: 1
   },
   buttonControl: {
@@ -219,7 +218,7 @@ const datePickers = createMuiTheme({
   },
 });
 
-function MBOverviewBody(props){
+export default function MBOverview(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
   const [ editting, handleEditting ] = React.useState(false)
@@ -399,7 +398,7 @@ function MBOverviewBody(props){
   },[ ])
 
   return data && data.status !== 'wrong params' && (
-    <div style={{ padding: 8, marginTop: 24, marginLeft: 'auto', marginRight: 'auto', maxWidth: 900 }}>
+    <div className={classes.root}>
       { !editting &&
         <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>
           { ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' }
@@ -632,35 +631,5 @@ function MBOverviewBody(props){
         </TemplateDialog>
       }
     </div>
-  );
-}
-
-export default function MBOverview(props){
-  const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, setData, data, matchid } = props
-  const [ expanded, setExpanded ] = React.useState(true)
-
-  function expandHandler(){
-    setExpanded(!expanded)
-  }
-
-  return(
-    <Paper className={classes.root} elevation={3} onClick={()=>!expanded ? expandHandler():console.log()}>
-      <Typography component="div">
-        <Box className={classes.title} fontWeight={600} m={1}>
-          Overview
-        </Box>
-      </Typography>
-      <IconButton
-        className={classes.expandIcon}
-        style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
-        onClick={expandHandler}
-      >
-        <ExpandMoreIcon />
-      </IconButton>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <MBOverviewBody {...props}/>
-      </Collapse>
-    </Paper>
   );
 }

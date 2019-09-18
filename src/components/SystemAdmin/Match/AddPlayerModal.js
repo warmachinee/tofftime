@@ -278,7 +278,7 @@ export default function AddPlayerModal(props){
             <ExpandMoreIcon
               className={classes.expandIcon}
               style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
-            { ( sess && sess.language === 'EN' ) ? "Create user" : 'สร้างผู้ใช้' }
+            { ( sess && sess.language === 'EN' ) ? "Create user" : 'สร้างผู้ใช้งาน' }
           </GreenTextButton>
         </div>
       }
