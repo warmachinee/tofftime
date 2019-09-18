@@ -56,6 +56,10 @@ const urlLink = {
   usersystem: getWebURL() + '/admin/usersystem',
   newsmain: getWebURL() + '/admin/newsmain',
   announcemain: getWebURL() + '/admin/announcemain',
+  pagemain: getWebURL() + '/admin/pagemain',
+  loadpage: getWebURL() + '/admin/loadpage',
+  pagesystem: getWebURL() + '/admin/pagesystem',
+  pagesection: getWebURL() + '/admin/pagesection',
   //--------------------User--------------------
   mloadmatch: getWebURL() + '/match/loadmatch',
   mloaduser: getWebURL() + '/match/loaduser',
@@ -153,7 +157,7 @@ function fetchPostFile(url, extendURL, obj, formData){
   });
 }
 
-function handleSortArrayByDate(data, primary, secondary){
+function sortArrByDate(data, primary, secondary){
   if(data){
     var obj = data
     obj.sort( (a, b) =>{
@@ -169,7 +173,7 @@ function handleSortArrayByDate(data, primary, secondary){
   }
 }
 
-function handleSortArrayByDateStr(data, primary, secondary){
+function sortArrByDateStr(data, primary, secondary){
   if(data){
     var obj = data
     obj.sort( (a, b) =>{
@@ -177,6 +181,22 @@ function handleSortArrayByDateStr(data, primary, secondary){
       const db = new Date(handleStringToDate(b[primary]))
       if (da < db) return 1;
       if (da > db) return -1;
+      if(secondary) return a[secondary].localeCompare(b[secondary]);
+    })
+    return obj
+  }else{
+    return null
+  }
+}
+
+function sortReverseArrByDate(data, primary, secondary){
+  if(data){
+    var obj = data
+    obj.sort( (a, b) =>{
+      const da = new Date(a[primary])
+      const db = new Date(b[primary])
+      if (da > db) return 1;
+      if (da < db) return -1;
       if(secondary) return a[secondary].localeCompare(b[secondary]);
     })
     return obj
@@ -244,7 +264,7 @@ function handleGetDate(date){
   var month;
   var dateStr;
   const today = new Date()
-  const cdate = new Date(date)
+  const cdate = new Date( /\//.test(date) ? handleStringToDate(date) : date )
   var diff = (today - cdate)/(1000) //millisecond
   var str = ''
   if(diff >=0 && diff < 60){
@@ -305,6 +325,27 @@ function handleDateToString(d){
       day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
       month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
       dateStr = thisD.getFullYear() + '-' + month + '-' + day
+    }
+    return dateStr
+  }
+}
+
+function dateToString(d){
+  if(d){
+    var thisD;
+    var day;
+    var month;
+    var dateStr;
+    if(typeof(d) === 'object'){
+      thisD = d
+      day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
+      month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
+      dateStr = day + '-' + month + '-' + thisD.getFullYear()
+    }else{
+      thisD = new Date(d)
+      day = (thisD.getDate() > 9) ? thisD.getDate():'0' + thisD.getDate()
+      month = (thisD.getMonth() + 1 > 9) ? thisD.getMonth() + 1:'0' + ( thisD.getMonth() + 1 )
+      dateStr = day + '-' + month + '-' + thisD.getFullYear()
     }
     return dateStr
   }
@@ -382,12 +423,14 @@ export {
   fetchPostFile,
   xhrGet,
   xhrPost,
-  handleSortArrayByDate,
-  handleSortArrayByDateStr,
+  sortArrByDate,
+  sortArrByDateStr,
+  sortReverseArrByDate,
   handleGetPostTime,
   handleGetDate,
   handleHoleSum,
   handleDateToString,
+  dateToString,
   handleStringToDate,
   getTodayTime,
   handleScrolllTo,

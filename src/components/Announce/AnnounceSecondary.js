@@ -53,10 +53,13 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       opacity: .7
     },
+    [theme.breakpoints.down(450)]: {
+      height: 72
+    },
   },
   label: {
     position: 'absolute',
-    bottom: 8,
+    bottom: 16,
     width: '100%',
     boxSizing: 'border-box',
     color: grey[50],
@@ -69,6 +72,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     padding: theme.spacing(2, 1),
     maxHeight: 72,
+    height: '100%',
     display: '-webkit-box',
     overflow: 'hidden',
     whiteSpace: 'normal',
@@ -78,9 +82,6 @@ const useStyles = makeStyles(theme => ({
     lineHeight: 1.6,
     '&:hover': {
       backgroundColor: grey[700],
-    },
-    [theme.breakpoints.up(500)]: {
-      bottom: 16,
     },
     [theme.breakpoints.up(900)]: {
       bottom: 0,

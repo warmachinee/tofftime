@@ -3,8 +3,12 @@ import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
 import * as COLOR from './../../api/palette'
 
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
+import {
+  Avatar,
+  Typography,
+  IconButton,
+
+} from '@material-ui/core';
 
 import AccountIcon from '@material-ui/icons/AccountCircle';
 
@@ -28,7 +32,6 @@ const useStyles = makeStyles(theme => ({
     boxSizing: 'border-box',
   },
   marginAuto: {
-    marginLeft: 'auto',
     marginRight: 'auto',
   },
   iconButton: {
@@ -41,87 +44,83 @@ const useStyles = makeStyles(theme => ({
   },
   avatarIcon: {
     fontSize: 72
-  }
+  },
+  title: {
+    position: 'relative',
+    display: '-webkit-box',
+    overflow: 'hidden',
+    whiteSpace: 'normal',
+    textOverflow: 'ellipsis',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    lineHeight: 1.4,
+    cursor: 'pointer',
+    width: 100,
+    textAlign: 'center',
+    '&:hover': {
+      fontWeight: 600,
+    },
+  },
 
 }));
-/*
-const data = [
-  {
-    id: 1,
-    pic: 'https://assetsv2.fiverrcdn.com/assets/v2_globals/fiverr-logo-new-green-64920d4e75a1e04f4fc7988365357c16.png'
-  },
-  {
-    id: 2,
-    pic: 'https://i.pinimg.com/originals/a8/c1/54/a8c15493781667d05e628e2f76d65b3a.jpg'
-  },
-  {
-    id: 3,
-    pic: 'https://seeklogo.com/images/C/Chang-logo-8DADB374B6-seeklogo.com.png'
-  },
-  {
-    id: 4,
-    pic: 'https://singhaelitegolf.com/wp-content/uploads/2014/03/SINGHA-Logo.jpg'
-  },
-  {
-    id: 5,
-    pic: 'https://image.shutterstock.com/image-vector/vector-label-golf-logo-championship-260nw-360432086.jpg'
-  },
-  {
-    id: 6,
-    pic: 'https://www.thaiseniorpga.com/images/Logo.png'
-  },
-  {
-    id: 7,
-    pic: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSodhBwzuR_aV8NYLDj21Ypm0wSOUp4mndTrR7SRc_kIGBHwhG1g'
-  },
-  {
-    id: 8,
-    pic: 'https://seeklogo.com/images/P/pga-updated-logo-EE5AAFB4EF-seeklogo.com.png'
-  },
-  {
-    id: 9,
-    pic: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/75/Ladies_Professional_Golf_Association.svg/1200px-Ladies_Professional_Golf_Association.svg.png'
-  },
-  {
-    id: 10,
-    pic: 'https://upload.wikimedia.org/wikipedia/en/4/45/Lahinch_Golf_Club_crest.png'
-  },
-]
-*/
-const data = [
-  {
-    pageid: 651376,
-    logo: "/pages/651376/651376"
-  },
-  {
-    pageid: 658041,
-    logo: "/pages/658041/658041"
-  }
-]
 
 export default function OrganizerList(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken, BTN, isSupportWebp } = props
+  const { API, sess, token, setCSRFToken, BTN, isSupportWebp, handleSnackBar } = props
+  const [ data, setData ] = React.useState(null)
+
+  async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'mloadpage', {
+        action: 'list',
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(!d.status){
+        setData(d)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
+    })
+  }
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ ])
 
   return (
     <div id="el_organizer" className={classes.root}>
-      <LabelText text="Organizer" />
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Organizer" : 'ผู้จัดการแข่งขัน' } />
       <div className={classes.grid}>
-        { data.map(
+        { data &&
+          data.map(
           d =>
-          <BTN.NoStyleLink to={`/page/${d.pageid}`} key={d.pageid} className={classes.marginAuto}>
-            { d.logo ?
-              <IconButton className={classes.iconButton}>
-                <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
-              </IconButton>
-              :
-              <IconButton className={classes.iconButton}>
-                <Avatar className={classes.avatar}>
-                  <AccountIcon classes={{ root: classes.avatarIcon }}/>
-                </Avatar>
-              </IconButton>
-            }
-          </BTN.NoStyleLink>
+          <div style={{ display: 'flex', flexDirection: 'column' }} key={d.pageid} className={classes.marginAuto}>
+            <BTN.NoStyleLink to={`/page/${d.pageid}`}>
+              { d.logo ?
+                <IconButton className={classes.iconButton}>
+                  <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                </IconButton>
+                :
+                <IconButton className={classes.iconButton}>
+                  <Avatar className={classes.avatar}>
+                    <AccountIcon classes={{ root: classes.avatarIcon }}/>
+                  </Avatar>
+                </IconButton>
+              }
+            </BTN.NoStyleLink>
+            <BTN.NoStyleLink to={`/page/${d.pageid}`}>
+              <Typography className={classes.title}>
+                {d.pagename}
+              </Typography>
+            </BTN.NoStyleLink>
+          </div>
         )}
       </div>
     </div>

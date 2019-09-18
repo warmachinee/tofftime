@@ -197,7 +197,7 @@ function ListComponent(props){
 
 export default function MatchBody(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleSnackBar, pageOrganizer, pageData } = props
+  const { sess, token, setCSRFToken, handleSnackBar, pageOrganizer, pageData, pageList } = props
   const [ data, setData ] = React.useState(null)
   const [ dataClassed, setDataClassed ] = React.useState(null)
   const [ editting, setEditting ] = React.useState(false)
@@ -315,19 +315,7 @@ export default function MatchBody(props){
         )
         setDataClassed(arrData)
       }
-      if(sess.typeid !== 'admin'){
-        if(pageOrganizer){
-          setData(d.filter( item =>{
-            return item.pageid === pageData.pageid
-          }))
-        }else{
-          setData(d.filter( item =>{
-            return item.pageid === 0
-          }))
-        }
-      }else{
-        setData(d)
-      }
+      setData(d)
     })
   }
 
@@ -340,16 +328,24 @@ export default function MatchBody(props){
       <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Match
+          { ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
         </Box>
       </Typography>
       <CreateMatch setData={setData} setDataClassed={setDataClassed} {...props}/>
       <div style={{ display: 'flex', margin: '24px 16px 0 0', justifyContent: 'space-between' }}>
         <GreenTextButton color="primary" onClick={toggleEdittingDisplay}>
-          { edittingDisplay? 'Done':'Edit Display'}
+          { edittingDisplay?
+            ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+            :
+            ( ( sess && sess.language === 'EN' ) ? "Edit Display" : 'แก้ไขการแสดง' )
+          }
         </GreenTextButton>
         <GreenTextButton color="primary" onClick={toggleEditting}>
-          { editting? 'Done':'Remove'}
+          { editting?
+            ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+            :
+            ( ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' )
+          }
         </GreenTextButton>
       </div>
       <List style={{ overflow: 'auto' }}>
@@ -358,17 +354,17 @@ export default function MatchBody(props){
             <ListItemIcon>
               <div style={{ width: 42 }}></div>
             </ListItemIcon>
-            <StyledText inset primary="Match" className={classes.tableTitle}/>
+            <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } className={classes.tableTitle}/>
           </ListItem>
           :
           <ListItem key="Table Head" className={classes.tableHead}>
             { window.innerWidth >= 600 &&
-              <StyledText primary="Date" className={classes.tableDate}/>
+              <StyledText primary={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' } className={classes.tableDate}/>
             }
             <StyledText primary="Views" className={classes.tableView}/>
-            <StyledText inset primary="Match" className={classes.tableTitle}/>
+            <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } className={classes.tableTitle}/>
             { ( window.innerWidth >= 800 && !editting ) &&
-              <StyledText inset primary="Location" className={classes.tableLocation}/>
+              <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Location" : 'สนาม' } className={classes.tableLocation}/>
             }
             { editting &&
               <ListItemSecondaryAction>
@@ -437,7 +433,7 @@ export default function MatchBody(props){
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure you want to delete?
+            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             { removeData && removeData.title }
@@ -446,10 +442,10 @@ export default function MatchBody(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            Cancel
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            Delete
+            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
           </RedButton>
         </div>
       </TemplateDialog>
@@ -459,7 +455,7 @@ export default function MatchBody(props){
         open={confirmPasswordState} handleClose={handleConfirmPasswordCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Fill password
+            { ( sess && sess.language === 'EN' ) ? "Fill password" : 'ใส่รหัสผ่าน' }
           </Box>
         </Typography>
         <ThemeProvider theme={theme}>
@@ -468,7 +464,7 @@ export default function MatchBody(props){
             fullWidth
             style={{ marginTop: 16 }}
             className={classes.margin}
-            label="Password"
+            label={ ( sess && sess.language === 'EN' ) ? "Password" : 'รหัสผ่าน' }
             variant="outlined"
             type="password"
             onChange={(e)=>setConfirmPassword(e.target.value)}
@@ -478,10 +474,10 @@ export default function MatchBody(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmPasswordCancel} className={classes.confirmButton}>
-            Cancel
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
           </GreenTextButton>
           <RedButton onClick={handleFetchRemove} className={classes.confirmButton}>
-            Delete
+            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
           </RedButton>
         </div>
       </TemplateDialog>

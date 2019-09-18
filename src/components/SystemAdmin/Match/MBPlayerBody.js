@@ -374,7 +374,7 @@ export default function MBPlayerBody(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'uccess' ? 'success' : 'error',
+          variant: d.status === 'success' ? 'success' : 'error',
           autoHideDuration: d.status === 'success'? 2000 : 5000
         })
       })
@@ -548,7 +548,9 @@ export default function MBPlayerBody(props){
             { !editting && !edittingClass &&
               (
                 edittingDisplay?
-                <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>Done</GreenTextButton>
+                <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>
+                  { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                </GreenTextButton>
                 :
                 <GreenTextButton className={classes.controlsEditButton} onClick={handleEdittingDisplay}>
                   <DesktopMacIcon
@@ -557,7 +559,7 @@ export default function MBPlayerBody(props){
                       window.innerWidth > 450? '20%':'10%'
                     }}
                     className={classes.controlsEditButtonIcon}/>
-                  Display
+                  { ( sess && sess.language === 'EN' ) ? "Showing" : 'การแสดงผล' }
                 </GreenTextButton>
               )
             }
@@ -568,12 +570,18 @@ export default function MBPlayerBody(props){
                   {
                     matchDetail.scorematch === 1?
                     <React.Fragment>
-                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
-                      <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
+                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
+                        { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                      </GreenTextButton>
+                      <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
+                        { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                      </GreenButton>
                     </React.Fragment>
                     :
                     <React.Fragment>
-                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>Done</GreenTextButton>
+                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
+                        { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                      </GreenTextButton>
                     </React.Fragment>
                   }
                 </React.Fragment>
@@ -585,7 +593,11 @@ export default function MBPlayerBody(props){
                       window.innerWidth > 450? '20%':'10%'
                     }}
                     className={classes.controlsEditButtonIcon}/>
-                  { matchDetail.scorematch === 1? "Class" : 'Flight' }
+                  { matchDetail.scorematch === 1? (
+                    ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท'
+                  ) : (
+                    ( sess && sess.language === 'EN' ) ? "Flight" : 'ไฟล์ท'
+                  ) }
                 </GreenTextButton>
               )
             }
@@ -593,7 +605,9 @@ export default function MBPlayerBody(props){
               (
                 editting?
                 <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
-                  onClick={handleDoneEditting}>Done</GreenTextButton>
+                  onClick={handleDoneEditting}>
+                  { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                </GreenTextButton>
                 :
                 <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
                   <DeleteIcon
@@ -602,7 +616,7 @@ export default function MBPlayerBody(props){
                       window.innerWidth > 450? '20%':'10%'
                     }}
                     className={classes.controlsEditButtonIcon}/>
-                  Remove
+                  { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
                 </GreenTextButton>
               )
             }
@@ -615,7 +629,13 @@ export default function MBPlayerBody(props){
               <React.Fragment>
                 <div style={{ display: 'flex' }}>
                   <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
-                  <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedClass !== 0 ? 'Selected Class : ' : 'Select Class :' }</div>
+                  <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
+                    { selectedClass !== 0 ? (
+                      ( sess && sess.language === 'EN' ) ? "Selected Class  :  " : 'ประเภทที่เลือก  :  '
+                    ) : (
+                      ( sess && sess.language === 'EN' ) ? "Select Class   :   " : 'เลือกประเภท'
+                    ) }
+                  </div>
                 </div>
                 <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
                   { selectedClass !== 0?
@@ -626,23 +646,27 @@ export default function MBPlayerBody(props){
                       d &&
                       <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
                     )
-                    : <React.Fragment>No class selected</React.Fragment>
+                    : <React.Fragment>-</React.Fragment>
                   }
                 </GreenTextButton>
               </React.Fragment>
               :
               <React.Fragment>
                 <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
-                  onClick={()=>handleUpdateFlight('clear')}>Clear</GreenTextButton>
+                  onClick={()=>handleUpdateFlight('clear')}>
+                  { ( sess && sess.language === 'EN' ) ? "Clear" : 'เคลียร์' }
+                </GreenTextButton>
                 <GreenButton className={classes.controlsEditButton2}
-                  onClick={()=>handleUpdateFlight('update')}>Update</GreenButton>
+                  onClick={()=>handleUpdateFlight('update')}>
+                  { ( sess && sess.language === 'EN' ) ? "Update" : 'อัพเดท' }
+                </GreenButton>
               </React.Fragment>
             )
           }
           { editting && sess.typeid === 'admin' &&
             <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
               <DeleteIcon />
-              Remove
+              { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
             </GreenTextButton>
           }
           { !( editting || edittingClass) &&
@@ -655,7 +679,7 @@ export default function MBPlayerBody(props){
               disabled={data === null}
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser? "Search player" : '' }
+              placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' ) : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -680,28 +704,36 @@ export default function MBPlayerBody(props){
           </ThemeProvider>
         </ListItem>
         <div style={{ overflow: 'auto', position: 'relative' }}>
-          { ( editting || edittingClass || edittingDisplay ) &&
+          {/* ( editting || edittingClass || edittingDisplay ) &&
             <Typography component="div">
               <Box className={classes.notice} m={1}>
                 { edittingDisplay && 'Click the list to toggle the player display.'}
                 { edittingClass && 'Select class and player to change player class.'}
                 { editting && 'Select the list to delete multiple or Hit the icon on the right to delete single.'}
               </Box>
-            </Typography>
+            </Typography>*/
           }
           <ListItem role={undefined}
             style={{
               display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
             }}>
             <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-              primary={ window.innerWidth < 600? "Player" : "First name" } />
+              primary={ window.innerWidth < 600? (
+                ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ'
+              ) : (
+                ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ'
+              ) } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-                primary="Last name" />
+                primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
             }
             { window.innerWidth > 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }}
-                primary={ matchDetail.scorematch === 1? "Class" : 'Flight' } />
+                primary={ matchDetail.scorematch === 1? (
+                  ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท'
+                ) : (
+                  ( sess && sess.language === 'EN' ) ? "Flight" : 'ไฟล์ท'
+                ) } />
             }
             <ListItemIcon style={{ justifyContent: 'flex-start' }}>
               <div style={{ height: 42, width: 42 }}></div>
@@ -849,20 +881,28 @@ export default function MBPlayerBody(props){
               { data && data.length > 10 && !searchUser &&
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= data.length ? 'Collapse':'More' }
+                    { dataSliced >= data.length ? (
+                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                    ):(
+                      ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                    ) }
                   </Button>
                   { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
                   }
                 </React.Fragment>
               }
               { data && handleSearch().length > 10 && searchUser &&
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                    { dataSliced >= handleSearch().length ? (
+                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                    ):(
+                      ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                    ) }
                   </Button>
                   { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
                   }
                 </React.Fragment>
               }
@@ -871,7 +911,7 @@ export default function MBPlayerBody(props){
               <ListItem>
                 <Typography component="div" style={{ width: '100%' }}>
                   <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                    No Reult
+                    { ( sess && sess.language === 'EN' ) ? "No Reult" : 'ไม่มีผลลัพท์' }
                   </Box>
                 </Typography>
               </ListItem>

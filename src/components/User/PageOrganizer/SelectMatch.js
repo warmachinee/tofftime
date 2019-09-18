@@ -89,8 +89,8 @@ const useStyles = makeStyles(theme => ({
 export default function PageOrganizerCreatePost(props) {
   const classes = useStyles();
   const {
-    BTN, COLOR, token, setCSRFToken, handleSnackBar,
-    pageOrganizer, pageData,
+    sess, BTN, COLOR, token, setCSRFToken, handleSnackBar,
+    pageOrganizer, pageData, pageList,
     selectMatchState, setSelectMatchState, setSelectedMatch, toggleCreateMatch, createMatchState
   } = props
   const [ data, setData ] = React.useState(null)
@@ -117,9 +117,7 @@ export default function PageOrganizerCreatePost(props) {
           return item.pageid === pageData.pageid
         }))
       }else{
-        setData(d.filter( item =>{
-          return item.pageid === 0
-        }))
+        setData(d)
       }
     })
   }
@@ -133,11 +131,11 @@ export default function PageOrganizerCreatePost(props) {
   return (
     <TemplateDialog open={selectMatchState} handleClose={handleClose} maxWidth={900}>
       <div className={classes.root}>
-        <LabelText text="Select match" />
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Select match" : 'เลือกการแข่งขัน' } />
         <div className={classes.grid}>
           <BTN.Red style={{ paddingRight: 16 }} onClick={toggleCreateMatch}>
             <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-            Create Match
+            { ( sess && sess.language === 'EN' ) ? "Create Match" : 'สร้างการแข่งขัน' }
           </BTN.Red>
           <List style={{ marginTop: 16 }}>
             <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
@@ -153,15 +151,15 @@ export default function PageOrganizerCreatePost(props) {
               </ListItemIcon>
               { window.innerWidth >= 600 &&
                 <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                  primary="date" />
+                  primary={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' } />
               }
               <ListItemText style={{ color: 'white', width: 100 }}
-                primary="Match" />
+                primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } />
 
               { window.innerWidth >= 900 &&
                 <ListItemText
                   style={{ width: 100, color: 'white' }}
-                  primary="Location" />
+                  primary={ ( sess && sess.language === 'EN' ) ? "Location" : 'สนาม' } />
               }
             </ListItem>
           </List>

@@ -137,7 +137,11 @@ const theme = createMuiTheme({
 
 export default function PageOrganizerPostEditor(props) {
   const classes = useStyles();
-  const { BTN, token, setCSRFToken, handleSnackBar, isSupportWebp, createPostState, setCreatePostState, toggleCreatePost, pageData, clickAction, edittingData } = props
+  const {
+    sess, BTN, token, setCSRFToken, handleSnackBar, isSupportWebp,
+    createPostState, setCreatePostState, toggleCreatePost,
+    pageData, clickAction, edittingData, handleCloseEditor
+  } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
   const [ dataDetail, setDataDetail ] = React.useState(null)
@@ -225,14 +229,22 @@ export default function PageOrganizerPostEditor(props) {
       }
     }
 
+    if(selectedTypePost === 'post'){
+      if(title && detail){
+        Object.assign(sendObj, { message:  title + '<$$split$$>' + detail });
+      }
+    }
+
     if(selectedTypePost === 'announce'){
       if(detail){
         Object.assign(sendObj, { announcedetail:  detail });
       }
     }
 
-    if(title){
-      Object.assign(sendObj, { message:  title});
+    if(selectedTypePost !== 'post'){
+      if(title){
+        Object.assign(sendObj, { message:  title});
+      }
     }
 
     await API.xhrPost(
@@ -284,7 +296,11 @@ export default function PageOrganizerPostEditor(props) {
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       if(d.status === 'success'){
-        setCreatePostState(false)
+        if(handleCloseEditor){
+          handleCloseEditor()
+        }else{
+          setCreatePostState(false)
+        }
       }
     }
   }
@@ -307,14 +323,22 @@ export default function PageOrganizerPostEditor(props) {
       }
     }
 
+    if(selectedTypePost === 'post'){
+      if(title && detail){
+        Object.assign(sendObj, { message:  title + '<$$split$$>' + detail });
+      }
+    }
+
     if(selectedTypePost === 'announce'){
       if(detail){
         Object.assign(sendObj, { announcedetail:  detail });
       }
     }
 
-    if(title){
-      Object.assign(sendObj, { message:  title});
+    if(selectedTypePost !== 'post'){
+      if(title){
+        Object.assign(sendObj, { message:  title});
+      }
     }
 
     await API.xhrPost(
@@ -368,7 +392,13 @@ export default function PageOrganizerPostEditor(props) {
         postid: edittingData.postid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setTitle(d.message)
+      if(d.type === 'post' && d.message){
+        const messageSplit = d.message.split('<$$split$$>')
+        setTitle(d.messageSplit[0])
+        setDetail(d.messageSplit[1])
+      }else{
+        setTitle(d.message)
+      }
       setSelectedTypePost(d.type)
 
       if(d.photopath){
@@ -399,7 +429,7 @@ export default function PageOrganizerPostEditor(props) {
           <TextField
             autoFocus
             className={classes.margin}
-            label="Title"
+            label={ ( sess && sess.language === 'EN' ) ? "Title" : 'หัวข้อ' }
             value={title}
             variant="outlined"
             onChange={(e)=>setTitle(e.target.value)}
@@ -446,7 +476,9 @@ export default function PageOrganizerPostEditor(props) {
               position: 'relative', marginTop: 16, marginBottom: 24,
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
-            <Typography variant="caption" style={{ textAlign: 'center' }}>Upload image</Typography>
+            <Typography variant="caption" style={{ textAlign: 'center' }}>
+              { ( sess && sess.language === 'EN' ) ? "Upload image" : 'อัพโหลดรูป' }
+            </Typography>
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -473,26 +505,28 @@ export default function PageOrganizerPostEditor(props) {
               <FormControlLabel
                 value={'post'}
                 control={<GreenRadio />}
-                label="Post"
+                label={ ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
                 labelPlacement="end"
               />
               <FormControlLabel
                 value={'announce'}
                 control={<GreenRadio />}
-                label="Announce"
+                label={ ( sess && sess.language === 'EN' ) ? "Announce" : 'ประกาศ' }
                 labelPlacement="end"
               />
               <FormControlLabel
                 value={'match'}
                 control={<GreenRadio />}
-                label="Match"
+                label={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
                 labelPlacement="end"
               />
             </RadioGroup>
           </FormControl>
-          { selectedTypePost === 'announce' &&
+          { selectedTypePost !== 'match' &&
             <React.Fragment>
-              <div style={{ marginTop: 24 }}>Fill content here</div>
+              <div style={{ marginTop: 24 }}>
+                { ( sess && sess.language === 'EN' ) ? "Content" : 'เนื้อหา' }
+              </div>
               <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2, }}>
                 { clickAction === 'edit' ?
                   ( (dataDetail && dataDetail.messagedetail) ?
@@ -551,14 +585,22 @@ export default function PageOrganizerPostEditor(props) {
             </BTN.PrimaryOutlined>
               :
               <BTN.PrimaryOutlined onClick={toggleSelectMatch} className={classes.selectMatchButton}>
-                { selectedMatch? selectedMatch.title : 'Select match' }
+                { selectedMatch?
+                  selectedMatch.title
+                  :
+                  ( sess && sess.language === 'EN' ) ? "Select match" : 'เลือกการแข่งขัน' 
+                }
               </BTN.PrimaryOutlined>
             )
           }
         </ThemeProvider>
         <GreenButton variant="contained" color="primary" className={classes.button}
           onClick={clickAction === 'edit'? handleFetchEditPost : handleFetchCreatePost}>
-          {clickAction === 'edit'? 'Save':'Create'}
+          { clickAction === 'edit'?
+            ( ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' )
+            :
+            ( ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' )
+          }
         </GreenButton>
       </div>
       <SelectMatch

@@ -183,7 +183,7 @@ function HideOnScroll(props) {
 
 function Header(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, setResponse, sess, handleSess, isSupportWebp , drawerOpen, accountData } = props
+  const { sess, token, setCSRFToken, setResponse, handleSess, isSupportWebp , drawerOpen, accountData } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ anchorNoti, setAnchorNoti] = React.useState(null);
   const [ notiState, setNotiState ] = React.useState(false);
@@ -318,9 +318,15 @@ function Header(props) {
             <div className={classes.grow} />
             { window.location.pathname === '/' && window.innerWidth >= 600 &&
               <React.Fragment>
-                <Button size="small" onClick={()=>API.handleScrolllTo('match')}>Match</Button>
-                <Button size="small" onClick={()=>API.handleScrolllTo('news')}>News</Button>
-                <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>Organizer</Button>
+                <Button size="small" onClick={()=>API.handleScrolllTo('match')}>
+                  { ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
+                </Button>
+                <Button size="small" onClick={()=>API.handleScrolllTo('news')}>
+                  { ( sess && sess.language === 'EN' ) ? "News" : 'ข่าว' }
+                </Button>
+                <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>
+                  { ( sess && sess.language === 'EN' ) ? "Organizer" : 'ผู้จัดการแข่งขัน' }
+                </Button>
                 <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
               </React.Fragment>
             }
@@ -365,7 +371,7 @@ function Header(props) {
             }
             { !( sess && sess.status === 1 ) &&
               <Button className={classes.loginBtn}
-                onClick={handleLogin}>Login</Button>
+                onClick={handleLogin}>{ ( sess && sess.language === 'EN' ) ? "Login" : 'เข้าสู่ระบบ' }</Button>
             }
           </Toolbar>
         </AppBar>
@@ -382,26 +388,34 @@ function Header(props) {
           { sess && sess.status === 1 && sess.typeid !== 'admin' && window.innerWidth >= 600 &&
             !( window.location.pathname === '/' ) &&
             <Link to={`/`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <MenuItem onClick={menuCloseHandler}>Home</MenuItem>
+              <MenuItem onClick={menuCloseHandler}>
+                { ( sess && sess.language === 'EN' ) ? "Home" : 'หน้าแรก' }
+              </MenuItem>
             </Link>
           }
 
           { sess && sess.status === 1 && sess.typeid === 'admin' &&
             !/\/admin/.test(window.location.pathname) &&
             <Link to={`/admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <MenuItem onClick={menuCloseHandler}>Admin</MenuItem>
+              <MenuItem onClick={menuCloseHandler}>
+                { ( sess && sess.language === 'EN' ) ? "Admin" : 'แอดมิน' }
+              </MenuItem>
             </Link>
           }
 
           { sess && sess.status === 1 && sess.typeid !== 'admin' &&
             !/\/user/.test(window.location.pathname) &&
             <Link to={`/user`/*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <MenuItem onClick={menuCloseHandler}>User</MenuItem>
+              <MenuItem onClick={menuCloseHandler}>
+                { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้' }
+              </MenuItem>
             </Link>
           }
 
           { ( sess && sess.status === 1 ) &&
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            <MenuItem onClick={handleLogout}>
+              { ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' }
+            </MenuItem>
           }
 
           {/* ( sess && sess.status === 1 ) && window.innerWidth < 600 &&
@@ -440,7 +454,7 @@ function Header(props) {
                         variant="body1"
                         style={{ color: "white" }}
                       >
-                        Notifications
+                        { ( sess && sess.language === 'EN' ) ? "Notifications" : 'การแจ้งเตือน' }
                       </Typography>
                     </Button>
                   </React.Fragment>

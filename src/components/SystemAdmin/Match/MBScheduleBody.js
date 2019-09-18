@@ -31,6 +31,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ClassIcon from '@material-ui/icons/Class';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import AccessTimeIcon from '@material-ui/icons/AccessTime';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -214,14 +215,12 @@ const theme = createMuiTheme({
 
 export default function MBScheduleBody(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ edittingTeam, setEdittingTeam ] = React.useState(false);
   const [ addState, setAddState ] = React.useState(false);
   const [ teamState, setTeamState ] = React.useState(false);
   const [ formState, setFormState ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
-  //const [ dataSchedule, setDataSchedule ] = React.useState(null)
-  //const [ dataForm, setDataForm ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ checked, setChecked ] = React.useState([]);
   const [ searchUser, setSearchUser ] = React.useState('')
@@ -229,6 +228,54 @@ export default function MBScheduleBody(props){
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ selectedTeam, setSelectedTeam ] = React.useState(0)
   const [ selectedUser, setSelectedUser ] = React.useState(null)
+
+  function getStatus(status){
+    switch (true) {
+      case status === 0:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
+              { ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ',
+          color: COLOR.red[500]
+        });
+        break;
+      case status === 1:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
+              { ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ',
+          color: COLOR.amber[500]
+        });
+        break;
+      case status === 2:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
+              { ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ',
+          color: COLOR.green[500]
+        });
+        break;
+      default:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.grey[800] }}>
+              { ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี',
+          color: COLOR.grey[500]
+        });
+    }
+  }
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -358,7 +405,7 @@ export default function MBScheduleBody(props){
   function handleResponseForm(){
     const socket = socketIOClient( API.getWebURL() )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
-      setData(API.handleSortArrayByDate(messageNew, 'createdate', 'fullname'))
+      setData(API.sortArrByDate(messageNew, 'createdate', 'fullname'))
     })
   }
 
@@ -475,7 +522,7 @@ export default function MBScheduleBody(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setData(API.handleSortArrayByDate(d.resultform, 'createdate', 'fullname'))
+        setData(API.sortArrByDate(d.resultform, 'createdate', 'fullname'))
       })
       await handleFetchMatchDetail()
     }
@@ -512,17 +559,19 @@ export default function MBScheduleBody(props){
               target='_blank'
               style={{ textDecoration: 'none', color: 'inherit' }}>
               <GreenTextButton className={classes.controlsEditButton}>
-                Form
+                { ( sess && sess.language === 'EN' ) ? "Form" : 'รายชื่อผู้สมัคร' }
               </GreenTextButton>
             </a>
-            <a href={`/schedule/${matchid}`}
-              target='_blank'
-              style={{ textDecoration: 'none', color: 'inherit' }}>
-              <GreenTextButton className={classes.controlsEditButton}>
-                <ClassIcon className={classes.controlsEditButtonIcon} />
-                Schedule
-              </GreenTextButton>
-            </a>
+            { matchDetail && matchDetail.team && matchDetail.team.length > 0 &&
+              <a href={`/schedule/${matchid}`}
+                target='_blank'
+                style={{ textDecoration: 'none', color: 'inherit' }}>
+                <GreenTextButton className={classes.controlsEditButton}>
+                  <ClassIcon className={classes.controlsEditButtonIcon} />
+                  { ( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางการแข่งขัน' }
+                </GreenTextButton>
+              </a>
+            }
           </React.Fragment>
         }
       </div>
@@ -532,7 +581,7 @@ export default function MBScheduleBody(props){
             style={{ margin: '2px 0'}}
             onClick={handleAddOpen}>
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
-            Invite
+            { ( sess && sess.language === 'EN' ) ? "Invite" : 'ชวนผู้เล่น' }
           </RedButton>
           <GreenTextButton
             className={classes.button}
@@ -541,10 +590,10 @@ export default function MBScheduleBody(props){
             variant="outlined">
             { matchDetail && matchDetail.team && matchDetail.team.length > 0?
               (
-                'Edit Team' + '( ' + matchDetail.team.length + ' )'
+                ( ( sess && sess.language === 'EN' ) ? "Edit Schedule" : 'แก้ไขตารางเวลา' ) + '( ' + matchDetail.team.length + ' )'
               )
               :
-              'Create Team'
+              ( ( sess && sess.language === 'EN' ) ? "Create Schedule" : 'สร้างตารางเวลา' )
             }
           </GreenTextButton>
           <div style={{ flex: 1 }} />
@@ -556,12 +605,16 @@ export default function MBScheduleBody(props){
             }}>
             { edittingTeam?
               <React.Fragment>
-                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingTeam}>Done</GreenTextButton>
-                <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>Save</GreenButton>
+                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingTeam}>
+                  { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                </GreenTextButton>
+                <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
+                  { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                </GreenButton>
               </React.Fragment>
               :
               <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
-                Edit Schedule
+                { ( sess && sess.language === 'EN' ) ? "Player Schedule" : 'ตางรางเวลาของผู้เล่น' }
               </GreenTextButton>
             }
           </div>
@@ -572,7 +625,7 @@ export default function MBScheduleBody(props){
               className={classes.button}
               onClick={handleFetchSwitchHostForm}
               variant="outlined">
-              Switch Host
+              { ( sess && sess.language === 'EN' ) ? "Switch Host" : 'สลับผู้จัด' }
             </GreenTextButton>
           </ListItem>
         }
@@ -580,8 +633,14 @@ export default function MBScheduleBody(props){
           { edittingTeam &&
             <React.Fragment>
               <div style={{ display: 'flex' }}>
-                <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
-                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>{ selectedTeam !== 0 ? 'Selected Time : ' : 'Select Time :' }</div>
+                <AccessTimeIcon style={{ color: primary[600], marginRight: 4 }}/>
+                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
+                  { selectedTeam !== 0 ? (
+                    ( sess && sess.language === 'EN' ) ? "Selected Time  : " : 'เวลาที่เลือก  : '
+                  ): (
+                    ( sess && sess.language === 'EN' ) ? "Select Time  : " : 'เลือกเวลา  : '
+                  ) }
+                </div>
               </div>
               <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
                 { selectedTeam !== 0?
@@ -606,7 +665,7 @@ export default function MBScheduleBody(props){
             <TextField
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser? "Search player" : '' }
+              placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search player" : 'ค้นหาผู้เล่น' ) : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -631,22 +690,29 @@ export default function MBScheduleBody(props){
           </ThemeProvider>
         </ListItem>
         <div style={{ overflow: 'auto', position: 'relative' }}>
-          { edittingTeam &&
+          {/* edittingTeam &&
             <Typography component="div">
               <Box className={classes.notice} m={1}>
-                { edittingTeam && 'Select team and player to change player team.'}
+                { edittingTeam && (
+                  ( sess && sess.language === 'EN' ) ? "Select team and player to change player team." : 'ค้นหาผู้เล่น'
+                )}
               </Box>
-            </Typography>
+            </Typography>*/
           }
           <ListItem role={undefined}
             style={{
               display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
             }}>
             <ListItemText inset={edittingTeam} style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-              primary={ window.innerWidth < 600? "Player" : "First name" } />
+              primary={
+                window.innerWidth < 600?
+                ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' )
+                :
+                ( ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' )
+              } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-                primary="Last name" />
+                primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
             }
             {/*
               <ListItemIcon style={{ justifyContent: 'flex-start' }}>
@@ -654,10 +720,12 @@ export default function MBScheduleBody(props){
               </ListItemIcon>*/
             }
             { window.innerWidth > 600 && edittingTeam &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass} primary="Team" />
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}
+                primary={ ( sess && sess.language === 'EN' ) ? "Time" : 'เวลา' } />
             }
             { window.innerWidth > 450 && !edittingTeam &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}  primary="Status" />
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}
+                primary={ ( sess && sess.language === 'EN' ) ? "Status" : 'สถานะ' } />
             }
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
@@ -711,10 +779,7 @@ export default function MBScheduleBody(props){
                                     value.status === 1? amber[800] : green[500]
                                   }}
                                 >
-                                  {
-                                    value.status === 0? 'Incomplete' :
-                                    value.status === 1? 'Pending' : 'Complete'
-                                  }
+                                  {getStatus(value.status).text}
                                 </Typography>
                               </React.Fragment>
                             }
@@ -783,10 +848,7 @@ export default function MBScheduleBody(props){
                                 value.status === 1? amber[800] : green[500]
                               }}
                             >
-                              {
-                                value.status === 0? 'Incomplete' :
-                                value.status === 1? 'Pending' : 'Complete'
-                              }
+                              {getStatus(value.status).text}
                             </Typography>
                           }
                           secondary={
@@ -806,20 +868,28 @@ export default function MBScheduleBody(props){
               { data && data.length > 10 && !searchUser &&
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= data.length ? 'Collapse':'More' }
+                    { dataSliced >= data.length ? (
+                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                    ):(
+                      ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                    ) }
                   </Button>
                   { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
                   }
                 </React.Fragment>
               }
               { data && handleSearch().length > 10 && searchUser &&
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                    { dataSliced >= handleSearch().length ? (
+                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                    ):(
+                      ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                    ) }
                   </Button>
                   { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
                   }
                 </React.Fragment>
               }
@@ -828,7 +898,7 @@ export default function MBScheduleBody(props){
               <ListItem>
                 <Typography component="div" style={{ width: '100%' }}>
                   <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                    No Reult
+                    { ( sess && sess.language === 'EN' ) ? "No Reult" : 'ไม่มีผลลัพท์' }
                   </Box>
                 </Typography>
               </ListItem>

@@ -17,11 +17,16 @@ import {
 
 } from '@material-ui/core';
 
-import AddIcon from '@material-ui/icons/Add';
 import MenuIcon from '@material-ui/icons/Menu';
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+
+import {
+  Add,
+  AccountCircle,
+  KeyboardArrowDown,
+  Notifications,
+  Translate,
+
+} from '@material-ui/icons';
 
 import ic_logo from './../img/logoX2.png'
 
@@ -104,7 +109,7 @@ const useStyles = makeStyles(theme => ({
     width: 32,
     height: 32,
   },
-  notiHidden: {
+  iconHidden: {
     [theme.breakpoints.down(900)]: {
       display: 'none',
     }
@@ -115,7 +120,7 @@ const useStyles = makeStyles(theme => ({
 export default function UserHeader(props) {
   const classes = useStyles();
   const {
-    API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess,
+    API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess,
     accountData, notiData, setNotiData, open, handleDrawerClick, toggleNoti,
     pageOrganizer, pageData
   } = props
@@ -223,22 +228,22 @@ export default function UserHeader(props) {
             <IconButton
               edge="start"
             >
-              <AddIcon />
+              <Add />
             </IconButton>
             */
           }
           <div style={{ flex: 1 }} />
-          <IconButton className={classes.notiHidden} onClick={toggleNoti}>
+          <IconButton className={classes.iconHidden} onClick={toggleNoti}>
             { notiData && notiData.length > 0?
               <Badge badgeContent={
                   notiData.filter( item =>{
                     return item.read === 'unread'
                   }).length
                 } color="secondary">
-                <NotificationsIcon />
+                <Notifications />
               </Badge>
               :
-              <NotificationsIcon />
+              <Notifications />
             }
           </IconButton>
           <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
@@ -253,7 +258,7 @@ export default function UserHeader(props) {
                         <Avatar className={classes.avatarImage}
                           src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
                         :
-                        <AccountIcon classes={{ root: classes.avatar }} />
+                        <AccountCircle classes={{ root: classes.avatar }} />
                       )
                       :
                       (
@@ -261,7 +266,7 @@ export default function UserHeader(props) {
                         <Avatar className={classes.avatarImage}
                           src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
                         :
-                        <AccountIcon classes={{ root: classes.avatar }} />
+                        <AccountCircle classes={{ root: classes.avatar }} />
                       )
                     }
                   </IconButton>
@@ -284,7 +289,7 @@ export default function UserHeader(props) {
                           <Avatar className={classes.avatarImage}
                             src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
                           :
-                          <AccountIcon classes={{ root: classes.avatar }} />
+                          <AccountCircle classes={{ root: classes.avatar }} />
                         )
                         :
                         (
@@ -292,7 +297,7 @@ export default function UserHeader(props) {
                           <Avatar className={classes.avatarImage}
                             src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
                           :
-                          <AccountIcon classes={{ root: classes.avatar }} />
+                          <AccountCircle classes={{ root: classes.avatar }} />
                         )
                       }
                     </IconButton>
@@ -313,7 +318,7 @@ export default function UserHeader(props) {
                 </React.Fragment>
               }
               <IconButton className={classes.accountArrow} onClick={handleClick}>
-                <KeyboardArrowDownIcon />
+                <KeyboardArrowDown />
               </IconButton>
             </React.Fragment>
           }
@@ -327,23 +332,29 @@ export default function UserHeader(props) {
         { /\/organizer/.test(window.location.pathname) &&
           <Link to='/user'
             style={{ textDecoration: 'none', color: 'inherit' }}>
-            <MenuItem onClick={handleClose}>User</MenuItem>
+            <MenuItem onClick={handleClose}>
+              { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้' }
+            </MenuItem>
           </Link>
         }
         { ( accountData || pageData ) &&
           ( /\/user\/profile/.test(window.location.pathname) ?
           <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
-            <MenuItem onClick={handleClose}>Dashboard</MenuItem>
+            <MenuItem onClick={handleClose}>
+              { ( sess && sess.language === 'EN' ) ? "Dashboard" : 'หน้าหลัก' }
+            </MenuItem>
           </Link>
           :
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
+            <MenuItem onClick={handleClose}>
+              { ( sess && sess.language === 'EN' ) ? "Profile" : 'โปรไฟล์' }
+            </MenuItem>
           </Link>
           )
         }
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <MenuItem onClick={handleLogout}>{ ( sess && sess.language === 'EN' ) ? "Logout" : 'ลงชื่อออก' }</MenuItem>
       </Menu>
     </React.Fragment>
   );

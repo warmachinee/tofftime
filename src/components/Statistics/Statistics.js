@@ -147,9 +147,26 @@ const matchTypeNames = [
 
 export default function Statistics(props) {
   const classes = useStyles();
-  const { API, isSupportWebp, token, setCSRFToken, handleAccountData, open, accountData, userid, userData } = props
+  const { API, isSupportWebp, sess, token, setCSRFToken, handleAccountData, open, accountData, userid, userData } = props
   const [ data, setData ] = React.useState(null)
   const [ checked, setChecked ] = React.useState([]);
+
+  function getSortName(name){
+    if(sess && sess.language === 'EN'){
+      return name
+    }else{
+      switch (true) {
+        case name === 'unofficial':
+          return 'ไม่เป็นทางการ'
+          break;
+        case name === 'official':
+          return 'เป็นทางการ'
+          break;
+        default:
+          return 'ส่วนตัว'
+      }
+    }
+  }
 
   function handleChange(event) {
     var value = event.target.value
@@ -216,9 +233,17 @@ export default function Statistics(props) {
   React.useEffect(()=>{
     if(!(userData && userData.privacy === 'private')){
       handleFetch()
-      setChecked(accountData.historystat)
+      if(accountData){
+        setChecked(accountData.historystat)
+      }
     }
   },[ userid ])
+
+  React.useEffect(()=>{
+    if(accountData){
+      setChecked(accountData.historystat)
+    }
+  },[ accountData ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -240,6 +265,7 @@ export default function Statistics(props) {
         [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
       })}>
         <Paper
+          style={{ boxSizing: 'border-box' }}
           className={clsx(
             {
               [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
@@ -254,7 +280,7 @@ export default function Statistics(props) {
             [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
             [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
           })}>
-            <InputLabel>Match</InputLabel>
+            <InputLabel>{ (sess && sess.language === 'EN')? 'Match' : 'การแข่งขัน' }</InputLabel>
             <Select
               multiple
               disabled={Boolean(userid)}
@@ -264,7 +290,7 @@ export default function Statistics(props) {
               renderValue={selected => (
                 <div className={classes.chips}>
                   { selected.map(value => (
-                    <Chip key={value} label={value} className={classes.chip} />
+                    <Chip key={value} label={getSortName(value)} className={classes.chip} />
                   ))}
                 </div>
               )}
@@ -273,7 +299,7 @@ export default function Statistics(props) {
               { matchTypeNames.map(name => (
                 <MenuItem key={name} value={name}>
                   <Checkbox checked={checked.indexOf(name) > -1} />
-                  <ListItemText style={{ textTransform: 'capitalize' }} primary={name} />
+                  <ListItemText style={{ textTransform: 'capitalize' }} primary={getSortName(name)} />
                 </MenuItem>
               ))}
             </Select>
@@ -296,7 +322,9 @@ export default function Statistics(props) {
           }}>
           <div className={classes.statLabel}>
             <GolfCourse className={classes.icon} />
-            <Typography variant="body1" className={classes.typo}>Matches</Typography>
+            <Typography variant="body1" className={classes.typo}>
+              { ( sess && sess.language === 'EN' ) ? "Matches" : 'จำนวนการแข่งขัน' }
+            </Typography>
           </div>
           <div className={classes.valueGrid}>
             { data &&
@@ -315,7 +343,9 @@ export default function Statistics(props) {
           }}>
           <div className={classes.statLabel}>
             <AssignmentInd className={classes.icon} />
-            <Typography variant="body1" className={classes.typo}>Handicap</Typography>
+            <Typography variant="body1" className={classes.typo}>
+              { ( sess && sess.language === 'EN' ) ? "Handicap" : 'แฮนดิแคป' }
+            </Typography>
           </div>
           <div className={classes.valueGrid}>
             { data &&

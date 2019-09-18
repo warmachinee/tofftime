@@ -93,64 +93,75 @@ const GreenTextButton = withStyles(theme => ({
 
 export default function Location(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, selectedFieldVersion } = props
-  const [ pageState, setPageState ] = React.useState('select')
+  const {
+    sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar,
+    pageState, setPageState, selectedFieldVersion
+  } = props
   const [ edittingField, setEdittingField ] = React.useState(null)
 
   return (
-    <div className={classes.root}>
-      { ( pageState === 'edit' || pageState === 'create' ) &&
-        <IconButton className={classes.back} onClick={()=>setPageState('select')}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }}/>
-        </IconButton>
-      }
-      { pageState === 'select' &&
-        <div>
-          <div style={{ display: 'flex', marginBottom: 24 }}>
-            <GreenButton
-              className={classes.createButton}
-              onClick={()=>setPageState('create')}>
-              <CreateIcon className={classes.createIcon} color="inherit"/>
-              Create course
-            </GreenButton>
-          </div>
-          <Typography component="div">
-            <div style={{ display: 'flex' }}>
-              <Box style={{ width: '30%' }} className={classes.title} fontWeight={600} m={1}>
-                Selected
-              </Box>
-              <Box style={{ width: '60%' }} className={classes.title} m={1}>
-                {selectedField ? selectedField.fieldname : 'none'} {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
-              </Box>
+    <React.Fragment>
+      { pageState &&
+        <div className={classes.root}>
+          { ( pageState === 'edit' || pageState === 'create' ) &&
+            <IconButton className={classes.back} onClick={()=>setPageState('select')}>
+              <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+            </IconButton>
+          }
+          { pageState === 'select' &&
+            <div>
+              <div style={{ display: 'flex', marginBottom: 24 }}>
+                <GreenButton
+                  className={classes.createButton}
+                  onClick={()=>setPageState('create')}>
+                  <CreateIcon className={classes.createIcon} color="inherit"/>
+                  { ( sess && sess.language === 'EN' ) ? "Create course" : 'สร้างสนาม' }
+                </GreenButton>
+              </div>
+              <Typography component="div">
+                <div style={{ display: 'flex' }}>
+                  <Box style={{ width: '30%' }} className={classes.title} fontWeight={600} m={1}>
+                    { ( sess && sess.language === 'EN' ) ? "Selected" : 'สนามที่เลือก' }
+                  </Box>
+                  <Box style={{ width: '60%' }} className={classes.title} m={1}>
+                    {
+                      selectedField ?
+                      selectedField.fieldname
+                      :
+                      ( ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี' )
+                    }
+                    { selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )' }
+                  </Box>
+                </div>
+                <Box className={classes.notice} m={1}>
+                  { ( sess && sess.language === 'EN' ) ? "[ Please pick one ]" : '[ กดเพื่อเลือกสนาม ]' }
+                </Box>
+              </Typography>
             </div>
-            <Box className={classes.notice} m={1}>
-              [ Please pick one ]
-            </Box>
-          </Typography>
+          }
+
+          { pageState === 'select' &&
+            <LocationList
+              {...props}
+              setEdittingField={setEdittingField}
+              setPageState={setPageState} />
+          }
+
+          { pageState === 'create' &&
+            <LocationEditor
+              {...props}
+              setPageState={setPageState}/>
+          }
+
+          { pageState === 'edit' &&
+            <LocationEditor
+              {...props}
+              edittingField={edittingField}
+              setEdittingField={setEdittingField}
+              setPageState={setPageState}/>
+          }
         </div>
       }
-
-      { pageState === 'select' &&
-        <LocationList
-          {...props}
-          setEdittingField={setEdittingField}
-          setPageState={setPageState} />
-      }
-
-      { pageState === 'create' &&
-        <LocationEditor
-          {...props}
-          setPageState={setPageState}/>
-      }
-
-      { pageState === 'edit' &&
-        <LocationEditor
-          {...props}
-          edittingField={edittingField}
-          setEdittingField={setEdittingField}
-          setPageState={setPageState}/>
-      }
-
-    </div>
+    </React.Fragment>
   );
 }

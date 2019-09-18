@@ -40,22 +40,6 @@ export default function Organizer(props) {
     if(props.location){
       props.setLocationPath(props.location.pathname)
     }
-    /*
-    if(sess && sess.status !== 1){
-      handleSnackBar({
-        state: true,
-        message: 'Please login before to continue.',
-        variant: 'error',
-        autoHideDuration: 10000,
-      })
-      setTimeout(()=>{
-        window.location.pathname = '/login'
-      }, 11000)
-    }else{
-      if(props.location){
-        props.setLocationPath(props.location.pathname)
-      }
-    }*/
   },[ props.location ])
 
   return (

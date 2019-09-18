@@ -172,6 +172,7 @@ export default function UserPage(props) {
     token, setCSRFToken, drawerState, drawerClose
   } = props
   const [ open, setOpen ] = React.useState( window.innerWidth >= 900 );
+  const [ pageList, setPageList ] = React.useState(null)
   const [ addFriendState, setAddFriendState ] = React.useState(false);
   const [ notiState, setNotiState ] = React.useState(false);
   const [ createPageState, setCreatePageState ] = React.useState(false);
@@ -198,9 +199,12 @@ export default function UserPage(props) {
     pageData: props.pageData,
     editPageRefresh: props.editPageRefresh,
     setEditPageRefresh: props.setEditPageRefresh,
+
   }
 
   const dialogProps = {
+    pageList: pageList,
+    setPageList: setPageList,
     open: open,
     handleDrawerClick: handleDrawerClick,
     handleDrawerOpen: handleDrawerOpen,
@@ -325,13 +329,8 @@ export default function UserPage(props) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
 
-        { true ?
-          <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
-            render={()=> <UserDashboard {...props} {...dialogProps}/>} />
-          :
-          <Route exact path={`/`}
-            render={()=> <UserDashboard {...props} {...dialogProps}/>} />
-        }
+        <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
+          render={()=> <UserDashboard {...props} {...dialogProps}/>} />
         <RouteProfile path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer ? '' : ':userid' }`}
           {...passingProps} />
         { !pageOrganizer &&
@@ -378,7 +377,7 @@ export default function UserPage(props) {
 
 function UserDashboard(props){
   const classes = useStyles();
-  const { sess, open, pageOrganizer } = props
+  const { sess, open, pageOrganizer, pageList } = props
 
   return(
     <React.Fragment>
@@ -392,10 +391,15 @@ function UserDashboard(props){
       { pageOrganizer &&
         <PageOrganizerOverview {...props} />
       }
-      <Statistics {...props} />
-      <Upcoming {...props} />
-      <History {...props} open={open}/>
-
+      { !pageOrganizer &&
+        <Statistics {...props} />
+      }
+      { pageList &&
+        <React.Fragment>
+          <Upcoming {...props} />
+          <History {...props} open={open}/>
+        </React.Fragment>
+      }
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&
         <Redirect to={`/admin`} />
       }

@@ -330,7 +330,7 @@ export default function MBPlayoffBody(props){
     <div className={classes.root}>
       <Typography component="div">
         <Box className={classes.notice} m={1}>
-          Select class
+          { ( sess && sess.language === 'EN' ) ? "Select class" : 'เลือกประเภท' }
         </Box>
       </Typography>
       <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
@@ -342,7 +342,8 @@ export default function MBPlayoffBody(props){
         >
           { matchDetail && matchDetail.class &&
             matchDetail.class.map( d =>
-              d && <StyledTab key={d.classname} label={d.classname} />
+              d && <StyledTab key={d.classname}
+              label={ matchDetail.scorematch === 1 ? d.classname : API.handleAmateurClass(d.classno) } />
           )}
         </StyledTabs>
       </Paper>
@@ -359,13 +360,19 @@ export default function MBPlayoffBody(props){
                   { value === i && filtered &&
                     <React.Fragment>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-                        <GreenTextButton onClick={()=>handleClearPlayoff(c)}>Clear</GreenTextButton>
+                        <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
+                          { ( sess && sess.language === 'EN' ) ? "Clear" : 'เคลียร์' }
+                        </GreenTextButton>
                       </div>
                       <ListItem className={classes.listItem}>
-                        <ListItemText style={{ color: 'white' }} className={classes.listText} primary="First name" />
-                        <ListItemText style={{ color: 'white' }} className={classes.listText} primary="Last name" />
+                        <ListItemText style={{ color: 'white' }} className={classes.listText}
+                          primary={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' } />
+                        <ListItemText style={{ color: 'white' }} className={classes.listText}
+                          primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
                         <ListItemIcon className={classes.listStatus}>
-                          <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>Playoff</div>
+                          <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>
+                            { ( sess && sess.language === 'EN' ) ? "Playoff" : 'เพลย์ออฟ' }
+                          </div>
                         </ListItemIcon>
                       </ListItem>
                       { filtered.length > 1 &&
@@ -381,7 +388,7 @@ export default function MBPlayoffBody(props){
                         <ListItem>
                           <Typography component="div" style={{ width: '100%' }}>
                             <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                              No playoff player
+                              { ( sess && sess.language === 'EN' ) ? "No playoff player" : 'ไม่มีผู้เล่นเพลย์ออฟ' }
                             </Box>
                           </Typography>
                         </ListItem>

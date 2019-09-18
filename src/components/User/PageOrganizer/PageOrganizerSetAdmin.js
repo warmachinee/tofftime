@@ -70,13 +70,13 @@ const useStyles = makeStyles(theme => ({
   },
   listStatus: {
     margin: theme.spacing(1, 0),
-    width: '30%',
+    width: '40%',
     display: 'flex', justifyContent: 'flex-start'
   },
   menuButton: {
     textTransform: 'capitalize',
     padding: '6px 8px',
-    left: -16
+    left: -8
   },
   controls: {
     position: 'relative',
@@ -111,6 +111,19 @@ function ListMenu(props) {
   const classes = useStyles();
   const { sess, token, setCSRFToken, matchid, handleSnackBar, primary, setData, pageData } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
+
+  function getAdminRole(role){
+    switch (true) {
+      case role === 'host':
+        return ( sess && sess.language === 'EN' ) ? "Host" : 'เจ้าของเพจ'
+        break;
+      case role === 'admin':
+        return ( sess && sess.language === 'EN' ) ? "Admin" : 'ผู้ดูแล'
+        break;
+      default:
+        return ( sess && sess.language === 'EN' ) ? "Member" : 'สมาชิก'
+    }
+  }
 
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -160,10 +173,10 @@ function ListMenu(props) {
     <div>
       { primary.permission !== 'host' ?
         <Button className={classes.menuButton} onClick={handleClick}>
-          {primary.permission}
+          {getAdminRole(primary.permission)}
         </Button>
         :
-        <div style={{ textTransform: 'capitalize' }}>{primary.permission}</div>
+        <div style={{ textTransform: 'capitalize' }}>{getAdminRole(primary.permission)}</div>
       }
       <Menu
         anchorEl={anchorEl}
@@ -172,7 +185,7 @@ function ListMenu(props) {
         onClose={handleClose}
       >
         { primary.permission !== 'host' &&
-          <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>Remove</MenuItem>
+          <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>{ ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }</MenuItem>
         }
         <div />
       </Menu>
@@ -214,9 +227,9 @@ export default function PageOrganizerSetAdmin(props) {
   },[ setAdminState, open ])
 
   return (
-    <TemplateDialog open={setAdminState} handleClose={toggleSetAdmin}>
+    <TemplateDialog open={setAdminState} handleClose={toggleSetAdmin} maxWidth={800}>
       <div className={classes.root}>
-        <LabelText text="Set admin" />
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Set admin" : 'แต่งตั้งผู้ดูแล' } />
         <div className={classes.grid}>
           <Button className={classes.addAdminButton} variant="contained"
             onClick={handleOpen}>
@@ -225,11 +238,14 @@ export default function PageOrganizerSetAdmin(props) {
           </Button>
           <List style={{ cursor: 'auto' }}>
             <ListItem className={classes.listLabel}>
-              <StyledText className={classes.listText} primary="First name" />
+              <StyledText className={classes.listText}
+                primary={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' } />
               { window.innerWidth >= 600 &&
-                <StyledText className={classes.listText} primary="Last name" />
+                <StyledText className={classes.listText}
+                  primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
               }
-              <StyledText className={classes.listStatus} primary="Role" />
+              <StyledText className={classes.listStatus}
+                primary={ ( sess && sess.language === 'EN' ) ? "Role" : 'ตำแหน่ง' } />
             </ListItem>
             { data &&
               data.map( d =>

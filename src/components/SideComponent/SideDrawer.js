@@ -39,6 +39,7 @@ const useStyles = makeStyles({
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 1,
     lineHeight: 1.4,
+    textAlign: 'center'
   },
 
 });
@@ -106,13 +107,15 @@ export default function SideDrawer(props) {
           <React.Fragment>
             <div className={classes.userInfo}>
               <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
-                { accountData.photopath ?
-                  <Avatar className={classes.avatarImage}
-                    onClick={drawerClose}
-                    src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
-                  :
-                  <AccountIcon onClick={drawerClose} classes={{ root: classes.avatar }} />
-                }
+                <div style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                  { accountData.photopath ?
+                    <Avatar className={classes.avatarImage}
+                      onClick={drawerClose}
+                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                    :
+                    <AccountIcon onClick={drawerClose} classes={{ root: classes.avatar }} />
+                  }
+                </div>
               </BTN.NoStyleLink>
               <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
                 <Typography variant="body1" className={classes.userTitle} onClick={drawerClose}>
@@ -125,7 +128,9 @@ export default function SideDrawer(props) {
                 </Typography>
               </BTN.NoStyleLink>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
-                <BTN.Red onClick={handleLogout}>Log out</BTN.Red>
+                <BTN.Red onClick={handleLogout}>
+                  { ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' }
+                </BTN.Red>
               </div>
             </div>
             <Divider />
@@ -151,24 +156,23 @@ export default function SideDrawer(props) {
           }
           { window.location.pathname === '/' &&
             <React.Fragment>
-              <Divider />
               <ListItem button onClick={()=>handleScroll('match')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary="Match" />
+                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('news')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary="News" />
+                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "News" : 'ข่าว' } />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('organizer')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary="Organizer" />
+                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Organizer" : 'ผู้จัดการแข่งขัน' } />
               </ListItem>
               <Divider />
             </React.Fragment>

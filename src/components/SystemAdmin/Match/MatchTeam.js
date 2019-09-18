@@ -160,7 +160,11 @@ export default function MatchTeam(props) {
       <React.Fragment>
         <Typography component="div">
           <Box className={classes.title} fontWeight={600}>
-            { matchDetail && matchDetail.team.length === 0 ? 'Create Team' : 'Edit Team' }
+            { matchDetail && matchDetail.team.length === 0 ? (
+              ( sess && sess.language === 'EN' ) ? "Create schedule" : 'สร้างตารางเวลา'
+            ) : (
+              ( sess && sess.language === 'EN' ) ? "Edit schedule" : 'แก้ไขตารางเวลา'
+            ) }
           </Box>
         </Typography>
         <div style={{ marginTop: 24 }}>
@@ -168,7 +172,7 @@ export default function MatchTeam(props) {
             <TextField
               fullWidth
               className={classes.timePicker}
-              label="Time"
+              label={ ( sess && sess.language === 'EN' ) ? "Time" : 'เวลา' }
               type="time"
               onKeyPress={e =>handleKeyPress(e.key)}
               onChange={e => setCurrentTime(e.target.value)}
@@ -177,8 +181,8 @@ export default function MatchTeam(props) {
               <TextField
                 className={classes.textField}
                 variant="outlined"
-                label="Period"
-                helperText="0 - 59 minute"
+                label={ ( sess && sess.language === 'EN' ) ? "Period" : 'ระยะห่างเวลาต่อทีม' }
+                helperText={`0 - 59 ${ ( sess && sess.language === 'EN' ) ? "minute" : 'นาที' }`}
                 value={ !isNaN(period) ? period : '' }
                 onKeyPress={e =>handleKeyPress(e.key)}
                 onChange={e => setPeriod(parseInt(e.target.value))}
@@ -188,8 +192,8 @@ export default function MatchTeam(props) {
               <TextField
                 className={classes.textField}
                 variant="outlined"
-                label="Person"
-                helperText="Number of persons in the team"
+                label={ ( sess && sess.language === 'EN' ) ? "Person" : 'จำนวนคน' }
+                helperText={ ( sess && sess.language === 'EN' ) ? "Number of persons in the team" : 'จำนวนคนต่อทีม' }
                 value={ !isNaN(person) ? person : '' }
                 onKeyPress={e =>handleKeyPress(e.key)}
                 onChange={e => setPerson(parseInt(e.target.value))}
@@ -200,7 +204,7 @@ export default function MatchTeam(props) {
               <FormControl component="fieldset">
                 <FormControlLabel
                   control={<Switch checked={autoGen} onChange={()=>setAutoGen(!autoGen)} />}
-                  label="Auto gen time schedule"
+                  label="Auto gen"
                 />
               </FormControl>
             </div>
@@ -208,7 +212,11 @@ export default function MatchTeam(props) {
               fullWidth
               className={classes.createButton}
               onClick={handleSchedule}>
-              { matchDetail && matchDetail.team.length === 0 ? 'Create' : 'Confirm' }
+              { matchDetail && matchDetail.team.length === 0 ? (
+                ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง'
+              ) : (
+                ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก'
+              ) }
             </GreenButton>
           </ThemeProvider>
         </div>

@@ -58,6 +58,23 @@ const RouteMatchList = Loadable.Map({
   loading: () => null
 });
 
+const RouteAdminPageList = Loadable.Map({
+  loader: {
+    PageList: () => import(/* webpackChunkName: "PageList" */'./../components/SystemAdmin/Page/PageList'),
+  },
+  render(loaded, props) {
+    let Component = loaded.PageList.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )}/>
+    )
+  },
+  loading: () => null
+});
+
 const RouteMatch = Loadable.Map({
   loader: {
     Match: () => import(/* webpackChunkName: "Match" */'./../components/SystemAdmin/Match/Match'),
@@ -186,6 +203,11 @@ export default function SystemAdmin(props) {
               Match List
             </StyledButton>
           </Link>
+          <Link to={`/admin/page`} className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              Page
+            </StyledButton>
+          </Link>
         </div>
         <div style={{ marginTop: 36 }}>
           <Link to={`/admin/match`} className={classes.linkElement}>
@@ -204,11 +226,7 @@ export default function SystemAdmin(props) {
                 User
               </StyledButton>
             </Link>
-            <Link to={`/admin/page`} className={classes.linkElement}>
-              <StyledButton variant="contained" color="primary" className={classes.button}>
-                Page
-              </StyledButton>
-            </Link>*/
+            */
           }
         </div>
       </React.Fragment>
@@ -223,6 +241,8 @@ export default function SystemAdmin(props) {
           <RouteAnnouncement path={`/admin/announce`} {...passingProps}/>
           <RouteNews path={`/admin/news`} {...passingProps}/>
           <RouteMatchList path={`/admin/matchlist`} {...passingProps}/>
+          <RouteAdminPageList path={`/admin/page`} {...passingProps}/>
+
           <RouteMatch path={`/admin/match`} {...passingProps}/>
           <RouteCourse path={`/admin/course`} {...passingProps}/>
           <RouteUser path={`/admin/user`} {...passingProps}/>

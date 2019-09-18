@@ -7,6 +7,11 @@ import { primary, grey } from './../../../api/palette'
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../../LabelText'),
+  loading: () => null
+});
+
 const RouteMatch = Loadable.Map({
   loader: {
     Match: () => import(/* webpackChunkName: "Match" */'./../../SystemAdmin/Match/Match'),
@@ -143,21 +148,22 @@ export default function Management(props) {
   function SystemComponent(){
     return (sess && sess.status === 1) && (
       <React.Fragment>
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Management" : 'ระบบการจัดการ' }/>
         <div style={{ marginTop: 36 }}>
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
-              Match
+              { ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
             </StyledButton>
           </Link>
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
-              Course
+              { ( sess && sess.language === 'EN' ) ? "Course" : 'สนาม' }
             </StyledButton>
           </Link>
           { pageOrganizer &&
             <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} className={classes.linkElement}>
               <StyledButton variant="contained" color="primary" className={classes.button}>
-                Post
+                { ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
               </StyledButton>
             </Link>
           }

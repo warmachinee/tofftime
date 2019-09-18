@@ -1,12 +1,18 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { grey } from './../../../api/palette'
+import Loadable from 'react-loadable';
+import { makeStyles, fade, createMuiTheme, withStyles } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
+import { primary, grey } from './../../../api/palette'
 
 import {
   Paper,
   Avatar,
   Typography,
-  Button
+  Button,
+  Box,
+  Divider,
+  TextField,
+
 } from '@material-ui/core';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -15,6 +21,11 @@ import {
   AddCircle,
 
 } from '@material-ui/icons';
+
+const TemplateDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loading: () => null
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,25 +79,89 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+const theme = createMuiTheme({
+  palette: {
+    primary: primary,
+  },
+});
+
 export default function PageOrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, sess, pageData, isSupportWebp, toggleSetAdmin, toggleCreatePost } = props
+  const { API, BTN, token, setCSRFToken, handleSnackBar, sess, pageData, isSupportWebp, toggleSetAdmin, toggleCreatePost } = props
   const [ isFollow, setIsFollow ] = React.useState(false)
+  const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
+  const [ confirmPasswordState, handleConfirmPasswordState ] = React.useState(false)
+  const [ confirmPassword, setConfirmPassword ] = React.useState(null)
+
+  function handleConfirmPasswordCancel(){
+    handleConfirmPasswordState(false)
+    handleConfirmDeleteState(false)
+  }
+
+  function handleConfirmCancel(){
+    handleConfirmDeleteState(false)
+  }
+
+  function handleConfirmDelete(){
+    if( !(sess.typeid === 'f-auth' || sess.typeid === 'g-auth')){
+      handleConfirmPasswordState(true)
+    }else{
+      handleFetchRemove()
+    }
+  }
+
+  function handleKeyPress(e){
+    if(e.key === 'Enter'){
+      handleFetchRemove()
+    }
+  }
+
+  async function handleFetchRemove(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    const sendObj = {
+      action: 'delete',
+      pageid: pageData.pageid,
+    }
+
+    if( !(sess.typeid === 'f-auth' || sess.typeid === 'g-auth')){
+      Object.assign(sendObj, { password: confirmPassword });
+    }else{
+      Object.assign(sendObj, { password: '1234' });
+    }
+
+    await API.xhrPost(
+      token? token : resToken.token,
+      'ppagesystem', {
+        ...sendObj
+    }, (csrf, d) =>{
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? 'success' : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      setCSRFToken(csrf)
+      try {
+        if(d.status === 'success'){
+          window.location.pathname = '/user'
+        }
+      }catch(err) { console.log(err.message) }
+    })
+  }
 
   return (
     <div className={classes.root}>
       { pageData &&
         <Paper className={classes.paper}>
-          <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
-
-          </BTN.NoStyleLink>
           <div className={classes.imageGrid}>
-            { pageData.logo ?
-              <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
-              :
-              <AccountCircleIcon classes={{ root: classes.avatar }} />
-            }
+            <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
+              { pageData.logo ?
+                <Avatar className={classes.avatarImage}
+                  src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                :
+                <AccountCircleIcon classes={{ root: classes.avatar }} />
+              }
+            </BTN.NoStyleLink>
           </div>
           <div className={classes.pageDetailGrid}>
             <div className={classes.pageDetail}>
@@ -95,20 +170,86 @@ export default function PageOrganizerOverview(props) {
                   {pageData.pagename}
                 </Typography>
               </BTN.NoStyleLink>
+              <Typography gutterBottom variant="body1" className={classes.followers}>
+                {pageData.subscriber} { (
+                  ( sess && sess.language === 'EN' ) ? "follower" : 'ผู้ติดตาม'
+                ) + ( pageData.subscriber > 1 ? ( ( sess && sess.language === 'EN' ) ? 's' : '' ) : '')}
+              </Typography>
               <Typography gutterBottom variant="body2" className={classes.followers}>
-                {pageData.subscriber} { 'follower' + ( pageData.subscriber > 1 ? 's' : '')}
+                {pageData.view} { 'view' + ( pageData.view > 1 ? 's' : '')}
               </Typography>
             </div>
           </div>
         </Paper>
       }
       <Paper className={classes.paper}>
-        <BTN.Red className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreatePost}>
+        <BTN.Primary className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreatePost}>
           <AddCircle style={{ marginLeft: 4, marginRight: 8 }}/>
-          Post
+          { ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
+        </BTN.Primary>
+        <BTN.PrimaryOutlined className={classes.panelButton} onClick={toggleSetAdmin}>
+          { ( sess && sess.language === 'EN' ) ? "Set admin" : 'แต่งตั้งผู้ดูแล' }
+        </BTN.PrimaryOutlined>
+        <div style={{ flex: 1 }} />
+        <BTN.Red onClick={()=>handleConfirmDeleteState(true)}>
+          { ( sess && sess.language === 'EN' ) ? "Delete page" : 'ลบเพจ' }
         </BTN.Red>
-        <BTN.PrimaryOutlined className={classes.panelButton} onClick={toggleSetAdmin}>Set admin</BTN.PrimaryOutlined>
       </Paper>
+
+      <TemplateDialog
+        maxWidth={400}
+        open={confirmDeleteState} handleClose={handleConfirmCancel}>
+        <Typography component="div">
+          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
+            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
+          </Box>
+          <Box className={classes.confirmSubtitle} m={3}>
+            { pageData && pageData.pagename }
+          </Box>
+        </Typography>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <BTN.PrimaryText onClick={handleConfirmCancel} className={classes.confirmButton}>
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+          </BTN.PrimaryText>
+          <BTN.Red onClick={handleConfirmDelete} className={classes.confirmButton}>
+            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+          </BTN.Red>
+        </div>
+      </TemplateDialog>
+
+      <TemplateDialog
+        maxWidth={400}
+        open={confirmPasswordState} handleClose={handleConfirmPasswordCancel}>
+        <Typography component="div">
+          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
+            Fill password
+          </Box>
+        </Typography>
+        <ThemeProvider theme={theme}>
+          <TextField
+            autoFocus
+            fullWidth
+            style={{ marginTop: 16 }}
+            className={classes.margin}
+            label="Password"
+            variant="outlined"
+            type="password"
+            onChange={(e)=>setConfirmPassword(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
+          />
+        </ThemeProvider>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <BTN.PrimaryText onClick={handleConfirmPasswordCancel} className={classes.confirmButton}>
+            Cancel
+          </BTN.PrimaryText>
+          <BTN.Red onClick={handleFetchRemove} className={classes.confirmButton}>
+            Delete
+          </BTN.Red>
+        </div>
+      </TemplateDialog>
+
     </div>
   );
 }

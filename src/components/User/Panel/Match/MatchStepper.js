@@ -43,7 +43,7 @@ export default function MatchStepper(props) {
   const classes = useStyles();
   const theme = useTheme();
   const {
-    API, BTN, token, setCSRFToken, handleSnackBar,
+    API, BTN, sess, token, setCSRFToken, handleSnackBar,
     dialogStepper, handleCreateMatchClose, setExpanded, pageOrganizer, pageData
   } = props
   const [ activeStep, setActiveStep ] = React.useState(0);
@@ -57,6 +57,7 @@ export default function MatchStepper(props) {
   const [ selectedDate, setSelectedDate ] = React.useState(new Date());
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
+  const [ pageState, setPageState ] = React.useState('select')
 
   const passingFunction = {
     matchName: matchName,
@@ -75,7 +76,26 @@ export default function MatchStepper(props) {
     handleMatchType: handleMatchType,
     handleDateChange: handleDateChange,
     handlePicture: handlePicture,
-    setSelectedFieldVersion: setSelectedFieldVersion
+    setSelectedFieldVersion: setSelectedFieldVersion,
+    pageState: pageState,
+    setPageState: setPageState
+  }
+
+  function getLabel(label){
+    if(sess && sess.language === 'EN'){
+      return label
+    }else{
+      switch (true) {
+        case label === 'Math detail':
+          return 'รายละเอียดการแข่งขัน'
+          break;
+        case label === 'Course':
+          return 'เลือกสนาม'
+          break;
+        default:
+          return 'รูปภาพ'
+      }
+    }
   }
 
   function handleNext() {
@@ -218,24 +238,27 @@ export default function MatchStepper(props) {
         nextButton={
           activeStep === maxSteps - 1 ?
           <BTN.Primary size="small" onClick={handleCreate}>
-            Create
+            { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
           </BTN.Primary>
           :
           <BTN.PrimaryText size="small" onClick={handleNext}>
-            Next
+            { ( sess && sess.language === 'EN' ) ? "Next" : 'ถัดไป' }
             {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
           </BTN.PrimaryText>
         }
         backButton={
           <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
             {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            Back
+            { ( sess && sess.language === 'EN' ) ? "Back" : 'ย้อนกลับ' }
           </BTN.PrimaryText>
         }
       />
-      <Paper square elevation={0} className={classes.header}>
-        <Typography variant="h6" style={{ textAlign: 'center' }}>{labelSteps[activeStep]}</Typography>
-      </Paper>
+
+      { !( activeStep === 1 && pageState !== 'select' ) &&
+        <Paper square elevation={0} className={classes.header}>
+          <Typography variant="h6" style={{ textAlign: 'center' }}>{getLabel(labelSteps[activeStep])}</Typography>
+        </Paper>
+      }
       <CreateMatchBody {...props} {...passingFunction} activeStep={activeStep} handleNext={handleNext} />
     </div>
   );

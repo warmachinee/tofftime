@@ -259,7 +259,7 @@ function RewardContainer(props){
                 className={classes.prizeText}
                 value={edittingData || ''}
                 type="number"
-                helperText="Please input number only."
+                helperText={ ( sess && sess.language === 'EN' ) ? "Please input number only." : 'ใส่ตัวเลขเท่านั้น' }
                 onChange={e =>handleChange(e.target.value)}
                 onFocus={e => e.target.select()}
                 onKeyPress={e =>handleKeyPress(e)}
@@ -272,7 +272,9 @@ function RewardContainer(props){
                 }}
                 />
             </ThemeProvider>
-            <Button style={{ height: 36 }} color="primary" variant="contained" onClick={handleSave}>Save</Button>
+            <Button style={{ height: 36 }} color="primary" variant="contained" onClick={handleSave}>
+              { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+            </Button>
           </Typography>
         }/>
         { window.innerWidth >= 700 &&
@@ -289,7 +291,7 @@ function RewardContainer(props){
                     className={classes.prizeText}
                     value={edittingData || ''}
                     type="number"
-                    helperText="Please input number only."
+                    helperText={ ( sess && sess.language === 'EN' ) ? "Please input number only." : 'ใส่ตัวเลขเท่านั้น' }
                     onChange={e =>handleChange(e.target.value)}
                     onFocus={e => e.target.select()}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -302,7 +304,9 @@ function RewardContainer(props){
                     }}
                     />
                 </ThemeProvider>
-                <GreenButton style={{ height: 36 }} onClick={handleSave}>Save</GreenButton>
+                <GreenButton style={{ height: 36 }} onClick={handleSave}>
+                  { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                </GreenButton>
               </div>
             } />
         )
@@ -321,6 +325,16 @@ export default function MBRewardBody(props){
   const [ value, setValue ] = React.useState(0);
   const [ editting, setEditting ] = React.useState(false);
   const [ rewardEdit, setRewardEdit ] = React.useState([]);
+
+  function getRewardStatus(status){
+    switch (true) {
+      case status === 'reward not create':
+        return ( sess && sess.language === 'EN' ) ? 'Please create reward.' : 'ยังไม่ได้เพิ่มเงินรางวัล'
+        break;
+      default:
+        return ( sess && sess.language === 'EN' ) ? 'No reward' : 'ไม่มีเงินรางวัล'
+    }
+  }
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -510,7 +524,7 @@ export default function MBRewardBody(props){
           { matchDetail && matchDetail.class &&
             matchDetail.class.map( d=>
               d &&
-              <StyledTab key={d.classname} label={d.classname} />
+              <StyledTab key={d.classname} label={ matchDetail.scorematch === 1? d.classname : API.handleAmateurClass(d.classno) } />
             )
           }
         </StyledTabs>
@@ -520,7 +534,9 @@ export default function MBRewardBody(props){
           { data && data.status &&
             <RedButton className={classes.buttonMargin}
               style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
-              onClick={handleCreate}>Create</RedButton>
+              onClick={handleCreate}>
+              { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
+            </RedButton>
           }
           { editting &&
             <React.Fragment>
@@ -529,31 +545,41 @@ export default function MBRewardBody(props){
                   onChange={e =>handleRewardChange(e.target.value)}
                   onFocus={e => e.target.select()}
                   onKeyPress={e =>handleRewardKeyPress(e)}
-                  label="Number"
-                  helperText="The number of the player who will get a reward."
+                  label={ ( sess && sess.language === 'EN' ) ? "Number" : 'ตัวเลข' }
+                  helperText={ ( sess && sess.language === 'EN' ) ? "The number of the player who will get a reward." : 'จำนวนผู้เล่นที่จะได้รางวัล' }
                   type="number"
                 />
               </ThemeProvider>
-            <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>Save</GreenButton>
+            <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
+              { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+            </GreenButton>
             </React.Fragment>
           }
-          <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>Reset</GreenTextButton>
+          <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
+            { ( sess && sess.language === 'EN' ) ? "Reset" : 'รีเซ็ต' }
+          </GreenTextButton>
           <div style={{ flex: 1 }} />
           { window.innerWidth >= 500 && editting &&
             <GreenTextButton
               className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-              onClick={()=>setEditting(false)}>Done</GreenTextButton>
+              onClick={()=>setEditting(false)}>
+              { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+            </GreenTextButton>
           }
           { !editting &&
             <GreenButton
-              className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>Edit</GreenButton>
+              className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>
+              { ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' }
+            </GreenButton>
           }
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           { window.innerWidth < 500 && editting &&
             <GreenTextButton
               className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-              onClick={()=>setEditting(false)}>Done</GreenTextButton>
+              onClick={()=>setEditting(false)}>
+              { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+            </GreenTextButton>
           }
         </div>
         <List>
@@ -561,12 +587,19 @@ export default function MBRewardBody(props){
             style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4, cursor: 'auto' }}
             >
             <ListItemText style={{ color: 'white' }} className={classes.listText}
-              primary={ window.innerWidth < 700? 'Player' : 'Full name' } />
+              primary={
+                window.innerWidth < 700?
+                ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' )
+                :
+                ( ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' )
+              } />
             { window.innerWidth >= 700 &&
-              <ListItemText style={{ color: 'white' }} className={classes.listText} primary='Last name' />
+              <ListItemText style={{ color: 'white' }} className={classes.listText}
+                primary={ ( ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' )  } />
             }
             { !( editting && window.innerWidth < 550 ) &&
-              <ListItemText style={{ color: 'white' }} className={classes.listPrize} primary='Prize' />
+              <ListItemText style={{ color: 'white' }} className={classes.listPrize}
+                primary={ ( sess && sess.language === 'EN' ) ? "Prize" : 'เงินรางวัล' } />
             }
           </ListItem>
         </List>
@@ -591,7 +624,8 @@ export default function MBRewardBody(props){
           }
           { data && data.status &&
             <ListItem>
-              <ListItemText className={classes.listText} primary={data.status} />
+              <ListItemText className={classes.listText} style={{ textTransform: 'capitalize'}}
+                primary={getRewardStatus(data.status)} />
             </ListItem>
           }
         </List>

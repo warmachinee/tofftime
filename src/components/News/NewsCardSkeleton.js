@@ -39,7 +39,7 @@ export default function NewsCardSkeleton(props) {
           ):null
         )
       }}>
-      <div style={{ width: window.innerWidth >= 600 ? '50%' : '100%' }}>
+      <div style={{ width: window.innerWidth >= 600 ? 300 : '100%' }}>
         <Skeleton
           style={{
             boxSizing: 'border-box',

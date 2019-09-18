@@ -107,14 +107,14 @@ export default function AddFriend(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text="Search friend" />
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' } />
       <ThemeProvider theme={theme}>
         <TextField
           autoFocus
           className={classes.searchBox}
           style={{ marginTop: 24 }}
           variant="outlined"
-          placeholder={ !searchUser? "Search player" : '' }
+          placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหาเพื่อน' ) : '' }
           value={searchUser}
           onChange={handleChangePerson}
           InputProps={{
@@ -151,6 +151,19 @@ function ListPlayerItem(props) {
   const { API, BTN, COLOR, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, data } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ status, setStatus ] = React.useState(data.status);
+
+  function getFriendStatus(status){
+    switch (true) {
+      case status === 'pending':
+        return ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ'
+        break;
+      case status === 'friend':
+        return ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน'
+        break;
+      default:
+        return ''
+    }
+  }
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -214,7 +227,7 @@ function ListPlayerItem(props) {
   return (
     <React.Fragment>
       <ListItem button>
-        <ListItemIcon>
+        <ListItemIcon onClick={handleMenuClick}>
           { data.photopath ?
             <Avatar className={classes.avatarImage}
               src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
@@ -231,22 +244,19 @@ function ListPlayerItem(props) {
               </Typography>
             </React.Fragment>
           }
-          secondary={
-            status === 'pending'? 'Pending' :
-            status === 'friend'? 'Friend' : ''
-          }/>
+          secondary={getFriendStatus(status)}/>
         { status !== 'friend' &&
           <ListItemIcon>
             { status === 'pending'?
               <BTN.Red style={{ padding: '4px 12px' }}
                 onClick={()=>handleFriendClick(data.userid, 'un')}>
-                Unfriend
+                { ( sess && sess.language === 'EN' ) ? "Unfriend" : 'ลบเพื่อน' }
               </BTN.Red>
               :
               <BTN.Primary
                 style={{ padding: 4 }}
                 onClick={()=>handleFriendClick(data.userid, 'add')}>
-                Add
+                { ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่มเพื่อน' }
               </BTN.Primary>
             }
           </ListItemIcon>

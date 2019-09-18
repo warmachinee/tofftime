@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   imageGrid: {
     width: '100%',
     [theme.breakpoints.up(600)]: {
-      width: '50%',
+      width: 300,
     },
   },
   image: {
@@ -66,10 +66,10 @@ const useStyles = makeStyles(theme => ({
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
     lineHeight: 1.4,
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   date: {
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   subtitle: {
     display: '-webkit-box',
@@ -79,7 +79,6 @@ const useStyles = makeStyles(theme => ({
     WebkitBoxOrient: 'vertical',
     WebkitLineClamp: 2,
     lineHeight: 1.4,
-    cursor: 'pointer',
     [theme.breakpoints.up(600)]: {
       WebkitLineClamp: 3,
     },
@@ -99,7 +98,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerPostCard(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, data, loading } = props
+  const { API, BTN, sess, isSupportWebp, data, loading, pageid } = props
   const [ pictureURL, setPictureURL ] = React.useState(data ? data.photopath : null)
 
   return(
@@ -108,10 +107,12 @@ export default function OrganizerPostCard(props) {
       elevation={1}>
       <div className={classes.imageGrid}>
         { ( !loading && pictureURL ) ?
-          <img
-            className={classes.image}
-            src={API.getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
-            onError={()=>setPictureURL(null)} />
+          <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+            <img
+              className={classes.image}
+              src={API.getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
+              onError={()=>setPictureURL(null)} />
+          </BTN.NoStyleLink>
           :
           <Skeleton disableAnimate className={classes.skeleton}
             style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }}/>
@@ -120,12 +121,16 @@ export default function OrganizerPostCard(props) {
       <Box className={classes.box}>
         { !loading ?
           <React.Fragment>
-            <Typography gutterBottom variant="h6" className={classes.title}>
-              {data.message}
-            </Typography>
-            <Typography gutterBottom display="block" variant="caption" color="textSecondary" className={classes.date}>
-              { API.handleGetDate(data.createdate)}
-            </Typography>
+            <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+              <Typography gutterBottom variant="h6" className={classes.title}>
+                {data.message && data.message.split('<$$split$$>')[0]}
+              </Typography>
+            </BTN.NoStyleLink>
+            <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+              <Typography gutterBottom display="block" variant="caption" color="textSecondary" className={classes.date}>
+                { API.handleGetDate(data.createdate)}
+              </Typography>
+            </BTN.NoStyleLink>
           </React.Fragment>
           :
           <React.Fragment>

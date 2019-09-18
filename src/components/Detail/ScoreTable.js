@@ -239,8 +239,8 @@ function ScoreRow(props){
                     <div key={i}
                       style={{
                         backgroundColor:
-                        data.fieldscore[i] - d < 0? amber[300]:
-                        data.fieldscore[i] - d > 0? green[300]:blueGrey[50],
+                        data.fieldscore[i + 9] - d < 0? amber[300]:
+                        data.fieldscore[i + 9] - d > 0? green[300]:blueGrey[50],
                         padding: '8px 4px', width: 32, textAlign: 'center'
                     }}>{d}</div>
                   )}
@@ -266,7 +266,7 @@ function ScoreRow(props){
 
 export default function ScoreTable(props) {
   const classes = useStyles();
-  const { data, userscore, matchClass, sortBy } = props
+  const { sess, data, userscore, matchClass, sortBy } = props
   const inputEl = React.useRef(null);
   const [ op, setOp ] = React.useState(true)
   const [ widthEl, setWidthEl ] = React.useState(0)
@@ -339,8 +339,12 @@ export default function ScoreTable(props) {
           <Table className={classes.table}>
             <TableBody>
               <TableRow>
-                <StyledTableRank style={{...style.rank, color: 'white' }} align="center">Rank</StyledTableRank>
-                <StyledTableHead style={{ color: 'white' }} component="th" scope="row">Name</StyledTableHead>
+                <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
+                  { ( sess && sess.language === 'EN' ) ? "Rank" : 'อันดับ' }
+                </StyledTableRank>
+                <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
+                  { ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อผู้เล่น' }
+                </StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>
                     { (wd >= 750) &&
@@ -384,8 +388,12 @@ export default function ScoreTable(props) {
             }}>
             <TableBody>
               <TableRow>
-                <StyledTableRank style={{...style.rank, color: 'white' }} align="center">Rank</StyledTableRank>
-                <StyledTableHead style={{ color: 'white' }} component="th" scope="row">Name</StyledTableHead>
+                <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
+                  { ( sess && sess.language === 'EN' ) ? "Rank" : 'อันดับ' }
+                </StyledTableRank>
+                <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
+                  { ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อผู้เล่น' }
+                </StyledTableHead>
 
                 { (wd >= 450) &&
                   <React.Fragment>

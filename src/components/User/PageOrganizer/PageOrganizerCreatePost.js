@@ -26,12 +26,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function PageOrganizerCreatePost(props) {
   const classes = useStyles();
-  const { BTN, token, setCSRFToken, handleSnackBar, createPostState, toggleCreatePost } = props
+  const { sess, BTN, token, setCSRFToken, handleSnackBar, createPostState, toggleCreatePost } = props
 
   return (
     <TemplateDialog open={createPostState} handleClose={toggleCreatePost} elementId="create-post-dialog">
       <div className={classes.root}>
-        <LabelText text="Create post" />
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Create post" : 'สร้างโพสต์' } />
         <PageOrganizerPostEditor {...props} />
       </div>
     </TemplateDialog>

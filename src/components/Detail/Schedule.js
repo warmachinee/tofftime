@@ -136,7 +136,9 @@ export default function Schedule(props) {
       <GoBack />
       { matchDetail &&
         <div className={classes.content}>
-          <Typography gutterBottom variant="h4">Schedule</Typography>
+          <Typography gutterBottom variant="h4">
+            { ( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางการแข่งขัน' }
+          </Typography>
           <Typography gutterBottom variant="h5">{matchDetail.title}</Typography>
           <Typography gutterBottom variant="h6" component="div" style={{ display: 'flex' }}>
             <LocationOn style={{ color: COLOR.primary[600] }} />
@@ -145,10 +147,14 @@ export default function Schedule(props) {
           <Typography gutterBottom variant="subtitle2" color="textSecondary">{matchDetail.date}</Typography>
           <List disablePadding style={{ marginTop: 16 }}>
             <ListItem style={{ backgroundColor: COLOR.grey[900], paddingTop: 12, paddingBottom: 12 }}>
-              <ListItemText className={classes.listTeam} style={{ color: 'white' }} primary="Team" />
-              <ListItemText className={classes.listTime} style={{ color: 'white' }} primary="Time" />
-              <ListItemText className={classes.listName} style={{ color: 'white' }} primary="Name" />
-              <ListItemText className={classes.listLastname} style={{ color: 'white' }} primary="Lastname" />
+              <ListItemText className={classes.listTeam} style={{ color: 'white' }}
+                primary={ ( sess && sess.language === 'EN' ) ? "Team" : 'ทีม' } />
+              <ListItemText className={classes.listTime} style={{ color: 'white' }}
+                primary={ ( sess && sess.language === 'EN' ) ? "Time" : 'เวลา' } />
+              <ListItemText className={classes.listName} style={{ color: 'white' }}
+                primary={ ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' } />
+              <ListItemText className={classes.listLastname} style={{ color: 'white' }}
+                primary={ ( sess && sess.language === 'EN' ) ? "Lastname" : 'นามสกุล' } />
             </ListItem>
           </List>
           <List disablePadding>

@@ -245,12 +245,28 @@ export default function MatchClass(props) {
         classname: arrEdit,
         classno: arrEditClassno
     }, (csrf, d) =>{
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: d.status === 'success' ? d.status : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+      var statusRes = []
+      d.forEach( e =>{
+        if(e.status !== 'success'){
+          handleSnackBar({
+            state: true,
+            message: e.status,
+            variant: e.status === 'success' ? e.status : 'error',
+            autoHideDuration: e.status === 'success'? 2000 : 5000
+          })
+          statusRes.push(e.status)
+        }else{
+          statusRes.push(e.status)
+        }
       })
+      if(statusRes.every(item => item === 'success')){
+        handleSnackBar({
+          state: true,
+          message: 'success',
+          variant: 'success',
+          autoHideDuration: 2000
+        })
+      }
       setCSRFToken(csrf)
       try {
         handleFetch()
@@ -331,25 +347,37 @@ export default function MatchClass(props) {
     <div>
       <div className={classes.controls}>
         <Button variant={ classAction === 'add'? 'contained':'outlined' } color="primary" className={classes.button}
-          onClick={()=>setClassAction( classAction === 'add'? '':'add' )}>Add</Button>
+          onClick={()=>setClassAction( classAction === 'add'? '':'add' )}>
+          { ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่ม' }
+        </Button>
         <Button variant={ classAction === 'edit'? 'contained':'outlined' } color="primary" className={classes.button}
-          onClick={()=>setClassAction( classAction === 'edit'? '':'edit')}>Edit</Button>
+          onClick={()=>setClassAction( classAction === 'edit'? '':'edit')}>
+          { ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' }
+        </Button>
         <Button variant={ classAction === 'delete'? 'contained':'outlined' } color="primary" className={classes.button}
-          onClick={()=>setClassAction( classAction === 'delete'? '':'delete')}>Remove</Button>
+          onClick={()=>setClassAction( classAction === 'delete'? '':'delete')}>
+          { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
+        </Button>
       </div>
       <List className={classes.root}>
         { lists && lists.length === 0 && data &&
           <ListItem>
             <ListItemText
               style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, color: primary[900] }}
-              primary={ data.scorematch === 1? "No class" : "No flight" } />
+              primary={ data.scorematch === 1? (
+                ( sess && sess.language === 'EN' ) ? "No class" : 'ไม่มี'
+              ) : (
+                ( sess && sess.language === 'EN' ) ? "No flight" : 'ไม่มี'
+              ) } />
           </ListItem>
         }
         { lists && ( classAction === '' || classAction === 'add' ) &&
           lists.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
-                <ListItemText primary={d.classname} />
+                <ListItemText primary={ data.scorematch === 1? d.classname : (
+                    arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
+                  ) } />
               </ListItem>
             )
           }
@@ -362,15 +390,33 @@ export default function MatchClass(props) {
                 autoFocus
                 value={text || ''}
                 type={ data.scorematch === 1? 'text' : 'number' }
-                helperText={ data.scorematch === 1? 'Please input class name.' : 'Please input number.' }
+                helperText={
+                  data.scorematch === 1?
+                  ( ( sess && sess.language === 'EN' ) ? 'Please input class name.' : 'ใส่ชื่อประเภท' )
+                  :
+                  ( ( sess && sess.language === 'EN' ) ? 'Please input number (HC).' : 'ใส่ตัวเลข (HC)' )
+                }
                 onChange={e =>setText(e.target.value)}
                 onKeyPress={e =>handleKeyPress(e.key)}
               />
+              { data.scorematch === 0 &&
+                <div style={{ display: 'flex', width: '100%' }}>
+                  <div style={{ marginTop: 'auto', marginBottom: 28, textAlign: 'center', width: 64 }}> {
+                      ( sess && sess.language === 'EN' ) ? 'to' : 'ถึง'
+                    } </div>
+                  <TextField
+                    style={{ marginBottom: 20 }}
+                    fullWidth
+                    type="number"
+                    onKeyPress={e =>handleKeyPress(e.key)}
+                  />
+                </div>
+              }
             </ThemeProvider>
             <ListItemIcon className={classes.addClassButtonGrid}>
               <GreenTextButton disabled={!text} className={classes.addClassButton} variant="outlined" onClick={handleAddItem}>
                 <AddCircleIcon style={{ marginRight: 12 }}/>
-                Add
+                { ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่ม' }
               </GreenTextButton>
             </ListItemIcon>
           </ListItem>
@@ -385,8 +431,21 @@ export default function MatchClass(props) {
                     autoFocus={i==0}
                     value={arrEdit[i] || ''}
                     onChange={e =>handleEditClass(d, e, i)}
+                    onKeyPress={e => ( e.key === 'Enter' )? handleSave() : console.log() }
                   />
                 </ThemeProvider>
+                { data.scorematch === 0 &&
+                  <div style={{ display: 'flex', width: '100%' }}>
+                    <div style={{ marginTop: 'auto', marginBottom: 8, textAlign: 'center', width: 64 }}> {
+                        ( sess && sess.language === 'EN' ) ? 'to' : 'ถึง'
+                      } </div>
+                    <TextField
+                      disabled
+                      fullWidth
+                      value={ ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 }
+                    />
+                  </div>
+                }
               </ListItem>
             )
           }
@@ -395,7 +454,9 @@ export default function MatchClass(props) {
           lists.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
-                <ListItemText primary={d.classname} />
+                <ListItemText primary={ data.scorematch === 1? d.classname : (
+                    arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
+                  ) } />
                 <ListItemSecondaryAction>
                   <IconButton onClick={()=>handleDeleteItem(d)}>
                     <DeleteIcon classes={{ root: classes.deleteIcon }} />
@@ -408,7 +469,9 @@ export default function MatchClass(props) {
       </List>
       { classAction === 'edit' && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenButton className={classes.saveButton} onClick={handleSave}>Save</GreenButton>
+          <GreenButton className={classes.saveButton} onClick={handleSave}>
+            { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+          </GreenButton>
         </div>
       }
       <TemplateDialog
@@ -416,19 +479,19 @@ export default function MatchClass(props) {
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure you want to delete?
+            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
-            ( Class : { selectedDeleteItem && selectedDeleteItem.classname } )
+            ( { ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท' } : { selectedDeleteItem && selectedDeleteItem.classname } )
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            Cancel
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            Delete
+            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
           </RedButton>
         </div>
       </TemplateDialog>

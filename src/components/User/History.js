@@ -53,7 +53,6 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'flex-end',
     width: '100%',
-    marginTop: 36,
     padding: '0 12px',
     boxSizing: 'border-box',
   },
@@ -120,6 +119,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexWrap: 'wrap',
   },
+  chip: {
+    margin: 2,
+    textTransform: 'capitalize'
+  },
 
 }));
 
@@ -142,10 +145,30 @@ const matchTypeNames = [
 
 export default function History(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, accountData, open, userid, userData, pageOrganizer, pageData } = props
+  const {
+    API, COLOR, sess, token, setCSRFToken, accountData, open, userid, userData,
+    pageOrganizer, pageData, pageList, userPageList
+  } = props
   const [ data, setData ] = React.useState(null)
   const [ statType, setStatType ] = React.useState('total')
   const [ checked, setChecked ] = React.useState([]);
+
+  function getSortName(name){
+    if(sess && sess.language === 'EN'){
+      return name
+    }else{
+      switch (true) {
+        case name === 'unofficial':
+          return 'ไม่เป็นทางการ'
+          break;
+        case name === 'official':
+          return 'เป็นทางการ'
+          break;
+        default:
+          return 'ส่วนตัว'
+      }
+    }
+  }
 
   function handleChange(event) {
     var value = event.target.value
@@ -168,7 +191,11 @@ export default function History(props) {
       Object.assign(sendObj, { targetuser: userid });
       setChecked(userData.historystat)
     }else{
-      setChecked(accountData.historystat)
+      if(accountData){
+        setChecked(accountData.historystat)
+      }else{
+        setChecked(['indy'])
+      }
     }
 
     await API.xhrPost(
@@ -183,9 +210,7 @@ export default function History(props) {
             return item.pageid === pageData.pageid
           }))
         }else{
-          setData(d.filter( item =>{
-            return item.pageid === 0
-          }))
+          setData(d)
         }
       }
     })
@@ -212,7 +237,7 @@ export default function History(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text="History" />
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "History" : 'ประวัติ' } />
       <div className={classes.grid}>
         <div
           className={clsx(classes.gridChild,{
@@ -220,6 +245,7 @@ export default function History(props) {
             [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
           })}>
           <Paper
+            style={{ boxSizing: 'border-box' }}
             className={clsx(
               {
                 [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
@@ -243,7 +269,7 @@ export default function History(props) {
                 renderValue={selected => (
                   <div className={classes.chips}>
                     { selected.map(value => (
-                      <Chip key={value} label={value} className={classes.chip} />
+                      <Chip key={value} label={getSortName(value)} className={classes.chip} />
                     ))}
                   </div>
                 )}
@@ -252,13 +278,14 @@ export default function History(props) {
                 { matchTypeNames.map(name => (
                   <MenuItem key={name} value={name}>
                     <Checkbox checked={checked.indexOf(name) > -1} />
-                    <ListItemText style={{ textTransform: 'capitalize' }} primary={name} />
+                    <ListItemText style={{ textTransform: 'capitalize' }} primary={getSortName(name)} />
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Paper>
           <Paper
+            style={{ boxSizing: 'border-box' }}
             className={clsx({
               [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
               [classes.controlPaperUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
@@ -268,14 +295,14 @@ export default function History(props) {
                 [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
                 [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
               })}>
-                <InputLabel>Type</InputLabel>
+                <InputLabel>{ (sess && sess.language === 'EN')? 'Type' : 'ประเภท' }</InputLabel>
                 <Select
                   value={statType}
                   onChange={e => setStatType(e.target.value)}
                 >
-                  <MenuItem value={'total'}>Total</MenuItem>
-                  <MenuItem value={'0'}>Amateur</MenuItem>
-                  <MenuItem value={'1'}>Pro</MenuItem>
+                  <MenuItem value={'total'}>{ (sess && sess.language === 'EN')? 'Total' : 'ทั้งหมด' }</MenuItem>
+                  <MenuItem value={'0'}>{ (sess && sess.language === 'EN')? 'Amateur' : 'มือสมัครเล่น' }</MenuItem>
+                  <MenuItem value={'1'}>{ (sess && sess.language === 'EN')? 'Pro' : 'มืออาชีพ' }</MenuItem>
                 </Select>
               </FormControl>
             </form>
@@ -295,19 +322,22 @@ export default function History(props) {
             </ListItemIcon>
             { ( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
               <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                primary="date" />
+                primary={ (sess && sess.language === 'EN')? 'Date' : 'วันที่' } />
             }
             <ListItemText style={{ color: 'white', width: 100 }}
-              primary="Match" />
+              primary={ (sess && sess.language === 'EN')? 'Match' : 'การแข่งขัน' } />
 
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
               <ListItemText
                 style={{ width: 100, color: 'white' }}
-                primary="Location" />
+                primary={ (sess && sess.language === 'EN')? 'Location' : 'สนาม' } />
             }
             <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
               <Typography variant="subtitle2" color="textSecondary" style={{ color: 'white' }}>
-                { ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ? 'Handicap' : 'HC'}
+                {
+                  ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ?
+                  ( (sess && sess.language === 'EN')? 'Handicap' : 'แฮนดิแคป' ) : 'HC'
+                }
               </Typography>
             </ListItemIcon>
           </ListItem>
@@ -316,13 +346,13 @@ export default function History(props) {
         { data ?
           (
             (
-              data.filter( item =>{
+              API.sortArrByDate(data, 'matchdate').filter( item =>{
                 return checked.some( d =>{ return item.type === d })
               }).filter( item =>{
                 return (statType === 'total') ? ( true ) : ( parseInt(statType) === item.scorematch )
               }).length > 0
             ) ?
-            data.filter( item =>{
+            API.sortArrByDate(data, 'matchdate').filter( item =>{
               return checked.some( d =>{ return item.type === d })
             }).filter( item =>{
               return (statType === 'total') ? ( true ) : ( parseInt(statType) === item.scorematch )

@@ -107,6 +107,21 @@ const useStyles = makeStyles(theme => ({
     padding: 16,
     width: '100%'
   },
+  dateClassGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    [theme.breakpoints.up(400)]: {
+      flexDirection: 'row',
+    },
+  },
+  textFieldClass: {
+    width: 280,
+    marginTop: 16,
+    [theme.breakpoints.up(400)]: {
+      marginTop: 'auto',
+      marginLeft: 16,
+    },
+  },
 
 }))
 
@@ -202,7 +217,7 @@ export default function CreateMatchBody(props){
                       autoFocus={activeStep === 0}
                       variant="outlined"
                       className={classes.margin}
-                      label="Match name"
+                      label={ ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน' }
                       value={matchName || ''}
                       onChange={e =>setMatchName(e.target.value)}
                     />
@@ -210,55 +225,59 @@ export default function CreateMatchBody(props){
                   <ThemeProvider theme={theme}>
                     <FormControl component="fieldset" className={classes.margin}
                       style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}>
-                      <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
+                      <FormLabel component="legend" style={{ marginLeft: 16 }}>
+                        { ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' }
+                      </FormLabel>
                       <RadioGroup value={selectedPrivacy} onChange={handlePrivacy} row>
                         <FormControlLabel
                           value={'public'}
                           control={<GreenRadio />}
-                          label="Public"
+                          label={ ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ' }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'friend'}
                           control={<GreenRadio />}
-                          label="Friend"
+                          label={ ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'private'}
                           control={<GreenRadio />}
-                          label="Private"
+                          label={ ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว' }
                           labelPlacement="end"
                         />
                       </RadioGroup>
                     </FormControl>
                     <FormControl component="fieldset" className={classes.margin}
                       style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}>
-                      <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
+                      <FormLabel component="legend" style={{ marginLeft: 16 }}>
+                        { ( sess && sess.language === 'EN' ) ? "Type" : 'ประเภทการแข่งขัน' }
+                      </FormLabel>
                       <RadioGroup value={selectedMatchType} onChange={handleMatchType} row>
                         <FormControlLabel
                           value={'1'}
                           control={<GreenRadio />}
-                          label="Pro"
+                          label={ ( sess && sess.language === 'EN' ) ? "Professional" : 'มืออาชีพ' }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'0'}
                           control={<GreenRadio />}
-                          label="Amateur"
+                          label={ ( sess && sess.language === 'EN' ) ? "Amateur" : 'มือสมัครเล่น' }
                           labelPlacement="end"
                         />
                       </RadioGroup>
                     </FormControl>
                   </ThemeProvider>
-                  <div style={{ display: 'flex' }}>
+                  <div className={classes.dateClassGrid}>
                     <ThemeProvider theme={datePickers}>
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
                           clearable
                           style={{ marginTop: 24 }}
                           className={classes.margin}
-                          label="Date"
+                          label={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' }
                           inputVariant="outlined"
                           format="dd/MM/yyyy"
                           value={selectedDate}
@@ -269,8 +288,8 @@ export default function CreateMatchBody(props){
                     { selectedMatchType === '1' &&
                       <ThemeProvider theme={theme}>
                         <TextField
-                          style={{ width: 108, marginTop: 'auto', marginLeft: 16 }}
-                          label="Class"
+                          className={classes.textFieldClass}
+                          label={ ( sess && sess.language === 'EN' ) ? "Class" : 'จำนวนประเภทการแข่งขัน' }
                           value={ !isNaN(matchClass) ? matchClass : '' }
                           type="number"
                           variant="outlined"
@@ -345,16 +364,7 @@ export default function CreateMatchBody(props){
           }
         }()}
       </div>
-      {/*
-        <div className={classes.buttonControl}>
-          <div style={{ flex: 2 }}></div>
-          <StyledTextButton className={classes.button}
-            onClick={handleReset}>Reset</StyledTextButton>
-          <StyledButton className={classes.button}
-            onClick={handleCreate}>Create</StyledButton>
-        </div>*/
-      }
-
+      
     </div>
   );
 }

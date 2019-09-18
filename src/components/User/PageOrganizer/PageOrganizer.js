@@ -19,6 +19,9 @@ export default function PageOrganizer(props) {
           pageid: parseInt(props.computedMatch.params.pageid)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
+        if(d.length < 2){
+          window.location.pathname = '/user'
+        }
         handlePageData({
           ...d[0],
           pageid: parseInt(props.computedMatch.params.pageid)

@@ -10,11 +10,14 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
@@ -25,8 +28,8 @@ const TemplateDialog = Loadable({
   loading: () => <LDCircular />
 });
 
-const AddMatchModal = Loadable({
-  loader: () => import(/* webpackChunkName: "AddMatchModal" */'./AddMatchModal'),
+const AddPageModal = Loadable({
+  loader: () => import(/* webpackChunkName: "AddPageModal" */'./AddPageModal'),
   loading: () => <LDCircular />
 });
 
@@ -49,10 +52,11 @@ const useStyles = makeStyles(theme => ({
   tableHead: {
     backgroundColor: grey[900],
   },
-  tableDate: {
-    width: 120,
+  tableFollower: {
+    paddingRight: 24,
+    textAlign: 'center'
   },
-  tableDateText: {
+  tableFollowerText: {
     fontStyle: 'oblique',
     fontFamily: 'monospace'
   },
@@ -74,6 +78,11 @@ const useStyles = makeStyles(theme => ({
   },
   deleteIcon: {
     color: primary[600]
+  },
+  bigAvatar: {
+    margin: 10,
+    width: 60,
+    height: 60,
   },
 
 }))
@@ -113,7 +122,7 @@ const GreenTextButton = withStyles(theme => ({
   },
 }))(Button);
 
-export default function MatchList(props){
+export default function PageList(props){
   const classes = useStyles();
   const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
@@ -139,9 +148,9 @@ export default function MatchList(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'matchmain', {
+      'pagemain', {
         action: 'remove',
-        matchid: d.matchid
+        pageid: d.pageid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -162,8 +171,8 @@ export default function MatchList(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'loadmainpage', {
-        action: 'match',
+      'mloadpage', {
+        action: 'list',
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(!d.status){
@@ -201,14 +210,14 @@ export default function MatchList(props){
       <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Match List
+          Page List
         </Box>
       </Typography>
       <div style={{ display: 'flex', margin: '24px 16px 0 16px' }}>
         <RedButton variant="contained" color="secondary"
           onClick={handleOpen}>
           <AddCircleIcon style={{ marginRight: 8 }}/>
-          Add match
+          Add page
         </RedButton>
         <div style={{ flex: 1 }} />
         <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>
@@ -218,12 +227,12 @@ export default function MatchList(props){
       <List>
         <ListItem className={classes.tableHead}>
           { window.innerWidth >= 500 &&
-            <StyledText primary="Date" className={classes.tableDate}/>
+            <StyledText primary="Follower" className={classes.tableFollower}/>
           }
+          <ListItemAvatar style={{ marginRight: 16 }}>
+            <div style={{ margin: 10, width: 60, height: 24 }}></div>
+          </ListItemAvatar>
           <StyledText inset={window.innerWidth < 700 && window.innerWidth >=450} primary="Title" className={classes.tableTitle}/>
-          { window.innerWidth >= 700 &&
-            <StyledText inset primary="Location" className={classes.tableLocation}/>
-          }
           <ListItemIcon className={classes.tableAction}>
             <IconButton disabled edge="end">
               <div style={{ width: 24 }}></div>
@@ -231,37 +240,41 @@ export default function MatchList(props){
           </ListItemIcon>
         </ListItem>
         { data &&
-          API.sortArrByDateStr(data, 'date', 'title').map( d =>
+          data.map( d =>
             d &&
-            <React.Fragment key={d.matchid}>
+            <React.Fragment key={d.pageid}>
               <ListItem>
                 { window.innerWidth >= 500 &&
-                  <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
+                  <ListItemText primary={d.subscriber}
+                    className={classes.tableFollower}
+                    classes={{ primary: classes.tableFollowerText }}/>
                 }
-                <ListItemText inset={window.innerWidth < 700 && window.innerWidth >=450} primary={d.title} className={classes.tableTitle}
-                  secondary={
-                    window.innerWidth < 700 &&
-                    (
-                      window.innerWidth >= 500?
-                      d.location
+                <ListItemAvatar style={{ marginRight: 16 }}>
+                  {
+                    d.logo?
+                      <Avatar
+                        alt={d.title}
+                        src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
+                        className={classes.bigAvatar} />
                       :
-                      <React.Fragment>
-                        <Typography
-                          style={{ fontStyle: 'oblique' }}
-                          component="span"
-                          variant="caption"
-                          color="textPrimary"
-                        >
-                          {d.date}
-                        </Typography>
-                        <br></br>
-                        {d.location}
-                      </React.Fragment>
-                    )
+                      <AccountCircleIcon className={classes.bigAvatar}/>
+                  }
+                </ListItemAvatar>
+                <ListItemText inset={window.innerWidth < 700 && window.innerWidth >=450}
+                  primary={d.pagename} className={classes.tableTitle}
+                  secondary={
+                    window.innerWidth < 500 &&
+                    <React.Fragment>
+                      <Typography
+                        style={{ fontStyle: 'oblique' }}
+                        component="span"
+                        variant="caption"
+                        color="textPrimary"
+                      >
+                        {d.subscriber} {`follower${d.subscriber > 1 ? 's' : '' }`}
+                      </Typography>
+                    </React.Fragment>
                   }/>
-                { window.innerWidth >= 700 &&
-                  <ListItemText inset primary={d.location} className={classes.tableLocation}/>
-                }
                 <ListItemIcon className={classes.tableAction}>
                   { editting?
                     <IconButton style={{ padding: 0 }} edge="end" onClick={()=>handleRemove(d)}>
@@ -281,7 +294,7 @@ export default function MatchList(props){
 
       </List>
       <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
-        <AddMatchModal {...passingProps} setData={setData}/>
+        <AddPageModal {...passingProps} setData={setData}/>
       </TemplateDialog>
     </div>
   );

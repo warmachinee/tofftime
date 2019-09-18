@@ -191,7 +191,10 @@ function TextMaskCustom(props) {
 
 export default function Profile(props) {
   const classes = useStyles();
-  const { API, BTN, sess, isSupportWebp, token, setCSRFToken, handleAccountData, accountData, handleSnackBar, pageOrganizer, pageData } = props
+  const {
+    API, BTN, sess, isSupportWebp, token, setCSRFToken, handleAccountData, accountData, handleSnackBar,
+    pageOrganizer, pageData
+  } = props
   const [ editting, setEditting ] = React.useState(false)
   const [ changePasswordState, setChangePasswordState ] = React.useState(false)
   const [ edittingData, setEdittingData ] = React.useState({
@@ -214,6 +217,19 @@ export default function Profile(props) {
 
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
+
+  function getPrivacy(privacy){
+    switch (true) {
+      case privacy === 'public':
+        return ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ'
+        break;
+      case privacy === 'friend':
+        return ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน'
+        break;
+      default:
+        return ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว'
+    }
+  }
 
   function toggleChangePassword(){
     setChangePasswordState(!changePasswordState)
@@ -431,7 +447,14 @@ export default function Profile(props) {
               <IconButton onClick={()=>window.history.go(-1)}>
                 <ChevronLeftIcon fontSize="large"/>
               </IconButton>
-              <BTN.PrimaryText onClick={toggleEditting}>{ editting ? 'Done' : 'Edit'}</BTN.PrimaryText>
+              <BTN.PrimaryText onClick={toggleEditting}>
+                {
+                  editting ?
+                  ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+                  :
+                  ( ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' )
+                }
+              </BTN.PrimaryText>
             </div>
             <div className={classes.imageGrid}>
               { editting ?
@@ -452,9 +475,11 @@ export default function Profile(props) {
                       <AccountCircleIcon classes={{ root: classes.avatar }} />
                     )
                   }
-                  <div style={{ position: 'absolute', color: 'black', bottom: -8, display: 'flex' }}>
+                  <div style={{ position: 'absolute', color: 'black', bottom: -16, display: 'flex' }}>
                     <EditIcon fontSize="small"/>
-                    <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>Upload</Typography>
+                    <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>
+                      { ( sess && sess.language === 'EN' ) ? "Upload" : 'อัพโหลดรูป' }
+                    </Typography>
                   </div>
                 </IconButton>
                 :
@@ -481,7 +506,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label="First name"
+                    label={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' }
                     className={classes.margin}
                     value={edittingData.fullname}
                     onChange={e => setEdittingData({ ...edittingData, fullname: e.target.value})}
@@ -492,7 +517,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label="Last name"
+                    label={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' }
                     className={classes.margin}
                     value={edittingData.lastname}
                     onChange={e => setEdittingData({ ...edittingData, lastname: e.target.value})}
@@ -518,9 +543,7 @@ export default function Profile(props) {
                     {' • '}( {accountData.nickname} )
                   </Typography>
                   :
-                  <Typography gutterBottom variant="h6" className={classes.name}>
-                    (No nickname)
-                  </Typography>
+                  null
                 }
               </div>
             }
@@ -530,7 +553,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label="Nickname"
+                    label={ ( sess && sess.language === 'EN' ) ? "Nickname" : 'ชื่อเล่น' }
                     className={classes.margin}
                     value={edittingData.displayname}
                     onChange={e => setEdittingData({ ...edittingData, displayname: e.target.value})}
@@ -540,11 +563,13 @@ export default function Profile(props) {
                 </ListItem>
               </List>
             }
+
             { !editting &&
               <Typography variant="subtitle2" className={classes.email}>
-                email : {accountData.email}
+                { ( sess && sess.language === 'EN' ) ? "email" : 'อีเมล' } : {accountData.email}
               </Typography>
             }
+
             { editting ?
               <FormControl component="fieldset" className={classes.margin}
                 style={{
@@ -552,24 +577,26 @@ export default function Profile(props) {
                   padding: '4px 16px 8px 24px',
                   borderRadius: 4, boxSizing: 'border-box'
                 }}>
-                <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
+                <FormLabel component="legend" style={{ marginLeft: 16 }}>
+                  { ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' }
+                </FormLabel>
                 <RadioGroup value={edittingData.privacy} onChange={e => setEdittingData({ ...edittingData, privacy: e.target.value})} row>
                   <FormControlLabel
                     value={'public'}
                     control={<Radio />}
-                    label="Public"
+                    label={ ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ' }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'friend'}
                     control={<Radio />}
-                    label="Friend"
+                    label={ ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'private'}
                     control={<Radio />}
-                    label="Private"
+                    label={ ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว' }
                     labelPlacement="end"
                   />
                 </RadioGroup>
@@ -578,20 +605,22 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    Privacy : {accountData.privacy}
+                    { ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' } : {getPrivacy(accountData.privacy)}
                   </Typography>
                 </ListItem>
               </List>
             }
+
             { sess && sess.typeid === 'user' &&
               <List className={classes.listItem}>
                 <ListItem button onClick={toggleChangePassword}>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    Change password
+                    { ( sess && sess.language === 'EN' ) ? "Change password" : 'เปลี่ยนรหัสผ่าน' }
                   </Typography>
                 </ListItem>
               </List>
             }
+
             { editting ?
               <List>
                 <ListItem style={{
@@ -606,16 +635,22 @@ export default function Profile(props) {
                     onChange={e => setEdittingData({ ...edittingData, gender: e.target.value})}
                     input={<OutlinedInput />}
                   >
-                    <MenuItem value='-'>{'Gender'}</MenuItem>
-                    <MenuItem value='male'>Male</MenuItem>
-                    <MenuItem value='female'>Female</MenuItem>
+                    <MenuItem value='-'>
+                      { ( sess && sess.language === 'EN' ) ? "Gender" : 'เพศ' }
+                    </MenuItem>
+                    <MenuItem value='male'>
+                      { ( sess && sess.language === 'EN' ) ? "Male" : 'ชาย' }
+                    </MenuItem>
+                    <MenuItem value='female'>
+                      { ( sess && sess.language === 'EN' ) ? "Female" : 'หญิง' }
+                    </MenuItem>
                   </Select>
                   <div style={{ width: 24 }} />
                   <OutlinedInput
                     className={classes.margin}
                     inputComponent={TextMaskCustom}
                     value={edittingData.tel}
-                    placeholder="Phone number"
+                    placeholder={ ( sess && sess.language === 'EN' ) ? "Phone number" : 'เบอร์โทรศัพท์' }
                     onChange={e => handlePhoneNumber(e.target.value)}
                     onKeyPress={e =>handleKeyPress(e)}
                   />
@@ -625,16 +660,17 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    Gender : {accountData.gender}
+                    { ( sess && sess.language === 'EN' ) ? "Gender" : 'เพศ' } : {accountData.gender}
                   </Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    Phone number : {accountData.tel}
+                    { ( sess && sess.language === 'EN' ) ? "Phone number" : 'เบอร์โทรศัพท์' } : {accountData.tel}
                   </Typography>
                 </ListItem>
               </List>
             }
+
             { editting ?
               <List>
                 <ListItem>
@@ -644,7 +680,7 @@ export default function Profile(props) {
                         clearable
                         disableFuture
                         className={classes.margin}
-                        label="Birthday"
+                        label={ ( sess && sess.language === 'EN' ) ? "Birthday" : 'วันเกิด' }
                         openTo="year"
                         inputVariant="outlined"
                         format="dd/MM/yyyy"
@@ -660,16 +696,19 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    Age : {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
+                    { ( sess && sess.language === 'EN' ) ? "Age" : 'อายุ' } :
+                    {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
                   </Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    Birth date : {accountData.birthdate && API.handleDateToString(accountData.birthdate)}
+                    { ( sess && sess.language === 'EN' ) ? "Birthday" : 'วันเกิด' } :
+                    {accountData.birthdate && API.dateToString(accountData.birthdate)}
                   </Typography>
                 </ListItem>
               </List>
             }
+
             { editting ?
               <List>
                 <ListItem>
@@ -677,7 +716,7 @@ export default function Profile(props) {
                     fullWidth
                     variant="outlined"
                     className={classes.margin}
-                    label="Golf favorite equipment"
+                    label={ ( sess && sess.language === 'EN' ) ? "Golf favorite equipment" : 'อุปกรณ์ที่ชอบใช้' }
                     value={edittingData.favgolf}
                     onChange={e => setEdittingData({ ...edittingData, favgolf: e.target.value})}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -689,59 +728,68 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    Equipment : {accountData.favgolf}
+                    { ( sess && sess.language === 'EN' ) ? "Equipment" : 'อุปกรณ์ที่ใช้' } : {accountData.favgolf}
                   </Typography>
                 </ListItem>
               </List>
             }
+
             <div style={{ display: 'flex', marginTop: 36, justifyContent: 'flex-end' }}>
               { editting &&
-                <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>Save</BTN.Primary>
+                <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>
+                  { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                </BTN.Primary>
               }
             </div>
+
           </Paper>
         )
       }
       { !pageOrganizer &&
         <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth={500}>
-          <LabelText text="Change password" />
+          <LabelText text={ ( sess && sess.language === 'EN' ) ? "Change password" : 'เปลี่ยนรหัสผ่าน' } />
           <div style={{ marginTop: 24, marginBottom: 24 }}>
-            <TextField
-              autoFocus={changePasswordState}
-              fullWidth
-              label="Old password"
-              variant="outlined"
-              type="password"
-              className={classes.margin}
-              onChange={e => setEdittingData({ ...edittingData, password: e.target.value})}
-              onKeyPress={e =>handleKeyPress(e)}
-              onFocus={e => e.target.select()}
-            />
-            <TextField
-              fullWidth
-              label="New password"
-              variant="outlined"
-              type="password"
-              error={errorPassword.oldNew}
-              helperText={errorPassword.oldNew && "New password is same as old password."}
-              className={classes.margin}
-              onChange={e => setEdittingData({ ...edittingData, changePassword: e.target.value})}
-              onKeyPress={e =>handleKeyPress(e)}
-              onFocus={e => e.target.select()}
-            />
-            <TextField
-              fullWidth
-              label="Confirm password"
-              variant="outlined"
-              type="password"
-              error={errorPassword.changeConfirm}
-              helperText={errorPassword.changeConfirm && "Confirm password is not same as new password."}
-              className={classes.margin}
-              onChange={e => setEdittingData({ ...edittingData, confirmPassword: e.target.value})}
-              onKeyPress={e =>handleKeyPress(e)}
-              onFocus={e => e.target.select()}
-            />
-            <BTN.Primary style={{ padding: '16px 36px', width: '100%', marginTop: 24 }} onClick={handleSave}>Confirm</BTN.Primary>
+            <ThemeProvider theme={theme}>
+              <TextField
+                autoFocus={changePasswordState}
+                fullWidth
+                label={ ( sess && sess.language === 'EN' ) ? "Old password" : 'รหัสผ่านเก่า' }
+                variant="outlined"
+                type="password"
+                className={classes.margin}
+                onChange={e => setEdittingData({ ...edittingData, password: e.target.value})}
+                onKeyPress={e =>handleKeyPress(e)}
+                onFocus={e => e.target.select()}
+              />
+              <TextField
+                fullWidth
+                label={ ( sess && sess.language === 'EN' ) ? "New password" : 'รหัสผ่านใหม่' }
+                variant="outlined"
+                type="password"
+                error={errorPassword.oldNew}
+                helperText={errorPassword.oldNew && "New password is same as old password."}
+                className={classes.margin}
+                onChange={e => setEdittingData({ ...edittingData, changePassword: e.target.value})}
+                onKeyPress={e =>handleKeyPress(e)}
+                onFocus={e => e.target.select()}
+              />
+              <TextField
+                fullWidth
+                label={ ( sess && sess.language === 'EN' ) ? "Confirm password" : 'ยืนยันรหัสผ่าน่' }
+                variant="outlined"
+                type="password"
+                error={errorPassword.changeConfirm}
+                helperText={errorPassword.changeConfirm && "Confirm password is not same as new password."}
+                className={classes.margin}
+                onChange={e => setEdittingData({ ...edittingData, confirmPassword: e.target.value})}
+                onKeyPress={e =>handleKeyPress(e)}
+                onFocus={e => e.target.select()}
+              />
+            </ThemeProvider>
+            <BTN.Primary style={{ padding: '16px 36px', width: '100%', marginTop: 24 }}
+              onClick={handleSave}>
+              { ( sess && sess.language === 'EN' ) ? "Confirm" : 'ยืนยัน' }
+            </BTN.Primary>
           </div>
         </TemplateDialog>
       }

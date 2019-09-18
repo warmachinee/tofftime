@@ -41,13 +41,6 @@ const useStyles = makeStyles(theme => ({
       margin: theme.spacing(1,0),
     },
   },
-  title: {
-    textAlign: 'center', color: primary[900],
-    fontSize: 28,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 32,
-    },
-  },
   button: {
     width: '100%',
     padding: 8,
@@ -120,7 +113,7 @@ const theme = createMuiTheme({
 
 export default function CreatePage(props) {
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, createPageState, toggleCreatePage } = props
+  const { sess, token, setCSRFToken, handleSnackBar, createPageState, toggleCreatePage } = props
   const [ pageName, setPageName ] = React.useState('')
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
@@ -213,22 +206,14 @@ export default function CreatePage(props) {
   return (
     <TemplateDialog open={createPageState} handleClose={toggleCreatePage} maxWidth={450}>
       <div className={classes.root}>
-        {/*
-          <Typography component="div" style={{ marginBottom: 24 }}>
-            <Box className={classes.title} fontWeight={600} m={1}>
-              Create page
-            </Box>
-          </Typography>*/
-        }
-        <LabelText text="Create page" />
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Create page" : 'สร้างเพจ' } />
         <div style={{ marginTop: 24 }}>
           <ThemeProvider theme={theme}>
             <TextField
               autoFocus
               className={classes.margin}
-              label="Page name"
+              label={ ( sess && sess.language === 'EN' ) ? "Page name" : 'ชื่อเพจ' }
               variant="outlined"
-              autoComplete="email"
               onChange={(e)=>setPageName(e.target.value)}
               onKeyPress={e =>handleKeyPress(e)}
             />
@@ -273,7 +258,9 @@ export default function CreatePage(props) {
                 position: 'relative', marginTop: 16, marginBottom: 24,
                 display: 'flex', flexDirection: 'column', justifyContent: 'center'
               }}>
-              <Typography variant="caption" style={{ textAlign: 'center' }}>Upload image</Typography>
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
+                { ( sess && sess.language === 'EN' ) ? "Upload image" : 'อัพโหลดรูป' }
+              </Typography>
               <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
                 <div style={{ flex: 1 }} />
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -290,7 +277,7 @@ export default function CreatePage(props) {
           }
           <GreenButton variant="contained" color="primary" className={classes.button}
             onClick={handleCreatePage}>
-            Create
+            { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
           </GreenButton>
         </div>
       </div>

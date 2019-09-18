@@ -100,7 +100,13 @@ export default function ListFriend(props) {
               <Search />
             }
           </ListItemIcon>
-          <ListItemText primary={( data && data.length > 0 ) ? 'Friend' : 'Add friend'} />
+          <ListItemText
+            primary={
+              ( data && data.length > 0 ) ?
+              ( ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' )
+              :
+              ( ( sess && sess.language === 'EN' ) ? "Add friend" : 'เพิ่มเพื่อน' )
+            } />
         </ListItem>
       </List>
       <Collapse in={state} timeout="auto" style={{ minHeight: 'auto' }}>
@@ -111,7 +117,7 @@ export default function ListFriend(props) {
               <ListItemIcon>
                 <Search />
               </ListItemIcon>
-              <ListItemText primary="Add friend" />
+              <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Add friend" : 'เพิ่มเพื่อน' } />
             </ListItem>
           }
           { data &&

@@ -37,12 +37,12 @@ import {
 } from '@material-ui/icons';
 
 export default function CreateMatchDialog(props) {
-  const { createMatchState, toggleCreateMatch } = props
+  const { sess, createMatchState, toggleCreateMatch } = props
 
   return (
-    <TemplateDialog open={createMatchState} handleClose={toggleCreateMatch}>
+    <TemplateDialog open={createMatchState} handleClose={toggleCreateMatch} maxWidth={700}>
       <div>
-        <LabelText text="Create Match"/>
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Create Match" : 'สร้างการแข่งขัน' } />
         <MatchStepper {...props} dialogStepper/>
       </div>
     </TemplateDialog>

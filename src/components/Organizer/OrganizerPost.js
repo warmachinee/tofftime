@@ -62,11 +62,11 @@ export default function OrganizerPost(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text="Post"/>
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }/>
       <div className={classes.grid}>
         { data?
           ( data.length > 0 ?
-            data.map( d => <OrganizerPostCard key={d.postid} {...props} data={d}/> )
+            data.map( d => <OrganizerPostCard key={d.postid} {...props} data={d} pageid={pageid} /> )
             :
             <div style={{
                 width: '100%', padding: '36px 0', textAlign: 'center',

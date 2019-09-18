@@ -236,7 +236,9 @@ function MBScoreEditorContainer(props){
           <ExpandMoreIcon
             className={classes.expandIcon}
             style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }} />
-          { selected? selected.firstname + " " + selected.lastname : 'Select Player'}
+          { selected? selected.firstname + " " + selected.lastname : (
+            ( sess && sess.language === 'EN' ) ? "Select Player" : 'เลือกผู้เล่น'
+          )}
         </GreenTextButton>
         { selected &&
           <a href={`/display/${matchid}/${selected.userid}`}
@@ -254,7 +256,7 @@ function MBScoreEditorContainer(props){
               autoFocus={expanded}
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser? "Search player" : '' }
+              placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search Player" : 'ค้นหาผู้เล่น' ) : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -280,18 +282,28 @@ function MBScoreEditorContainer(props){
         </div>
         <Typography component="div">
           <Box className={classes.notice} m={1}>
-            Please select player in the list.
+            { ( sess && sess.language === 'EN' ) ? "Please select player in the list." : 'เลือกผู้เล่นในลิสต์' }
           </Box>
         </Typography>
         <List>
           <ListItem style={{ backgroundColor:  grey[900] }}>
             <ListItemText style={{ color: 'white' }} className={classes.listText}
-              primary={ window.innerWidth < 450? "Player" : "First name" } />
+              primary={
+                window.innerWidth < 450?
+                ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' )
+                :
+                ( ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' )
+              } />
             <ListItemText style={{ color: 'white' }} className={classes.listText}
-              primary={ window.innerWidth < 450? "" : "Last name" } />
+              primary={ window.innerWidth < 450? "" : ( ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' ) } />
             { window.innerWidth > 450 &&
               <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass}
-                primary={ matchDetail.scorematch === 1? "Class" : 'Flight' } />
+                primary={
+                  matchDetail.scorematch === 1?
+                  ( ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท' )
+                  :
+                  ( ( sess && sess.language === 'EN' ) ? "Flight" : 'ไฟล์ท' )
+                } />
             }
 
           </ListItem>
@@ -342,7 +354,7 @@ function MBScoreEditorContainer(props){
                         :
                         <React.Fragment>
                           <br></br>
-                          {"No class"}
+                          { ( sess && sess.language === 'EN' ) ? "No class" : 'ไม่มีประเภท' }
                         </React.Fragment>
                       )
                     } />
@@ -368,7 +380,8 @@ function MBScoreEditorContainer(props){
                         )
                       )
                       :
-                      <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"No class"} />
+                      <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                        primary={ ( sess && sess.language === 'EN' ) ? "No class" : 'ไม่มีประเภท' } />
                     )
                   }
                 </ListItem>
@@ -380,20 +393,28 @@ function MBScoreEditorContainer(props){
             { data && data.length > 10 && !searchUser &&
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
-                  { dataSliced >= data.length ? 'Collapse':'More' }
+                  { dataSliced >= data.length ? (
+                    ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                  ):(
+                    ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                  ) }
                 </Button>
                 { data && dataSliced < data.length &&
-                  <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
                 }
               </React.Fragment>
             }
             { data && handleSearch().length > 10 && searchUser &&
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
-                  { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                  { dataSliced >= handleSearch().length ? (
+                    ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                  ):(
+                    ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                  ) }
                 </Button>
                 { data && dataSliced < handleSearch().length &&
-                  <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
                 }
               </React.Fragment>
             }
@@ -402,7 +423,7 @@ function MBScoreEditorContainer(props){
             <ListItem>
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  No Reult
+                  { ( sess && sess.language === 'EN' ) ? "No Reult" : 'ไม่มีผลลัพท์' }
                 </Box>
               </Typography>
             </ListItem>
@@ -633,17 +654,21 @@ export default function MBScoreEditorBody(props){
         </Box>
       </Typography>
       <div className={classes.controls}>
-        <Button disabled={selected === null} className={classes.button} onClick={handleReset}>Reset</Button>
+        <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
+          { ( sess && sess.language === 'EN' ) ? "Reset" : 'รีเซ็ต' }
+        </Button>
         { selected?
           <GreenButton
             disabled={selected === null}
             variant="contained" color="primary"
-            className={classes.button} onClick={handleUpdateScore}>Save</GreenButton>
+            className={classes.button} onClick={handleUpdateScore}>
+            { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+          </GreenButton>
           :
           <Button
             disabled
             variant="contained" color="primary"
-            className={classes.button} >Save</Button>
+            className={classes.button} >{ ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }</Button>
         }
       </div>
     </div>

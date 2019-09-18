@@ -326,7 +326,7 @@ function CreateMatchBody(props){
     if(selectedFieldVersion !== 1){
       Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
     }
-    
+
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
@@ -407,7 +407,7 @@ function CreateMatchBody(props){
             <TextField
               autoFocus
               className={classes.margin}
-              label="Match name"
+              label={ ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน' }
               value={matchName || ''}
               onChange={e =>setMatchName(e.target.value)}
             />
@@ -419,7 +419,7 @@ function CreateMatchBody(props){
                   clearable
                   style={{ marginTop: 24 }}
                   className={classes.margin}
-                  label="Date"
+                  label={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' }
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
                   value={selectedDate}
@@ -430,8 +430,8 @@ function CreateMatchBody(props){
             { selectedMatchType === '1' &&
               <ThemeProvider theme={theme}>
                 <TextField
-                  style={{ width: 108, marginTop: 'auto', marginLeft: 16 }}
-                  label="Class"
+                  style={{ width: 280, marginTop: 'auto', marginLeft: 16 }}
+                  label={ ( sess && sess.language === 'EN' ) ? "Class" : 'จำนวนประเภทการแข่งขัน' }
                   value={matchClass}
                   type="number"
                   variant="outlined"
@@ -494,28 +494,30 @@ function CreateMatchBody(props){
               onClick={handleOpen}
               className={classes.button}
               style={{ textTransform: 'none' }}>
-              { selectedField ? selectedField.fieldname : 'Select Location' }
+              { selectedField ? selectedField.fieldname : ( ( sess && sess.language === 'EN' ) ? "Select Location" : 'เลือกสนาม' ) }
             </StyledTextButton>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}>
-              <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
+              <FormLabel component="legend" style={{ marginLeft: 16 }}>
+                { ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' }
+              </FormLabel>
               <RadioGroup value={selectedPrivacy} onChange={handlePrivacy} row>
                 <FormControlLabel
                   value={'public'}
                   control={<GreenRadio />}
-                  label="Public"
+                  label={ ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'friend'}
                   control={<GreenRadio />}
-                  label="Friend"
+                  label={ ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'private'}
                   control={<GreenRadio />}
-                  label="Private"
+                  label={ ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว' }
                   labelPlacement="end"
                 />
               </RadioGroup>
@@ -527,13 +529,13 @@ function CreateMatchBody(props){
                 <FormControlLabel
                   value={'1'}
                   control={<GreenRadio />}
-                  label="Pro"
+                  label={ ( sess && sess.language === 'EN' ) ? "Professional" : 'มืออาชีพ' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'0'}
                   control={<GreenRadio />}
-                  label="Amateur"
+                  label={ ( sess && sess.language === 'EN' ) ? "Amateur" : 'มือสมัครเล่น' }
                   labelPlacement="end"
                 />
               </RadioGroup>
@@ -545,11 +547,11 @@ function CreateMatchBody(props){
       <div className={classes.buttonControl}>
         <div style={{ flex: 2 }}></div>
         <StyledTextButton className={classes.button}
-          onClick={handleReset}>Reset</StyledTextButton>
+          onClick={handleReset}>{ ( sess && sess.language === 'EN' ) ? "Reset" : 'รีเซ็ต' }</StyledTextButton>
         <StyledButton className={classes.button}
-          onClick={handleCreate}>Create</StyledButton>
+          onClick={handleCreate}>{ ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }</StyledButton>
       </div>
-      <TemplateDialog open={open} handleClose={handleClose}>
+      <TemplateDialog open={open} handleClose={handleClose} maxWidth={700}>
         <Location
           {...props}
           {...passingFunction}
@@ -573,7 +575,7 @@ export default function CreateMatch(props){
     <Paper className={classes.root} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          CreateMatch
+          { ( sess && sess.language === 'EN' ) ? "Create match" : 'สร้างการแข่งขัน' }
         </Box>
       </Typography>
       <IconButton

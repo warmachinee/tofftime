@@ -270,7 +270,7 @@ export default function LocationList(props){
             autoFocus
             className={classes.searchBox}
             variant="outlined"
-            placeholder={ !searchField? "Search" : '' }
+            placeholder={ !searchField? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' ) : '' }
             value={searchField}
             onChange={handleChangeField}
             InputProps={{
@@ -297,7 +297,12 @@ export default function LocationList(props){
           <GreenTextButton className={classes.editButton}
             variant={ editting? 'text' : 'outlined' }
             onClick={()=>setEditting(!editting)}>
-            { editting? 'Done' : 'Edit' }
+            {
+              editting?
+              ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+              :
+              ( ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' )
+            }
           </GreenTextButton>
         </div>
       </div>
@@ -325,7 +330,7 @@ export default function LocationList(props){
         open={open} handleClose={handleClose}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure you want to delete?
+            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
@@ -334,10 +339,10 @@ export default function LocationList(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleClose} className={classes.confirmButton}>
-            Cancel
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
           </GreenTextButton>
           <RedButton onClick={handleDelete} className={classes.confirmButton}>
-            Delete
+            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
           </RedButton>
         </div>
       </TemplateDialog>

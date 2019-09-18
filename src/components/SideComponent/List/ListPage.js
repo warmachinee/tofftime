@@ -35,8 +35,10 @@ const useStyles = makeStyles(theme => ({
 
 export default function ListPage(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess, pageid } = props
-  const [ pageList, setPageList ] = React.useState(null)
+  const {
+    API, BTN, COLOR, isSupportWebp, token, setCSRFToken, sess, handleSess,
+    pageid, pageList, setPageList
+  } = props
 
   async function handleFetchPage(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -54,23 +56,27 @@ export default function ListPage(props) {
     handleFetchPage()
   },[ props.createPageState ])
 
-  return pageList && (
-    pageList.filter( item =>{
-      return item.pageid !== pageid
-    }).map( d =>
-      <BTN.NoStyleLink to={`/organizer/${d.pageid}`} key={d.pageid}>
-        <ListItem button>
-          <ListItemIcon>
-            { d.logo ?
-              <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
-              :
-              <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }}/>
-            }
-          </ListItemIcon>
-          <ListItemText className={classes.listTitle} primary={d.pagename} />
-        </ListItem>
-      </BTN.NoStyleLink>
-    )
+  return (
+    <React.Fragment>
+      { pageList &&
+        pageList.filter( item =>{
+          return item.pageid !== pageid
+        }).map( d =>
+          <BTN.NoStyleLink to={`/organizer/${d.pageid}`} key={d.pageid}>
+            <ListItem button>
+              <ListItemIcon>
+                { d.logo ?
+                  <Avatar className={classes.avatarImage}
+                    src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                  :
+                  <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }}/>
+                }
+              </ListItemIcon>
+              <ListItemText className={classes.listTitle} primary={d.pagename} />
+            </ListItem>
+          </BTN.NoStyleLink>
+        )
+      }
+    </React.Fragment>
   )
 }

@@ -115,7 +115,7 @@ const theme = createMuiTheme({
 
 export default function EditPage(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken, handleSnackBar, isSupportWebp, pageData, setEditPageRefresh  } = props
+  const { API, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageData, setEditPageRefresh  } = props
   const [ data, setData ] = React.useState(null);
   const [ pageName, setPageName ] = React.useState('')
   const [ selectedFile, setSelectedFile ] = React.useState(null);
@@ -217,16 +217,15 @@ export default function EditPage(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text="Edit page" />
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Edit page" : 'แก้ไขเพจ' } />
       <div style={{ marginTop: 24 }}>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
             className={classes.margin}
-            label="Page name"
+            label={ ( sess && sess.language === 'EN' ) ? "Page name" : 'ชื่อเพจ' }
             value={pageName}
             variant="outlined"
-            autoComplete="email"
             onChange={(e)=>setPageName(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
           />
@@ -271,7 +270,9 @@ export default function EditPage(props) {
               position: 'relative', marginTop: 16, marginBottom: 24,
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
-            <Typography variant="caption" style={{ textAlign: 'center' }}>Upload image</Typography>
+            <Typography variant="caption" style={{ textAlign: 'center' }}>
+              { ( sess && sess.language === 'EN' ) ? "Upload image" : 'อัพโหลดรูป' }
+            </Typography>
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -288,7 +289,7 @@ export default function EditPage(props) {
         }
         <GreenButton variant="contained" color="primary" className={classes.button}
           onClick={handleEditPage}>
-          Save
+          { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
         </GreenButton>
       </div>
     </div>

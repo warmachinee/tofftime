@@ -401,7 +401,9 @@ function MBOverviewBody(props){
   return data && data.status !== 'wrong params' && (
     <div style={{ padding: 8, marginTop: 24, marginLeft: 'auto', marginRight: 'auto', maxWidth: 900 }}>
       { !editting &&
-        <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>Edit</GreenTextButton>
+        <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>
+          { ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' }
+        </GreenTextButton>
       }
       <div className={classes.grid}>
         <div className={classes.gridChild1}>
@@ -409,14 +411,18 @@ function MBOverviewBody(props){
             {editting?
               <TextField
                 className={classes.textMatchname}
-                label="Match name"
-                value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || 'Match name' }
+                label={ ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน' }
+                value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
+                  ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน'
+                ) }
                 onChange={e =>setSelectedMatchName(e.target.value)}
               />
               :
               <Typography component="div" className={classes.textMatchname}>
                 <Box className={classes.normal}>
-                  { data && ( selectedMatchName ? selectedMatchName : data.title ) || 'Match name' }
+                  { data && ( selectedMatchName ? selectedMatchName : data.title ) || (
+                    ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน'
+                  ) }
                 </Box>
               </Typography>
             }
@@ -428,7 +434,7 @@ function MBOverviewBody(props){
                   clearable
                   disabled={!editting}
                   className={classes.margin}
-                  label="Date"
+                  label={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' }
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
                   value={ data?( selectedDate ? selectedDate : new Date(API.handleStringToDate(data.date)) ):new Date() }
@@ -500,7 +506,9 @@ function MBOverviewBody(props){
               className={classes.button}
               style={{ textTransform: 'none' }}
               onClick={()=>handleOpen('location')}>
-              { data?( selectedField? selectedField.fieldname : data.location ):'Location' }
+              { data?( selectedField? selectedField.fieldname : data.location ) : (
+                ( sess && sess.language === 'EN' ) ? "Location" : 'สนาม'
+              ) }
               {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
             </GreenTextButton>
             <GreenTextButton
@@ -512,18 +520,30 @@ function MBOverviewBody(props){
                 ( data.class && !data.class.status &&
                   (
                     data.class.length >= 2 ?
-                    ( data.class.length + (data.scorematch === 1 ? ' Classes' : ' Flight') )
+                    ( data.class.length + (data.scorematch === 1 ? (
+                      ( sess && sess.language === 'EN' ) ? " Classes" : ' ประเภท'
+                    ) : (
+                      ( sess && sess.language === 'EN' ) ? " Flight" : ' ไฟล์ท'
+                    )) )
                     :
-                    ( data.class.length + (data.scorematch === 1 ? ' Class' : ' Flight') )
+                    ( data.class.length + (data.scorematch === 1 ? (
+                      ( sess && sess.language === 'EN' ) ? " Class" : ' ประเภท'
+                    ) : (
+                      ( sess && sess.language === 'EN' ) ? " Flight" : ' ไฟล์ท'
+                    )) )
                   )
                 ):
-                (data.scorematch === 1 ? ' Class' : ' Flight')
+                (data.scorematch === 1 ? (
+                  ( sess && sess.language === 'EN' ) ? " Class" : ' ประเภท'
+                ) : (
+                  ( sess && sess.language === 'EN' ) ? " Flight" : ' ไฟล์ท'
+                ))
               }
             </GreenTextButton>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}
               disabled={!editting}>
-              <FormLabel component="legend" style={{ marginLeft: 16 }}>Privacy</FormLabel>
+              <FormLabel component="legend" style={{ marginLeft: 16 }}>{ ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' }</FormLabel>
               <RadioGroup
                 value={
                   data?( selectedPrivacy? selectedPrivacy : data.privacy ):'public'
@@ -532,19 +552,19 @@ function MBOverviewBody(props){
                 <FormControlLabel
                   value={'public'}
                   control={<GreenRadio />}
-                  label="Public"
+                  label={ ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'friend'}
                   control={<GreenRadio />}
-                  label="Friend"
+                  label={ ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'private'}
                   control={<GreenRadio />}
-                  label="Private"
+                  label={ ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว' }
                   labelPlacement="end"
                 />
               </RadioGroup>
@@ -581,9 +601,13 @@ function MBOverviewBody(props){
         <div className={classes.buttonControl}>
           <div style={{ flex: 2 }}></div>
           <GreenTextButton className={classes.button}
-            onClick={()=>handleEditting(false)}>Cancel</GreenTextButton>
+            onClick={()=>handleEditting(false)}>
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+          </GreenTextButton>
           <GreenButton className={classes.button}
-            onClick={handleEditMatch}>Save</GreenButton>
+            onClick={handleEditMatch}>
+            { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+          </GreenButton>
         </div>
         :
         <div style={{ height: 88 }}></div>

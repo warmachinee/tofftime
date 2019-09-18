@@ -130,7 +130,7 @@ const useStyles = makeStyles(theme => ({
 
 function MatchDetailBody(props) {
   const classes = useStyles();
-  const { BTN, data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
+  const { BTN, sess, data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
   const [ expanded, setExpanded ] = React.useState(true)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
 
@@ -154,19 +154,22 @@ function MatchDetailBody(props) {
           <Typography gutterBottom variant="h6" color="textSecondary">
             { data &&
               (
-                data.scorematch === 1 ? 'Pro' : 'Amateur'
+                data.scorematch === 1 ?
+                ( ( sess && sess.language === 'EN' ) ? "Professional" : 'มืออาชีพ' )
+                :
+                ( ( sess && sess.language === 'EN' ) ? "Amateur" : 'มือสมัครเล่น' )
               )
             }
           </Typography>
           <div style={{ display: 'flex' }}>
             { BTN && data && data.team && data.team.length > 0 &&
               <BTN.NoStyleLink to={`/schedule/${matchid}`}>
-                <BTN.PrimaryText>Schedule</BTN.PrimaryText>
+                <BTN.PrimaryText>{ ( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางการแข่งขัน' }</BTN.PrimaryText>
               </BTN.NoStyleLink>
             }
             { matchid && BTN &&
               <BTN.NoStyleLink to={`/matchform/${matchid}`}>
-                <BTN.PrimaryText>Form</BTN.PrimaryText>
+                <BTN.PrimaryText>{ ( sess && sess.language === 'EN' ) ? "Form" : 'รายชื่อผู้สมัคร' }</BTN.PrimaryText>
               </BTN.NoStyleLink>
             }
           </div>
@@ -234,7 +237,7 @@ function MatchDetailBody(props) {
               marginTop: 16,
               boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
             }}>
-            <ListItemText primary="Scoreboard" />
+            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Scoreboard" : 'ตารางคะแนน' } />
             <IconButton
               disableRipple
               className={classes.expandIcon}

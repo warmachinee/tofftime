@@ -114,7 +114,7 @@ export default function SelectMatchListItem(props) {
               <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%' }}
                 primary={
                   <Typography variant="subtitle2" color="textSecondary">
-                    {API.handleGetDate(data.createdate)}
+                    {API.handleGetDate(data.date)}
                   </Typography>
                 }
                 secondary={
@@ -132,7 +132,7 @@ export default function SelectMatchListItem(props) {
                 <React.Fragment>
                   { !(window.innerWidth >= 600) &&
                     <Typography variant="caption" color="textSecondary">
-                      {`${API.handleGetDate(data.createdate)} • ${data.views + 'views'}`}
+                      {`${API.handleGetDate(data.date)} • ${data.views + 'views'}`}
                     </Typography>
                   }
                   <Typography variant="body2" color="textPrimary" className={classes.listTitle}>

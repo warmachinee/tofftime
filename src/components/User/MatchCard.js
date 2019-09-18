@@ -14,7 +14,6 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    marginLeft: 'auto',
     marginRight: 'auto',
     marginBottom: 24,
     [theme.breakpoints.up(600)]: {
@@ -140,7 +139,12 @@ export default function MatchCard(props) {
               color: data.typescore === 1 ? primary[700] : 'inherit',
               fontWeight: data.typescore === 1 ? 900 : 400
             }}>
-            { data.typescore === 1 ? 'Professional' : 'Amateur' }
+            {
+              data.typescore === 1 ?
+              ( ( sess && sess.language === 'EN' ) ? "Professional" : 'มืออาชีพ' )
+              :
+              ( ( sess && sess.language === 'EN' ) ? "Amateur" : 'มือสมัครเล่น' )
+            }
           </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>

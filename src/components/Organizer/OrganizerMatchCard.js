@@ -13,7 +13,6 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
-    marginLeft: 'auto',
     marginRight: 'auto',
     marginBottom: 24,
     [theme.breakpoints.up(600)]: {
@@ -69,7 +68,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerMatchCard(props) {
   const classes = useStyles();
-  const { API, BTN, data, isSupportWebp } = props
+  const { API, BTN, data, isSupportWebp, sess } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
 
   return(

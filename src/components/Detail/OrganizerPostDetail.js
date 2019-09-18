@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-export default function OrganizerAnnounceDetail(props){
+export default function OrganizerPostDetail(props){
   const classes = useStyles();
   const { API, sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
@@ -71,22 +71,6 @@ export default function OrganizerAnnounceDetail(props){
     if(props.computedMatch){
       handleFetch()
     }
-    /*
-    if(sess && sess.status !== 1){
-      handleSnackBar({
-        state: true,
-        message: 'Please login before to continue.',
-        variant: 'error',
-        autoHideDuration: 10000,
-      })
-      setTimeout(()=>{
-        window.location.pathname = '/login'
-      }, 11000)
-    }else{
-      if(props.computedMatch){
-        handleFetch()
-      }
-    }*/
     window.scrollTo(0, 0)
   },[ ])
 
@@ -96,12 +80,24 @@ export default function OrganizerAnnounceDetail(props){
       { data &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h3">
-            {data.message}
+            { data.message &&
+              ( data.type === 'announce'?
+                data.message
+                :
+                data.message.split('<$$split$$>')[0]
+              )
+            }
           </Typography>
           { data.photopath &&
             <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
-          <DetailComponent messagedetail={data.messagedetail}/>
+          <DetailComponent
+            messagedetail={
+              data.type === 'announce' ?
+              ( data.messagedetail && data.messagedetail )
+              :
+              ( data.message && data.message.split('<$$split$$>')[1] )
+            }/>
         </div>
       }
     </Paper>

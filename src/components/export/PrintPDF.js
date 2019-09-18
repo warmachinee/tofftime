@@ -26,7 +26,9 @@ export default function PrintPDF(props){
   })
 
   return(
-    <Button onClick={()=>handleDownload(data, userData, matchClass.classname)} color="primary">PDF</Button>
+    <Button onClick={()=>handleDownload(data, userData, matchClass.classname)} color="primary">
+      PDF
+    </Button>
   );
 }
 

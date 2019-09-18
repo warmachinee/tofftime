@@ -54,12 +54,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function NotificationsDialog(props) {
   const classes = useStyles();
-  const { notiState, toggleNoti, notiData } = props
+  const { sess, notiState, toggleNoti, notiData } = props
 
   return (
     <TemplateDialog open={notiState} handleClose={toggleNoti} fullScreen>
       <div className={classes.root}>
-        <LabelText text="Notifications" />
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Notifications" : 'การแจ้งเตือน' } />
         <List>
           { notiData &&
             notiData.map( d => <ListNotiItem key={d.createdate} {...props} data={d}/>)
@@ -90,17 +90,46 @@ function ListNotiItem(props) {
     setAnchorEl(null);
   }
 
-  function handleGetButton(){
+  function getNotiLabel(action, type){
+    switch (true) {
+      case type === 'friend' && action === 'add':
+        return ( sess && sess.language === 'EN' ) ? "Friend request" : 'คำขอเป็นเพื่อน'
+        break;
+      case type === 'friend' && action === 'accept':
+        return ( sess && sess.language === 'EN' ) ? "Accepted your friend request" : 'ยอมรับคำขอเป็นเพื่อน'
+        break;
+      case type === 'match' && action === 'join':
+        return ( sess && sess.language === 'EN' ) ? "Match join request" : 'ขอเข้าร่วมการแข่งขัน'
+        break;
+      case type === 'match' && action === 'invite':
+        return ( sess && sess.language === 'EN' ) ? "Match invite request" : 'เชิญเข้าร่วมการแข่งขัน'
+        break;
+      case type === 'match' && action === 'accept':
+        return ( sess && sess.language === 'EN' ) ? "Joined match" : 'เข้าร่วมการแข่งขัน'
+        break;
+      case type === 'match' && action === 'acceptfrominvite':
+        return ( sess && sess.language === 'EN' ) ? "Joined match" : 'เข้าร่วมการแข่งขัน'
+        break;
+      default:
+
+    }
+  }
+
+  function getNotiButton(){
     switch (true) {
       case data.type === 'friend' && data.action === 'add':
         return(
           <React.Fragment>
             <BTN.Primary
               style={{ padding: '4px 12px' }}
-              onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'accept')}>Confirm</BTN.Primary>
+              onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'accept')}>
+              { ( sess && sess.language === 'EN' ) ? "Confirm" : 'ยืนยัน' }
+            </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px' }}
-              onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'reject')}>Cancel</BTN.PrimaryText>
+              onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'reject')}>
+              { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+            </BTN.PrimaryText>
           </React.Fragment>
         )
         break;
@@ -112,10 +141,14 @@ function ListNotiItem(props) {
           <React.Fragment>
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'accept', 'host')}>Accept</BTN.Primary>
+              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'accept', 'host')}>
+              { ( sess && sess.language === 'EN' ) ? "Accept" : 'ยอมรับ' }
+            </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'host')}>Reject</BTN.PrimaryText>
+              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'host')}>
+              { ( sess && sess.language === 'EN' ) ? "Reject" : 'ปฏิเสธ' }
+            </BTN.PrimaryText>
           </React.Fragment>
         )
         break;
@@ -124,17 +157,21 @@ function ListNotiItem(props) {
           <React.Fragment>
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'acceptfrominvite', 'target')}>Join</BTN.Primary>
+              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'acceptfrominvite', 'target')}>
+              { ( sess && sess.language === 'EN' ) ? "Join" : 'เข้าร่วม' }
+            </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'target')}>Cancel</BTN.PrimaryText>
+              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'target')}>
+              { ( sess && sess.language === 'EN' ) ? "Reject" : 'ปฏิเสธ' }
+            </BTN.PrimaryText>
           </React.Fragment>
         )
         break;
       case data.type === 'match' && data.action === 'accept':
         return null
         break;
-      case data.type === 'match' && data.action === 'acceptfrominvte':
+      case data.type === 'match' && data.action === 'acceptfrominvite':
         return null
         break;
       default:
@@ -210,7 +247,7 @@ function ListNotiItem(props) {
                 { data.fromdetail.nickname !== '-' && `(${data.fromdetail.nickname})` }
               </Typography>
               <Typography variant="subtitle2" color="textSecondary">
-                {data.action}•{data.type}
+                {getNotiLabel(data.action, data.type)}
               </Typography>
               <Typography variant="caption" color="textSecondary">
                 {API.handleGetPostTime(data.createdate)}
@@ -220,15 +257,15 @@ function ListNotiItem(props) {
           secondary={
             <React.Fragment>
               { window.innerWidth < 600 &&
-                handleGetButton()
+                getNotiButton()
               }
             </React.Fragment>
           } />
         { window.innerWidth >= 600 &&
           <ListItemIcon>
             {
-              handleGetButton() ?
-              handleGetButton()
+              getNotiButton() ?
+              getNotiButton()
               :
               <div />
             }

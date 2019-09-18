@@ -45,7 +45,6 @@ const PageOrganizerPostEditor = Loadable({
   loading: () => <LDCircular />
 });
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -70,6 +69,11 @@ const useStyles = makeStyles(theme => ({
   },
   tableHead: {
     backgroundColor: grey[900],
+  },
+  name: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   listRoot: {
     overflow: 'auto',
@@ -214,20 +218,24 @@ export default function PagePost(props){
       <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          Page post
+          { ( sess && sess.language === 'EN' ) ? "Page post" : 'โพสต์ของเพจ' }
         </Box>
       </Typography>
       <div style={{ display: 'flex' }}>
         <RedButton style={{ padding: '8px 16px 8px 0' }} variant="contained" color="secondary"
           onClick={()=>handleOpen('create')}>
           <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
-          Create
+          { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
         </RedButton>
         <div style={{ flex: 1 }} />
         <GreenTextButton style={{ padding: '8px 24px' }}
           variant={ editting? 'text' : 'outlined' }
           onClick={()=>setEditting(!editting)}>
-          { editting? 'Done' : 'Remove' }
+          { editting?
+            ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+            :
+            ( ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' )
+          }
         </GreenTextButton>
       </div>
       <List>
@@ -235,12 +243,12 @@ export default function PagePost(props){
           <ListItemAvatar style={{ marginRight: 16 }}>
             <div style={{ margin: 10, width: 60, height: 24 }}></div>
           </ListItemAvatar>
-          <StyledText primary="Post" />
+          <StyledText primary={ ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' } />
         </ListItem>
       </List>
       <List className={classes.listRoot}>
         { data && !data.status &&
-          API.handleSortArrayByDate(data, 'createdate', 'title').map( d =>{
+          API.sortArrByDate(data, 'createdate', 'title').map( d =>{
             return d &&
             <React.Fragment key={d.postid}>
               <ListItem>
@@ -248,14 +256,19 @@ export default function PagePost(props){
                   {
                     d.photopath?
                       <Avatar
-                        alt={d.message}
+                        alt={d.message.split('<$$split$$>')[0]}
                         src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
                       <ImageIcon className={classes.bigAvatar}/>
                   }
                 </ListItemAvatar>
-                <ListItemText className={classes.listDetail} primary={d.message}
+                <ListItemText className={classes.listDetail}
+                  primary={
+                    <Typography className={classes.name} component="div">
+                      {d.message.split('<$$split$$>')[0]}
+                    </Typography>
+                  }
                   secondary={
                     <Typography variant="subtitle2" color="textSecondary" style={{ textTransform: 'capitalize' }}>
                       {d.type}
@@ -279,8 +292,14 @@ export default function PagePost(props){
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
         <div>
-          <LabelText text={ clickAction === 'edit' ? "Edit post" : "Create post"} />
-          <PageOrganizerPostEditor {...props} clickAction={clickAction} edittingData={edittingData} />
+          <LabelText
+            text={
+              clickAction === 'edit' ?
+              ( ( sess && sess.language === 'EN' ) ? "Edit post" : 'แก้ไขโพสต์' )
+              :
+              ( ( sess && sess.language === 'EN' ) ? "Create post" : 'สร้างโพสต์' )
+            } />
+          <PageOrganizerPostEditor {...props} clickAction={clickAction} edittingData={edittingData} handleCloseEditor={handleClose}/>
         </div>
       </TemplateDialog>
       <TemplateDialog
@@ -288,19 +307,19 @@ export default function PagePost(props){
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure you want to delete?
+            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
-            ( Page post : { selectedDeleteItem && selectedDeleteItem.message } )
+            ( { ( sess && sess.language === 'EN' ) ? "Page post" : 'โพสต์ของเพจ' } : { selectedDeleteItem && selectedDeleteItem.message } )
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            Cancel
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            Delete
+            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
           </RedButton>
         </div>
       </TemplateDialog>

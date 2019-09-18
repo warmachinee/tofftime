@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function UpcomingList(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer, pageData } = props
+  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer, pageData, pageList } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -98,9 +98,7 @@ export default function UpcomingList(props) {
             return item.pageid === pageData.pageid
           }))
         }else{
-          setData(d.filter( item =>{
-            return item.pageid === 0
-          }))
+          setData(d)
         }
       }
     })
@@ -125,7 +123,7 @@ export default function UpcomingList(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text="Upcoming" />
+      <LabelText text={ (sess && sess.language === 'EN')? 'Upcoming' : 'เร็วๆนี้' } />
       <div className={classes.grid}>
         <List>
           <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
@@ -141,22 +139,22 @@ export default function UpcomingList(props) {
             </ListItemIcon>
             { ( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
               <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                primary="date" />
+                primary={ (sess && sess.language === 'EN')? 'Date' : 'วันที่' } />
             }
             <ListItemText style={{ color: 'white', width: 100 }}
-              primary="Match" />
+              primary={ (sess && sess.language === 'EN')? 'Match' : 'การแข่งขัน' } />
 
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
               <ListItemText
                 style={{ width: 100, color: 'white' }}
-                primary="Location" />
+                primary={ (sess && sess.language === 'EN')? 'Location' : 'สนาม' } />
             }
           </ListItem>
         </List>
         <Divider />
         { data ?
           ( data.length > 0 ?
-            data.map( d => <UpcomingListItem key={d.matchid} data={d} {...props}/>)
+            API.sortReverseArrByDate(data, 'matchdate').map( d => <UpcomingListItem key={d.matchid} data={d} {...props}/>)
             :
             <div style={{
                 width: '100%', padding: '36px 0', textAlign: 'center',

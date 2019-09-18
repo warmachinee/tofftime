@@ -35,6 +35,7 @@ import {
   Flag,
   SettingsApplications,
   AddCircleOutline,
+  Translate,
 
 } from '@material-ui/icons';
 
@@ -117,7 +118,7 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
   },
-  notiHidden: {
+  iconHidden: {
     [theme.breakpoints.up(900)]: {
       display: 'none',
     }
@@ -171,6 +172,22 @@ export default function SideMenu(props) {
 
   function toggleConfirmLogout(){
     setConfirmLogout(!confirmLogout)
+  }
+
+  async function handleSwitchLanguage(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'uusersystem', {
+        action: 'switchlanguage'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(d.status === 'success'){
+        setTimeout(()=>{
+          window.location.pathname = window.location.pathname
+        }, 1000)
+      }
+    })
   }
 
   async function handleLogout(){
@@ -306,6 +323,17 @@ export default function SideMenu(props) {
                       </Button>
                     </BTN.NoStyleLink>
                   }
+                  { sess &&
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <IconButton onClick={handleSwitchLanguage}>
+                        <Translate style={{ color: COLOR.primary[700] }}/>
+                      </IconButton>
+                      <div style={{ fontSize: 16, fontWeight: 600, color: COLOR.grey[500], padding: 12  }}>
+                        {sess.language}
+                      </div>
+                    </div>
+                  }
                 </div>
               }
             </div>
@@ -314,7 +342,7 @@ export default function SideMenu(props) {
         }
         <Divider />
         <List>
-          <ListItem button onClick={toggleNoti} className={classes.notiHidden}>
+          <ListItem button onClick={toggleNoti} className={classes.iconHidden}>
             <ListItemIcon>
               { notiData && notiData.length > 0?
                 <Badge badgeContent={
@@ -328,13 +356,14 @@ export default function SideMenu(props) {
                 <Notifications />
               }
             </ListItemIcon>
-            <ListItemText primary="Notifications" />
+            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Notifications" : 'การแจ้งเตือน' } />
           </ListItem>
           <ListItem button onClick={toggleCreateMatch}>
             <ListItemIcon>
               <AddCircleOutline />
             </ListItemIcon>
-            <ListItemText className={classes.listTitle} primary="Create Match" />
+            <ListItemText className={classes.listTitle}
+              primary={ ( sess && sess.language === 'EN' ) ? "Create Match" : 'สร้างการแข่งขัน' } />
           </ListItem>
           <Divider />
         </List>
@@ -350,7 +379,7 @@ export default function SideMenu(props) {
                     <AccountCircle classes={{ root: classes.avatar }} />
                   }
                 </ListItemIcon>
-                <ListItemText primary="User" />
+                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้' } />
               </ListItem>
             </BTN.NoStyleLink>
             <Divider />
@@ -361,7 +390,8 @@ export default function SideMenu(props) {
             <ListItemIcon>
               <Flag />
             </ListItemIcon>
-            <ListItemText className={classes.listTitle} primary="Create Page" />
+            <ListItemText className={classes.listTitle}
+              primary={ ( sess && sess.language === 'EN' ) ? "Create Page" : 'สร้างเพจ' } />
           </ListItem>
           <ListPage {...props} />
         </List>
@@ -381,23 +411,23 @@ export default function SideMenu(props) {
             <BTN.NoStyleLink to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}>
               <ListItem button>
                 <ListItemIcon><Dashboard /></ListItemIcon>
-                <ListItemText primary="Dashboard" />
+                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Dashboard" : 'หน้าหลัก' } />
               </ListItem>
             </BTN.NoStyleLink>
           }
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}>
             <ListItem button>
               <ListItemIcon><SettingsApplications /></ListItemIcon>
-              <ListItemText primary="Management" />
+              <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Management" : 'ระบบการจัดการ' } />
             </ListItem>
           </BTN.NoStyleLink>
           <ListItem button onClick={toggleHistory}>
             <ListItemIcon><History /></ListItemIcon>
-            <ListItemText primary="History" />
+            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "History" : 'ประวัติ' } />
           </ListItem>
           <ListItem button onClick={toggleUpcoming}>
             <ListItemIcon><Event /></ListItemIcon>
-            <ListItemText primary="Upcoming" />
+            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Upcoming" : 'เร็วๆนี้' } />
           </ListItem>
         </List>
         <ListFriend expanded={expanded} handleExpand={handleExpand} state={expanded.friend} {...props} />
@@ -406,7 +436,8 @@ export default function SideMenu(props) {
         <List>
           <ListItem button onClick={toggleConfirmLogout} className={classes.logout}>
             <ListItemIcon><ExitToApp classes={{ root: classes. logoutIcon }}/></ListItemIcon>
-            <ListItemText className={classes.logoutTitle} primary="Logout" />
+            <ListItemText className={classes.logoutTitle}
+              primary={ ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' } />
           </ListItem>
         </List>
       </Drawer>
@@ -414,16 +445,16 @@ export default function SideMenu(props) {
         {/*handleLogout*/}
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure you want to Log out?
+            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to Log out?" : 'ต้องการลงชื่อออกหรือไม่ ?' }
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <BTN.PrimaryText fullWidth onClick={toggleConfirmLogout} className={classes.confirmButton}>
-            Cancel
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
           </BTN.PrimaryText>
           <BTN.Red fullWidth onClick={handleLogout} className={classes.confirmButton}>
-            Log out
+            { ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' }
           </BTN.Red>
         </div>
       </TemplateDialog>

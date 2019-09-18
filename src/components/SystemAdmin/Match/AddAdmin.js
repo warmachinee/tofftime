@@ -203,8 +203,8 @@ function ListMenu(props) {
   return (
     <div>
       <React.Fragment>
-        <ListItem role={undefined} dense button
-          onClick={e => admin && admin.some( d =>{ return d.userid !== value.userid }) ? handleClick(e) : console.log() }>
+        <ListItem button
+          onClick={e => ( admin && admin.some( d =>{ return d.userid === value.userid }) ) ? handleClick(e) : handleSelectRole(value, 'set') }>
           <ListItemIcon className={classes.listItemIcon}>
             { admin && admin.some( d =>{ return d.userid === value.userid }) ?
               <CheckCircleIcon classes={{ root: classes.addCircleIcon }}/>
@@ -223,8 +223,8 @@ function ListMenu(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={()=>handleSelectRole(value, 'set')}>Admin</MenuItem>
-        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>Member</MenuItem>
+        {/* <MenuItem onClick={()=>handleSelectRole(value, 'set')}>{ ( sess && sess.language === 'EN' ) ? "Admin" : 'ผู้ดูแล' }</MenuItem> */}
+        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>{ ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }</MenuItem>
       </Menu>
     </div>
   );
@@ -397,7 +397,7 @@ export default function AddAdmin(props){
           disabled={data === null}
           className={classes.searchBox}
           variant="outlined"
-          placeholder={ !searchUser? "Search player" : '' }
+          placeholder={ !searchUser? ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' : '' }
           value={searchUser}
           onChange={e =>setSearchUser(e.target.value)}
           InputProps={{

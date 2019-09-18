@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
 export default function UserOverview(props) {
   const classes = useStyles();
   const {
-    API, BTN, COLOR, isSupportWebp, anchorEl, handleClose,
+    API, BTN, COLOR, sess, isSupportWebp, anchorEl, handleClose,
     token, setCSRFToken,
     data, handleFriend, alreadyFriend, handleAddFriendClose
   } = props
@@ -90,15 +90,21 @@ export default function UserOverview(props) {
           </Button>
         </BTN.NoStyleLink>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
-          <BTN.PrimaryText style={{ padding: 4, width: '100%' }} onClick={handleClose}>Cancel</BTN.PrimaryText>
+          <BTN.PrimaryText style={{ padding: 4, width: '100%' }} onClick={handleClose}>
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+          </BTN.PrimaryText>
           <BTN.Primary style={{ padding: 4, width: '100%' }}
             onClick={()=>
               data.status === 'pending' ? handleFriendClick(data.userid, 'un') :
               alreadyFriend ? handleFriendClick(data.userid, 'un') : handleFriendClick(data.userid, 'add')
             }>
             {
-              data.status === 'pending' ? 'Unfriend' :
-              alreadyFriend ? 'Unfriend' : 'Add'
+              data.status === 'pending' ? ( ( sess && sess.language === 'EN' ) ? "Unfriend" : 'ลบเพื่อน' ) :
+              ( alreadyFriend ? 
+                ( ( sess && sess.language === 'EN' ) ? "Unfriend" : 'ลบเพื่อน' )
+                :
+                ( ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่มเพื่อน' )
+              )
             }
           </BTN.Primary>
         </div>

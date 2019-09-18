@@ -40,6 +40,40 @@ export default function Timeline(props) {
   const [ data, setData ] = React.useState(null)
   const [ friend, setFriend ] = React.useState(null)
 
+  function getComponent(){
+    switch (true) {
+      case data.privacy === 'private':
+        return null
+        break;
+      case data.privacy === 'public':
+        return (
+          <React.Fragment>
+            <Statistics userid={param} {...props} userData={data} />
+            <Upcoming userid={param} {...props} userData={data} />
+            <History userid={param} {...props} open={open} userData={data} />
+          </React.Fragment>
+        )
+        break;
+      case data.privacy === 'friend':
+        return friend.some( item =>{ return item.userid === data.userid }) && (
+          <React.Fragment>
+            <Statistics userid={param} {...props} userData={data} />
+            <Upcoming userid={param} {...props} userData={data} />
+            <History userid={param} {...props} open={open} userData={data} />
+          </React.Fragment>
+        )
+        break;
+      default:
+      return(
+        <React.Fragment>
+          <Statistics userid={param} {...props} userData={data} />
+          <Upcoming userid={param} {...props} userData={data} />
+          <History userid={param} {...props} open={open} userData={data} />
+        </React.Fragment>
+      )
+    }
+  }
+
   async function handleFetchInfo(userid){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
@@ -89,14 +123,7 @@ export default function Timeline(props) {
       { data && friend &&
         <React.Fragment>
           <OverviewProfile {...props} userid={param} userData={data} />
-          { data.privacy !== 'private' &&
-            friend.some( item =>{ return item.userid === data.userid }) &&
-            <React.Fragment>
-              <Statistics userid={param} {...props} userData={data}/>
-              <Upcoming userid={param} {...props} userData={data}/>
-              <History userid={param} {...props} open={open} userData={data}/>
-            </React.Fragment>
-          }
+          {getComponent()}
         </React.Fragment>
       }
     </div>

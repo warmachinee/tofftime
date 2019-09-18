@@ -69,14 +69,14 @@ export default function ListFollow(props) {
           <ListItemIcon>
             {expanded.follow ? <ExpandLess /> : <ExpandMore />}
           </ListItemIcon>
-          <ListItemText primary="Follow" />
+          <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Follow" : 'การติดตาม' } />
         </ListItem>
       </List>
       <Collapse in={state} timeout="auto" style={{ minHeight: 'auto' }}>
         <List component="div" disablePadding>
           { data &&
             data.map( d =>
-              <BTN.NoStyleLink to={`page/${d.pageid}`} key={d.pageid}>
+              <BTN.NoStyleLink to={`/page/${d.pageid}`} key={d.pageid}>
                 <ListItem button>
                   <ListItemIcon>
                     { d.logo ?

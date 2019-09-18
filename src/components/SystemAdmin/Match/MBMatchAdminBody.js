@@ -52,13 +52,13 @@ const useStyles = makeStyles(theme => ({
   },
   listStatus: {
     margin: theme.spacing(1, 0),
-    width: '30%',
+    width: '40%',
     display: 'flex', justifyContent: 'flex-start'
   },
   menuButton: {
     textTransform: 'capitalize',
     padding: '6px 8px',
-    left: -16
+    left: -8
   },
   controls: {
     position: 'relative',
@@ -94,6 +94,19 @@ function ListMenu(props) {
   const classes = useStyles();
   const { sess, token, setCSRFToken, matchid, handleSnackBar, setMBData, primary } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
+
+  function getAdminRole(role){
+    switch (true) {
+      case role === 'host':
+        return ( sess && sess.language === 'EN' ) ? "Host" : 'เจ้าของเพจ'
+        break;
+      case role === 'admin':
+        return ( sess && sess.language === 'EN' ) ? "Admin" : 'ผู้ดูแล'
+        break;
+      default:
+        return ( sess && sess.language === 'EN' ) ? "Member" : 'สมาชิก'
+    }
+  }
 
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
@@ -144,16 +157,20 @@ function ListMenu(props) {
 
   return (
     <div>
-      <Button className={classes.menuButton} onClick={handleClick}>
-        {primary.permission}
-      </Button>
+      { primary.permission !== 'host' ?
+        <Button className={classes.menuButton} onClick={handleClick}>
+          {getAdminRole(primary.permission)}
+        </Button>
+        :
+        <div style={{ textTransform: 'capitalize' }}>{getAdminRole(primary.permission)}</div>
+      }
       <Menu
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>Member</MenuItem>
+        <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>{ ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }</MenuItem>
       </Menu>
     </div>
   );
@@ -196,17 +213,20 @@ export default function MBMatchAdminBody(props){
         <Button className={classes.addAdminButton} variant="contained"
           onClick={handleOpen}>
           <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
-          Add admin
+          { ( sess && sess.language === 'EN' ) ? "Add admin" : 'เพิ่มแอดมิน' }
         </Button>
         <div style={{ flex: 1 }} />
       </ListItem>
       <List style={{ cursor: 'auto' }}>
         <ListItem className={classes.listLabel}>
-          <StyledText className={classes.listText} primary="First name" />
+          <StyledText className={classes.listText}
+            primary={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' } />
           { window.innerWidth >= 600 &&
-            <StyledText className={classes.listText} primary="Last name" />
+            <StyledText className={classes.listText}
+              primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
           }
-          <StyledText className={classes.listStatus} primary="Role" />
+          <StyledText className={classes.listStatus}
+            primary={ ( sess && sess.language === 'EN' ) ? "Role" : 'ตำแหน่ง' } />
         </ListItem>
         { data &&
           data.map( d =>

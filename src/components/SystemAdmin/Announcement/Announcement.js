@@ -121,7 +121,7 @@ const GreenTextButton = withStyles(theme => ({
 
 export default function Announcement(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
@@ -235,7 +235,7 @@ export default function Announcement(props){
       </List>
       <List className={classes.listRoot}>
         { data && !data.status &&
-          API.handleSortArrayByDate(data, 'createdate', 'title').map( d =>{
+          API.sortArrByDate(data, 'createdate', 'title').map( d =>{
             return d &&
             <React.Fragment key={d.announceid}>
               <ListItem>
@@ -279,7 +279,7 @@ export default function Announcement(props){
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            Are you sure you want to delete?
+            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( Announce : { selectedDeleteItem && selectedDeleteItem.title } )
@@ -288,10 +288,10 @@ export default function Announcement(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            Cancel
+            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            Delete
+            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
           </RedButton>
         </div>
       </TemplateDialog>

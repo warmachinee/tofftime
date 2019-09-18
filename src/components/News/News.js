@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 export default function News(props) {
   const classes = useStyles();
   const {
-    COLOR, API, BTN, isSupportWebp, token, setCSRFToken
+    COLOR, API, BTN, isSupportWebp, token, setCSRFToken, sess
   } = props
   const [ data, setData ] = React.useState(null)
 
@@ -59,7 +59,7 @@ export default function News(props) {
 
   return(
     <div id="el_news" className={classes.root}>
-      <LabelText text="News"/>
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "News" : 'ข่าว' } />
       <div className={classes.grid}>
         { data?
           data.map( d => <NewsCard key={d.newsid} {...props} data={d}/> )

@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, token, setCSRFToken, userid, userData, createMatchState, pageOrganizer, pageData } = props
+  const { API, sess, token, setCSRFToken, userid, userData, createMatchState, pageOrganizer, pageData, pageList } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -63,9 +63,7 @@ export default function Upcoming(props) {
             return item.pageid === pageData.pageid
           }))
         }else{
-          setData(d.filter( item =>{
-            return item.pageid === 0
-          }))
+          setData(d)
         }
       }
     })
@@ -79,11 +77,11 @@ export default function Upcoming(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text="Upcoming" />
+      <LabelText text={ (sess && sess.language === 'EN')? 'Upcoming' : 'เร็วๆนี้' } />
       <div className={classes.grid}>
         { data ?
           ( data.length > 0 ?
-            data.slice(0, 10).map( d => <MatchCard key={d.matchid} data={d} {...props} />)
+            API.sortReverseArrByDate(data, 'matchdate').slice(0, 10).map( d => <MatchCard key={d.matchid} data={d} {...props} />)
             :
             <div style={{
                 width: '100%', padding: '36px 0', textAlign: 'center',

@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 
 function TabContainer(props) {
   const classes = useStyles()
-  const { data, userscore, matchClass, matchid, reward, sortBy, setSortBy } = props
+  const { sess, data, userscore, matchClass, matchid, reward, sortBy, setSortBy } = props
 
   const rewardSelected = !reward.status && reward.status !== 'reward not create' && reward.status !== 'need to login admin account' && reward.filter( item =>{
     return (item.classno === matchClass.classno && item)
@@ -43,22 +43,24 @@ function TabContainer(props) {
       <div style={{ display: 'flex' }}>
         {
           !reward.status &&
-          <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} />
+          <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} sess={sess} sortBy={sortBy}/>
         }
-        <PrintPDF data={data} userscore={userscore} matchClass={matchClass}/>
+        <PrintPDF data={data} userscore={userscore} matchClass={matchClass} />
         <div style={{ flex: 1 }} />
-        <div>
-          <FormControl className={classes.formControl}>
-            <InputLabel>Sort by</InputLabel>
-            <Select
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
-            >
-              <MenuItem value={'net'}>Net</MenuItem>
-              <MenuItem value={'sf'}>SF</MenuItem>
-            </Select>
-          </FormControl>
-        </div>
+        { data && data.scorematch === 0 &&
+          <div>
+            <FormControl className={classes.formControl}>
+              <InputLabel>{ ( sess && sess.language === 'EN' ) ? "Sort by" : 'จัดเรียงตาม' }</InputLabel>
+              <Select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+              >
+                <MenuItem value={'net'}>Net</MenuItem>
+                <MenuItem value={'sf'}>SF</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        }
       </div>
       <ScoreTable {...props} data={data} userscore={userscore} matchClass={matchClass}/>
     </React.Fragment>
@@ -100,7 +102,7 @@ const StyledTab = withStyles(theme => ({
 
 export default function Scoreboard(props) {
   const classes = useStyles();
-  const { data, userscore, matchClass, matchid, token, setCSRFToken } = props
+  const { sess, data, userscore, matchClass, matchid, token, setCSRFToken } = props
   const [ value, setValue ] = React.useState(0);
   const [ reward, setReward ] = React.useState(null)
 
@@ -160,7 +162,7 @@ export default function Scoreboard(props) {
             )
           }
           { data.scorematch === 0 &&
-            <StyledTab label={"No class"} />
+            <StyledTab label={ ( sess && sess.language === 'EN' ) ? "Other" : 'อื่นๆ' } />
           }
         </StyledTabs>
       </Paper>

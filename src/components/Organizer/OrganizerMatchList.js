@@ -59,7 +59,7 @@ export default function OrganizerMatchList(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text="Match list" />
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Match list" : 'การแข่งขัน' } />
       <div className={classes.grid}>
         { ( data && data.length > 0 ) ?
           data.map( d => <OrganizerMatchCard key={d.postid} data={d} {...props} />)

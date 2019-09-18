@@ -89,6 +89,54 @@ export default function MatchFormResult(props) {
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ data, setData ] = React.useState(null)
 
+  function getStatus(status){
+    switch (true) {
+      case status === 0:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
+              { ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ',
+          color: COLOR.red[500]
+        });
+        break;
+      case status === 1:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
+              { ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ',
+          color: COLOR.amber[500]
+        });
+        break;
+      case status === 2:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
+              { ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ',
+          color: COLOR.green[500]
+        });
+        break;
+      default:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.grey[800] }}>
+              { ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี',
+          color: COLOR.grey[500]
+        });
+    }
+  }
+
   function handleResponseForm(){
     const matchid = parseInt(props.computedMatch.params.matchid)
     const socket = socketIOClient( API.getWebURL() )
@@ -149,7 +197,9 @@ export default function MatchFormResult(props) {
       <GoBack />
       { matchDetail &&
         <div className={classes.content}>
-          <Typography gutterBottom variant="h4">Match form</Typography>
+          <Typography gutterBottom variant="h4">
+            { ( sess && sess.language === 'EN' ) ? "Form" : 'รายชื่อผู้สมัคร' }
+          </Typography>
           <Typography gutterBottom variant="h5">{matchDetail.title}</Typography>
           <Typography gutterBottom variant="h6" component="div" style={{ display: 'flex' }}>
             <LocationOn style={{ color: COLOR.primary[600] }} />
@@ -161,9 +211,12 @@ export default function MatchFormResult(props) {
               <ListItemIcon className={classes.listPicture}>
                 <div className={classes.avatarImage} />
               </ListItemIcon>
-              <ListItemText className={classes.listName} style={{ color: 'white' }} primary="Name" />
-              <ListItemText className={classes.listLastname} style={{ color: 'white' }} primary="Lastname" />
-              <ListItemText className={classes.listStatus} style={{ color: 'white' }} primary="Status" />
+              <ListItemText className={classes.listName} style={{ color: 'white' }}
+                primary={ ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' } />
+              <ListItemText className={classes.listLastname} style={{ color: 'white' }}
+                primary={ ( sess && sess.language === 'EN' ) ? "Lastname" : 'นามสกุล' } />
+              <ListItemText className={classes.listStatus} style={{ color: 'white' }}
+                primary={ ( sess && sess.language === 'EN' ) ? "Status" : 'สถานะ' } />
             </ListItem>
           </List>
           <List disablePadding>
@@ -186,35 +239,25 @@ export default function MatchFormResult(props) {
                       primary={
                         <Typography className={classes.name} variant="body2" component="div" style={{ display: 'flex' }}>
                           {d.fullname}
-                          { (window.innerWidth >= 500 && window.innerWidth < 700) ? <div style={{ width: 16 }} /> : null }
-                          { (window.innerWidth >= 500 && window.innerWidth < 700) ? d.lastname : null }
+                          { (window.innerWidth >= 500 && window.innerWidth < 700) ? <div style={{ width: 16 }} /> : '' }
+                          { (window.innerWidth >= 500 && window.innerWidth < 700) ? d.lastname : '' }
                         </Typography>
                       }
                       secondary={
+                        window.innerWidth < 500 &&
                         <React.Fragment>
                           <Typography className={classes.name} variant="body2" component="span" color="textPrimary">
-                            { window.innerWidth < 500 ? d.lastname : ''}
+                            {d.lastname}
                           </Typography>
                           <br></br>
-                          { window.innerWidth < 500 &&
-                            <React.Fragment>
-                              <Typography
-                                variant="caption"
-                                style={{
-                                  color:
-                                  d.status === 0? COLOR.red[500] :
-                                  d.status === 1? COLOR.amber[800] : COLOR.green[500]
-                                }}>
-                                {
-                                  d.status === 0? 'Incomplete' :
-                                  d.status === 1? 'Pending' : 'Complete'
-                                }
-                              </Typography>
-                              <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
-                                {API.handleGetDate(d.createdate)}
-                              </Typography>
-                            </React.Fragment>
-                          }
+                          <Typography
+                            variant="caption"
+                            style={{ color: getStatus(d.status).color }}>
+                            {getStatus(d.status).text}
+                          </Typography>
+                          <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
+                            {API.handleGetDate(d.createdate)}
+                          </Typography>
                         </React.Fragment>
                       } />
                     <ListItemText
@@ -227,24 +270,7 @@ export default function MatchFormResult(props) {
                         </React.Fragment>
                       } />
                     <ListItemText className={classes.listStatus}
-                      primary={
-                        window.innerWidth >= 500 &&
-                        (
-                          d.status === 0?
-                          <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
-                            Incomplete
-                          </Typography>
-                          :
-                          d.status === 1?
-                          <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
-                            Pending
-                          </Typography>
-                          :
-                          <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
-                            complete
-                          </Typography>
-                        )
-                      }
+                      primary={ window.innerWidth >= 500 && getStatus(d.status).component}
                       secondary={
                         window.innerWidth >= 500 && d.createdate &&
                           <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
