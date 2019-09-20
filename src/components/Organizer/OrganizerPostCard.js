@@ -43,9 +43,6 @@ const useStyles = makeStyles(theme => ({
   },
   imageGrid: {
     width: '100%',
-    [theme.breakpoints.up(600)]: {
-      width: 300,
-    },
   },
   image: {
     width: '100%',

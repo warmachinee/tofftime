@@ -192,7 +192,7 @@ const theme = createMuiTheme({
 
 export default function User(props){
   const classes = useStyles();
-  const { token, setCSRFToken, matchid, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp } = props
 
   const [ open, setOpen ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
@@ -494,20 +494,28 @@ export default function User(props){
           { data && handleSearch().length > 10 && !searchUser &&
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
-                { dataSliced >= data.length ? 'Collapse':'More' }
+                { dataSliced >= data.length ? (
+                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                ):(
+                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                ) }
               </Button>
               { data && dataSliced < data.length &&
-                <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
               }
             </React.Fragment>
           }
           { data && handleSearch().length > 10 && searchUser &&
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
-                { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                { dataSliced >= handleSearch().length ? (
+                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                ):(
+                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                ) }
               </Button>
               { data && dataSliced < handleSearch().length &&
-                <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
               }
             </React.Fragment>
           }

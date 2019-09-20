@@ -61,7 +61,7 @@ const theme = createMuiTheme({
 
 export default function AddPageModal(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, setData } = props
+  const { sess, token, setCSRFToken, handleSnackBar, setData } = props
 
   const [ pageListData, setPageListData ] = React.useState([])
   const [ searchPage, setSearchPage ] = React.useState('')
@@ -247,10 +247,14 @@ export default function AddPageModal(props){
           { pageListData && handleSearch().length > 10 && searchPage &&
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
-                { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                { dataSliced >= handleSearch().length ? (
+                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                ):(
+                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                ) }
               </Button>
               { pageListData && dataSliced < handleSearch().length &&
-                <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
               }
             </React.Fragment>
           }

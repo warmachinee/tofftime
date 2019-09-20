@@ -71,6 +71,7 @@ export default function MatchCard(props) {
   const classes = useStyles();
   const { API, BTN, sess, data, isSupportWebp, chkUserid, pageOrganizer, pageData } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
+  const [ joinStatus, setJoinStatus ] = React.useState(false)
 
   function handleJoinMatch(){
     if(sess){
@@ -80,6 +81,9 @@ export default function MatchCard(props) {
         matchid: data.matchid,
         userid: sess.userid,
       })
+      setTimeout(()=>{
+        setJoinStatus(true)
+      }, 1000)
     }
   }
 
@@ -99,7 +103,7 @@ export default function MatchCard(props) {
         case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              <BTN.Primary disabled={joinStatus} style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
             </div>
           )
           break;

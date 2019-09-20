@@ -22,6 +22,11 @@ const GoBack = Loadable({
   loading: () => null
 });
 
+const SchedulePDF = Loadable({
+  loader: () => import(/* webpackChunkName: "SchedulePDF" */'./../export/SchedulePDF'),
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
@@ -136,6 +141,11 @@ export default function Schedule(props) {
       <GoBack />
       { matchDetail &&
         <div className={classes.content}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            { data &&
+              <SchedulePDF {...props} data={data} matchDetail={matchDetail}/>
+            }
+          </div>
           <Typography gutterBottom variant="h4">
             { ( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางการแข่งขัน' }
           </Typography>

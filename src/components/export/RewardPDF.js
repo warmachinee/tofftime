@@ -1,6 +1,7 @@
 import React from 'react'
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import * as API from './../../api'
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 pdfMake.fonts = {
   THSarabunNew: {
@@ -24,7 +25,7 @@ export default function RewardPDF(props){
   return(
     <React.Fragment>
       { (reward.length !== 0 && !reward.status) ?
-        <Button onClick={()=>handleDownload(matchClass.classname, reward, data, sortBy)} color="primary">
+        <Button onClick={()=>handleDownload(matchClass, reward, data, sortBy, sess)} color="primary">
           { ( sess && sess.language === 'EN' ) ? "Reward" : 'รางวัล' }
         </Button>:
         <Button disabled color="primary">{reward.status}</Button>
@@ -33,11 +34,12 @@ export default function RewardPDF(props){
   );
 }
 
-function handleDownload(classname, reward, data, sortBy){
-  pdfMake.createPdf(PDFFile(classname, reward, data)).download('Reward ' + classname + '.pdf');
+function handleDownload(matchClass , reward, data, sortBy, sess){
+  var matchClassName = data.scorematch === 1 ? matchClass.classname : API.handleAmateurClass(matchClass.classno)
+  pdfMake.createPdf(PDFFile(matchClassName, reward, data, sortBy, sess)).download('Reward ' + matchClassName + '.pdf');
 }
 
-function PDFFile(classname, reward, data){
+function PDFFile(classname, reward, data, sortBy, sess){
   let temp = []
   let player = []
   for(var i = 0;i < reward.length;i++){
@@ -72,27 +74,36 @@ function PDFFile(classname, reward, data){
   let labelBody = (
     data.scorematch === 1 ?
     [
-      {text: 'ชื่อ - นามสกุล', fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]},
+      {
+        text: ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ - นามสกุล' ),
+        fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
+      },
       {text: 'PAR', fillColor: '#e0e0e0'},
-      {text: 'เงินรางวัล', fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
-      {text: 'ลายเซ็น', fillColor: '#e0e0e0'},
+      {text: ( ( sess && sess.language === 'EN' ) ? "Prize" : 'เงินรางวัล' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
+      {text: ( ( sess && sess.language === 'EN' ) ? "Sign" : 'ลายเซ็น' ), fillColor: '#e0e0e0'},
     ]
     :
     [
-      {text: 'ชื่อ - นามสกุล', fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]},
+      {
+        text: ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ - นามสกุล' ),
+        fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
+      },
       {text: 'HC', fillColor: '#e0e0e0'},
       {text: 'SF', fillColor: '#e0e0e0'},
-      {text: 'เงินรางวัล', fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
-      {text: 'ลายเซ็น', fillColor: '#e0e0e0'},
+      {text: ( ( sess && sess.language === 'EN' ) ? "Prize" : 'เงินรางวัล' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
+      {text: ( ( sess && sess.language === 'EN' ) ? "Sign" : 'ลายเซ็น' ), fillColor: '#e0e0e0'},
     ]
   )
 
   let label = [
     [
-      {text: 'เงินรางวัล\t', fontSize: 36},
+      {text: `${( ( sess && sess.language === 'EN' ) ? "Prize" : 'เงินรางวัล' )}\t`, fontSize: 36},
       {text: data.title, fontSize: 30},
     ],
-    {text: 'ประเภท\t' + classname, fontSize: 28, bold: true, margin: [0, 0, 0, 24]},
+    {
+      text: `${( ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท' )}\t` + classname,
+      fontSize: 28, bold: true, margin: [0, 0, 0, 24]
+    },
     {
       style: 'table',
 			table: {

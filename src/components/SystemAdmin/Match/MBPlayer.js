@@ -886,13 +886,13 @@ export default function MBPlayer(props){
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
                     { dataSliced >= data.length ? (
-                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
                     ):(
-                      ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                      ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
                     ) }
                   </Button>
                   { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
                   }
                 </React.Fragment>
               }
@@ -900,13 +900,13 @@ export default function MBPlayer(props){
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
                     { dataSliced >= handleSearch().length ? (
-                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'พับ'
+                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
                     ):(
-                      ( sess && sess.language === 'EN' ) ? "More" : 'ขยาย'
+                      ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
                     ) }
                   </Button>
                   { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'ขยายทั้งหมด' }</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
                   }
                 </React.Fragment>
               }

@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function UpcomingList(props) {
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, open, userid, pageOrganizer, pageData, pageList } = props
+  const { sess, API, COLOR, token, setCSRFToken, open, userid, pageOrganizer, pageData, pageList } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){

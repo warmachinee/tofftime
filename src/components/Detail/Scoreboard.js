@@ -45,7 +45,7 @@ function TabContainer(props) {
           !reward.status &&
           <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} sess={sess} sortBy={sortBy}/>
         }
-        <PrintPDF data={data} userscore={userscore} matchClass={matchClass} />
+        <PrintPDF data={data} userscore={userscore} matchClass={matchClass} sess={sess} sortBy={sortBy}/>
         <div style={{ flex: 1 }} />
         { data && data.scorematch === 0 &&
           <div>

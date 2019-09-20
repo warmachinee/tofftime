@@ -61,7 +61,7 @@ const theme = createMuiTheme({
 
 export default function AddMatchModal(props){
   const classes = useStyles();
-  const { token, setCSRFToken, handleSnackBar, setData } = props
+  const { sess, token, setCSRFToken, handleSnackBar, setData } = props
 
   const [ matchListData, setMatchListData ] = React.useState([])
   const [ searchMatch, setSearchMatch ] = React.useState('')
@@ -238,10 +238,14 @@ export default function AddMatchModal(props){
           { matchListData && handleSearch().length > 10 && searchMatch &&
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
-                { dataSliced >= handleSearch().length ? 'Collapse':'More' }
+                { dataSliced >= handleSearch().length ? (
+                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                ):(
+                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                ) }
               </Button>
               { matchListData && dataSliced < handleSearch().length &&
-                <Button fullWidth onClick={handleMoreAll}>More All</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
               }
             </React.Fragment>
           }

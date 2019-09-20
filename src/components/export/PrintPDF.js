@@ -1,6 +1,7 @@
 import React from 'react'
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import * as API from './../../api'
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 pdfMake.fonts = {
   THSarabunNew: {
@@ -20,27 +21,28 @@ pdfMake.fonts = {
 import Button from '@material-ui/core/Button';
 
 export default function PrintPDF(props){
-  const { data, userscore, matchClass } = props
+  const { data, userscore, matchClass, sess, sortBy } = props
   const userData = userscore.filter((d)=>{
     return d.classno === matchClass.classno
   })
 
   return(
-    <Button onClick={()=>handleDownload(data, userData, matchClass.classname)} color="primary">
+    <Button onClick={()=>handleDownload(data, userData, matchClass, sortBy, sess)} color="primary">
       PDF
     </Button>
   );
 }
 
-function handlePrint(data, userscore, classname){
+function handlePrint(data, userscore, classname, sess){
   pdfMake.createPdf(PDFFile(data, userscore, classname)).open()
 }
 
-function handleDownload(data, userscore, classname){
-  pdfMake.createPdf(PDFFile(data, userscore, classname)).download('Score ' + classname + '.pdf');
+function handleDownload(data, userscore, matchClass, sortBy, sess){
+  var matchClassName = data.scorematch === 1 ? matchClass.classname : API.handleAmateurClass(matchClass.classno)
+  pdfMake.createPdf(PDFFile(data, userscore, matchClassName, sortBy, sess)).download('Score ' + matchClassName + '.pdf');
 }
 
-function PDFFile(data, userscore, classname){
+function PDFFile(data, userscore, classname, sortBy, sess){
   let temp = []
   let tempArr = [1,2,3,4,5,6,7,8,9]
   let tempArr2 = [10,11,12,13,14,15,16,17,18]
@@ -56,7 +58,7 @@ function PDFFile(data, userscore, classname){
             text: '',
           },
           {
-            text: 'คะแนนสนาม'
+            text: ( sess && sess.language === 'EN' ) ? "PAR Score" : 'คะแนนสนาม'
           },
           {
             border: [false, false, false, false],
@@ -104,9 +106,9 @@ function PDFFile(data, userscore, classname){
 				text: [
           {text: data.title + '\n', fontSize: 36},
           {text: data.date, fontSize: 20},
-          {text: "\tณ สนาม \t", fontSize: 28},
+          {text: `\t${( sess && sess.language === 'EN' ) ? "at" : 'ณ สนาม'}\t`, fontSize: 28},
           {text: data.location, fontSize: 24},
-          {text: "\nประเภท \t" + classname, fontSize: 28, bold: true},
+          {text: `\t${( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท'}\t` + classname, fontSize: 28, bold: true},
         ]
 			},
 		]
