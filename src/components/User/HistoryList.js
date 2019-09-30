@@ -109,7 +109,7 @@ export default function HistoryList(props) {
                 <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%' }}
                   primary={
                     <Typography variant="subtitle2" color="textSecondary">
-                      {API.handleGetDate(data.matchdate)}
+                      {API.dateToString(data.matchdate)}
                     </Typography>
                   }
                   secondary={
@@ -118,13 +118,13 @@ export default function HistoryList(props) {
                         {data.views + 'views'}
                       </Typography>
                     </React.Fragment>
-                  }/>
+                  } />
               }
 
               {/*
                 <ListItemIcon>
                   { data.scorematch === 1 ?
-                    <CheckCircle style={{ color: COLOR.primary[500] }}/>
+                    <CheckCircle style={{ color: COLOR.primary[500] }} />
                     :
                     <div style={{ width: 24 }} />
                   }
@@ -137,7 +137,7 @@ export default function HistoryList(props) {
                   <React.Fragment>
                     { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
                       <Typography variant="caption" color="textSecondary">
-                        {`${API.handleGetDate(data.matchdate)} • ${data.views + 'views'}`}
+                        {`${API.dateToString(data.matchdate)} • ${data.views + 'views'}`}
                       </Typography>
                     }
                     <Typography variant="body2" color="textPrimary" className={classes.listTitle}>
@@ -192,7 +192,7 @@ export default function HistoryList(props) {
             <div style={{ width: '100%' }}>
               <div>
                 { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
-                  <Skeleton height={12} width="20%" style={{ marginRight: 16 }}/>
+                  <Skeleton height={12} width="20%" style={{ marginRight: 16 }} />
                 }
                 <Skeleton style={{ marginRight: 16 }} />
               </div>
@@ -201,7 +201,7 @@ export default function HistoryList(props) {
               }
             </div>
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
-              <Skeleton style={{ marginRight: 16, width: '100%' }}/>
+              <Skeleton style={{ marginRight: 16, width: '100%' }} />
             }
             <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
               <Skeleton width={ ( open ? window.innerWidth < 690 : window.innerWidth < 450) ? 24 : 36 }

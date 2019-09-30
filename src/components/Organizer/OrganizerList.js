@@ -105,12 +105,12 @@ export default function OrganizerList(props) {
             <BTN.NoStyleLink to={`/page/${d.pageid}`}>
               { d.logo ?
                 <IconButton className={classes.iconButton}>
-                  <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                  <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
                 </IconButton>
                 :
                 <IconButton className={classes.iconButton}>
                   <Avatar className={classes.avatar}>
-                    <AccountIcon classes={{ root: classes.avatarIcon }}/>
+                    <AccountIcon classes={{ root: classes.avatarIcon }} />
                   </Avatar>
                 </IconButton>
               }

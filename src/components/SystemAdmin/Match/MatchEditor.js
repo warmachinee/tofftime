@@ -15,6 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -247,6 +248,7 @@ export default function MatchEditor(props){
       <Paper className={classes.paper}>
         <Button style={{ boxSizing: 'border-box', marginLeft: 36, marginTop: 16 }} onClick={handleClick}>
           <LabelText paddingTop={0} paddingLeft={0} text={labelSteps[activeStep]} />
+          <ArrowDropDownIcon fontSize="large" style={{ marginLeft: 8, marginTop: 12 }} />
         </Button>
         <MobileStepper
           style={{ backgroundColor: 'inherit', marginTop: 24 }}
@@ -281,7 +283,7 @@ export default function MatchEditor(props){
         {
           labelSteps.map( (d, i) =>
           <MenuItem key={d}
-            onClick={()=>( activeStep === i ) ? console.log() : handleMenu(i)} 
+            onClick={()=>( activeStep === i ) ? console.log() : handleMenu(i)}
             style={{ ...(activeStep === i  && { backgroundColor: grey[400] }) }}>{d}</MenuItem>
         )}
       </Menu>

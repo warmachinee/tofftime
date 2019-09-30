@@ -34,7 +34,7 @@ export default function AnnouncePrimarySkeleton(props) {
         <Skeleton
           className={classes.skeleton}
           height={32}
-          style={{ backgroundColor: grey[300] }}/>
+          style={{ backgroundColor: grey[300] }} />
       </div>
     </div>
   );

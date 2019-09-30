@@ -105,7 +105,7 @@ export default function Location(props) {
         <div className={classes.root}>
           { ( pageState === 'edit' || pageState === 'create' ) &&
             <IconButton className={classes.back} onClick={()=>setPageState('select')}>
-              <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+              <ArrowBackIcon classes={{ root: classes.backIcon }} />
             </IconButton>
           }
           { pageState === 'select' &&
@@ -150,7 +150,7 @@ export default function Location(props) {
           { pageState === 'create' &&
             <LocationEditor
               {...props}
-              setPageState={setPageState}/>
+              setPageState={setPageState} />
           }
 
           { pageState === 'edit' &&
@@ -158,7 +158,7 @@ export default function Location(props) {
               {...props}
               edittingField={edittingField}
               setEdittingField={setEdittingField}
-              setPageState={setPageState}/>
+              setPageState={setPageState} />
           }
         </div>
       }

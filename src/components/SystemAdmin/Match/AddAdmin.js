@@ -207,9 +207,9 @@ function ListMenu(props) {
           onClick={e => ( admin && admin.some( d =>{ return d.userid === value.userid }) ) ? handleClick(e) : handleSelectRole(value, 'set') }>
           <ListItemIcon className={classes.listItemIcon}>
             { admin && admin.some( d =>{ return d.userid === value.userid }) ?
-              <CheckCircleIcon classes={{ root: classes.addCircleIcon }}/>
+              <CheckCircleIcon classes={{ root: classes.addCircleIcon }} />
               :
-              <div style={{ width: 24, height: 24 }}/>
+              <div style={{ width: 24, height: 24 }} />
             }
           </ListItemIcon>
           <ListItemText className={classes.listText} primary={value.firstname} />

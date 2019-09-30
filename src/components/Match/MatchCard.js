@@ -4,13 +4,12 @@ import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
 import {
-  Paper, Box, Typography,
+  Paper, Box, Typography, Button
 } from '@material-ui/core';
 
 import Skeleton from '@material-ui/lab/Skeleton';
 
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -105,7 +104,11 @@ export default function MatchCard(props) {
         case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <BTN.Primary disabled={joinStatus} style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              { joinStatus?
+                <Button disabled>Join</Button>
+                :
+                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              }
             </div>
           )
           break;
@@ -154,7 +157,7 @@ export default function MatchCard(props) {
           </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-              <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
+              <LocationOnIcon fontSize="small" className={classes.locationIcon} />
               {data.location}
             </Typography>
           </BTN.NoStyleLink>

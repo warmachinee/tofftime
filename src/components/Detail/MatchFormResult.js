@@ -229,7 +229,7 @@ export default function MatchFormResult(props) {
                     <ListItemIcon className={classes.listPicture}>
                       { d.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle classes={{ root: classes.avatar }} />
                       }

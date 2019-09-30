@@ -15,7 +15,7 @@ const RouteMatchBody = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => <LDCircular />
@@ -32,7 +32,7 @@ const RouteMatchEditor = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => <LDCircular />

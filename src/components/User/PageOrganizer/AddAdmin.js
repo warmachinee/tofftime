@@ -146,7 +146,7 @@ function ListMenu(props) {
           <ListItemIcon>
             { value.photopath ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                src={API.getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
               :
               <AccountCircleIcon classes={{ root: classes.avatar }} />
             }
@@ -161,7 +161,7 @@ function ListMenu(props) {
             }
             {
               ...value.nickname !== '-' && { secondary: value.nickname }
-            }/>
+            } />
         </ListItem>
         <Divider />
       </React.Fragment>

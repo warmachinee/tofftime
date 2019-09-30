@@ -15,8 +15,8 @@ const RouteMain = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -33,7 +33,7 @@ const RouteAnnounceDetail = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -50,7 +50,7 @@ const RouteNewsDetail = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -67,7 +67,7 @@ const RouteMatchDetail = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -84,7 +84,7 @@ const RouteOrganizerPostDetail = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -101,7 +101,7 @@ const RouteSchedule = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -118,7 +118,7 @@ const RouteMatchFormResult = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -134,8 +134,8 @@ const RouteUserPage = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -151,8 +151,8 @@ const RoutePageOrganizer = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -168,8 +168,8 @@ const RouteOrganizer = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -185,8 +185,8 @@ const RouteSystemAdmin = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -202,8 +202,8 @@ const RouteSignIn = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -220,7 +220,7 @@ const RouteScoreDisplay = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null

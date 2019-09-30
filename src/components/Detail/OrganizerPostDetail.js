@@ -97,7 +97,7 @@ export default function OrganizerPostDetail(props){
               ( data.messagedetail && data.messagedetail )
               :
               ( data.message && data.message.split('<$$split$$>')[1] )
-            }/>
+            } />
         </div>
       }
     </Paper>

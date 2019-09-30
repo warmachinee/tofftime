@@ -224,7 +224,7 @@ export default function PagePost(props){
       <div style={{ display: 'flex' }}>
         <RedButton style={{ padding: '8px 16px 8px 0' }} variant="contained" color="secondary"
           onClick={()=>handleOpen('create')}>
-          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
           { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
         </RedButton>
         <div style={{ flex: 1 }} />
@@ -260,7 +260,7 @@ export default function PagePost(props){
                         src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
-                      <ImageIcon className={classes.bigAvatar}/>
+                      <ImageIcon className={classes.bigAvatar} />
                   }
                 </ListItemAvatar>
                 <ListItemText className={classes.listDetail}
@@ -273,11 +273,11 @@ export default function PagePost(props){
                     <Typography variant="subtitle2" color="textSecondary" style={{ textTransform: 'capitalize' }}>
                       {d.type}
                     </Typography>
-                  }/>
+                  } />
                 <ListItemIcon>
                   { editting?
                     <IconButton onClick={()=>handleDeleteItem(d)}>
-                      <DeleteIcon classes={{ root: classes.greenIcon }}/>
+                      <DeleteIcon classes={{ root: classes.greenIcon }} />
                     </IconButton>
                     :
                     <IconButton onClick={()=>handleSelectPagePost(d)}>
@@ -299,7 +299,7 @@ export default function PagePost(props){
               :
               ( ( sess && sess.language === 'EN' ) ? "Create post" : 'สร้างโพสต์' )
             } />
-          <PageOrganizerPostEditor {...props} clickAction={clickAction} edittingData={edittingData} handleCloseEditor={handleClose}/>
+          <PageOrganizerPostEditor {...props} clickAction={clickAction} edittingData={edittingData} handleCloseEditor={handleClose} />
         </div>
       </TemplateDialog>
       <TemplateDialog
@@ -313,7 +313,7 @@ export default function PagePost(props){
             ( { ( sess && sess.language === 'EN' ) ? "Page post" : 'โพสต์ของเพจ' } : { selectedDeleteItem && selectedDeleteItem.message } )
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }

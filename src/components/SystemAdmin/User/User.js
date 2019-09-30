@@ -445,7 +445,7 @@ export default function User(props){
           <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
             primary={ window.innerWidth >= 500?"Last name" : '' } />
           <ListItemIcon>
-            <div style={{ width: 42 }}/>
+            <div style={{ width: 42 }} />
           </ListItemIcon>
         </ListItem>
         { data && !data.status &&
@@ -470,7 +470,7 @@ export default function User(props){
                           {value.lastname}
                         </Box>
                       </Typography>
-                    }/>
+                    } />
                   { window.innerWidth >= 500 &&
                     <ListItemText className={classes.listText} primary={value.lastname} />
                   }
@@ -478,7 +478,7 @@ export default function User(props){
                     { editting?
                       <IconButton
                         onClick={()=>handleOpen(value)}>
-                        <CreateIcon classes={{ root: classes.createIcon }}/>
+                        <CreateIcon classes={{ root: classes.createIcon }} />
                       </IconButton>
                       :
                       <div style={{ height: 48, width: 48 }} />
@@ -550,7 +550,7 @@ export default function User(props){
                   tempFile
                   :
                   ( isSupportWebp? edittingUser.photopath + '.webp': edittingUser.photopath + '.jpg' )
-                }/>
+                } />
               { imgRef.current &&
                 <div
                   style={{
@@ -565,7 +565,7 @@ export default function User(props){
                     <div style={{ flex: 1 }} />
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }}/>
+                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }} />
                     </StyledIconButton>
                     <div style={{ flex: 1 }} />
                   </div>
@@ -582,7 +582,7 @@ export default function User(props){
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUploadIcon fontSize="large" style={{ color: primary[500] }}/>
+                    <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>

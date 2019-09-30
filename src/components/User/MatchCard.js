@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
 import {
-  Paper, Box, Typography,
+  Paper, Box, Typography, Button
 } from '@material-ui/core';
 
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -103,7 +103,11 @@ export default function MatchCard(props) {
         case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <BTN.Primary disabled={joinStatus} style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              { joinStatus?
+                <Button disabled>Join</Button>
+                :
+                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              }
             </div>
           )
           break;
@@ -129,7 +133,7 @@ export default function MatchCard(props) {
             src={API.getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
         </BTN.NoStyleLink>
         :
-        <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }}/>
+        <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />
       }
       { data ?
         <Box className={classes.box}>
@@ -152,7 +156,7 @@ export default function MatchCard(props) {
           </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-              <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
+              <LocationOnIcon fontSize="small" className={classes.locationIcon} />
               {data.fieldname}
             </Typography>
           </BTN.NoStyleLink>

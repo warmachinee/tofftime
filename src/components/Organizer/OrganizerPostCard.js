@@ -112,7 +112,7 @@ export default function OrganizerPostCard(props) {
           </BTN.NoStyleLink>
           :
           <Skeleton disableAnimate className={classes.skeleton}
-            style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }}/>
+            style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }} />
         }
       </div>
       <Box className={classes.box}>
@@ -131,8 +131,8 @@ export default function OrganizerPostCard(props) {
           </React.Fragment>
           :
           <React.Fragment>
-            <Skeleton width="100%" height={28}/>
-            <Skeleton width="20%" height={14}/>
+            <Skeleton width="100%" height={28} />
+            <Skeleton width="20%" height={14} />
             <Skeleton width="70%"/>
             <Skeleton width="90%"/>
           </React.Fragment>

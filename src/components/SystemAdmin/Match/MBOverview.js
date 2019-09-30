@@ -454,7 +454,7 @@ export default function MBOverview(props){
                   tempFile
                   :
                   API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
-                }/>
+                } />
               { editting && imgRef.current &&
                 <div
                   style={{
@@ -469,7 +469,7 @@ export default function MBOverview(props){
                     <div style={{ flex: 1 }} />
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }}/>
+                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }} />
                     </StyledIconButton>
                     <div style={{ flex: 1 }} />
                   </div>
@@ -487,7 +487,7 @@ export default function MBOverview(props){
                   { editting &&
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUploadIcon fontSize="large" style={{ color: primary[500] }}/>
+                      <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
                     </StyledIconButton>
                   }
                   <div style={{ flex: 1 }} />
@@ -619,7 +619,7 @@ export default function MBOverview(props){
             setSelectedField={setSelectedField}
             selectedFieldVersion={selectedFieldVersion}
             setSelectedFieldVersion={setSelectedFieldVersion}
-            handleClose={handleClose}/>
+            handleClose={handleClose} />
         </TemplateDialog>
       }
       { modalType && modalType === 'class' &&
@@ -627,7 +627,7 @@ export default function MBOverview(props){
           <MatchClass
             {...props}
             data={data && data.status !== 'class database error' && data}
-            matchid={matchid} setData={setData}/>
+            matchid={matchid} setData={setData} />
         </TemplateDialog>
       }
     </div>

@@ -109,7 +109,7 @@ export default function OrganizerOverview(props) {
           <div className={classes.imageGrid}>
             { data.logo ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(data.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                src={API.getPictureUrl(data.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
               :
               <AccountCircleIcon classes={{ root: classes.avatar }} />
             }

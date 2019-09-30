@@ -207,7 +207,7 @@ export default function MatchList(props){
       <div style={{ display: 'flex', margin: '24px 16px 0 16px' }}>
         <RedButton variant="contained" color="secondary"
           onClick={handleOpen}>
-          <AddCircleIcon style={{ marginRight: 8 }}/>
+          <AddCircleIcon style={{ marginRight: 8 }} />
           Add match
         </RedButton>
         <div style={{ flex: 1 }} />
@@ -218,11 +218,11 @@ export default function MatchList(props){
       <List>
         <ListItem className={classes.tableHead}>
           { window.innerWidth >= 500 &&
-            <StyledText primary="Date" className={classes.tableDate}/>
+            <StyledText primary="Date" className={classes.tableDate} />
           }
-          <StyledText inset={window.innerWidth < 700 && window.innerWidth >=450} primary="Title" className={classes.tableTitle}/>
+          <StyledText inset={window.innerWidth < 700 && window.innerWidth >=450} primary="Title" className={classes.tableTitle} />
           { window.innerWidth >= 700 &&
-            <StyledText inset primary="Location" className={classes.tableLocation}/>
+            <StyledText inset primary="Location" className={classes.tableLocation} />
           }
           <ListItemIcon className={classes.tableAction}>
             <IconButton disabled edge="end">
@@ -236,7 +236,7 @@ export default function MatchList(props){
             <React.Fragment key={d.matchid}>
               <ListItem>
                 { window.innerWidth >= 500 &&
-                  <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }}/>
+                  <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }} />
                 }
                 <ListItemText inset={window.innerWidth < 700 && window.innerWidth >=450} primary={d.title} className={classes.tableTitle}
                   secondary={
@@ -258,14 +258,14 @@ export default function MatchList(props){
                         {d.location}
                       </React.Fragment>
                     )
-                  }/>
+                  } />
                 { window.innerWidth >= 700 &&
-                  <ListItemText inset primary={d.location} className={classes.tableLocation}/>
+                  <ListItemText inset primary={d.location} className={classes.tableLocation} />
                 }
                 <ListItemIcon className={classes.tableAction}>
                   { editting?
                     <IconButton style={{ padding: 0 }} edge="end" onClick={()=>handleRemove(d)}>
-                      <DeleteIcon classes={{ root: classes.deleteIcon }}/>
+                      <DeleteIcon classes={{ root: classes.deleteIcon }} />
                     </IconButton>
                     :
                     <IconButton disabled edge="end">
@@ -281,7 +281,7 @@ export default function MatchList(props){
 
       </List>
       <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
-        <AddMatchModal {...passingProps} setData={setData}/>
+        <AddMatchModal {...passingProps} setData={setData} />
       </TemplateDialog>
     </div>
   );

@@ -119,7 +119,7 @@ export default function UpcomingListItem(props) {
                         {data.views + 'views'}
                       </Typography>
                     </React.Fragment>
-                  }/>
+                  } />
               }
 
               <ListItemText
@@ -176,7 +176,7 @@ export default function UpcomingListItem(props) {
             <div style={{ width: '100%' }}>
               <div>
                 { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
-                  <Skeleton height={12} width="20%" style={{ marginRight: 16 }}/>
+                  <Skeleton height={12} width="20%" style={{ marginRight: 16 }} />
                 }
                 <Skeleton style={{ marginRight: 16 }} />
               </div>
@@ -185,7 +185,7 @@ export default function UpcomingListItem(props) {
               }
             </div>
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
-              <Skeleton style={{ marginRight: 16, width: '100%' }}/>
+              <Skeleton style={{ marginRight: 16, width: '100%' }} />
             }
           </ListItem>
         }

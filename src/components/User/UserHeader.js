@@ -220,7 +220,7 @@ export default function UserHeader(props) {
                 edge="start"
                 className={classes.logo}
               >
-                <img src={ic_logo} className={classes.logoImg}/>
+                <img src={ic_logo} className={classes.logoImg} />
               </IconButton>
             </Link>
           }
@@ -256,7 +256,7 @@ export default function UserHeader(props) {
                       (
                         pageData.logo ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle classes={{ root: classes.avatar }} />
                       )
@@ -264,7 +264,7 @@ export default function UserHeader(props) {
                       (
                         accountData.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle classes={{ root: classes.avatar }} />
                       )
@@ -287,7 +287,7 @@ export default function UserHeader(props) {
                         (
                           pageData.logo ?
                           <Avatar className={classes.avatarImage}
-                            src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                            src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                           :
                           <AccountCircle classes={{ root: classes.avatar }} />
                         )
@@ -295,7 +295,7 @@ export default function UserHeader(props) {
                         (
                           accountData.photopath ?
                           <Avatar className={classes.avatarImage}
-                            src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                            src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                           :
                           <AccountCircle classes={{ root: classes.avatar }} />
                         )

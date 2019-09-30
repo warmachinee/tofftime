@@ -336,7 +336,7 @@ export default function LocationList(props){
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleClose} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
@@ -420,10 +420,10 @@ function ListField(props){
         { editting &&
           <ListItemSecondaryAction>
             <IconButton onClick={()=>handleEdit(data)}>
-              <CreateIcon classes={{ root: classes.createIcon }}/>
+              <CreateIcon classes={{ root: classes.createIcon }} />
             </IconButton>
             <IconButton onClick={()=>handleOpen(data)}>
-              <DeleteIcon classes={{ root: classes.deleteIcon }}/>
+              <DeleteIcon classes={{ root: classes.deleteIcon }} />
             </IconButton>
           </ListItemSecondaryAction>
         }

@@ -13,12 +13,12 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const SignInComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignIn" */'./SignInComponent'),
-  loading: () => <Skeleton style={{ width: '100%', height: 700 }}/>
+  loading: () => <Skeleton style={{ width: '100%', height: 700 }} />
 });
 
 const SignUpComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignUp" */'./SignUpComponent'),
-  loading: () => <Skeleton style={{ width: '100%', height: 700, marginTop: 48 }}/>
+  loading: () => <Skeleton style={{ width: '100%', height: 700, marginTop: 48 }} />
 });
 
 const ForgotPassword = Loadable({
@@ -164,7 +164,7 @@ export default function SignIn(props) {
       <div className={classes.paper}>
         { pageState === 'signup' &&
           <IconButton className={classes.back} onClick={()=>setPageState('signin')}>
-            <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+            <ArrowBackIcon classes={{ root: classes.backIcon }} />
           </IconButton>
         }
         { pageState === 'signin' &&
@@ -183,7 +183,7 @@ export default function SignIn(props) {
           <SignUpComponent
             {...props}
             actionStatus={actionStatus}
-            handleSignUp={handleSignUp}/>
+            handleSignUp={handleSignUp} />
         }
       </div>
       <TemplateDialog open={forgotState} maxWidth={500} handleClose={()=>setForgotState(!forgotState)}>

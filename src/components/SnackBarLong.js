@@ -73,7 +73,7 @@ export default function SnackBarLong(props) {
                 <div className={classes.messageLong}>{sFULLNAME}</div>
                 <div className={classes.messageLong}>{sLASTNAME}</div>
               </div>
-              <Divider classes={{ root: classes.divider }}/>
+              <Divider classes={{ root: classes.divider }} />
               <div className={classes.messageGridBottom}>
                 <div className={classes.messageLabel}>OUT</div>
                 <div className={classes.messageLabel}>IN</div>

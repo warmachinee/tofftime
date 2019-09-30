@@ -538,7 +538,7 @@ export default function MBPlayer(props){
           { sess && sess.typeid === 'admin' &&
             <Button className={classes.addPlayerButton} variant="contained"
               onClick={handleOpen}>
-              <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+              <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
               Add player
             </Button>
           }
@@ -562,7 +562,7 @@ export default function MBPlayer(props){
                       window.innerWidth > 500? 0 :
                       window.innerWidth > 450? '20%':'10%'
                     }}
-                    className={classes.controlsEditButtonIcon}/>
+                    className={classes.controlsEditButtonIcon} />
                   { ( sess && sess.language === 'EN' ) ? "Showing" : 'การแสดงผล' }
                 </GreenTextButton>
               )
@@ -596,7 +596,7 @@ export default function MBPlayer(props){
                       window.innerWidth > 500? 0 :
                       window.innerWidth > 450? '20%':'10%'
                     }}
-                    className={classes.controlsEditButtonIcon}/>
+                    className={classes.controlsEditButtonIcon} />
                   { matchDetail.scorematch === 1? (
                     ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท'
                   ) : (
@@ -619,7 +619,7 @@ export default function MBPlayer(props){
                       window.innerWidth > 500? 0 :
                       window.innerWidth > 450? '20%':'10%'
                     }}
-                    className={classes.controlsEditButtonIcon}/>
+                    className={classes.controlsEditButtonIcon} />
                   { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
                 </GreenTextButton>
               )
@@ -632,7 +632,7 @@ export default function MBPlayer(props){
               matchDetail.scorematch === 1?
               <React.Fragment>
                 <div style={{ display: 'flex' }}>
-                  <ClassIcon style={{ color: primary[600], marginRight: 4 }}/>
+                  <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
                   <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
                     { selectedClass !== 0 ? (
                       ( sess && sess.language === 'EN' ) ? "Selected Class  :  " : 'ประเภทที่เลือก  :  '
@@ -667,7 +667,7 @@ export default function MBPlayer(props){
               </React.Fragment>
             )
           }
-          { editting && sess.typeid === 'admin' &&
+          { editting && checked.length > 0 &&
             <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
               <DeleteIcon />
               { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
@@ -762,7 +762,7 @@ export default function MBPlayer(props){
                         )
                       }>
                       <ListItemIcon>
-                        { ( ( sess.typeid === 'admin' && editting) || edittingClass )?
+                        { ( editting || edittingClass )?
                           <GreenCheckbox
                             edge="start"
                             checked={checked.indexOf(value) !== -1}
@@ -837,7 +837,7 @@ export default function MBPlayer(props){
                         } />
                       { window.innerWidth >= 600 &&
                         <ListItemText className={classes.listText}
-                          primary={value.lastname}/>
+                          primary={value.lastname} />
                       }
 
                       { window.innerWidth > 600 &&
@@ -869,7 +869,7 @@ export default function MBPlayer(props){
                       <ListItemIcon style={{ justifyContent: 'flex-end' }}>
                         { editting?
                           <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                            <DeleteIcon classes={{ root: classes.deleteIcon}}/>
+                            <DeleteIcon classes={{ root: classes.deleteIcon}} />
                           </IconButton>
                           :
                           <div style={{ height: 42, width: 42 }}></div>

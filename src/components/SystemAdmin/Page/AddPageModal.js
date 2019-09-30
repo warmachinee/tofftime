@@ -235,7 +235,7 @@ export default function AddPageModal(props){
                         >
                           {value.view} {`view${value.view > 1? 's' : ''}`}
                         </Typography>
-                      }/>
+                      } />
                   }
                 </ListItem>
                 <Divider />

@@ -349,7 +349,7 @@ export default function AddPlayerModal(props){
                     <ListItemIcon>
                       { value.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircleIcon classes={{ root: classes.avatar }} />
                       }

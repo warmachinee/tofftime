@@ -81,7 +81,7 @@ export default function ListFollow(props) {
                   <ListItemIcon>
                     { d.logo ?
                       <Avatar className={classes.avatarImage}
-                        src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                        src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                       :
                       <AccountCircle classes={{ root: classes.avatar }} />
                     }

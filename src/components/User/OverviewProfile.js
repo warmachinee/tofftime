@@ -125,7 +125,7 @@ export default function OverviewProfile(props) {
           <div className={classes.imageGrid}>
             { data.photopath ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
               :
               <AccountCircle classes={{ root: classes.avatar }} />
             }

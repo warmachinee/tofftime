@@ -229,6 +229,11 @@ export default function MatchClass(props) {
         autoHideDuration: d.status === 'success'? 2000 : 5000
       })
       setCSRFToken(csrf)
+      if(d.status === 'success'){
+        if(data.scorematch === 0){
+          setText('')
+        }
+      }
       try {
         handleFetch()
       }catch(err) { console.log(err.message) }
@@ -245,26 +250,35 @@ export default function MatchClass(props) {
         classname: arrEdit,
         classno: arrEditClassno
     }, (csrf, d) =>{
-      var statusRes = []
-      d.forEach( e =>{
-        if(e.status !== 'success'){
+      if(data.scorematch === 0){
+        var statusRes = []
+        d.forEach( e =>{
+          if(e.status !== 'success'){
+            handleSnackBar({
+              state: true,
+              message: e.status,
+              variant: e.status === 'success' ? e.status : 'error',
+              autoHideDuration: e.status === 'success'? 2000 : 5000
+            })
+            statusRes.push(e.status)
+          }else{
+            statusRes.push(e.status)
+          }
+        })
+        if(statusRes.every(item => item === 'success')){
           handleSnackBar({
             state: true,
-            message: e.status,
-            variant: e.status === 'success' ? e.status : 'error',
-            autoHideDuration: e.status === 'success'? 2000 : 5000
+            message: 'success',
+            variant: 'success',
+            autoHideDuration: 2000
           })
-          statusRes.push(e.status)
-        }else{
-          statusRes.push(e.status)
         }
-      })
-      if(statusRes.every(item => item === 'success')){
+      }else{
         handleSnackBar({
           state: true,
-          message: 'success',
-          variant: 'success',
-          autoHideDuration: 2000
+          message: d.status,
+          variant: d.status === 'success' ? d.status : 'error',
+          autoHideDuration: d.status === 'success'? 2000 : 5000
         })
       }
       setCSRFToken(csrf)
@@ -399,7 +413,7 @@ export default function MatchClass(props) {
                 onChange={e =>setText(e.target.value)}
                 onKeyPress={e =>handleKeyPress(e.key)}
               />
-              { data.scorematch === 0 &&
+            {/* data.scorematch === 0 &&
                 <div style={{ display: 'flex', width: '100%' }}>
                   <div style={{ marginTop: 'auto', marginBottom: 28, textAlign: 'center', width: 64 }}> {
                       ( sess && sess.language === 'EN' ) ? 'to' : 'ถึง'
@@ -410,12 +424,12 @@ export default function MatchClass(props) {
                     type="number"
                     onKeyPress={e =>handleKeyPress(e.key)}
                   />
-                </div>
+                </div>*/
               }
             </ThemeProvider>
             <ListItemIcon className={classes.addClassButtonGrid}>
               <GreenTextButton disabled={!text} className={classes.addClassButton} variant="outlined" onClick={handleAddItem}>
-                <AddCircleIcon style={{ marginRight: 12 }}/>
+                <AddCircleIcon style={{ marginRight: 12 }} />
                 { ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่ม' }
               </GreenTextButton>
             </ListItemIcon>
@@ -485,7 +499,7 @@ export default function MatchClass(props) {
             ( { ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท' } : { selectedDeleteItem && selectedDeleteItem.classname } )
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }

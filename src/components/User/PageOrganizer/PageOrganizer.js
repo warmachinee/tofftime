@@ -63,6 +63,6 @@ export default function PageOrganizer(props) {
       {...props}
       pageOrganizer
       pageData={pageData}
-      handlePageData={handlePageData}/>
+      handlePageData={handlePageData} />
   );
 }

@@ -372,7 +372,7 @@ export default function NewsEditor(props) {
                 tempFile
                 :
                 ( isSupportWebp? matchPicture + '.webp': matchPicture + '.jpg' )
-              }/>
+              } />
             { imgRef.current &&
               <div
                 style={{
@@ -387,7 +387,7 @@ export default function NewsEditor(props) {
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUploadIcon fontSize="large" style={{ color: primary[400] }}/>
+                    <CloudUploadIcon fontSize="large" style={{ color: primary[400] }} />
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>
@@ -404,7 +404,7 @@ export default function NewsEditor(props) {
                 <div style={{ flex: 1 }} />
                 <StyledIconButton className={classes.matchFile}>
                   <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                  <CloudUploadIcon fontSize="large" style={{ color: primary[500] }}/>
+                  <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
                 </StyledIconButton>
                 <div style={{ flex: 1 }} />
               </div>
@@ -420,7 +420,7 @@ export default function NewsEditor(props) {
             value={title}
             onChange={e => setTitle(e.target.value)}
             onKeyPress={e =>handleKeyPress(e.key)}
-            onFocus={e => e.target.select()}/>
+            onFocus={e => e.target.select()} />
           <TextField
             className={classes.textField}
             label="Subtitle"
@@ -428,7 +428,7 @@ export default function NewsEditor(props) {
             value={subtitle}
             onChange={e => setSubtitle(e.target.value)}
             onKeyPress={e =>handleKeyPress(e.key)}
-            onFocus={e => e.target.select()}/>
+            onFocus={e => e.target.select()} />
           <div>{ ( sess && sess.language === 'EN' ) ? "Content" : 'เนื้อหา' }</div>
           <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2 }}>
             { clickAction === 'edit' ?

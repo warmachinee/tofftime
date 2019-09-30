@@ -215,7 +215,7 @@ export default function Announcement(props){
       <div style={{ display: 'flex' }}>
         <RedButton style={{ padding: '8px 16px 8px 0' }} variant="contained" color="secondary"
           onClick={()=>handleOpen('create')}>
-          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
           Create
         </RedButton>
         <div style={{ flex: 1 }} />
@@ -247,14 +247,14 @@ export default function Announcement(props){
                         src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
-                      <ImageIcon className={classes.bigAvatar}/>
+                      <ImageIcon className={classes.bigAvatar} />
                   }
                 </ListItemAvatar>
-                <ListItemText className={classes.listDetail} primary={d.title} secondary={d.subtitle}/>
+                <ListItemText className={classes.listDetail} primary={d.title} secondary={d.subtitle} />
                 <ListItemIcon>
                   { editting?
                     <IconButton onClick={()=>handleDeleteItem(d)}>
-                      <DeleteIcon classes={{ root: classes.greenIcon }}/>
+                      <DeleteIcon classes={{ root: classes.greenIcon }} />
                     </IconButton>
                     :
                     <IconButton onClick={()=>handleSelectAnnounce(d)}>
@@ -285,7 +285,7 @@ export default function Announcement(props){
             ( Announce : { selectedDeleteItem && selectedDeleteItem.title } )
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }

@@ -46,10 +46,10 @@ export default function Organizer(props) {
     <div className={classes.root}>
       { props.computedMatch &&
         <React.Fragment>
-          <OrganizerAnnounce {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
-          <OrganizerOverview {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
-          <OrganizerMatchList {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
-          <OrganizerPost {...props} pageid={parseInt(props.computedMatch.params.pageid)}/>
+          <OrganizerAnnounce {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
+          <OrganizerOverview {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
+          <OrganizerMatchList {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
+          <OrganizerPost {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
         </React.Fragment>
       }
     </div>

@@ -58,11 +58,11 @@ export default function OrganizerPost(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ props.createPostState ])
 
   return(
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }/>
+      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' } />
       <div className={classes.grid}>
         { data?
           ( data.length > 0 ?

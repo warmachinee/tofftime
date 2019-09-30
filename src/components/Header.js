@@ -273,7 +273,7 @@ function Header(props) {
                   className={classes.logo}
                   onClick={()=>window.scrollTo(0, 0)}
                 >
-                  <img src={ic_logo} className={classes.logoImg}/>
+                  <img src={ic_logo} className={classes.logoImg} />
                 </IconButton>
               )
               :
@@ -283,7 +283,7 @@ function Header(props) {
                     edge="start"
                     className={classes.logo}
                   >
-                    <img src={ic_logo} className={classes.logoImg}/>
+                    <img src={ic_logo} className={classes.logoImg} />
                   </IconButton>
                 </Link>
               )*/
@@ -292,7 +292,7 @@ function Header(props) {
                   edge="start"
                   className={classes.logo}
                 >
-                  <img src={ic_logo} className={classes.logoImg}/>
+                  <img src={ic_logo} className={classes.logoImg} />
                 </IconButton>
               </Link>
             }
@@ -348,7 +348,7 @@ function Header(props) {
                       style={{ padding: 8 }}>
                       { accountData.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountIcon classes={{ root: classes.avatar }} />
                       }

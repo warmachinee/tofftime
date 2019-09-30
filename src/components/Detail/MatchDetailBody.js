@@ -1,4 +1,5 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import * as API from './../../api'
@@ -15,6 +16,7 @@ import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Button from '@material-ui/core/Button';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
@@ -133,6 +135,52 @@ function MatchDetailBody(props) {
   const { BTN, sess, data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
   const [ expanded, setExpanded ] = React.useState(true)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
+  const [ joinStatus, setJoinStatus ] = React.useState(false)
+
+  function handleJoinMatch(){
+    if(sess && sess.status === 1){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.emit('match-request-client-message', {
+        action: 'join',
+        matchid: matchid,
+        userid: sess.userid,
+      })
+      setTimeout(()=>{
+        setJoinStatus(true)
+      }, 1000)
+    }else{
+      window.location.pathname = '/login'
+    }
+  }
+
+  function handleGetButton(){
+    if(BTN && data && data.status === 0){
+      switch (true) {
+        case data.permission === 'host' || data.permission === 'admin':
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
+              <BTN.NoStyleLink to={`/user/management/match/${matchid}`}>
+                <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+              </BTN.NoStyleLink>
+            </div>
+          )
+          break;
+        case data.permission === 'none':
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+              { joinStatus?
+                <Button disabled>Join</Button>
+                :
+                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              }
+            </div>
+          )
+          break;
+        default:
+          return null
+      }
+    }
+  }
 
   function expandHandler(){
     setExpanded(!expanded)
@@ -151,6 +199,7 @@ function MatchDetailBody(props) {
               {data?data.title:'Match Title'}
             </Typography>
           </Tooltip>
+          {handleGetButton()}
           <Typography gutterBottom variant="h6" color="textSecondary">
             { data &&
               (
@@ -179,7 +228,7 @@ function MatchDetailBody(props) {
             </Box>
           </Typography>
           <Typography gutterBottom component="div" style={{ display: 'flex' }}>
-            <LocationOnIcon className={classes.locationIcon}/>
+            <LocationOnIcon className={classes.locationIcon} />
             <Box className={classes.location} >
               {data?data.location:'Location'} {data? '(' + data.locationversion + ')':''}
             </Box>
@@ -187,7 +236,7 @@ function MatchDetailBody(props) {
           <div className={classes.imageGrid}>
             { data && data.picture &&
               <img align="left" className={classes.image}
-                src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
           </div>
           <div style={{ marginTop: 16 }}>

@@ -378,8 +378,8 @@ function CreateMatchBody(props){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
-      'loadmatch', {
-        action: 'list'
+      sess.typeid === 'admin' ? 'loadmatch' : 'loadusersystem', {
+        ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'creator' }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(!d.status){
@@ -462,7 +462,7 @@ function CreateMatchBody(props){
                     <div style={{ flex: 1 }} />
                     <StyledIconButton className={classes.matchFile}>
                       <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }}/>
+                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }} />
                     </StyledIconButton>
                     <div style={{ flex: 1 }} />
                   </div>
@@ -479,7 +479,7 @@ function CreateMatchBody(props){
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUploadIcon fontSize="large" style={{ color: primary[500] }}/>
+                    <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>
@@ -589,7 +589,7 @@ export default function CreateMatch(props){
         { sess && sess.typeid === 'admin' ?
           <CreateMatchBody
             {...props}
-            setExpanded={setExpanded}/>
+            setExpanded={setExpanded} />
           :
           <MatchStepper
             {...props}

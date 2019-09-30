@@ -122,13 +122,13 @@ export default function ListFriend(props) {
           }
           { data &&
             data.map( d =>
-              <ListFriendItem key={d.userid} data={d} {...props} handleAddFriendClose={handleAddFriendClose} setData={setData}/>
+              <ListFriendItem key={d.userid} data={d} {...props} handleAddFriendClose={handleAddFriendClose} setData={setData} />
             )
           }
         </List>
       </Collapse>
       <TemplateDialog open={addFriendState} handleClose={handleAddFriendClose}>
-        <AddFriend {...props} handleAddFriendClose={handleAddFriendClose}/>
+        <AddFriend {...props} handleAddFriendClose={handleAddFriendClose} />
       </TemplateDialog>
     </React.Fragment>
   )
@@ -195,7 +195,7 @@ function ListFriendItem(props) {
         <ListItemIcon>
           { data.photopath ?
             <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
             :
             <AccountCircle classes={{ root: classes.avatar }} />
           }

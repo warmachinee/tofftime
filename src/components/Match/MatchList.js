@@ -58,7 +58,7 @@ export default function MatchList(props) {
       <LabelText text={ ( sess && sess.language === 'EN' ) ? "Match list" : 'การแข่งขัน' } />
       <div className={classes.grid}>
         { data &&
-          data.map( d => <MatchCard key={d.matchid} data={d} {...props}/>)
+          data.map( d => <MatchCard key={d.matchid} data={d} {...props} />)
         }
       </div>
     </div>

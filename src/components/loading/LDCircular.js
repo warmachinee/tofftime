@@ -24,7 +24,7 @@ export function LDCircular() {
   return (
     <div style={grid}>
       <div style={{ flexGrow: 1 }}></div>
-      <ColorCircularProgress size={48}/>
+      <ColorCircularProgress size={48} />
       <div style={{ flexGrow: 1 }}></div>
     </div>
   );

@@ -67,9 +67,9 @@ export default function ListPage(props) {
               <ListItemIcon>
                 { d.logo ?
                   <Avatar className={classes.avatarImage}
-                    src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                    src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                   :
-                  <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }}/>
+                  <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }} />
                 }
               </ListItemIcon>
               <ListItemText className={classes.listTitle} primary={d.pagename} />

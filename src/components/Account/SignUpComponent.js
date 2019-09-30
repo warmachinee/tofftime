@@ -230,7 +230,7 @@ export default function SignUpComponent(props){
               <Select
                 value={gender}
                 onChange={e =>setGender(e.target.value)}
-                input={<OutlinedInput labelWidth={genderWidth}/>}
+                input={<OutlinedInput labelWidth={genderWidth} />}
               >
                 <MenuItem value='male'>Male</MenuItem>
                 <MenuItem value='female'>Female</MenuItem>

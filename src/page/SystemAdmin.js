@@ -18,7 +18,7 @@ const RouteAnnouncement = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -35,7 +35,7 @@ const RouteNews = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -52,7 +52,7 @@ const RouteMatchList = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -69,7 +69,7 @@ const RouteAdminPageList = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -86,7 +86,7 @@ const RouteMatch = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -103,7 +103,7 @@ const RouteCourse = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -120,7 +120,7 @@ const RouteUser = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -238,14 +238,14 @@ export default function SystemAdmin(props) {
       { sess && sess.status === 1 &&
         <React.Fragment>
           <Route exact path={`/admin`} component={SystemComponent} />
-          <RouteAnnouncement path={`/admin/announce`} {...passingProps}/>
-          <RouteNews path={`/admin/news`} {...passingProps}/>
-          <RouteMatchList path={`/admin/matchlist`} {...passingProps}/>
-          <RouteAdminPageList path={`/admin/page`} {...passingProps}/>
+          <RouteAnnouncement path={`/admin/announce`} {...passingProps} />
+          <RouteNews path={`/admin/news`} {...passingProps} />
+          <RouteMatchList path={`/admin/matchlist`} {...passingProps} />
+          <RouteAdminPageList path={`/admin/page`} {...passingProps} />
 
-          <RouteMatch path={`/admin/match`} {...passingProps}/>
-          <RouteCourse path={`/admin/course`} {...passingProps}/>
-          <RouteUser path={`/admin/user`} {...passingProps}/>
+          <RouteMatch path={`/admin/match`} {...passingProps} />
+          <RouteCourse path={`/admin/course`} {...passingProps} />
+          <RouteUser path={`/admin/user`} {...passingProps} />
         </React.Fragment>
       }
     </Paper>

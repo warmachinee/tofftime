@@ -82,7 +82,7 @@ export default function NewsDetail(props){
             { data && data.photopath &&
               <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
-            <DetailComponent newsdetail={data && data.messagedetail ? data.messagedetail : ''}/>
+            <DetailComponent newsdetail={data && data.messagedetail ? data.messagedetail : ''} />
           </div>
         )
         :
@@ -100,7 +100,7 @@ export default function NewsDetail(props){
                 d.picture &&
                   <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
               }
-              <DetailComponent newsdetail={d.newsdetail}/>
+              <DetailComponent newsdetail={d.newsdetail} />
             </div>
           )
         )*/
@@ -116,7 +116,7 @@ export default function NewsDetail(props){
           <Typography variant="h5">
             {data.subtitle}
           </Typography>
-          <DetailComponent newsdetail={data.newsdetail}/>
+          <DetailComponent newsdetail={data.newsdetail} />
         </div>
       }
     </Paper>

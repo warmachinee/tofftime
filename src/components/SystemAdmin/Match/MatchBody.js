@@ -156,9 +156,9 @@ function ListComponent(props){
     <ListItem button>
       { window.innerWidth >= 600 &&
         <ListItemText className={classes.tableDate} classes={{ primary: classes.tableDateText }}
-          primary={data.date}/>
+          primary={data.date} />
       }
-      <ListItemText primary={data.views} className={classes.tableView}/>
+      <ListItemText primary={data.views} className={classes.tableView} />
       <ListItemText inset className={classes.tableTitle}
         primary={data.title}
         secondary={
@@ -180,9 +180,9 @@ function ListComponent(props){
               {data.location}
             </React.Fragment>
           )
-        }/>
+        } />
       { ( window.innerWidth >= 800 && !editting ) &&
-        <ListItemText inset primary={data.location} className={classes.tableLocation}/>
+        <ListItemText inset primary={data.location} className={classes.tableLocation} />
       }
       { editting &&
         <ListItemSecondaryAction>
@@ -331,7 +331,7 @@ export default function MatchBody(props){
           { ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
         </Box>
       </Typography>
-      <CreateMatch setData={setData} setDataClassed={setDataClassed} {...props}/>
+      <CreateMatch setData={setData} setDataClassed={setDataClassed} {...props} />
       <div style={{ display: 'flex', margin: '24px 16px 0 0', justifyContent: 'space-between' }}>
         <GreenTextButton color="primary" onClick={toggleEdittingDisplay}>
           { edittingDisplay?
@@ -354,17 +354,17 @@ export default function MatchBody(props){
             <ListItemIcon>
               <div style={{ width: 42 }}></div>
             </ListItemIcon>
-            <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } className={classes.tableTitle}/>
+            <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } className={classes.tableTitle} />
           </ListItem>
           :
           <ListItem key="Table Head" className={classes.tableHead}>
             { window.innerWidth >= 600 &&
-              <StyledText primary={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' } className={classes.tableDate}/>
+              <StyledText primary={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' } className={classes.tableDate} />
             }
-            <StyledText primary="Views" className={classes.tableView}/>
-            <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } className={classes.tableTitle}/>
+            <StyledText primary="Views" className={classes.tableView} />
+            <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } className={classes.tableTitle} />
             { ( window.innerWidth >= 800 && !editting ) &&
-              <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Location" : 'สนาม' } className={classes.tableLocation}/>
+              <StyledText inset primary={ ( sess && sess.language === 'EN' ) ? "Location" : 'สนาม' } className={classes.tableLocation} />
             }
             { editting &&
               <ListItemSecondaryAction>
@@ -390,7 +390,7 @@ export default function MatchBody(props){
                   <ListComponent data={d} />
                 </Link>
                 :
-                <ListComponent data={d} editting={editting} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState}/>
+                <ListComponent data={d} editting={editting} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
               }
               <Divider />
             </React.Fragment>
@@ -409,7 +409,7 @@ export default function MatchBody(props){
                 </ListItemIcon>
                 <ListItemText className={classes.tableTitle}
                   primary={d.title}
-                  secondary={d.location}/>
+                  secondary={d.location} />
                 <ListItemText
                   style={{ textAlign: 'right' }}
                   primary={
@@ -421,7 +421,7 @@ export default function MatchBody(props){
                     >
                       {d.date}
                     </Typography>
-                  }/>
+                  } />
               </ListItem>
               <Divider />
             </React.Fragment>
@@ -439,7 +439,7 @@ export default function MatchBody(props){
             { removeData && removeData.title }
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
@@ -471,7 +471,7 @@ export default function MatchBody(props){
             onKeyPress={e =>handleKeyPress(e)}
           />
         </ThemeProvider>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmPasswordCancel} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }

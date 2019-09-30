@@ -123,7 +123,7 @@ export default function SelectMatchListItem(props) {
                       {data.views + 'views'}
                     </Typography>
                   </React.Fragment>
-                }/>
+                } />
             }
 
             <ListItemText
@@ -180,7 +180,7 @@ export default function SelectMatchListItem(props) {
             <div style={{ width: '100%' }}>
               <div>
                 { !(window.innerWidth >= 600) &&
-                  <Skeleton height={12} width="20%" style={{ marginRight: 16 }}/>
+                  <Skeleton height={12} width="20%" style={{ marginRight: 16 }} />
                 }
                 <Skeleton style={{ marginRight: 16 }} />
               </div>
@@ -189,7 +189,7 @@ export default function SelectMatchListItem(props) {
               }
             </div>
             { window.innerWidth >= 900 &&
-              <Skeleton style={{ marginRight: 16, width: '100%' }}/>
+              <Skeleton style={{ marginRight: 16, width: '100%' }} />
             }
           </ListItem>
         }

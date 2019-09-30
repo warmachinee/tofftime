@@ -110,8 +110,8 @@ const RouteProfile = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -127,8 +127,8 @@ const RouteTimeline = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -144,8 +144,8 @@ const RouteManagement = Loadable.Map({
       <Route
         {...props}
         render={()=> (
-          <Component {...props}/>
-        )}/>
+          <Component {...props} />
+        )} />
     )
   },
   loading: () => null
@@ -345,7 +345,7 @@ export default function UserPage(props) {
         <div className={classes.toolbar} />
 
         <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
-          render={()=> <UserDashboard {...props} {...dialogProps}/>} />
+          render={()=> <UserDashboard {...props} {...dialogProps} />} />
         <RouteProfile path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer ? '' : ':userid' }`}
           {...passingProps} />
         { !pageOrganizer &&
@@ -401,7 +401,7 @@ function UserDashboard(props){
           <OverviewProfile {...props} />
           <Statistics userid={sess && sess.userid} {...props} />
         </div>
-        <FriendFollowList {...props}/>*/
+        <FriendFollowList {...props} />*/
       }
       { pageOrganizer &&
         <React.Fragment>
@@ -420,7 +420,7 @@ function UserDashboard(props){
       { pageList &&
         <React.Fragment>
           <Upcoming {...props} />
-          <History {...props} open={open}/>
+          <History {...props} open={open} />
         </React.Fragment>
       }
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&

@@ -50,7 +50,7 @@ export default function GoBack(props){
   <div style={{ width: '100%' }}>
     <Link to={handleBack()} className={classes.linkElement}>
       <IconButton className={classes.back}>
-        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+        <ArrowBackIcon classes={{ root: classes.backIcon }} />
       </IconButton>
     </Link>
   </div>
@@ -58,7 +58,7 @@ export default function GoBack(props){
   return window.history.length > 1 && (
     <div style={{ width: '100%' }}>
       <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-        <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+        <ArrowBackIcon classes={{ root: classes.backIcon }} />
       </IconButton>
     </div>
   );

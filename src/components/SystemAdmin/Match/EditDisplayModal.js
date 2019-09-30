@@ -81,7 +81,7 @@ export default function EditDisplayModal(props){
     selectedPlayer, matchDetail, handleClose
   } = props
   const [ state, setState ] = React.useState(selectedPlayer.display === 1);
-  const [ comment, setComment ] = React.useState('')
+  const [ comment, setComment ] = React.useState(selectedPlayer.note ? selectedPlayer.note : '')
 
   function handleKeyPress(e){
     if(e.key === 'Enter'){
@@ -102,9 +102,9 @@ export default function EditDisplayModal(props){
       handleEditNote()
     }
 
-    if( (state !== (selectedPlayer.display === 1)) || comment ){
-      //handleFetch()
-    }
+    setTimeout(()=>{
+      handleClose()
+    }, 1000)
   }
 
   async function handleEditNote(){

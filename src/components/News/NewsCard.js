@@ -118,7 +118,7 @@ export default function NewsCard(props) {
               onError={()=>setPictureURL(null)} />
           </BTN.NoStyleLink>
           :
-          <Skeleton className={classes.skeleton} style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }}/>
+          <Skeleton className={classes.skeleton} style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }} />
         }
       </div>
       <Box className={classes.box}>
@@ -136,8 +136,8 @@ export default function NewsCard(props) {
           </BTN.NoStyleLink>
           :
           <React.Fragment>
-            <Skeleton width="100%" height={28}/>
-            <Skeleton width="20%" height={14}/>
+            <Skeleton width="100%" height={28} />
+            <Skeleton width="20%" height={14} />
             <Skeleton width="70%"/>
             <Skeleton width="90%"/>
             <Skeleton width="90%"/>

@@ -125,7 +125,7 @@ function PDFFile(data, userscore, classname, sortBy, sess){
         body: [
           [
             {
-              text: userscore[i].rank, fillColor: '#bdbdbd',
+              text: ( sortBy === 'sf' && data.scorematch === 0 ) ? i + 1 : userscore[i].rank, fillColor: '#bdbdbd',
             },
             {
               text: userscore[i].firstname + '\t' + userscore[i].lastname,
@@ -158,7 +158,10 @@ function PDFFile(data, userscore, classname, sortBy, sess){
             ...userscore[i].score.slice(9, 18),
             {text: userscore[i].in, fillColor: '#e0e0e0'},
             {text: (userscore[i].out + userscore[i].in), fillColor: '#e0e0e0'},
-            {text: userscore[i].par, fillColor: '#9e9e9e'}
+            {
+              text: data.scorematch === 1 ? userscore[i].par : ( sortBy === 'net' ? userscore[i].net : userscore[i].sf ),
+              fillColor: '#9e9e9e'
+            }
           ],
         ]
       }

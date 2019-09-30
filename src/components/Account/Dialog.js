@@ -178,11 +178,11 @@ export default function Dialog(props) {
           <div style={modalStyle} className={classes.paper}>
             { pageState === 'signup' &&
               <IconButton className={classes.back} onClick={()=>setPageState('signin')}>
-                <ArrowBackIcon classes={{ root: classes.backIcon }}/>
+                <ArrowBackIcon classes={{ root: classes.backIcon }} />
               </IconButton>
             }
             <IconButton className={classes.close} onClick={handleClose}>
-              <CloseIcon classes={{ root: classes.closeIcon }}/>
+              <CloseIcon classes={{ root: classes.closeIcon }} />
             </IconButton>
             { pageState === 'signin' &&
               <SignInComponent
@@ -194,13 +194,13 @@ export default function Dialog(props) {
                 actionStatus={actionStatus}
                 handleSignIn={handleSignIn}
                 setPageState={setPageState}
-                setForgotState={setForgotState}/>
+                setForgotState={setForgotState} />
             }
             { pageState === 'signup' &&
               <SignUpComponent
                 {...props}
                 actionStatus={actionStatus}
-                handleSignUp={handleSignUp}/>
+                handleSignUp={handleSignUp} />
             }
           </div>
         </Modal>

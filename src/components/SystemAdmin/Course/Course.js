@@ -13,7 +13,7 @@ const RouteCourseBody = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null

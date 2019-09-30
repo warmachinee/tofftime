@@ -359,7 +359,7 @@ function MBScoreEditorContainer(props){
                     } />
                   { window.innerWidth > 450 &&
                     <ListItemText className={classes.listText}
-                      primary={value.lastname}/>
+                      primary={value.lastname} />
                   }
                   { matchDetail && matchDetail.class && window.innerWidth > 450 &&
                     ( matchDetail.class.length > 0 ?

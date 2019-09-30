@@ -264,7 +264,7 @@ export default function SideMenu(props) {
                             [classes.avatarImageInfo]: open,
                             [classes.avatarImage]: !open
                           })}
-                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle
                           style={{ transition: '.2s', color: COLOR.grey[900] }}
@@ -284,7 +284,7 @@ export default function SideMenu(props) {
                             [classes.avatarImageInfo]: open,
                             [classes.avatarImage]: !open
                           })}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle
                           style={{ transition: '.2s', color: COLOR.grey[900] }}
@@ -327,7 +327,7 @@ export default function SideMenu(props) {
                     <div
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <IconButton onClick={handleSwitchLanguage}>
-                        <Translate style={{ color: COLOR.primary[700] }}/>
+                        <Translate style={{ color: COLOR.primary[700] }} />
                       </IconButton>
                       <div style={{ fontSize: 16, fontWeight: 600, color: COLOR.grey[500], padding: 12  }}>
                         {sess.language}
@@ -374,7 +374,7 @@ export default function SideMenu(props) {
                 <ListItemIcon>
                   { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
-                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                     :
                     <AccountCircle classes={{ root: classes.avatar }} />
                   }
@@ -401,7 +401,7 @@ export default function SideMenu(props) {
             <BTN.NoStyleLink to='/'>
               <ListItem button>
                 <ListItemIcon>
-                  <img src={ic_logo} className={classes.logoImg}/>
+                  <img src={ic_logo} className={classes.logoImg} />
                 </ListItemIcon>
                 <ListItemText primary="ToffTime" />
               </ListItem>
@@ -435,7 +435,7 @@ export default function SideMenu(props) {
         <Divider />
         <List>
           <ListItem button onClick={toggleConfirmLogout} className={classes.logout}>
-            <ListItemIcon><ExitToApp classes={{ root: classes. logoutIcon }}/></ListItemIcon>
+            <ListItemIcon><ExitToApp classes={{ root: classes. logoutIcon }} /></ListItemIcon>
             <ListItemText className={classes.logoutTitle}
               primary={ ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' } />
           </ListItem>
@@ -448,7 +448,7 @@ export default function SideMenu(props) {
             { ( sess && sess.language === 'EN' ) ? "Are you sure you want to Log out?" : 'ต้องการลงชื่อออกหรือไม่ ?' }
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <BTN.PrimaryText fullWidth onClick={toggleConfirmLogout} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }

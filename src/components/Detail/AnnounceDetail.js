@@ -77,7 +77,7 @@ export default function AnnounceDetail(props){
           { data.picture &&
             <img className={classes.img} src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
-          <DetailComponent announcedetail={data.announcedetail}/>
+          <DetailComponent announcedetail={data.announcedetail} />
         </div>
       }
     </Paper>

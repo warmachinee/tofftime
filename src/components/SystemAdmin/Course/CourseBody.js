@@ -30,6 +30,7 @@ import {
   Create,
   Search,
   Clear,
+  RemoveCircleOutline,
 
 } from '@material-ui/icons'
 
@@ -158,6 +159,27 @@ export default function CourseBody(props){
     toggleEditting()
   }
 
+  async function handleFetchToggleOfficial(data){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'fieldsystem', {
+        action: 'togglecustom',
+        fieldid: data.fieldid,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'success' ? d.status : 'error',
+        autoHideDuration: d.status === 'success'? 2000 : 5000
+      })
+      if(d.status === 'success'){
+        handleFetch()
+      }
+    })
+  }
+
   async function handleDeleteField(){
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
@@ -273,9 +295,13 @@ export default function CourseBody(props){
             <React.Fragment key={d.fieldid}>
               <ListItem className={classes.list}>
                 <ListItemIcon className={classes.listOfficial}>
-                  { d.custom === 0 ?
-                    <CheckCircle style={{ color: COLOR.primary[600] }}/> : <div style={{ width: 24, fontSize: 28 }}>{'-'}</div>
-                  }
+                  <IconButton onClick={()=>handleFetchToggleOfficial(d)} disabled={sess && sess.typeid !== 'admin'}>
+                    { d.custom === 0 ?
+                      <CheckCircle style={{ color: COLOR.primary[600] }} />
+                      :
+                      <RemoveCircleOutline />
+                    }
+                  </IconButton>
                 </ListItemIcon>
                 <ListItemIcon className={classes.listImage}>
                   { d.photopath ?
@@ -324,7 +350,7 @@ export default function CourseBody(props){
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleClose} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }

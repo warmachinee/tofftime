@@ -43,9 +43,9 @@ function TabContainer(props) {
       <div style={{ display: 'flex' }}>
         {
           !reward.status &&
-          <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} sess={sess} sortBy={sortBy}/>
+          <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} sess={sess} sortBy={sortBy} />
         }
-        <PrintPDF data={data} userscore={userscore} matchClass={matchClass} sess={sess} sortBy={sortBy}/>
+        <PrintPDF data={data} userscore={userscore} matchClass={matchClass} sess={sess} sortBy={sortBy} />
         <div style={{ flex: 1 }} />
         { data && data.scorematch === 0 &&
           <div>
@@ -62,7 +62,7 @@ function TabContainer(props) {
           </div>
         }
       </div>
-      <ScoreTable {...props} data={data} userscore={userscore} matchClass={matchClass}/>
+      <ScoreTable {...props} data={data} userscore={userscore} matchClass={matchClass} />
     </React.Fragment>
   )
 }

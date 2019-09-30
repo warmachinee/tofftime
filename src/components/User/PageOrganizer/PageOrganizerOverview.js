@@ -157,7 +157,7 @@ export default function PageOrganizerOverview(props) {
             <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
               { pageData.logo ?
                 <Avatar className={classes.avatarImage}
-                  src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+                  src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
                 :
                 <AccountCircleIcon classes={{ root: classes.avatar }} />
               }
@@ -211,7 +211,7 @@ export default function PageOrganizerOverview(props) {
             { pageData && pageData.pagename }
           </Box>
         </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleConfirmCancel} className={classes.confirmButton}>
             { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
@@ -243,7 +243,7 @@ export default function PageOrganizerOverview(props) {
             onKeyPress={e =>handleKeyPress(e)}
           />
         </ThemeProvider>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }}/>
+        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleConfirmPasswordCancel} className={classes.confirmButton}>
             Cancel

@@ -241,7 +241,7 @@ export default function EditPage(props) {
             <img ref={imgRef}
               style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
               className={classes.matchImg}
-              src={tempFile}/>
+              src={tempFile} />
             { imgRef.current &&
               <div
                 style={{
@@ -256,7 +256,7 @@ export default function EditPage(props) {
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUpload fontSize="large" style={{ color: primary[400] }}/>
+                    <CloudUpload fontSize="large" style={{ color: primary[400] }} />
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>
@@ -279,7 +279,7 @@ export default function EditPage(props) {
                 <div style={{ flex: 1 }} />
                 <StyledIconButton className={classes.matchFile}>
                   <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                  <CloudUpload fontSize="large" style={{ color: primary[500] }}/>
+                  <CloudUpload fontSize="large" style={{ color: primary[500] }} />
                 </StyledIconButton>
                 <div style={{ flex: 1 }} />
               </div>

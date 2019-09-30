@@ -233,7 +233,7 @@ export default function PageOrganizerSetAdmin(props) {
         <div className={classes.grid}>
           <Button className={classes.addAdminButton} variant="contained"
             onClick={handleOpen}>
-            <AddCircle style={{ marginRight: 8, marginLeft: 12 }}/>
+            <AddCircle style={{ marginRight: 8, marginLeft: 12 }} />
             Add admin
           </Button>
           <List style={{ cursor: 'auto' }}>

@@ -216,7 +216,7 @@ export default function PageList(props){
       <div style={{ display: 'flex', margin: '24px 16px 0 16px' }}>
         <RedButton variant="contained" color="secondary"
           onClick={handleOpen}>
-          <AddCircleIcon style={{ marginRight: 8 }}/>
+          <AddCircleIcon style={{ marginRight: 8 }} />
           Add page
         </RedButton>
         <div style={{ flex: 1 }} />
@@ -227,12 +227,12 @@ export default function PageList(props){
       <List>
         <ListItem className={classes.tableHead}>
           { window.innerWidth >= 500 &&
-            <StyledText primary="Follower" className={classes.tableFollower}/>
+            <StyledText primary="Follower" className={classes.tableFollower} />
           }
           <ListItemAvatar style={{ marginRight: 16 }}>
             <div style={{ margin: 10, width: 60, height: 24 }}></div>
           </ListItemAvatar>
-          <StyledText inset={window.innerWidth < 700 && window.innerWidth >=450} primary="Title" className={classes.tableTitle}/>
+          <StyledText inset={window.innerWidth < 700 && window.innerWidth >=450} primary="Title" className={classes.tableTitle} />
           <ListItemIcon className={classes.tableAction}>
             <IconButton disabled edge="end">
               <div style={{ width: 24 }}></div>
@@ -247,7 +247,7 @@ export default function PageList(props){
                 { window.innerWidth >= 500 &&
                   <ListItemText primary={d.subscriber}
                     className={classes.tableFollower}
-                    classes={{ primary: classes.tableFollowerText }}/>
+                    classes={{ primary: classes.tableFollowerText }} />
                 }
                 <ListItemAvatar style={{ marginRight: 16 }}>
                   {
@@ -257,7 +257,7 @@ export default function PageList(props){
                         src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
-                      <AccountCircleIcon className={classes.bigAvatar}/>
+                      <AccountCircleIcon className={classes.bigAvatar} />
                   }
                 </ListItemAvatar>
                 <ListItemText inset={window.innerWidth < 700 && window.innerWidth >=450}
@@ -274,11 +274,11 @@ export default function PageList(props){
                         {d.subscriber} {`follower${d.subscriber > 1 ? 's' : '' }`}
                       </Typography>
                     </React.Fragment>
-                  }/>
+                  } />
                 <ListItemIcon className={classes.tableAction}>
                   { editting?
                     <IconButton style={{ padding: 0 }} edge="end" onClick={()=>handleRemove(d)}>
-                      <DeleteIcon classes={{ root: classes.deleteIcon }}/>
+                      <DeleteIcon classes={{ root: classes.deleteIcon }} />
                     </IconButton>
                     :
                     <IconButton disabled edge="end">
@@ -294,7 +294,7 @@ export default function PageList(props){
 
       </List>
       <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
-        <AddPageModal {...passingProps} setData={setData}/>
+        <AddPageModal {...passingProps} setData={setData} />
       </TemplateDialog>
     </div>
   );

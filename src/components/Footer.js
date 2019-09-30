@@ -27,7 +27,11 @@ export default function Footer(props) {
       <div style={{ display: 'flex', flexDirection: window.innerWidth >600 ? 'row' : 'column' }}>
         <div>
           <div style={{ marginTop: 24, color: 'white', fontSize: 18, fontWeight: 600 }}>Contact</div>
-          <div style={{ marginTop: 24, color: 'white', fontWeight: 600 }}>Email : support@tofftime.com</div>
+          <div style={{ marginTop: 24, color: 'white', fontWeight: 600 }}>
+            Email : <a href="mailto:support@tofftime.com"
+              target = "_top"
+              style={{ color: 'white', fontWeight: 600 }}>{'support@tofftime.com'}</a>
+          </div>
         </div>
         <div style={{ flex: 1 }} />
         <div>

@@ -111,7 +111,7 @@ export default function SideDrawer(props) {
                   { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
                       onClick={drawerClose}
-                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                     :
                     <AccountIcon onClick={drawerClose} classes={{ root: classes.avatar }} />
                   }

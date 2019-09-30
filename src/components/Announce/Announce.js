@@ -65,7 +65,9 @@ export default function Announce(props) {
   return (
     <div className={classes.root}>
       <AnnouncePrimary {...props} data={ data ? data.primary : null} />
-      <AnnounceSecondary {...props} data={ data ? data.secondary : null}/>
+      { data && data.secondary.length > 0 &&
+        <AnnounceSecondary {...props} data={ data ? data.secondary : null} />
+      }
     </div>
   );
 }

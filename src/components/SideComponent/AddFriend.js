@@ -230,7 +230,7 @@ function ListPlayerItem(props) {
         <ListItemIcon onClick={handleMenuClick}>
           { data.photopath ?
             <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
             :
             <AccountCircle classes={{ root: classes.avatar }} />
           }
@@ -244,7 +244,7 @@ function ListPlayerItem(props) {
               </Typography>
             </React.Fragment>
           }
-          secondary={getFriendStatus(status)}/>
+          secondary={getFriendStatus(status)} />
         { status !== 'friend' &&
           <ListItemIcon>
             { status === 'pending'?

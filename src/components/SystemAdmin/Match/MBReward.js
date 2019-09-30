@@ -275,7 +275,7 @@ function RewardContainer(props){
               { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
             </Button>
           </Typography>
-        }/>
+        } />
         { window.innerWidth >= 700 &&
           <ListItemText className={classes.listText} primary={data.lastname} />
         }
@@ -616,7 +616,7 @@ export default function MBReward(props){
                     data={d}
                     setData={setData}
                     setMatchDetail={setMatchDetail}
-                    editting={editting}/>
+                    editting={editting} />
                 );
               })
             )

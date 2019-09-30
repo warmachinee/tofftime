@@ -115,7 +115,7 @@ export default function MatchTeam(props) {
         </Typography>
         { ( selectedUser && selectedUser.photopath ) ?
           <img align="left" className={classes.image}
-            src={API.getPictureUrl(selectedUser.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>
+            src={API.getPictureUrl(selectedUser.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
           :
           <div className={classes.matchImgTemp}
             style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
@@ -130,13 +130,13 @@ export default function MatchTeam(props) {
           {/*<GreenTextButton onClick={handleClose}>Cancel</GreenTextButton>*/}
           <RedButton className={classes.iconButton} variant="contained"
             onClick={()=>handleUpdateForm('reject')}>
-            <CancelIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+            <CancelIcon style={{ marginRight: 8, marginLeft: 12 }} />
             Decline
           </RedButton>
           <div style={{ width: 16 }} />
           <GreenButton className={classes.iconButton} variant="contained"
             onClick={()=>handleUpdateForm('accept')}>
-            <DoneIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+            <DoneIcon style={{ marginRight: 8, marginLeft: 12 }} />
             Accept
           </GreenButton>
         </ListItem>

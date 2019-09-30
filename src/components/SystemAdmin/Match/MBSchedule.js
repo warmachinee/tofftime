@@ -584,7 +584,7 @@ export default function MBSchedule(props){
           <RedButton className={classes.iconButton} variant="contained"
             style={{ margin: '2px 0'}}
             onClick={handleAddOpen}>
-            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
             { ( sess && sess.language === 'EN' ) ? "Invite" : 'ชวนผู้เล่น' }
           </RedButton>
           <GreenTextButton
@@ -637,7 +637,7 @@ export default function MBSchedule(props){
           { edittingTeam &&
             <React.Fragment>
               <div style={{ display: 'flex' }}>
-                <AccessTimeIcon style={{ color: primary[600], marginRight: 4 }}/>
+                <AccessTimeIcon style={{ color: primary[600], marginRight: 4 }} />
                 <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
                   { selectedTeam !== 0 ? (
                     ( sess && sess.language === 'EN' ) ? "Selected Time  : " : 'เวลาที่เลือก  : '
@@ -821,7 +821,7 @@ export default function MBSchedule(props){
                         } />
                       { window.innerWidth >= 600 &&
                         <ListItemText className={classes.listText}
-                          primary={value.lastname}/>
+                          primary={value.lastname} />
                       }
                       { window.innerWidth > 600 && edittingTeam &&
                         (
@@ -914,7 +914,7 @@ export default function MBSchedule(props){
         <AddPlayerModal
           {...props}
           playerAction="invite"
-          data={data}/>
+          data={data} />
       </TemplateDialog>
       <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth={500}>
         <MatchTeam

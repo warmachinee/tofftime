@@ -211,7 +211,7 @@ export default function MBMatchAdmin(props){
       <ListItem className={classes.controls}>
         <Button className={classes.addAdminButton} variant="contained"
           onClick={handleOpen}>
-          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }}/>
+          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
           { ( sess && sess.language === 'EN' ) ? "Add admin" : 'เพิ่มแอดมิน' }
         </Button>
         <div style={{ flex: 1 }} />

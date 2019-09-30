@@ -55,7 +55,7 @@ export default function OrganizerMatchList(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ props.createPostState ])
 
   return(
     <div className={classes.root}>

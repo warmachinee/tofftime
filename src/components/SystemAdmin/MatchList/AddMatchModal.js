@@ -226,7 +226,7 @@ export default function AddMatchModal(props){
                         >
                           {value.date}
                         </Typography>
-                      }/>
+                      } />
                   }
                 </ListItem>
                 <Divider />

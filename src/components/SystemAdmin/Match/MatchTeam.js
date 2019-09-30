@@ -100,7 +100,7 @@ export default function MatchTeam(props) {
       person: person
     }
 
-    if(autoGen){
+    if(!autoGen){
       Object.assign(sendObj, { gen: 'true' });
     }
 
@@ -176,7 +176,7 @@ export default function MatchTeam(props) {
               type="time"
               onKeyPress={e =>handleKeyPress(e.key)}
               onChange={e => setCurrentTime(e.target.value)}
-              defaultValue={currentTime}/>
+              defaultValue={currentTime} />
             <div className={classes.fieldGrid}>
               <TextField
                 className={classes.textField}
@@ -188,7 +188,7 @@ export default function MatchTeam(props) {
                 onChange={e => setPeriod(parseInt(e.target.value))}
                 onFocus={e => e.target.select()}
                 type="number"/>
-              <div style={{ width: 16 }}/>
+              <div style={{ width: 16 }} />
               <TextField
                 className={classes.textField}
                 variant="outlined"
@@ -200,14 +200,16 @@ export default function MatchTeam(props) {
                 onFocus={e => e.target.select()}
                 type="number"/>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <FormControl component="fieldset">
-                <FormControlLabel
-                  control={<Switch checked={autoGen} onChange={()=>setAutoGen(!autoGen)} />}
-                  label="Auto gen"
-                />
-              </FormControl>
-            </div>
+            { matchDetail && matchDetail.team.length !== 0 &&
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <FormControl component="fieldset">
+                  <FormControlLabel
+                    control={<Switch checked={autoGen} onChange={()=>setAutoGen(!autoGen)} />}
+                    label="Auto gen"
+                  />
+                </FormControl>
+              </div>
+            }
             <GreenButton
               fullWidth
               className={classes.createButton}

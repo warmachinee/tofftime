@@ -332,7 +332,7 @@ export default function CreateMatchBody(props){
                             <div style={{ flex: 1 }} />
                             <StyledIconButton className={classes.matchFile}>
                               <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                              <CloudUploadIcon fontSize="large" style={{ color: primary[400] }}/>
+                              <CloudUploadIcon fontSize="large" style={{ color: primary[400] }} />
                             </StyledIconButton>
                             <div style={{ flex: 1 }} />
                           </div>
@@ -349,7 +349,7 @@ export default function CreateMatchBody(props){
                           <div style={{ flex: 1 }} />
                           <StyledIconButton className={classes.matchFile}>
                             <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                            <CloudUploadIcon fontSize="large" style={{ color: primary[500] }}/>
+                            <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
                           </StyledIconButton>
                           <div style={{ flex: 1 }} />
                         </div>

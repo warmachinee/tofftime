@@ -1,9 +1,10 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client'
 import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
 import {
-  Paper, Box, Typography,
+  Paper, Box, Typography, Button
 } from '@material-ui/core';
 
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -70,6 +71,52 @@ export default function OrganizerMatchCard(props) {
   const classes = useStyles();
   const { API, BTN, data, isSupportWebp, sess } = props
   const [ paperHover, setPaperHover ] = React.useState(0)
+  const [ joinStatus, setJoinStatus ] = React.useState(false)
+
+  function handleJoinMatch(){
+    if(sess && sess.status === 1){
+      const socket = socketIOClient( API.getWebURL() )
+      socket.emit('match-request-client-message', {
+        action: 'join',
+        matchid: data.messagedetail[0].matchid,
+        userid: sess.userid,
+      })
+      setTimeout(()=>{
+        setJoinStatus(true)
+      }, 1000)
+    }else{
+      window.location.pathname = '/login'
+    }
+  }
+
+  function handleGetButton(){
+    if(BTN && data && data.messagedetail[0].matchstatus === 0){
+      switch (true) {
+        case data.messagedetail[0].permission === 'host' || data.messagedetail[0].permission === 'admin':
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
+              <BTN.NoStyleLink to={`/user/management/match/${data.messagedetail[0].matchid}`}>
+                <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+              </BTN.NoStyleLink>
+            </div>
+          )
+          break;
+        case data.messagedetail[0].permission === 'none':
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+              { joinStatus?
+                <Button disabled>Join</Button>
+                :
+                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              }
+            </div>
+          )
+          break;
+        default:
+          return null
+      }
+    }
+  }
 
   return(
     <Paper
@@ -96,7 +143,7 @@ export default function OrganizerMatchCard(props) {
                 src={API.getPictureUrl(data.messagedetail[0].photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             </BTN.NoStyleLink>
             :
-            <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }}/>
+            <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />
           )
         )
       }
@@ -114,7 +161,7 @@ export default function OrganizerMatchCard(props) {
           </BTN.NoStyleLink>
           <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-              <LocationOnIcon fontSize="small" className={classes.locationIcon}/>
+              <LocationOnIcon fontSize="small" className={classes.locationIcon} />
               {data.messagedetail[0].fieldname + `(${data.messagedetail[0].fieldversion})`}
             </Typography>
           </BTN.NoStyleLink>
@@ -128,6 +175,7 @@ export default function OrganizerMatchCard(props) {
           <Skeleton height={14} width="60%"/>
         </Box>
       }
+      {handleGetButton()}
     </Paper>
   );
 }

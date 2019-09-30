@@ -423,7 +423,7 @@ export default function ScoreTable(props) {
           return ( d && d.classno === matchClass.classno )
         }).map( ( row, i ) => (
           row &&
-          <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i}/>
+          <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i} />
         ))}
       </Paper>
     </div>

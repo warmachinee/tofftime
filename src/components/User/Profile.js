@@ -467,10 +467,10 @@ export default function Profile(props) {
                         tempFile
                         :
                         API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
-                      }/>
+                      } />
                     :
                     ( selectedFile ?
-                      <Avatar className={classes.avatarImage} src={tempFile}/>
+                      <Avatar className={classes.avatarImage} src={tempFile} />
                       :
                       <AccountCircleIcon classes={{ root: classes.avatar }} />
                     )
@@ -490,7 +490,7 @@ export default function Profile(props) {
                         accountData.photopath ?
                         <Avatar className={classes.avatarImage}
                           style={{ cursor: 'pointer' }}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircleIcon
                           style={{ cursor: 'pointer' }}

@@ -260,10 +260,11 @@ export default function Statistics(props) {
 
   return (
     <React.Fragment>
-      <div className={clsx(classes.grid,{
-        [classes.gridFlexDirectionDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-        [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-      })}>
+      <div
+        className={clsx(classes.grid,{
+          [classes.gridFlexDirectionDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
+          [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+        })}>
         <Paper
           style={{ boxSizing: 'border-box' }}
           className={clsx(

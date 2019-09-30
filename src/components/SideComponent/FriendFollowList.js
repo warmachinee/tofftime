@@ -207,7 +207,7 @@ export default function FriendFollowList(props) {
                           { item.picture ?
                             /*
                             <Avatar className={classes.avatarImage}
-                              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
+                              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />*/
                             <Avatar className={classes.avatarImage}
                               src={item.picture} />
                             :
@@ -232,7 +232,7 @@ export default function FriendFollowList(props) {
                 :
                 Array.from(new Array(3)).map((item, i) => (
                   <ListItem key={i} className={classes.listItem}>
-                    <Skeleton variant="circle" width={36} height={36}/>
+                    <Skeleton variant="circle" width={36} height={36} />
                     { open && <Skeleton style={{ marginLeft: 16 }} width="80%"/>}
                   </ListItem>
                 ))
@@ -252,7 +252,7 @@ export default function FriendFollowList(props) {
                       { item.picture ?
                         /*
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )}/>*/
+                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />*/
                         <Avatar className={classes.avatarImage}
                           src={item.picture} />
                         :
@@ -267,7 +267,7 @@ export default function FriendFollowList(props) {
               :
               Array.from(new Array(3)).map((item, i) => (
                 <ListItem key={i} className={classes.listItem}>
-                  <Skeleton variant="circle" width={36} height={36}/>
+                  <Skeleton variant="circle" width={36} height={36} />
                   { open && <Skeleton style={{ marginLeft: 16 }} width="80%"/>}
                 </ListItem>
               ))
@@ -283,7 +283,7 @@ export default function FriendFollowList(props) {
               {
                 Array.from(new Array(3)).map((item, i) => (
                   <ListItem key={i} className={classes.listItem}>
-                    <Skeleton variant="circle" width={36} height={36}/>
+                    <Skeleton variant="circle" width={36} height={36} />
                     <Skeleton style={{ marginLeft: 16 }} width="80%"/>
                   </ListItem>
                 ))
@@ -296,7 +296,7 @@ export default function FriendFollowList(props) {
               {
                 Array.from(new Array(3)).map((item, i) => (
                   <ListItem key={i} className={classes.listItem}>
-                    <Skeleton variant="circle" width={36} height={36}/>
+                    <Skeleton variant="circle" width={36} height={36} />
                     <Skeleton style={{ marginLeft: 16 }} width="80%"/>
                   </ListItem>
                 ))

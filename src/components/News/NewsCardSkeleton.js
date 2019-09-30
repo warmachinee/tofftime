@@ -46,7 +46,7 @@ export default function NewsCardSkeleton(props) {
             backgroundColor: grey[300],
             margin: 0,
             width: '100%', height: window.innerWidth >= 500 ? '100%' : 200
-          }}/>
+          }} />
       </div>
       <Box
         style={{
@@ -58,8 +58,8 @@ export default function NewsCardSkeleton(props) {
           boxSizing: 'border-box',
           ... ( window.innerWidth >= 600 )? { width: '50%' } : null
         }}>
-        <Skeleton width="100%" height={28}/>
-        <Skeleton width="20%" height={14}/>
+        <Skeleton width="100%" height={28} />
+        <Skeleton width="20%" height={14} />
         <Skeleton width="70%"/>
         <Skeleton width="90%"/>
         <Skeleton width="90%"/>

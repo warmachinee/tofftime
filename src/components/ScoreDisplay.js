@@ -110,7 +110,7 @@ export default function ScoreDisplay(props){
 
   return(
     <div className={classes.root}>
-      <div style={{ height: 24 }}/>
+      <div style={{ height: 24 }} />
       { host ?
         <Typography variant="h4">
           { host.fullname } &nbsp;&nbsp; { host.lastname }

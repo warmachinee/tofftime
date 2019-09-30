@@ -199,7 +199,7 @@ export default function AnnouncePrimary(props) {
             <Skeleton
               className={classes.skeleton}
               height={32}
-              style={{ backgroundColor: grey[300] }}/>
+              style={{ backgroundColor: grey[300] }} />
           </div>
         }
       </AutoPlaySwipeableViews>
@@ -209,13 +209,13 @@ export default function AnnouncePrimary(props) {
       {
         window.innerWidth > 500 && data && data.length > 1 &&
         <IconButton classes={{ root: classes.iconButton }} className={classes.leftArrow} onClick={backHandler}>
-          <KeyboardArrowLeft classes={{ root: classes.arrow }}/>
+          <KeyboardArrowLeft classes={{ root: classes.arrow }} />
         </IconButton>
       }
       {
         window.innerWidth > 500  && data && data.length > 1 &&
         <IconButton classes={{ root: classes.iconButton }} className={classes.rightArrow} onClick={nextHandler}>
-          <KeyboardArrowRight classes={{ root: classes.arrow }}/>
+          <KeyboardArrowRight classes={{ root: classes.arrow }} />
         </IconButton>
       }
     </div>

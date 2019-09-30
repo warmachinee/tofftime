@@ -79,7 +79,7 @@ export default function TemplateDialog(props) {
               height: fullScreen ? '100%' : 'auto',
             }} className={classes.paper}>
             <IconButton className={classes.close} onClick={handleClose}>
-              <CloseIcon classes={{ root: classes.closeIcon }}/>
+              <CloseIcon classes={{ root: classes.closeIcon }} />
             </IconButton>
             {props.children}
           </div>

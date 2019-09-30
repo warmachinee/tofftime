@@ -23,7 +23,7 @@ const RouteMatch = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -40,7 +40,7 @@ const RouteCourse = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -57,7 +57,7 @@ const RoutePostManagement = Loadable.Map({
         {...props}
         render={()=> (
           <Component {...props} />
-        )}/>
+        )} />
     )
   },
   loading: () => null
@@ -148,7 +148,7 @@ export default function Management(props) {
   function SystemComponent(){
     return (sess && sess.status === 1) && (
       <React.Fragment>
-        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Management" : 'ระบบการจัดการ' }/>
+        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Management" : 'ระบบการจัดการ' } />
         <div style={{ marginTop: 36 }}>
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
@@ -194,12 +194,12 @@ export default function Management(props) {
       { (sess && sess.status === 1) &&
         <React.Fragment>
           <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`} component={SystemComponent} />
-          <RouteMatch path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} {...passingProps}/>
+          <RouteMatch path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} {...passingProps} />
           <RouteCourse path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} {...passingProps} />
           { pageOrganizer &&
-            <RoutePostManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} {...passingProps}/>
+            <RoutePostManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} {...passingProps} />
           }
-          {/*<RouteUser path={`/user/mangament/user`} {...passingProps}/>*/}
+          {/*<RouteUser path={`/user/mangament/user`} {...passingProps} />*/}
         </React.Fragment>
       }
     </Paper>

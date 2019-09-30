@@ -62,7 +62,7 @@ export default function NotificationsDialog(props) {
         <LabelText text={ ( sess && sess.language === 'EN' ) ? "Notifications" : 'การแจ้งเตือน' } />
         <List>
           { notiData &&
-            notiData.map( d => <ListNotiItem key={d.createdate} {...props} data={d}/>)
+            notiData.map( d => <ListNotiItem key={d.createdate} {...props} data={d} />)
           }
           { notiData && notiData.length === 0 &&
             <ListItem style={{ marginTop: 24 }}>
@@ -229,7 +229,7 @@ function ListNotiItem(props) {
             <Avatar
               style={{ transition: '.2s' }}
               className={classes.avatarImage}
-              src={API.getPictureUrl(data.fromdetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}/>
+              src={API.getPictureUrl(data.fromdetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
             :
             <AccountCircle
               style={{ color: COLOR.grey[900] }}

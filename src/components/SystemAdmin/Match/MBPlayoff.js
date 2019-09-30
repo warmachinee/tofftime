@@ -216,7 +216,7 @@ function PlayoffContainer(props){
       <ListItemText className={classes.listText} primary={data.lastname} />
       <ListItemIcon className={classes.listStatus}>
         { data.status === 'playoff'?
-          <CheckCircleIcon classes={{ root: classes.checkCircle }}/>
+          <CheckCircleIcon classes={{ root: classes.checkCircle }} />
           :
           <div style={{ width: 20, textAlign: 'center', fontSize: 20, fontWeight: 600 }}>-</div>
         }
@@ -380,7 +380,7 @@ export default function MBPlayoff(props){
                             key={d.userid}
                             {...props}
                             data={d}
-                            setData={setData} setMatchDetail={setMatchDetail}/>
+                            setData={setData} setMatchDetail={setMatchDetail} />
                         )
                       }
                       { filtered.length <= 1 &&
