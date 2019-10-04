@@ -503,8 +503,7 @@ export default function MBScoreEditor(props){
   }, [ arrScore, oldSelected, selected ])
 
   function handleUpdateScore(){
-    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-    const socket = socketIOClient( hd + API.webURL() )
+    const socket = socketIOClient( API.getWebURL() )
     socket.emit('admin-match-client-message', {
       action: "scorebysystemadmin",
       matchid: matchid,

@@ -7,7 +7,7 @@ import { primary, grey } from './../../../api/palette'
 
 import CKEditor from '@ckeditor/ckeditor5-react';
 
-import BalloonEditor from '@ckeditor/ckeditor5-build-balloon-block';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import {
   Button,
@@ -531,8 +531,8 @@ export default function PageOrganizerPostEditor(props) {
                 { clickAction === 'edit' ?
                   ( (dataDetail && dataDetail.messagedetail) ?
                     <CKEditor
+                      editor={ ClassicEditor }
                       data={detail}
-                      editor={ BalloonEditor }
                       onChange={ ( event, editor ) => {
                         const data = editor.getData();
                         handleCKEditorOnChange(data)
@@ -542,8 +542,8 @@ export default function PageOrganizerPostEditor(props) {
                     />
                     :
                     <CKEditor
+                      editor={ ClassicEditor }
                       data={detail}
-                      editor={ BalloonEditor }
                       onChange={ ( event, editor ) => {
                         const data = editor.getData();
                         handleCKEditorOnChange(data)
@@ -554,8 +554,8 @@ export default function PageOrganizerPostEditor(props) {
                   )
                   :
                   <CKEditor
+                    editor={ ClassicEditor }
                     data={detail}
-                    editor={ BalloonEditor }
                     onChange={ ( event, editor ) => {
                       const data = editor.getData();
                       handleCKEditorOnChange(data)
@@ -588,7 +588,7 @@ export default function PageOrganizerPostEditor(props) {
                 { selectedMatch?
                   selectedMatch.title
                   :
-                  ( sess && sess.language === 'EN' ) ? "Select match" : 'เลือกการแข่งขัน' 
+                  ( sess && sess.language === 'EN' ) ? "Select match" : 'เลือกการแข่งขัน'
                 }
               </BTN.PrimaryOutlined>
             )

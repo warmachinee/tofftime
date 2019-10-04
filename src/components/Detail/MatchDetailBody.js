@@ -1,37 +1,47 @@
 import React from 'react';
 import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
+import { Link } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import * as API from './../../api'
 import { primary } from './../../api/palette'
 
-import Scoreboard from './Scoreboard'
+import {
+  Button,
+  Paper,
+  IconButton,
+  Typography,
+  Tooltip,
+  Box,
+  Collapse,
+  List,
+  ListItem,
+  ListItemText,
+  Menu,
+  MenuItem,
 
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
+} from '@material-ui/core';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 import { LDCircular } from './../loading/LDCircular'
 
+const Scoreboard = Loadable({
+  loader: () => import(/* webpackChunkName: "Scoreboard" */'./Scoreboard'),
+  loading: () => <LDCircular />
+});
+
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
   loading: () => <LDCircular />
 });
 
+
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
-    maxWidth: 1200,
+    maxWidth: 1600,
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
@@ -136,6 +146,15 @@ function MatchDetailBody(props) {
   const [ expanded, setExpanded ] = React.useState(true)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ joinStatus, setJoinStatus ] = React.useState(false)
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
+
+  const handleClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   function handleJoinMatch(){
     if(sess && sess.status === 1){
@@ -203,10 +222,7 @@ function MatchDetailBody(props) {
           <Typography gutterBottom variant="h6" color="textSecondary">
             { data &&
               (
-                data.scorematch === 1 ?
-                ( ( sess && sess.language === 'EN' ) ? "Professional" : 'มืออาชีพ' )
-                :
-                ( ( sess && sess.language === 'EN' ) ? "Amateur" : 'มือสมัครเล่น' )
+                data.scorematch === 1 ? 'Professional' : 'Amateur'
               )
             }
           </Typography>
@@ -220,6 +236,10 @@ function MatchDetailBody(props) {
               <BTN.NoStyleLink to={`/matchform/${matchid}`}>
                 <BTN.PrimaryText>{ ( sess && sess.language === 'EN' ) ? "Form" : 'รายชื่อผู้สมัคร' }</BTN.PrimaryText>
               </BTN.NoStyleLink>
+            }
+            <div style={{ flex: 1 }} />
+            { BTN &&
+              <BTN.PrimaryText onClick={handleClick}>{ ( sess && sess.language === 'EN' ) ? "Mini Game" : 'มินิเกม' }</BTN.PrimaryText>
             }
           </div>
           <Typography component="div">
@@ -298,7 +318,6 @@ function MatchDetailBody(props) {
               <ExpandMoreIcon />
             </IconButton>
           </ListItem>
-
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             { data && userscore &&
               <Scoreboard {...props} matchClass={data && data.class} />
@@ -307,7 +326,23 @@ function MatchDetailBody(props) {
         </React.Fragment>
       </div>
       {/*--------------------End Content--------------------*/}
-
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        { matchid && BTN &&
+          <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/mah`}>
+            <MenuItem onClick={handleClose}>Mah</MenuItem>
+          </Link>
+        }
+        { matchid && BTN &&
+          <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/jao`}>
+            <MenuItem onClick={handleClose}>Jao</MenuItem>
+          </Link>
+        }
+      </Menu>
     </Paper >
   );
 }

@@ -443,8 +443,7 @@ export default function MBPlayer(props){
         }catch(err) { console.log(err.message) }
       })
     }else{
-      var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-      const socket = socketIOClient( hd + API.webURL() )
+      const socket = socketIOClient( API.getWebURL() )
       socket.emit('match-request-client-message', {
         action: "confirm",
         matchid: matchid,

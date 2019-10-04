@@ -110,8 +110,12 @@ function xhrPost(token, url, obj, func){
     req.onreadystatechange = () => {
       if (req.readyState !== 4) return;
       if (req.status >= 200 && req.status < 300) {
-        func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
-        resolve()
+        if(req.responseText){
+          func(req.getResponseHeader('csrf-token'), JSON.parse(req.responseText))
+          resolve()
+        }else{
+          console.log(req.responseText);
+        }
       }else{
         //console.log(req.status);
       }

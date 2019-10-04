@@ -52,6 +52,7 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
+        exclude: /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/,
       },
       {
         test: /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/,
@@ -91,6 +92,13 @@ module.exports = {
             },
           },
         ],
+        exclude: [
+          /\.(js|jsx|mjs)$/,
+          /\.html$/,
+          /\.json$/,
+          /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/,
+          /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/
+        ],
       },
 
     ],
@@ -107,5 +115,6 @@ module.exports = {
       },
       favicon: './public/favicon.ico'
     }),
+
   ]
 };

@@ -1,20 +1,48 @@
 import React from 'react';
 import Loadable from 'react-loadable';
-import { Route } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import socketIOClient from 'socket.io-client'
 import * as API from './../../api'
 
 import { LDCircular } from './../loading/LDCircular'
 
-const MatchDetailBody = Loadable({
-  loader: () => import(/* webpackChunkName: "MatchDetailBody" */'./MatchDetailBody'),
+const RouteMatchDetailBody = Loadable.Map({
+  loader: {
+    MatchDetailBody: () => import(/* webpackChunkName: "MatchDetailBody" */'./MatchDetailBody'),
+  },
+  render(loaded, props) {
+    let Component = loaded.MatchDetailBody.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )} />
+    )
+  },
+  loading: () => <LDCircular />
+});
+
+const RouteMiniGameMah = Loadable.Map({
+  loader: {
+    MiniGameMah: () => import(/* webpackChunkName: "MiniGameMah" */'./../Game/MiniGameMah'),
+  },
+  render(loaded, props) {
+    let Component = loaded.MiniGameMah.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )} />
+    )
+  },
   loading: () => <LDCircular />
 });
 
 export default function MatchDetail(props){
   const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, handleSnackBarL } = props
-  const endpoint = API.getWebURL()
   const [ data, setData ] = React.useState(null)
   const [ rawUserscore, setRawUserscore ] = React.useState(null)
   const [ userscore, setUserscore ] = React.useState(null)
@@ -46,7 +74,7 @@ export default function MatchDetail(props){
 
   function response(action){
     const matchid = parseInt(props.computedMatch.params.matchid)
-    const socket = socketIOClient(endpoint)
+    const socket = socketIOClient( API.getWebURL() )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
       if(messageNew && messageNew.status === 'success'){
         if(messageNew.hostdetail){
@@ -78,12 +106,19 @@ export default function MatchDetail(props){
   },[ sortBy ])
 
   return(
-    <MatchDetailBody
-      {...props}
-      data={data}
-      userscore={userscore}
-      sortBy={sortBy}
-      setSortBy={setSortBy}
-      matchid={parseInt(props.computedMatch.params.matchid)} />
+    <Switch>
+      <RouteMatchDetailBody
+        exact
+        path={`/match/${props.computedMatch.params.matchid}`}
+        {...props}
+        data={data}
+        userscore={userscore}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        matchid={parseInt(props.computedMatch.params.matchid)} />
+      <RouteMiniGameMah
+        path={`/match/${props.computedMatch.params.matchid}/minigame/:gametype`}
+        {...props} />
+    </Switch>
   );
 }

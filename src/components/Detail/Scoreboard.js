@@ -22,6 +22,9 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     width: '100%',
     backgroundColor: theme.palette.background.paper,
+    maxWidth: 1200,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
   formControl: {
     margin: theme.spacing(1),

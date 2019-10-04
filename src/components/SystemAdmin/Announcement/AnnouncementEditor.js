@@ -6,7 +6,7 @@ import { primary, grey, red } from './../../../api/palette'
 
 import CKEditor from '@ckeditor/ckeditor5-react';
 
-import BalloonEditor from '@ckeditor/ckeditor5-build-balloon-block';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
@@ -416,8 +416,8 @@ export default function AnnouncementEditor(props) {
             { clickAction === 'edit' ?
               ( dataDetail && dataDetail.announcedetail &&
                 <CKEditor
+                  editor={ ClassicEditor }
                   data={detail}
-                  editor={ BalloonEditor }
                   onChange={ ( event, editor ) => {
                     const data = editor.getData();
                     handleCKEditorOnChange(data)
@@ -428,8 +428,8 @@ export default function AnnouncementEditor(props) {
               )
               :
               <CKEditor
+                editor={ ClassicEditor }
                 data={detail}
-                editor={ BalloonEditor }
                 onChange={ ( event, editor ) => {
                   const data = editor.getData();
                   handleCKEditorOnChange(data)

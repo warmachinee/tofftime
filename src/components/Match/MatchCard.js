@@ -149,10 +149,7 @@ export default function MatchCard(props) {
               fontWeight: data.typescore === 1 ? 900 : 400
             }}>
             {
-              data.typescore === 1 ?
-              ( ( sess && sess.language === 'EN' ) ? "Professional" : 'มืออาชีพ' )
-              :
-              ( ( sess && sess.language === 'EN' ) ? "Amateur" : 'มือสมัครเล่น' )
+              data.typescore === 1 ? 'Professional' : 'Amateur'
             }
           </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>

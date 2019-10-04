@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-ro
 import * as API from './api'
 import * as COLOR from './api/palette'
 import * as BTN from './components/Button'
+import TextField from '@material-ui/core/TextField';
 
 const RouteMain = Loadable.Map({
   loader: {
@@ -261,7 +262,11 @@ const Footer = Loadable({
   loading: () => null
 });
 
+
+import MiniGameMah from './components/Game/MiniGameMah'
+
 export default function App() {
+  const [ passwordAccess, setPasswordAccess ] = React.useState(true ? null : 'cat15000')
   const [ token, setCSRFToken ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ drawerState, setDrawerState ] = React.useState(false);
@@ -356,104 +361,121 @@ export default function App() {
   },[ locationPath ])
 
   return (
-    <div style={{ backgroundColor: '#f5f7f8' }}>
+    <React.Fragment>
+      { passwordAccess === 'cat15000' || ( sess && sess.status === 1 )?
+        <div style={{ backgroundColor: '#f5f7f8' }}>
 
-      { !/\/user|\/organizer/.test(window.location.pathname) &&
-        <Header
-          {...passingProps}
-          drawerOpen={toggleDrawer}
-          handleOpen={toggleDialog} />
+          { !/\/user|\/organizer/.test(window.location.pathname) &&
+            <Header
+              {...passingProps}
+              drawerOpen={toggleDrawer}
+              handleOpen={toggleDialog} />
+          }
+
+          { true?
+            <Switch>
+              <RouteMain exact path="/"
+                {...passingProps} />
+              <RouteOrganizer path="/page/:pageid"
+                {...passingProps} />
+
+              <RouteUserPage path="/user"
+                {...passingProps} />
+              <RoutePageOrganizer path="/organizer/:pageid"
+                {...passingProps} />
+              <RouteSystemAdmin path="/admin"
+                {...passingProps} />
+
+              <RouteAnnounceDetail path="/announce/:detailparam"
+                {...passingProps} />
+              <RouteNewsDetail path="/news/:detailparam"
+                {...passingProps} />
+              <RouteMatchDetail path="/match/:matchid"
+                {...passingProps}
+                handleSnackBarL={handleSnackBarL} />
+              <RouteOrganizerPostDetail path="/post/:pageid/:postid"
+                {...passingProps} />
+
+              <RouteSchedule path="/schedule/:matchid"
+                {...passingProps} />
+              <RouteMatchFormResult path="/matchform/:matchid"
+                {...passingProps} />
+              <RouteSignIn path="/login"
+                {...passingProps} />
+              <RouteScoreDisplay path="/display/:matchid/:userid"
+                {...passingProps} />
+              <Route component={NoMatch} />
+            </Switch>
+            :
+            <MiniGameMah {...passingProps} />
+          }
+
+          { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&
+            <Redirect to={`/`} />
+          }
+
+          { sess && sess.status === 1 && /\/login/.test(window.location.pathname) &&
+            <Redirect to={`/`} />
+          }
+
+          <SnackBarAlert
+            variant={snackBar.variant}
+            autoHideDuration={snackBar.autoHideDuration}
+            open={snackBar.state}
+            onClose={()=>handleSnackBar({
+              state: false,
+              message: '',
+              variant: 'error',
+              autoHideDuration: 2000
+            })}
+            message={snackBar.message} />
+
+          <SnackBarLong
+            autoHideDuration={15000}
+            open={snackBarL.state}
+            onClose={()=>handleSnackBarL({
+              state: false,
+              sFULLNAME: '',
+              sLASTNAME: '',
+              sOUT: 0,
+              sIN: 0,
+              sTOTAL: 0,
+              sPAR: 0
+            })}
+            sFULLNAME={snackBarL.sFULLNAME}
+            sLASTNAME={snackBarL.sLASTNAME}
+            sOUT={snackBarL.sOUT}
+            sIN={snackBarL.sIN}
+            sTOTAL={snackBarL.sTOTAL}
+            sPAR={snackBarL.sPAR}
+            />
+
+          <Dialog
+            {...passingProps}
+            open={open}
+            handleClose={toggleDialog}
+            handleSess={handleSess} />
+
+          <SideDrawer
+            {...passingProps}
+            drawerState={drawerState}
+            drawerClose={toggleDrawer} />
+
+          { !/\/user|\/organizer/.test(window.location.pathname) &&
+            <Footer />
+          }
+
+        </div>
+        :
+        <div style={{ padding: 16 }}>
+          <TextField
+            autoFocus
+            label="Password"
+            variant="outlined"
+            type="password"
+            onChange={e => setPasswordAccess(e.target.value)} />
+        </div>
       }
-
-      <Switch>
-        <RouteMain exact path="/"
-          {...passingProps} />
-        <RouteOrganizer path="/page/:pageid"
-          {...passingProps} />
-
-        <RouteUserPage path="/user"
-          {...passingProps} />
-        <RoutePageOrganizer path="/organizer/:pageid"
-          {...passingProps} />
-        <RouteSystemAdmin path="/admin"
-          {...passingProps} />
-        
-        <RouteAnnounceDetail path="/announce/:detailparam"
-          {...passingProps} />
-        <RouteNewsDetail path="/news/:detailparam"
-          {...passingProps} />
-        <RouteMatchDetail path="/match/:matchid"
-          {...passingProps}
-          handleSnackBarL={handleSnackBarL} />
-        <RouteOrganizerPostDetail path="/post/:pageid/:postid"
-          {...passingProps} />
-
-        <RouteSchedule path="/schedule/:matchid"
-          {...passingProps} />
-        <RouteMatchFormResult path="/matchform/:matchid"
-          {...passingProps} />
-        <RouteSignIn path="/login"
-          {...passingProps} />
-        <RouteScoreDisplay path="/display/:matchid/:userid"
-          {...passingProps} />
-        <Route component={NoMatch} />
-      </Switch>
-
-      { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&
-        <Redirect to={`/`} />
-      }
-
-      { sess && sess.status === 1 && /\/login/.test(window.location.pathname) &&
-        <Redirect to={`/`} />
-      }
-
-      <SnackBarAlert
-        variant={snackBar.variant}
-        autoHideDuration={snackBar.autoHideDuration}
-        open={snackBar.state}
-        onClose={()=>handleSnackBar({
-          state: false,
-          message: '',
-          variant: 'error',
-          autoHideDuration: 2000
-        })}
-        message={snackBar.message} />
-
-      <SnackBarLong
-        autoHideDuration={15000}
-        open={snackBarL.state}
-        onClose={()=>handleSnackBarL({
-          state: false,
-          sFULLNAME: '',
-          sLASTNAME: '',
-          sOUT: 0,
-          sIN: 0,
-          sTOTAL: 0,
-          sPAR: 0
-        })}
-        sFULLNAME={snackBarL.sFULLNAME}
-        sLASTNAME={snackBarL.sLASTNAME}
-        sOUT={snackBarL.sOUT}
-        sIN={snackBarL.sIN}
-        sTOTAL={snackBarL.sTOTAL}
-        sPAR={snackBarL.sPAR}
-        />
-
-      <Dialog
-        {...passingProps}
-        open={open}
-        handleClose={toggleDialog}
-        handleSess={handleSess} />
-
-      <SideDrawer
-        {...passingProps}
-        drawerState={drawerState}
-        drawerClose={toggleDrawer} />
-
-      { !/\/user|\/organizer/.test(window.location.pathname) &&
-        <Footer />
-      }
-
-    </div>
+    </React.Fragment>
   );
 }

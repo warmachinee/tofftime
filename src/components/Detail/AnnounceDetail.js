@@ -6,8 +6,6 @@ import { primary } from './../../api/palette'
 
 import CKEditor from '@ckeditor/ckeditor5-react';
 
-import BalloonEditor from '@ckeditor/ckeditor5-build-balloon-block';
-
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';

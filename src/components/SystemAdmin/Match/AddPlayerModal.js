@@ -148,8 +148,7 @@ export default function AddPlayerModal(props){
   const [ lastname, setLastname ] = React.useState('')
 
   function handleInviteUser(d){
-    var hd = ( /www/.test(window.location.href) )? 'https://www.' : 'https://'
-    const socket = socketIOClient( hd + API.webURL() )//[0] : hostid , [1] : targetuserid
+    const socket = socketIOClient( API.getWebURL() )//[0] : hostid , [1] : targetuserid
 
     socket.emit('match-request-client-message', {
       action: "invite",
