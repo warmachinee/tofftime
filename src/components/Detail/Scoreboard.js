@@ -53,7 +53,7 @@ function TabContainer(props) {
         { data && data.scorematch === 0 &&
           <div>
             <FormControl className={classes.formControl}>
-              <InputLabel>{ ( sess && sess.language === 'EN' ) ? "Sort by" : 'จัดเรียงตาม' }</InputLabel>
+              <InputLabel>{ ( sess && sess.language === 'TH' ) ? "จัดเรียงตาม" : 'Sort by' }</InputLabel>
               <Select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
@@ -165,7 +165,7 @@ export default function Scoreboard(props) {
             )
           }
           { data.scorematch === 0 &&
-            <StyledTab label={ ( sess && sess.language === 'EN' ) ? "Other" : 'อื่นๆ' } />
+            <StyledTab label={ ( sess && sess.language === 'TH' ) ? "อื่นๆ" : 'Other' } />
           }
         </StyledTabs>
       </Paper>

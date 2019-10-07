@@ -55,12 +55,22 @@ export default function MatchList(props) {
 
   return(
     <div id="el_match" className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Match list" : 'การแข่งขัน' } />
-      <div className={classes.grid}>
-        { data &&
-          data.map( d => <MatchCard key={d.matchid} data={d} {...props} />)
-        }
-      </div>
+      { data && data.filter( item =>{ return item.typescore === 1 }).length > 0 &&
+        <React.Fragment>
+          <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแข่งขันมืออาชีพ" : 'Professional match' } />
+          <div className={classes.grid}>
+            { data.filter( item =>{ return item.typescore === 1 }).map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
+          </div>
+        </React.Fragment>
+      }
+      { data && data.filter( item =>{ return item.typescore === 0 }).length > 0 &&
+        <React.Fragment>
+          <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแข่งขันมือสมัครเล่น" : 'Amateur match' } />
+          <div className={classes.grid}>
+            { data.filter( item =>{ return item.typescore === 0 }).map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
+          </div>
+        </React.Fragment>
+      }
     </div>
   );
 }

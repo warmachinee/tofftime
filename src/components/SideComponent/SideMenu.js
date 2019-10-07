@@ -356,14 +356,14 @@ export default function SideMenu(props) {
                 <Notifications />
               }
             </ListItemIcon>
-            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Notifications" : 'การแจ้งเตือน' } />
+            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } />
           </ListItem>
           <ListItem button onClick={toggleCreateMatch}>
             <ListItemIcon>
               <AddCircleOutline />
             </ListItemIcon>
             <ListItemText className={classes.listTitle}
-              primary={ ( sess && sess.language === 'EN' ) ? "Create Match" : 'สร้างการแข่งขัน' } />
+              primary={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } />
           </ListItem>
           <Divider />
         </List>
@@ -379,7 +379,7 @@ export default function SideMenu(props) {
                     <AccountCircle classes={{ root: classes.avatar }} />
                   }
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้งาน' } />
+                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ผู้ใช้งาน" : 'User' } />
               </ListItem>
             </BTN.NoStyleLink>
             <Divider />
@@ -391,7 +391,7 @@ export default function SideMenu(props) {
               <Flag />
             </ListItemIcon>
             <ListItemText className={classes.listTitle}
-              primary={ ( sess && sess.language === 'EN' ) ? "Create Page" : 'สร้างเพจ' } />
+              primary={ ( sess && sess.language === 'TH' ) ? "สร้างเพจ" : 'Create Page' } />
           </ListItem>
           <ListPage {...props} />
         </List>
@@ -411,23 +411,23 @@ export default function SideMenu(props) {
             <BTN.NoStyleLink to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}>
               <ListItem button>
                 <ListItemIcon><Dashboard /></ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Dashboard" : 'หน้าหลัก' } />
+                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' } />
               </ListItem>
             </BTN.NoStyleLink>
           }
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}>
             <ListItem button>
               <ListItemIcon><SettingsApplications /></ListItemIcon>
-              <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Management" : 'ระบบการจัดการ' } />
+              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } />
             </ListItem>
           </BTN.NoStyleLink>
           <ListItem button onClick={toggleHistory}>
             <ListItemIcon><History /></ListItemIcon>
-            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "History" : 'ประวัติ' } />
+            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
           </ListItem>
           <ListItem button onClick={toggleUpcoming}>
             <ListItemIcon><Event /></ListItemIcon>
-            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Upcoming" : 'เร็วๆนี้' } />
+            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
           </ListItem>
         </List>
         <ListFriend expanded={expanded} handleExpand={handleExpand} state={expanded.friend} {...props} />
@@ -437,7 +437,7 @@ export default function SideMenu(props) {
           <ListItem button onClick={toggleConfirmLogout} className={classes.logout}>
             <ListItemIcon><ExitToApp classes={{ root: classes. logoutIcon }} /></ListItemIcon>
             <ListItemText className={classes.logoutTitle}
-              primary={ ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' } />
+              primary={ ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' } />
           </ListItem>
         </List>
       </Drawer>
@@ -445,16 +445,16 @@ export default function SideMenu(props) {
         {/*handleLogout*/}
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to Log out?" : 'ต้องการลงชื่อออกหรือไม่ ?' }
+            { ( sess && sess.language === 'TH' ) ? "ต้องการลงชื่อออกหรือไม่ ?" : 'Are you sure you want to Log out?' }
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <BTN.PrimaryText fullWidth onClick={toggleConfirmLogout} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
           </BTN.PrimaryText>
           <BTN.Red fullWidth onClick={handleLogout} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' }
+            { ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' }
           </BTN.Red>
         </div>
       </TemplateDialog>

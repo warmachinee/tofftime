@@ -147,7 +147,7 @@ export default function Schedule(props) {
             }
           </div>
           <Typography gutterBottom variant="h4">
-            { ( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางการแข่งขัน' }
+            { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
           </Typography>
           <Typography gutterBottom variant="h5">{matchDetail.title}</Typography>
           <Typography gutterBottom variant="h6" component="div" style={{ display: 'flex' }}>
@@ -158,13 +158,13 @@ export default function Schedule(props) {
           <List disablePadding style={{ marginTop: 16 }}>
             <ListItem style={{ backgroundColor: COLOR.grey[900], paddingTop: 12, paddingBottom: 12 }}>
               <ListItemText className={classes.listTeam} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Team" : 'ทีม' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' } />
               <ListItemText className={classes.listTime} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Time" : 'เวลา' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
               <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Lastname" : 'นามสกุล' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Lastname' } />
             </ListItem>
           </List>
           <List disablePadding>

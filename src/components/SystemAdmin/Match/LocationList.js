@@ -270,7 +270,7 @@ export default function LocationList(props){
             autoFocus
             className={classes.searchBox}
             variant="outlined"
-            placeholder={ !searchField? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' ) : '' }
+            placeholder={ !searchField? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
             value={searchField}
             onChange={handleChangeField}
             InputProps={{
@@ -299,9 +299,9 @@ export default function LocationList(props){
             onClick={()=>setEditting(!editting)}>
             {
               editting?
-              ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+              ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
               :
-              ( ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' )
+              ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' )
             }
           </GreenTextButton>
         </div>
@@ -330,7 +330,7 @@ export default function LocationList(props){
         open={open} handleClose={handleClose}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
+            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
@@ -339,10 +339,10 @@ export default function LocationList(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleClose} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
           </GreenTextButton>
           <RedButton onClick={handleDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
           </RedButton>
         </div>
       </TemplateDialog>

@@ -52,25 +52,25 @@ function PDFFile(data, matchDetail, sess){
 
   let labelBody = (
     [
-      {text: ( ( sess && sess.language === 'EN' ) ? "Team" : 'ทีม' ), fillColor: '#e0e0e0'},
-      {text: ( ( sess && sess.language === 'EN' ) ? "Time" : 'เวลา' ), fillColor: '#e0e0e0'},
+      {text: ( ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' ), fillColor: '#e0e0e0'},
+      {text: ( ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' ), fillColor: '#e0e0e0'},
       {
-        text: ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ - นามสกุล' ),
+        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Name' ),
         fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
       },
-      {text: ( ( sess && sess.language === 'EN' ) ? "Note" : 'หมายเหตุ' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
+      {text: ( ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
     ]
   )
 
   let label = [
     [
-      {text: `${( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางเวลา'}\t`, fontSize: 36},
+      {text: `${( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule'}\t`, fontSize: 36},
       {text: data.title, fontSize: 30},
     ],
     {text: matchDetail.title + '\t', fontSize: 28, bold: true, margin: [0, 0, 0, 24]},
     {text: matchDetail.location + `(${matchDetail.locationversion})` + '\t', fontSize: 24, bold: true, margin: [0, 0, 0, 24]},
     {
-      text: `${( sess && sess.language === 'EN' ) ? "Date" : 'วันที่\t' }${matchDetail.date}` + '\t',
+      text: `${( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }\t${matchDetail.date}` + '\t',
       fontSize: 24, bold: true, margin: [0, 0, 0, 24]
     },
     {

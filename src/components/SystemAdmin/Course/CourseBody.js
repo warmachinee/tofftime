@@ -227,7 +227,7 @@ export default function CourseBody(props){
       <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          { ( sess && sess.language === 'EN' ) ? "Course" : 'สนาม' }
+          { ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' }
         </Box>
       </Typography>
       <List>
@@ -236,7 +236,7 @@ export default function CourseBody(props){
             <TextField
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchField? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' ) : '' }
+              placeholder={ !searchField? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
               value={searchField}
               onChange={e =>setSearchField(e.target.value)}
               InputProps={{
@@ -262,12 +262,12 @@ export default function CourseBody(props){
         </ListItem>
       </List>
       <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
-        <BTN.PrimaryText onClick={handleCreateCourse}>{ ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }</BTN.PrimaryText>
+        <BTN.PrimaryText onClick={handleCreateCourse}>{ ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }</BTN.PrimaryText>
         <BTN.PrimaryText onClick={()=>setRemoveState(!removeState)}>
           { !removeState ?
-            ( ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' )
+            ( ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' )
             :
-            ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+            ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
           }
         </BTN.PrimaryText>
       </div>
@@ -275,13 +275,13 @@ export default function CourseBody(props){
         <ListItem>
           <ListItemIcon className={classes.listOfficial}>
             <Typography style={{ color: 'white' }}>
-              { ( sess && sess.language === 'EN' ) ? "Official" : 'เป็นทางการ' }
+              { ( sess && sess.language === 'TH' ) ? "เป็นทางการ" : 'Official' }
             </Typography>
           </ListItemIcon>
           <ListItemIcon className={classes.listImage}>
             <Skeleton className={classes.image} style={{ margin: 0, backgroundColor: 'inherit', height: 0 }} disableAnimate />
           </ListItemIcon>
-          <ListItemText style={{ color: 'white' }} primary={ ( sess && sess.language === 'EN' ) ? "Course" : 'สนาม' } />
+          <ListItemText style={{ color: 'white' }} primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
         </ListItem>
       </List>
       <List>
@@ -313,7 +313,7 @@ export default function CourseBody(props){
                 </ListItemIcon>
                 <ListItemText primary={d.fieldname}
                   {...(sess && sess.typeid !== 'admin' && d.fieldversion > 1)?
-                    { secondary: d.fieldversion + ( ( sess && sess.language === 'EN' ) ? ' version' : ' เวอร์ชัน') } : null }
+                    { secondary: d.fieldversion + ( ( sess && sess.language === 'TH' ) ? ' เวอร์ชัน' : ' version') } : null }
                     />
                 <ListItemSecondaryAction>
                   { removeState ?
@@ -344,7 +344,7 @@ export default function CourseBody(props){
         open={open} handleClose={handleClose}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
+            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
@@ -353,10 +353,10 @@ export default function CourseBody(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleClose} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
           </BTN.PrimaryText>
           <BTN.Red onClick={handleDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
           </BTN.Red>
         </div>
       </TemplateDialog>

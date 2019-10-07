@@ -221,13 +221,13 @@ export default function Profile(props) {
   function getPrivacy(privacy){
     switch (true) {
       case privacy === 'public':
-        return ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ'
+        return ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public'
         break;
       case privacy === 'friend':
-        return ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน'
+        return ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend'
         break;
       default:
-        return ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว'
+        return ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private'
     }
   }
 
@@ -450,9 +450,9 @@ export default function Profile(props) {
               <BTN.PrimaryText onClick={toggleEditting}>
                 {
                   editting ?
-                  ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+                  ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
                   :
-                  ( ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' )
+                  ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' )
                 }
               </BTN.PrimaryText>
             </div>
@@ -478,7 +478,7 @@ export default function Profile(props) {
                   <div style={{ position: 'absolute', color: 'black', bottom: -16, display: 'flex' }}>
                     <EditIcon fontSize="small"/>
                     <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>
-                      { ( sess && sess.language === 'EN' ) ? "Upload" : 'อัพโหลดรูป' }
+                      { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload' }
                     </Typography>
                   </div>
                 </IconButton>
@@ -506,7 +506,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' }
+                    label={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' }
                     className={classes.margin}
                     value={edittingData.fullname}
                     onChange={e => setEdittingData({ ...edittingData, fullname: e.target.value})}
@@ -517,7 +517,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' }
+                    label={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' }
                     className={classes.margin}
                     value={edittingData.lastname}
                     onChange={e => setEdittingData({ ...edittingData, lastname: e.target.value})}
@@ -553,7 +553,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label={ ( sess && sess.language === 'EN' ) ? "Nickname" : 'ชื่อเล่น' }
+                    label={ ( sess && sess.language === 'TH' ) ? "ชื่อเล่น" : 'Nickname' }
                     className={classes.margin}
                     value={edittingData.displayname}
                     onChange={e => setEdittingData({ ...edittingData, displayname: e.target.value})}
@@ -566,7 +566,7 @@ export default function Profile(props) {
 
             { !editting &&
               <Typography variant="subtitle2" className={classes.email}>
-                { ( sess && sess.language === 'EN' ) ? "email" : 'อีเมล' } : {accountData.email}
+                { ( sess && sess.language === 'TH' ) ? "อีเมล" : 'email' } : {accountData.email}
               </Typography>
             }
 
@@ -578,25 +578,25 @@ export default function Profile(props) {
                   borderRadius: 4, boxSizing: 'border-box'
                 }}>
                 <FormLabel component="legend" style={{ marginLeft: 16 }}>
-                  { ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' }
+                  { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }
                 </FormLabel>
                 <RadioGroup value={edittingData.privacy} onChange={e => setEdittingData({ ...edittingData, privacy: e.target.value})} row>
                   <FormControlLabel
                     value={'public'}
                     control={<Radio />}
-                    label={ ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ' }
+                    label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'friend'}
                     control={<Radio />}
-                    label={ ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' }
+                    label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'private'}
                     control={<Radio />}
-                    label={ ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว' }
+                    label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
                     labelPlacement="end"
                   />
                 </RadioGroup>
@@ -605,7 +605,7 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    { ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' } : {getPrivacy(accountData.privacy)}
+                    { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' } : {getPrivacy(accountData.privacy)}
                   </Typography>
                 </ListItem>
               </List>
@@ -615,7 +615,7 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem button onClick={toggleChangePassword}>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    { ( sess && sess.language === 'EN' ) ? "Change password" : 'เปลี่ยนรหัสผ่าน' }
+                    { ( sess && sess.language === 'TH' ) ? "เปลี่ยนรหัสผ่าน" : 'Change password' }
                   </Typography>
                 </ListItem>
               </List>
@@ -636,13 +636,13 @@ export default function Profile(props) {
                     input={<OutlinedInput />}
                   >
                     <MenuItem value='-'>
-                      { ( sess && sess.language === 'EN' ) ? "Gender" : 'เพศ' }
+                      { ( sess && sess.language === 'TH' ) ? "เพศ" : 'Gender' }
                     </MenuItem>
                     <MenuItem value='male'>
-                      { ( sess && sess.language === 'EN' ) ? "Male" : 'ชาย' }
+                      { ( sess && sess.language === 'TH' ) ? "ชาย" : 'Male' }
                     </MenuItem>
                     <MenuItem value='female'>
-                      { ( sess && sess.language === 'EN' ) ? "Female" : 'หญิง' }
+                      { ( sess && sess.language === 'TH' ) ? "หญิง" : 'Female' }
                     </MenuItem>
                   </Select>
                   <div style={{ width: 24 }} />
@@ -650,7 +650,7 @@ export default function Profile(props) {
                     className={classes.margin}
                     inputComponent={TextMaskCustom}
                     value={edittingData.tel}
-                    placeholder={ ( sess && sess.language === 'EN' ) ? "Phone number" : 'เบอร์โทรศัพท์' }
+                    placeholder={ ( sess && sess.language === 'TH' ) ? "เบอร์โทรศัพท์" : 'Phone number' }
                     onChange={e => handlePhoneNumber(e.target.value)}
                     onKeyPress={e =>handleKeyPress(e)}
                   />
@@ -660,12 +660,12 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    { ( sess && sess.language === 'EN' ) ? "Gender" : 'เพศ' } : {accountData.gender}
+                    { ( sess && sess.language === 'TH' ) ? "เพศ" : 'Gender' } : {accountData.gender}
                   </Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'EN' ) ? "Phone number" : 'เบอร์โทรศัพท์' } : {accountData.tel}
+                    { ( sess && sess.language === 'TH' ) ? "เบอร์โทรศัพท์" : 'Phone number' } : {accountData.tel}
                   </Typography>
                 </ListItem>
               </List>
@@ -680,7 +680,7 @@ export default function Profile(props) {
                         clearable
                         disableFuture
                         className={classes.margin}
-                        label={ ( sess && sess.language === 'EN' ) ? "Birthday" : 'วันเกิด' }
+                        label={ ( sess && sess.language === 'TH' ) ? "วันเกิด" : 'Birthday' }
                         openTo="year"
                         inputVariant="outlined"
                         format="dd/MM/yyyy"
@@ -696,13 +696,13 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'EN' ) ? "Age" : 'อายุ' } :
+                    { ( sess && sess.language === 'TH' ) ? "อายุ" : 'Age' } :
                     {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
                   </Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'EN' ) ? "Birthday" : 'วันเกิด' } :
+                    { ( sess && sess.language === 'TH' ) ? "วันเกิด" : 'Birthday' } :
                     {accountData.birthdate && API.dateToString(accountData.birthdate)}
                   </Typography>
                 </ListItem>
@@ -716,7 +716,7 @@ export default function Profile(props) {
                     fullWidth
                     variant="outlined"
                     className={classes.margin}
-                    label={ ( sess && sess.language === 'EN' ) ? "Golf favorite equipment" : 'อุปกรณ์ที่ชอบใช้' }
+                    label={ ( sess && sess.language === 'TH' ) ? "อุปกรณ์ที่ชอบใช้" : 'Golf favorite equipment' }
                     value={edittingData.favgolf}
                     onChange={e => setEdittingData({ ...edittingData, favgolf: e.target.value})}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -728,7 +728,7 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'EN' ) ? "Equipment" : 'อุปกรณ์ที่ใช้' } : {accountData.favgolf}
+                    { ( sess && sess.language === 'TH' ) ? "อุปกรณ์ที่ใช้" : 'Equipment' } : {accountData.favgolf}
                   </Typography>
                 </ListItem>
               </List>
@@ -737,7 +737,7 @@ export default function Profile(props) {
             <div style={{ display: 'flex', marginTop: 36, justifyContent: 'flex-end' }}>
               { editting &&
                 <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>
-                  { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
                 </BTN.Primary>
               }
             </div>
@@ -747,13 +747,13 @@ export default function Profile(props) {
       }
       { !pageOrganizer &&
         <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth={500}>
-          <LabelText text={ ( sess && sess.language === 'EN' ) ? "Change password" : 'เปลี่ยนรหัสผ่าน' } />
+          <LabelText text={ ( sess && sess.language === 'TH' ) ? "เปลี่ยนรหัสผ่าน" : 'Change password' } />
           <div style={{ marginTop: 24, marginBottom: 24 }}>
             <ThemeProvider theme={theme}>
               <TextField
                 autoFocus={changePasswordState}
                 fullWidth
-                label={ ( sess && sess.language === 'EN' ) ? "Old password" : 'รหัสผ่านเก่า' }
+                label={ ( sess && sess.language === 'TH' ) ? "รหัสผ่านเก่า" : 'Old password' }
                 variant="outlined"
                 type="password"
                 className={classes.margin}
@@ -763,7 +763,7 @@ export default function Profile(props) {
               />
               <TextField
                 fullWidth
-                label={ ( sess && sess.language === 'EN' ) ? "New password" : 'รหัสผ่านใหม่' }
+                label={ ( sess && sess.language === 'TH' ) ? "รหัสผ่านใหม่" : 'New password' }
                 variant="outlined"
                 type="password"
                 error={errorPassword.oldNew}
@@ -775,7 +775,7 @@ export default function Profile(props) {
               />
               <TextField
                 fullWidth
-                label={ ( sess && sess.language === 'EN' ) ? "Confirm password" : 'ยืนยันรหัสผ่าน่' }
+                label={ ( sess && sess.language === 'TH' ) ? "ยืนยันรหัสผ่าน่" : 'Confirm password' }
                 variant="outlined"
                 type="password"
                 error={errorPassword.changeConfirm}
@@ -788,7 +788,7 @@ export default function Profile(props) {
             </ThemeProvider>
             <BTN.Primary style={{ padding: '16px 36px', width: '100%', marginTop: 24 }}
               onClick={handleSave}>
-              { ( sess && sess.language === 'EN' ) ? "Confirm" : 'ยืนยัน' }
+              { ( sess && sess.language === 'TH' ) ? "ยืนยัน" : 'Confirm' }
             </BTN.Primary>
           </div>
         </TemplateDialog>

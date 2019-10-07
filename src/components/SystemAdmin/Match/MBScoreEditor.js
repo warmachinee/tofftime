@@ -236,7 +236,7 @@ function MBScoreEditorContainer(props){
             className={classes.expandIcon}
             style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }} />
           { selected? selected.firstname + " " + selected.lastname : (
-            ( sess && sess.language === 'EN' ) ? "Select Player" : 'เลือกผู้เล่น'
+            ( sess && sess.language === 'TH' ) ? "เลือกผู้เล่น" : 'Select Player'
           )}
         </GreenTextButton>
         { selected &&
@@ -255,7 +255,7 @@ function MBScoreEditorContainer(props){
               autoFocus={expanded}
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search Player" : 'ค้นหาผู้เล่น' ) : '' }
+              placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search Player' ) : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -281,7 +281,7 @@ function MBScoreEditorContainer(props){
         </div>
         <Typography component="div">
           <Box className={classes.notice} m={1}>
-            { ( sess && sess.language === 'EN' ) ? "Please select player in the list." : 'เลือกผู้เล่นในลิสต์' }
+            { ( sess && sess.language === 'TH' ) ? "เลือกผู้เล่นในลิสต์" : 'Please select player in the list.' }
           </Box>
         </Typography>
         <List>
@@ -289,19 +289,19 @@ function MBScoreEditorContainer(props){
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={
                 window.innerWidth < 450?
-                ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' )
                 :
-                ( ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
               } />
             <ListItemText style={{ color: 'white' }} className={classes.listText}
-              primary={ window.innerWidth < 450? "" : ( ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' ) } />
+              primary={ window.innerWidth < 450? "" : ( ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' ) } />
             { window.innerWidth > 450 &&
               <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass}
                 primary={
                   matchDetail.scorematch === 1?
-                  ( ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท' )
+                  ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' )
                   :
-                  ( ( sess && sess.language === 'EN' ) ? "Flight" : 'ไฟล์ท' )
+                  ( ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight' )
                 } />
             }
 
@@ -353,7 +353,7 @@ function MBScoreEditorContainer(props){
                         :
                         <React.Fragment>
                           <br></br>
-                          { ( sess && sess.language === 'EN' ) ? "No class" : 'ไม่มีประเภท' }
+                          { ( sess && sess.language === 'TH' ) ? "ไม่มีประเภท" : 'No class' }
                         </React.Fragment>
                       )
                     } />
@@ -380,7 +380,7 @@ function MBScoreEditorContainer(props){
                       )
                       :
                       <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                        primary={ ( sess && sess.language === 'EN' ) ? "No class" : 'ไม่มีประเภท' } />
+                        primary={ ( sess && sess.language === 'TH' ) ? "ไม่มีประเภท" : 'No class' } />
                     )
                   }
                 </ListItem>
@@ -393,13 +393,13 @@ function MBScoreEditorContainer(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= data.length ? (
-                    ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                   ):(
-                    ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                   ) }
                 </Button>
                 { data && dataSliced < data.length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
                 }
               </React.Fragment>
             }
@@ -407,13 +407,13 @@ function MBScoreEditorContainer(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= handleSearch().length ? (
-                    ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                   ):(
-                    ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                   ) }
                 </Button>
                 { data && dataSliced < handleSearch().length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
                 }
               </React.Fragment>
             }
@@ -422,7 +422,7 @@ function MBScoreEditorContainer(props){
             <ListItem>
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'EN' ) ? "No Reult" : 'ไม่มีผลลัพท์' }
+                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Reult' }
                 </Box>
               </Typography>
             </ListItem>
@@ -653,20 +653,20 @@ export default function MBScoreEditor(props){
       </Typography>
       <div className={classes.controls}>
         <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
-          { ( sess && sess.language === 'EN' ) ? "Reset" : 'รีเซ็ต' }
+          { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
         </Button>
         { selected?
           <GreenButton
             disabled={selected === null}
             variant="contained" color="primary"
             className={classes.button} onClick={handleUpdateScore}>
-            { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
           </GreenButton>
           :
           <Button
             disabled
             variant="contained" color="primary"
-            className={classes.button} >{ ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }</Button>
+            className={classes.button} >{ ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }</Button>
         }
       </div>
     </div>

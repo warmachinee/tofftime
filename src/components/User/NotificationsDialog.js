@@ -59,7 +59,7 @@ export default function NotificationsDialog(props) {
   return (
     <TemplateDialog open={notiState} handleClose={toggleNoti} fullScreen>
       <div className={classes.root}>
-        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Notifications" : 'การแจ้งเตือน' } />
+        <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } />
         <List>
           { notiData &&
             notiData.map( d => <ListNotiItem key={d.createdate} {...props} data={d} />)
@@ -93,22 +93,22 @@ function ListNotiItem(props) {
   function getNotiLabel(action, type){
     switch (true) {
       case type === 'friend' && action === 'add':
-        return ( sess && sess.language === 'EN' ) ? "Friend request" : 'คำขอเป็นเพื่อน'
+        return ( sess && sess.language === 'TH' ) ? "คำขอเป็นเพื่อน" : 'Friend request'
         break;
       case type === 'friend' && action === 'accept':
-        return ( sess && sess.language === 'EN' ) ? "Accepted your friend request" : 'ยอมรับคำขอเป็นเพื่อน'
+        return ( sess && sess.language === 'TH' ) ? "ยอมรับคำขอเป็นเพื่อน" : 'Accepted your friend request'
         break;
       case type === 'match' && action === 'join':
-        return ( sess && sess.language === 'EN' ) ? "Match join request" : 'ขอเข้าร่วมการแข่งขัน'
+        return ( sess && sess.language === 'TH' ) ? "ขอเข้าร่วมการแข่งขัน" : 'Match join request'
         break;
       case type === 'match' && action === 'invite':
-        return ( sess && sess.language === 'EN' ) ? "Match invite request" : 'เชิญเข้าร่วมการแข่งขัน'
+        return ( sess && sess.language === 'TH' ) ? "เชิญเข้าร่วมการแข่งขัน" : 'Match invite request'
         break;
       case type === 'match' && action === 'accept':
-        return ( sess && sess.language === 'EN' ) ? "Joined match" : 'เข้าร่วมการแข่งขัน'
+        return ( sess && sess.language === 'TH' ) ? "เข้าร่วมการแข่งขัน" : 'Joined match'
         break;
       case type === 'match' && action === 'acceptfrominvite':
-        return ( sess && sess.language === 'EN' ) ? "Joined match" : 'เข้าร่วมการแข่งขัน'
+        return ( sess && sess.language === 'TH' ) ? "เข้าร่วมการแข่งขัน" : 'Joined match'
         break;
       default:
 
@@ -123,12 +123,12 @@ function ListNotiItem(props) {
             <BTN.Primary
               style={{ padding: '4px 12px' }}
               onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'accept')}>
-              { ( sess && sess.language === 'EN' ) ? "Confirm" : 'ยืนยัน' }
+              { ( sess && sess.language === 'TH' ) ? "ยืนยัน" : 'Confirm' }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px' }}
               onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'reject')}>
-              { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+              { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
             </BTN.PrimaryText>
           </React.Fragment>
         )
@@ -142,12 +142,12 @@ function ListNotiItem(props) {
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'accept', 'host')}>
-              { ( sess && sess.language === 'EN' ) ? "Accept" : 'ยอมรับ' }
+              { ( sess && sess.language === 'TH' ) ? "ยอมรับ" : 'Accept' }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'host')}>
-              { ( sess && sess.language === 'EN' ) ? "Reject" : 'ปฏิเสธ' }
+              { ( sess && sess.language === 'TH' ) ? "ปฏิเสธ" : 'Reject' }
             </BTN.PrimaryText>
           </React.Fragment>
         )
@@ -158,12 +158,12 @@ function ListNotiItem(props) {
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'acceptfrominvite', 'target')}>
-              { ( sess && sess.language === 'EN' ) ? "Join" : 'เข้าร่วม' }
+              { ( sess && sess.language === 'TH' ) ? "เข้าร่วม" : 'Join' }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'target')}>
-              { ( sess && sess.language === 'EN' ) ? "Reject" : 'ปฏิเสธ' }
+              { ( sess && sess.language === 'TH' ) ? "ปฏิเสธ" : 'Reject' }
             </BTN.PrimaryText>
           </React.Fragment>
         )

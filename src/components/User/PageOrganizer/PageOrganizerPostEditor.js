@@ -429,7 +429,7 @@ export default function PageOrganizerPostEditor(props) {
           <TextField
             autoFocus
             className={classes.margin}
-            label={ ( sess && sess.language === 'EN' ) ? "Title" : 'หัวข้อ' }
+            label={ ( sess && sess.language === 'TH' ) ? "หัวข้อ" : 'Title' }
             value={title}
             variant="outlined"
             onChange={(e)=>setTitle(e.target.value)}
@@ -477,7 +477,7 @@ export default function PageOrganizerPostEditor(props) {
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
             <Typography variant="caption" style={{ textAlign: 'center' }}>
-              { ( sess && sess.language === 'EN' ) ? "Upload image" : 'อัพโหลดรูป' }
+              { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
             </Typography>
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
@@ -505,19 +505,19 @@ export default function PageOrganizerPostEditor(props) {
               <FormControlLabel
                 value={'post'}
                 control={<GreenRadio />}
-                label={ ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
+                label={ ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' }
                 labelPlacement="end"
               />
               <FormControlLabel
                 value={'announce'}
                 control={<GreenRadio />}
-                label={ ( sess && sess.language === 'EN' ) ? "Announce" : 'ประกาศ' }
+                label={ ( sess && sess.language === 'TH' ) ? "ประกาศ" : 'Announce' }
                 labelPlacement="end"
               />
               <FormControlLabel
                 value={'match'}
                 control={<GreenRadio />}
-                label={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
+                label={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
                 labelPlacement="end"
               />
             </RadioGroup>
@@ -525,7 +525,7 @@ export default function PageOrganizerPostEditor(props) {
           { selectedTypePost !== 'match' &&
             <React.Fragment>
               <div style={{ marginTop: 24 }}>
-                { ( sess && sess.language === 'EN' ) ? "Content" : 'เนื้อหา' }
+                { ( sess && sess.language === 'TH' ) ? "เนื้อหา" : 'Content' }
               </div>
               <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2, }}>
                 { clickAction === 'edit' ?
@@ -588,7 +588,7 @@ export default function PageOrganizerPostEditor(props) {
                 { selectedMatch?
                   selectedMatch.title
                   :
-                  ( sess && sess.language === 'EN' ) ? "Select match" : 'เลือกการแข่งขัน'
+                  ( sess && sess.language === 'TH' ) ? "เลือกการแข่งขัน" : 'Select match'
                 }
               </BTN.PrimaryOutlined>
             )
@@ -597,9 +597,9 @@ export default function PageOrganizerPostEditor(props) {
         <GreenButton variant="contained" color="primary" className={classes.button}
           onClick={clickAction === 'edit'? handleFetchEditPost : handleFetchCreatePost}>
           { clickAction === 'edit'?
-            ( ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' )
+            ( ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' )
             :
-            ( ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' )
+            ( ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' )
           }
         </GreenButton>
       </div>

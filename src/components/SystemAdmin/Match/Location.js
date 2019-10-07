@@ -111,22 +111,22 @@ export default function Location(props) {
               className={classes.createButton}
               onClick={()=>setPageState('create')}>
               <CreateIcon className={classes.createIcon} color="inherit"/>
-              { ( sess && sess.language === 'EN' ) ? "Create field" : 'สร้างสนาม' }
+              { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create field' }
             </GreenButton>
             <GreenTextButton className={classes.doneButton} onClick={handleClose}>Done</GreenTextButton>
           </div>
           <Typography component="div">
             <div style={{ display: 'flex' }}>
               <Box style={{ width: '30%' }} className={classes.title} fontWeight={600} m={1}>
-                { ( sess && sess.language === 'EN' ) ? "Selected" : 'สนามที่เลือก' }
+                { ( sess && sess.language === 'TH' ) ? "สนามที่เลือก" : 'Selected' }
               </Box>
               <Box style={{ width: '60%' }} className={classes.title} m={1}>
-                {selectedField ? selectedField.fieldname : ( ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี' )}
+                {selectedField ? selectedField.fieldname : ( ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None' )}
                 {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
               </Box>
             </div>
             <Box className={classes.notice} m={1}>
-              { ( sess && sess.language === 'EN' ) ? "[ Please pick one ]" : '[ กดเพื่อเลือกสนาม ]' }
+              { ( sess && sess.language === 'TH' ) ? "[ กดเพื่อเลือกสนาม ]" : '[ Please pick one ]' }
             </Box>
           </Typography>
         </div>

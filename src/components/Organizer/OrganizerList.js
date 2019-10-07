@@ -96,33 +96,36 @@ export default function OrganizerList(props) {
 
   return (
     <div id="el_organizer" className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Organizer" : 'ผู้จัดการแข่งขัน' } />
-      <div className={classes.grid}>
-        { data &&
-          data.map(
-          d =>
-          <div style={{ display: 'flex', flexDirection: 'column' }} key={d.pageid} className={classes.marginAuto}>
-            <BTN.NoStyleLink to={`/page/${d.pageid}`}>
-              { d.logo ?
-                <IconButton className={classes.iconButton}>
-                  <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
-                </IconButton>
-                :
-                <IconButton className={classes.iconButton}>
-                  <Avatar className={classes.avatar}>
-                    <AccountIcon classes={{ root: classes.avatarIcon }} />
-                  </Avatar>
-                </IconButton>
-              }
-            </BTN.NoStyleLink>
-            <BTN.NoStyleLink to={`/page/${d.pageid}`}>
-              <Typography className={classes.title}>
-                {d.pagename}
-              </Typography>
-            </BTN.NoStyleLink>
+      { data && data.length > 0 &&
+        <React.Fragment>
+          <LabelText text={ ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' } />
+          <div className={classes.grid}>
+            { data.map(
+              d =>
+              <div style={{ display: 'flex', flexDirection: 'column' }} key={d.pageid} className={classes.marginAuto}>
+                <BTN.NoStyleLink to={`/page/${d.pageid}`}>
+                  { d.logo ?
+                    <IconButton className={classes.iconButton}>
+                      <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                    </IconButton>
+                    :
+                    <IconButton className={classes.iconButton}>
+                      <Avatar className={classes.avatar}>
+                        <AccountIcon classes={{ root: classes.avatarIcon }} />
+                      </Avatar>
+                    </IconButton>
+                  }
+                </BTN.NoStyleLink>
+                <BTN.NoStyleLink to={`/page/${d.pageid}`}>
+                  <Typography className={classes.title}>
+                    {d.pagename}
+                  </Typography>
+                </BTN.NoStyleLink>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </React.Fragment>
+      }
     </div>
   );
 }

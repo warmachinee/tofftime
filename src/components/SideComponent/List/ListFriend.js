@@ -103,9 +103,9 @@ export default function ListFriend(props) {
           <ListItemText
             primary={
               ( data && data.length > 0 ) ?
-              ( ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' )
+              ( ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' )
               :
-              ( ( sess && sess.language === 'EN' ) ? "Add friend" : 'เพิ่มเพื่อน' )
+              ( ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add friend' )
             } />
         </ListItem>
       </List>
@@ -117,7 +117,7 @@ export default function ListFriend(props) {
               <ListItemIcon>
                 <Search />
               </ListItemIcon>
-              <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Add friend" : 'เพิ่มเพื่อน' } />
+              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add friend' } />
             </ListItem>
           }
           { data &&

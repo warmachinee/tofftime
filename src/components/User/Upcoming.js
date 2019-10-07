@@ -77,7 +77,7 @@ export default function Upcoming(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text={ (sess && sess.language === 'EN')? 'Upcoming' : 'เร็วๆนี้' } />
+      <LabelText text={ (sess && sess.language === 'TH')? 'เร็วๆนี้' : 'Upcoming' } />
       <div className={classes.grid}>
         { data ?
           ( data.length > 0 ?

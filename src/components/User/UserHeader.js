@@ -333,7 +333,7 @@ export default function UserHeader(props) {
           <Link to='/user'
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>
-              { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้งาน' }
+              { ( sess && sess.language === 'TH' ) ? "ผู้ใช้งาน" : 'User' }
             </MenuItem>
           </Link>
         }
@@ -342,19 +342,19 @@ export default function UserHeader(props) {
           <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>
-              { ( sess && sess.language === 'EN' ) ? "Dashboard" : 'หน้าหลัก' }
+              { ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' }
             </MenuItem>
           </Link>
           :
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>
-              { ( sess && sess.language === 'EN' ) ? "Profile" : 'โปรไฟล์' }
+              { ( sess && sess.language === 'TH' ) ? "โปรไฟล์" : 'Profile' }
             </MenuItem>
           </Link>
           )
         }
-        <MenuItem onClick={handleLogout}>{ ( sess && sess.language === 'EN' ) ? "Logout" : 'ลงชื่อออก' }</MenuItem>
+        <MenuItem onClick={handleLogout}>{ ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Logout' }</MenuItem>
       </Menu>
     </React.Fragment>
   );

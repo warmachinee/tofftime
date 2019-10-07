@@ -129,7 +129,7 @@ export default function SideDrawer(props) {
               </BTN.NoStyleLink>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
                 <BTN.Red onClick={handleLogout}>
-                  { ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' }
+                  { ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' }
                 </BTN.Red>
               </div>
             </div>
@@ -160,19 +160,19 @@ export default function SideDrawer(props) {
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } />
+                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('news')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "News" : 'ข่าว' } />
+                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' } />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('organizer')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Organizer" : 'ผู้จัดการแข่งขัน' } />
+                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' } />
               </ListItem>
               <Divider />
             </React.Fragment>

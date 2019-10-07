@@ -172,8 +172,8 @@ export default function PageOrganizerOverview(props) {
               </BTN.NoStyleLink>
               <Typography gutterBottom variant="body1" className={classes.followers}>
                 {pageData.subscriber} { (
-                  ( sess && sess.language === 'EN' ) ? "follower" : 'ผู้ติดตาม'
-                ) + ( pageData.subscriber > 1 ? ( ( sess && sess.language === 'EN' ) ? 's' : '' ) : '')}
+                  ( sess && sess.language === 'TH' ) ? "ผู้ติดตาม" : 'follower'
+                ) + ( pageData.subscriber > 1 ? ( ( sess && sess.language === 'TH' ) ? '' : 's' ) : '')}
               </Typography>
               <Typography gutterBottom variant="body2" className={classes.followers}>
                 {pageData.view} { 'view' + ( pageData.view > 1 ? 's' : '')}
@@ -185,18 +185,18 @@ export default function PageOrganizerOverview(props) {
       <Paper className={classes.paper}>
         <BTN.Primary className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreateMatch}>
           <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-          { ( sess && sess.language === 'EN' ) ? "Create match" : 'สร้างการแข่งขัน' }
+          { ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create match' }
         </BTN.Primary>
         <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreatePost}>
           <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-          { ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
+          { ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' }
         </BTN.PrimaryOutlined>
         <BTN.PrimaryOutlined className={classes.panelButton} onClick={toggleSetAdmin}>
-          { ( sess && sess.language === 'EN' ) ? "Set admin" : 'แต่งตั้งผู้ดูแล' }
+          { ( sess && sess.language === 'TH' ) ? "แต่งตั้งผู้ดูแล" : 'Set admin' }
         </BTN.PrimaryOutlined>
         <div style={{ flex: 1 }} />
         <BTN.Red onClick={()=>handleConfirmDeleteState(true)}>
-          { ( sess && sess.language === 'EN' ) ? "Delete page" : 'ลบเพจ' }
+          { ( sess && sess.language === 'TH' ) ? "ลบเพจ" : 'Delete page' }
         </BTN.Red>
       </Paper>
 
@@ -205,7 +205,7 @@ export default function PageOrganizerOverview(props) {
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
+            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             { pageData && pageData.pagename }
@@ -214,10 +214,10 @@ export default function PageOrganizerOverview(props) {
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
           </BTN.PrimaryText>
           <BTN.Red onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
           </BTN.Red>
         </div>
       </TemplateDialog>

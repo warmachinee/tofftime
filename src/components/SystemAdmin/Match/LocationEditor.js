@@ -499,9 +499,9 @@ export default function LocationEditor(props){
       <Typography component="div">
         <Box className={classes.headerText} m={1}>
           { edittingField?
-            ( ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' )
+            ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' )
             :
-            ( ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' )
+            ( ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' )
           }
         </Box>
       </Typography>
@@ -514,7 +514,7 @@ export default function LocationEditor(props){
               onChange={handleVersionChange}>
               {
                 courseVersion.map( d =>
-                  <MenuItem key={d.createdate} value={d.version}>{( ( sess && sess.language === 'EN' ) ? "Version " : 'เวอร์ชัน ' ) + d.version}</MenuItem>
+                  <MenuItem key={d.createdate} value={d.version}>{( ( sess && sess.language === 'TH' ) ? "เวอร์ชัน " : 'Version ' ) + d.version}</MenuItem>
               )}
             </Select>
           </FormControl>
@@ -523,7 +523,7 @@ export default function LocationEditor(props){
       <div className={classes.flexGrid}>
         <TextField
           fullWidth
-          label={ ( sess && sess.language === 'EN' ) ? "Location name" : 'ชื่อสนาม' }
+          label={ ( sess && sess.language === 'TH' ) ? "ชื่อสนาม" : 'Location name' }
           value={ location ? location : '' }
           onChange={e =>setLocation(e.target.value)}
           variant="outlined"
@@ -534,7 +534,7 @@ export default function LocationEditor(props){
           <FormControl component="fieldset">
             <FormControlLabel
               control={<Switch checked={official} onChange={()=>setOfficial(!official)} />}
-              label={ ( sess && sess.language === 'EN' ) ? "Official" : 'เป็นทางการ' }
+              label={ ( sess && sess.language === 'TH' ) ? "เป็นทางการ" : 'Official' }
             />
           </FormControl>
         </div>
@@ -599,7 +599,7 @@ export default function LocationEditor(props){
           { selectedFile && selectedFile.name }
         </Box>
         <Box className={classes.title} m={1}>
-          { ( sess && sess.language === 'EN' ) ? "PAR Score" : 'คะแนนสนาม' }
+          { ( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'PAR Score' }
         </Box>
       </Typography>
 
@@ -607,7 +607,7 @@ export default function LocationEditor(props){
 
       <Typography component="div">
         <Box className={classes.title} m={1}>
-          { ( sess && sess.language === 'EN' ) ? "Handicap" : 'แฮนดิแคป' }
+          { ( sess && sess.language === 'TH' ) ? "แฮนดิแคป" : 'Handicap' }
         </Box>
       </Typography>
 
@@ -619,9 +619,9 @@ export default function LocationEditor(props){
           onClick={ edittingField? handleEdit : handleCreate}>
           {
             edittingField?
-            ( ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' )
+            ( ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' )
             :
-            ( ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' )
+            ( ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' )
           }
         </GreenButton>
       </div>

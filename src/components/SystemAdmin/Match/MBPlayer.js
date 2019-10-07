@@ -552,7 +552,7 @@ export default function MBPlayer(props){
               (
                 edittingDisplay?
                 <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>
-                  { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
                 </GreenTextButton>
                 :
                 <GreenTextButton className={classes.controlsEditButton} onClick={handleEdittingDisplay}>
@@ -562,7 +562,7 @@ export default function MBPlayer(props){
                       window.innerWidth > 450? '20%':'10%'
                     }}
                     className={classes.controlsEditButtonIcon} />
-                  { ( sess && sess.language === 'EN' ) ? "Showing" : 'การแสดงผล' }
+                  { ( sess && sess.language === 'TH' ) ? "การแสดงผล" : 'Showing' }
                 </GreenTextButton>
               )
             }
@@ -574,16 +574,16 @@ export default function MBPlayer(props){
                     matchDetail.scorematch === 1?
                     <React.Fragment>
                       <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
-                        { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                        { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
                       </GreenTextButton>
                       <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
-                        { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                        { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
                       </GreenButton>
                     </React.Fragment>
                     :
                     <React.Fragment>
                       <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
-                        { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                        { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
                       </GreenTextButton>
                     </React.Fragment>
                   }
@@ -597,9 +597,9 @@ export default function MBPlayer(props){
                     }}
                     className={classes.controlsEditButtonIcon} />
                   { matchDetail.scorematch === 1? (
-                    ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท'
+                    ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
                   ) : (
-                    ( sess && sess.language === 'EN' ) ? "Flight" : 'ไฟล์ท'
+                    ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
                   ) }
                 </GreenTextButton>
               )
@@ -609,7 +609,7 @@ export default function MBPlayer(props){
                 editting?
                 <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
                   onClick={handleDoneEditting}>
-                  { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
                 </GreenTextButton>
                 :
                 <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
@@ -619,7 +619,7 @@ export default function MBPlayer(props){
                       window.innerWidth > 450? '20%':'10%'
                     }}
                     className={classes.controlsEditButtonIcon} />
-                  { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
+                  { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
                 </GreenTextButton>
               )
             }
@@ -634,9 +634,9 @@ export default function MBPlayer(props){
                   <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
                   <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
                     { selectedClass !== 0 ? (
-                      ( sess && sess.language === 'EN' ) ? "Selected Class  :  " : 'ประเภทที่เลือก  :  '
+                      ( sess && sess.language === 'TH' ) ? "ประเภทที่เลือก  :  " : 'Selected Class  :  '
                     ) : (
-                      ( sess && sess.language === 'EN' ) ? "Select Class   :   " : 'เลือกประเภท'
+                      ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select Class'
                     ) }
                   </div>
                 </div>
@@ -657,11 +657,11 @@ export default function MBPlayer(props){
               <React.Fragment>
                 <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
                   onClick={()=>handleUpdateFlight('clear')}>
-                  { ( sess && sess.language === 'EN' ) ? "Clear" : 'เคลียร์' }
+                  { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
                 </GreenTextButton>
                 <GreenButton className={classes.controlsEditButton2}
                   onClick={()=>handleUpdateFlight('update')}>
-                  { ( sess && sess.language === 'EN' ) ? "Update" : 'อัพเดท' }
+                  { ( sess && sess.language === 'TH' ) ? "อัพเดท" : 'Update' }
                 </GreenButton>
               </React.Fragment>
             )
@@ -669,7 +669,7 @@ export default function MBPlayer(props){
           { editting && checked.length > 0 &&
             <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
               <DeleteIcon />
-              { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
+              { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
             </GreenTextButton>
           }
           { !( editting || edittingClass) &&
@@ -682,7 +682,7 @@ export default function MBPlayer(props){
               disabled={data === null}
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' ) : '' }
+              placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -722,20 +722,20 @@ export default function MBPlayer(props){
             }}>
             <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={ window.innerWidth < 600? (
-                ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ'
+                ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name'
               ) : (
-                ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ'
+                ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name'
               ) } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-                primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
             }
             { window.innerWidth > 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }}
                 primary={ matchDetail.scorematch === 1? (
-                  ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท'
+                  ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
                 ) : (
-                  ( sess && sess.language === 'EN' ) ? "Flight" : 'ไฟล์ท'
+                  ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
                 ) } />
             }
             <ListItemIcon style={{ justifyContent: 'flex-start' }}>
@@ -885,13 +885,13 @@ export default function MBPlayer(props){
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
                     { dataSliced >= data.length ? (
-                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                     ):(
-                      ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                     ) }
                   </Button>
                   { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
                   }
                 </React.Fragment>
               }
@@ -899,13 +899,13 @@ export default function MBPlayer(props){
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
                     { dataSliced >= handleSearch().length ? (
-                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                     ):(
-                      ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                     ) }
                   </Button>
                   { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
                   }
                 </React.Fragment>
               }
@@ -914,7 +914,7 @@ export default function MBPlayer(props){
               <ListItem>
                 <Typography component="div" style={{ width: '100%' }}>
                   <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                    { ( sess && sess.language === 'EN' ) ? "No Reult" : 'ไม่มีผลลัพท์' }
+                    { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Reult' }
                   </Box>
                 </Typography>
               </ListItem>

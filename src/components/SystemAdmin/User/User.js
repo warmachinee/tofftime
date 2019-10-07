@@ -495,13 +495,13 @@ export default function User(props){
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
                 { dataSliced >= data.length ? (
-                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                  ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                 ):(
-                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                  ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                 ) }
               </Button>
               { data && dataSliced < data.length &&
-                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
               }
             </React.Fragment>
           }
@@ -509,13 +509,13 @@ export default function User(props){
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
                 { dataSliced >= handleSearch().length ? (
-                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                  ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                 ):(
-                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                  ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                 ) }
               </Button>
               { data && dataSliced < handleSearch().length &&
-                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
               }
             </React.Fragment>
           }

@@ -107,14 +107,14 @@ export default function AddFriend(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' } />
+      <LabelText text={ ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' } />
       <ThemeProvider theme={theme}>
         <TextField
           autoFocus
           className={classes.searchBox}
           style={{ marginTop: 24 }}
           variant="outlined"
-          placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหาเพื่อน' ) : '' }
+          placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาเพื่อน" : 'Search' ) : '' }
           value={searchUser}
           onChange={handleChangePerson}
           InputProps={{
@@ -155,10 +155,10 @@ function ListPlayerItem(props) {
   function getFriendStatus(status){
     switch (true) {
       case status === 'pending':
-        return ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ'
+        return ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending'
         break;
       case status === 'friend':
-        return ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน'
+        return ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend'
         break;
       default:
         return ''
@@ -250,13 +250,13 @@ function ListPlayerItem(props) {
             { status === 'pending'?
               <BTN.Red style={{ padding: '4px 12px' }}
                 onClick={()=>handleFriendClick(data.userid, 'un')}>
-                { ( sess && sess.language === 'EN' ) ? "Unfriend" : 'ลบเพื่อน' }
+                { ( sess && sess.language === 'TH' ) ? "ลบเพื่อน" : 'Unfriend' }
               </BTN.Red>
               :
               <BTN.Primary
                 style={{ padding: 4 }}
                 onClick={()=>handleFriendClick(data.userid, 'add')}>
-                { ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่มเพื่อน' }
+                { ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add' }
               </BTN.Primary>
             }
           </ListItemIcon>

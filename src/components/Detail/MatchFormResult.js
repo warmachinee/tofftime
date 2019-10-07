@@ -95,10 +95,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
-              { ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ' }
+              { ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ',
+          text: ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete',
           color: COLOR.red[500]
         });
         break;
@@ -106,10 +106,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
-              { ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ' }
+              { ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ',
+          text: ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending',
           color: COLOR.amber[500]
         });
         break;
@@ -117,10 +117,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
-              { ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ' }
+              { ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ',
+          text: ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete',
           color: COLOR.green[500]
         });
         break;
@@ -128,10 +128,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.grey[800] }}>
-              { ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี' }
+              { ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี',
+          text: ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None',
           color: COLOR.grey[500]
         });
     }
@@ -198,7 +198,7 @@ export default function MatchFormResult(props) {
       { matchDetail &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h4">
-            { ( sess && sess.language === 'EN' ) ? "Form" : 'รายชื่อผู้สมัคร' }
+            { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }
           </Typography>
           <Typography gutterBottom variant="h5">{matchDetail.title}</Typography>
           <Typography gutterBottom variant="h6" component="div" style={{ display: 'flex' }}>
@@ -212,11 +212,11 @@ export default function MatchFormResult(props) {
                 <div className={classes.avatarImage} />
               </ListItemIcon>
               <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Lastname" : 'นามสกุล' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Lastname' } />
               <ListItemText className={classes.listStatus} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Status" : 'สถานะ' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "สถานะ" : 'Status' } />
             </ListItem>
           </List>
           <List disablePadding>

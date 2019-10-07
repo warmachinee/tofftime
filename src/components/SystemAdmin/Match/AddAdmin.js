@@ -223,8 +223,8 @@ function ListMenu(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {/* <MenuItem onClick={()=>handleSelectRole(value, 'set')}>{ ( sess && sess.language === 'EN' ) ? "Admin" : 'ผู้ดูแล' }</MenuItem> */}
-        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>{ ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }</MenuItem>
+        {/* <MenuItem onClick={()=>handleSelectRole(value, 'set')}>{ ( sess && sess.language === 'TH' ) ? "ผู้ดูแล" : 'Admin' }</MenuItem> */}
+        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>{ ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }</MenuItem>
       </Menu>
     </div>
   );
@@ -397,7 +397,7 @@ export default function AddAdmin(props){
           disabled={data === null}
           className={classes.searchBox}
           variant="outlined"
-          placeholder={ !searchUser? ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' : '' }
+          placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
           value={searchUser}
           onChange={e =>setSearchUser(e.target.value)}
           InputProps={{
@@ -449,13 +449,13 @@ export default function AddAdmin(props){
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
                 { dataSliced >= data.length ? (
-                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                  ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                 ):(
-                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                  ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                 ) }
               </Button>
               { data && dataSliced < data.length &&
-                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
               }
             </React.Fragment>
           }
@@ -463,13 +463,13 @@ export default function AddAdmin(props){
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
                 { dataSliced >= handleSearch().length ? (
-                  ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                  ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                 ):(
-                  ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                  ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                 ) }
               </Button>
               { data && dataSliced < handleSearch().length &&
-                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
               }
             </React.Fragment>
           }

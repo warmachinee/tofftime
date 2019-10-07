@@ -429,7 +429,7 @@ export default function NewsEditor(props) {
             onChange={e => setSubtitle(e.target.value)}
             onKeyPress={e =>handleKeyPress(e.key)}
             onFocus={e => e.target.select()} />
-          <div>{ ( sess && sess.language === 'EN' ) ? "Content" : 'เนื้อหา' }</div>
+          <div>{ ( sess && sess.language === 'TH' ) ? "เนื้อหา" : 'Content' }</div>
           <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2 }}>
             { clickAction === 'edit' ?
               ( dataDetail && dataDetail.newsdetail &&

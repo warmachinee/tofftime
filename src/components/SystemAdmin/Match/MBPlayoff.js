@@ -328,7 +328,7 @@ export default function MBPlayoff(props){
     <div className={classes.root}>
       <Typography component="div">
         <Box className={classes.notice} m={1}>
-          { ( sess && sess.language === 'EN' ) ? "Select class" : 'เลือกประเภท' }
+          { ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select class' }
         </Box>
       </Typography>
       <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
@@ -359,17 +359,17 @@ export default function MBPlayoff(props){
                     <React.Fragment>
                       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
                         <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
-                          { ( sess && sess.language === 'EN' ) ? "Clear" : 'เคลียร์' }
+                          { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
                         </GreenTextButton>
                       </div>
                       <ListItem className={classes.listItem}>
                         <ListItemText style={{ color: 'white' }} className={classes.listText}
-                          primary={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' } />
+                          primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' } />
                         <ListItemText style={{ color: 'white' }} className={classes.listText}
-                          primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
+                          primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
                         <ListItemIcon className={classes.listStatus}>
                           <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>
-                            { ( sess && sess.language === 'EN' ) ? "Playoff" : 'เพลย์ออฟ' }
+                            { ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' }
                           </div>
                         </ListItemIcon>
                       </ListItem>
@@ -386,7 +386,7 @@ export default function MBPlayoff(props){
                         <ListItem>
                           <Typography component="div" style={{ width: '100%' }}>
                             <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                              { ( sess && sess.language === 'EN' ) ? "No playoff player" : 'ไม่มีผู้เล่นเพลย์ออฟ' }
+                              { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่นเพลย์ออฟ" : 'No playoff player' }
                             </Box>
                           </Typography>
                         </ListItem>

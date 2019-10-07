@@ -41,7 +41,7 @@ const GoBack = Loadable({
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
-    maxWidth: 1600,
+    maxWidth: 1200,
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
@@ -229,17 +229,17 @@ function MatchDetailBody(props) {
           <div style={{ display: 'flex' }}>
             { BTN && data && data.team && data.team.length > 0 &&
               <BTN.NoStyleLink to={`/schedule/${matchid}`}>
-                <BTN.PrimaryText>{ ( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางการแข่งขัน' }</BTN.PrimaryText>
+                <BTN.PrimaryText>{ ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }</BTN.PrimaryText>
               </BTN.NoStyleLink>
             }
             { matchid && BTN &&
               <BTN.NoStyleLink to={`/matchform/${matchid}`}>
-                <BTN.PrimaryText>{ ( sess && sess.language === 'EN' ) ? "Form" : 'รายชื่อผู้สมัคร' }</BTN.PrimaryText>
+                <BTN.PrimaryText>{ ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }</BTN.PrimaryText>
               </BTN.NoStyleLink>
             }
             <div style={{ flex: 1 }} />
             { BTN &&
-              <BTN.PrimaryText onClick={handleClick}>{ ( sess && sess.language === 'EN' ) ? "Mini Game" : 'มินิเกม' }</BTN.PrimaryText>
+              <BTN.PrimaryText onClick={handleClick}>{ ( sess && sess.language === 'TH' ) ? "มินิเกม" : 'Mini Game' }</BTN.PrimaryText>
             }
           </div>
           <Typography component="div">
@@ -306,7 +306,7 @@ function MatchDetailBody(props) {
               marginTop: 16,
               boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
             }}>
-            <ListItemText primary={ ( sess && sess.language === 'EN' ) ? "Scoreboard" : 'ตารางคะแนน' } />
+            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ตารางคะแนน" : 'Scoreboard' } />
             <IconButton
               disableRipple
               className={classes.expandIcon}

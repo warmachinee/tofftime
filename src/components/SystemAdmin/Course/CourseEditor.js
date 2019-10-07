@@ -523,9 +523,9 @@ export default function CourseEditor(props){
         <Box className={classes.headerText} m={1}>
           {
             edittingField?
-            ( ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' )
+            ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' )
             :
-            ( ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' )
+            ( ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' )
           }
         </Box>
       </Typography>
@@ -538,7 +538,7 @@ export default function CourseEditor(props){
               onChange={handleVersionChange}>
               {
                 courseVersion.map( d =>
-                  <MenuItem key={d.createdate} value={d.version}>{( ( sess && sess.language === 'EN' ) ? "Version " : 'เวอร์ชัน ' ) + d.version}</MenuItem>
+                  <MenuItem key={d.createdate} value={d.version}>{( ( sess && sess.language === 'TH' ) ? "เวอร์ชัน " : 'Version ' ) + d.version}</MenuItem>
               )}
             </Select>
           </FormControl>
@@ -565,7 +565,7 @@ export default function CourseEditor(props){
           <FormControl component="fieldset">
             <FormControlLabel
               control={<Switch checked={official} onChange={()=>setOfficial(!official)} />}
-              label={ ( sess && sess.language === 'EN' ) ? "Official" : 'เป็นทางการ' }
+              label={ ( sess && sess.language === 'TH' ) ? "เป็นทางการ" : 'Official' }
             />
           </FormControl>
         </div>
@@ -630,7 +630,7 @@ export default function CourseEditor(props){
           { selectedFile && selectedFile.name }
         </Box>
         <Box className={classes.title} m={1}>
-          { ( sess && sess.language === 'EN' ) ? "PAR Score" : 'คะแนนสนาม' }
+          { ( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'PAR Score' }
         </Box>
       </Typography>
 
@@ -638,7 +638,7 @@ export default function CourseEditor(props){
 
       <Typography component="div">
         <Box className={classes.title} m={1}>
-          { ( sess && sess.language === 'EN' ) ? "Handicap" : 'แฮนดิแคป' }
+          { ( sess && sess.language === 'TH' ) ? "แฮนดิแคป" : 'Handicap' }
         </Box>
       </Typography>
 
@@ -646,15 +646,15 @@ export default function CourseEditor(props){
 
       <div className={classes.buttonGrid}>
         <GreenTextButton className={classes.button} onClick={handleCancel}>
-          { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+          { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
         </GreenTextButton>
         <GreenButton className={classes.button} variant="contained"
           onClick={ edittingField? handleEdit : handleCreate}>
           {
             edittingField?
-            ( ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' )
+            ( ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' )
             :
-            ( ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' )
+            ( ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' )
           }
         </GreenButton>
       </div>

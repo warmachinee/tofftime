@@ -82,9 +82,7 @@ export default function MatchStepper(props) {
   }
 
   function getLabel(label){
-    if(sess && sess.language === 'EN'){
-      return label
-    }else{
+    if(sess && sess.language === 'TH'){
       switch (true) {
         case label === 'Math detail':
           return 'รายละเอียดการแข่งขัน'
@@ -95,6 +93,8 @@ export default function MatchStepper(props) {
         default:
           return 'รูปภาพ'
       }
+    }else{
+      return label
     }
   }
 
@@ -238,18 +238,18 @@ export default function MatchStepper(props) {
         nextButton={
           activeStep === maxSteps - 1 ?
           <BTN.Primary size="small" onClick={handleCreate}>
-            { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
+            { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
           </BTN.Primary>
           :
           <BTN.PrimaryText size="small" onClick={handleNext}>
-            { ( sess && sess.language === 'EN' ) ? "Next" : 'ถัดไป' }
+            { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
             {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
           </BTN.PrimaryText>
         }
         backButton={
           <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
             {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            { ( sess && sess.language === 'EN' ) ? "Back" : 'ย้อนกลับ' }
+            { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
           </BTN.PrimaryText>
         }
       />

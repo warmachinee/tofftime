@@ -217,13 +217,13 @@ export default function EditPage(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'EN' ) ? "Edit page" : 'แก้ไขเพจ' } />
+      <LabelText text={ ( sess && sess.language === 'TH' ) ? "แก้ไขเพจ" : 'Edit page' } />
       <div style={{ marginTop: 24 }}>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
             className={classes.margin}
-            label={ ( sess && sess.language === 'EN' ) ? "Page name" : 'ชื่อเพจ' }
+            label={ ( sess && sess.language === 'TH' ) ? "ชื่อเพจ" : 'Page name' }
             value={pageName}
             variant="outlined"
             onChange={(e)=>setPageName(e.target.value)}
@@ -271,7 +271,7 @@ export default function EditPage(props) {
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
             <Typography variant="caption" style={{ textAlign: 'center' }}>
-              { ( sess && sess.language === 'EN' ) ? "Upload image" : 'อัพโหลดรูป' }
+              { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
             </Typography>
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
@@ -289,7 +289,7 @@ export default function EditPage(props) {
         }
         <GreenButton variant="contained" color="primary" className={classes.button}
           onClick={handleEditPage}>
-          { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+          { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
         </GreenButton>
       </div>
     </div>

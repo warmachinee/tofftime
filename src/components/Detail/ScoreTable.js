@@ -340,10 +340,10 @@ export default function ScoreTable(props) {
             <TableBody>
               <TableRow>
                 <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
-                  { ( sess && sess.language === 'EN' ) ? "Rank" : 'อันดับ' }
+                  { ( sess && sess.language === 'TH' ) ? "อันดับ" : 'Rank' }
                 </StyledTableRank>
                 <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อผู้เล่น' }
+                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Name' }
                 </StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>
@@ -389,10 +389,10 @@ export default function ScoreTable(props) {
             <TableBody>
               <TableRow>
                 <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
-                  { ( sess && sess.language === 'EN' ) ? "Rank" : 'อันดับ' }
+                  { ( sess && sess.language === 'TH' ) ? "อันดับ" : 'Rank' }
                 </StyledTableRank>
                 <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อผู้เล่น' }
+                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Name' }
                 </StyledTableHead>
 
                 { (wd >= 450) &&

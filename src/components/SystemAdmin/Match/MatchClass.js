@@ -362,15 +362,15 @@ export default function MatchClass(props) {
       <div className={classes.controls}>
         <Button variant={ classAction === 'add'? 'contained':'outlined' } color="primary" className={classes.button}
           onClick={()=>setClassAction( classAction === 'add'? '':'add' )}>
-          { ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่ม' }
+          { ( sess && sess.language === 'TH' ) ? "เพิ่ม" : 'Add' }
         </Button>
         <Button variant={ classAction === 'edit'? 'contained':'outlined' } color="primary" className={classes.button}
           onClick={()=>setClassAction( classAction === 'edit'? '':'edit')}>
-          { ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' }
+          { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
         </Button>
         <Button variant={ classAction === 'delete'? 'contained':'outlined' } color="primary" className={classes.button}
           onClick={()=>setClassAction( classAction === 'delete'? '':'delete')}>
-          { ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }
+          { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
         </Button>
       </div>
       <List className={classes.root}>
@@ -379,9 +379,9 @@ export default function MatchClass(props) {
             <ListItemText
               style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, color: primary[900] }}
               primary={ data.scorematch === 1? (
-                ( sess && sess.language === 'EN' ) ? "No class" : 'ไม่มี'
+                ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No class'
               ) : (
-                ( sess && sess.language === 'EN' ) ? "No flight" : 'ไม่มี'
+                ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No flight'
               ) } />
           </ListItem>
         }
@@ -406,9 +406,9 @@ export default function MatchClass(props) {
                 type={ data.scorematch === 1? 'text' : 'number' }
                 helperText={
                   data.scorematch === 1?
-                  ( ( sess && sess.language === 'EN' ) ? 'Please input class name.' : 'ใส่ชื่อประเภท' )
+                  ( ( sess && sess.language === 'TH' ) ? 'ใส่ชื่อประเภท' : 'Please input class name.' )
                   :
-                  ( ( sess && sess.language === 'EN' ) ? 'Please input number (HC).' : 'ใส่ตัวเลข (HC)' )
+                  ( ( sess && sess.language === 'TH' ) ? 'ใส่ตัวเลข (HC)' : 'Please input number (HC).' )
                 }
                 onChange={e =>setText(e.target.value)}
                 onKeyPress={e =>handleKeyPress(e.key)}
@@ -416,7 +416,7 @@ export default function MatchClass(props) {
             {/* data.scorematch === 0 &&
                 <div style={{ display: 'flex', width: '100%' }}>
                   <div style={{ marginTop: 'auto', marginBottom: 28, textAlign: 'center', width: 64 }}> {
-                      ( sess && sess.language === 'EN' ) ? 'to' : 'ถึง'
+                      ( sess && sess.language === 'TH' ) ? 'ถึง' : 'to'
                     } </div>
                   <TextField
                     style={{ marginBottom: 20 }}
@@ -430,7 +430,7 @@ export default function MatchClass(props) {
             <ListItemIcon className={classes.addClassButtonGrid}>
               <GreenTextButton disabled={!text} className={classes.addClassButton} variant="outlined" onClick={handleAddItem}>
                 <AddCircleIcon style={{ marginRight: 12 }} />
-                { ( sess && sess.language === 'EN' ) ? "Add" : 'เพิ่ม' }
+                { ( sess && sess.language === 'TH' ) ? "เพิ่ม" : 'Add' }
               </GreenTextButton>
             </ListItemIcon>
           </ListItem>
@@ -451,7 +451,7 @@ export default function MatchClass(props) {
                 { data.scorematch === 0 &&
                   <div style={{ display: 'flex', width: '100%' }}>
                     <div style={{ marginTop: 'auto', marginBottom: 8, textAlign: 'center', width: 64 }}> {
-                        ( sess && sess.language === 'EN' ) ? 'to' : 'ถึง'
+                        ( sess && sess.language === 'TH' ) ? 'ถึง' : 'to'
                       } </div>
                     <TextField
                       disabled
@@ -484,7 +484,7 @@ export default function MatchClass(props) {
       { classAction === 'edit' && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenButton className={classes.saveButton} onClick={handleSave}>
-            { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
           </GreenButton>
         </div>
       }
@@ -493,19 +493,19 @@ export default function MatchClass(props) {
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
+            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
-            ( { ( sess && sess.language === 'EN' ) ? "Class" : 'ประเภท' } : { selectedDeleteItem && selectedDeleteItem.classname } )
+            ( { ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' } : { selectedDeleteItem && selectedDeleteItem.classname } )
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
           </RedButton>
         </div>
       </TemplateDialog>

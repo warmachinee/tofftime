@@ -277,7 +277,7 @@ export default function AddPlayerModal(props){
             <ExpandMoreIcon
               className={classes.expandIcon}
               style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
-            { ( sess && sess.language === 'EN' ) ? "Create user" : 'สร้างผู้ใช้งาน' }
+            { ( sess && sess.language === 'TH' ) ? "สร้างผู้ใช้งาน" : 'Create user' }
           </GreenTextButton>
         </div>
       }
@@ -315,7 +315,7 @@ export default function AddPlayerModal(props){
           autoFocus
           className={classes.searchBox}
           variant="outlined"
-          placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search" : 'ค้นหา' ) : '' }
+          placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
           value={searchUser}
           onChange={handleChangePerson}
           InputProps={{

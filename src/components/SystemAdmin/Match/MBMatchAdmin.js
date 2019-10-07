@@ -97,13 +97,13 @@ function ListMenu(props) {
   function getAdminRole(role){
     switch (true) {
       case role === 'host':
-        return ( sess && sess.language === 'EN' ) ? "Host" : 'เจ้าของการแข่งขัน'
+        return ( sess && sess.language === 'TH' ) ? "เจ้าของการแข่งขัน" : 'Host'
         break;
       case role === 'admin':
-        return ( sess && sess.language === 'EN' ) ? "Admin" : 'ผู้ดูแล'
+        return ( sess && sess.language === 'TH' ) ? "ผู้ดูแล" : 'Admin'
         break;
       default:
-        return ( sess && sess.language === 'EN' ) ? "Member" : 'สมาชิก'
+        return ( sess && sess.language === 'TH' ) ? "สมาชิก" : 'Member'
     }
   }
 
@@ -169,7 +169,7 @@ function ListMenu(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>{ ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' }</MenuItem>
+        <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>{ ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }</MenuItem>
       </Menu>
     </div>
   );
@@ -212,20 +212,20 @@ export default function MBMatchAdmin(props){
         <Button className={classes.addAdminButton} variant="contained"
           onClick={handleOpen}>
           <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-          { ( sess && sess.language === 'EN' ) ? "Add admin" : 'เพิ่มแอดมิน' }
+          { ( sess && sess.language === 'TH' ) ? "เพิ่มแอดมิน" : 'Add admin' }
         </Button>
         <div style={{ flex: 1 }} />
       </ListItem>
       <List style={{ cursor: 'auto' }}>
         <ListItem className={classes.listLabel}>
           <StyledText className={classes.listText}
-            primary={ ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' } />
+            primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' } />
           { window.innerWidth >= 600 &&
             <StyledText className={classes.listText}
-              primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
+              primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
           }
           <StyledText className={classes.listStatus}
-            primary={ ( sess && sess.language === 'EN' ) ? "Role" : 'ตำแหน่ง' } />
+            primary={ ( sess && sess.language === 'TH' ) ? "ตำแหน่ง" : 'Role' } />
         </ListItem>
         { data &&
           data.map( d =>

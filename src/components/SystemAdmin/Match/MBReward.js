@@ -258,7 +258,7 @@ function RewardContainer(props){
                 className={classes.prizeText}
                 value={edittingData || ''}
                 type="number"
-                helperText={ ( sess && sess.language === 'EN' ) ? "Please input number only." : 'ใส่ตัวเลขเท่านั้น' }
+                helperText={ ( sess && sess.language === 'TH' ) ? "ใส่ตัวเลขเท่านั้น" : 'Please input number only.' }
                 onChange={e =>handleChange(e.target.value)}
                 onFocus={e => e.target.select()}
                 onKeyPress={e =>handleKeyPress(e)}
@@ -272,7 +272,7 @@ function RewardContainer(props){
                 />
             </ThemeProvider>
             <Button style={{ height: 36 }} color="primary" variant="contained" onClick={handleSave}>
-              { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
             </Button>
           </Typography>
         } />
@@ -290,7 +290,7 @@ function RewardContainer(props){
                     className={classes.prizeText}
                     value={edittingData || ''}
                     type="number"
-                    helperText={ ( sess && sess.language === 'EN' ) ? "Please input number only." : 'ใส่ตัวเลขเท่านั้น' }
+                    helperText={ ( sess && sess.language === 'TH' ) ? "ใส่ตัวเลขเท่านั้น" : 'Please input number only.' }
                     onChange={e =>handleChange(e.target.value)}
                     onFocus={e => e.target.select()}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -304,7 +304,7 @@ function RewardContainer(props){
                     />
                 </ThemeProvider>
                 <GreenButton style={{ height: 36 }} onClick={handleSave}>
-                  { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
                 </GreenButton>
               </div>
             } />
@@ -328,10 +328,10 @@ export default function MBReward(props){
   function getRewardStatus(status){
     switch (true) {
       case status === 'reward not create':
-        return ( sess && sess.language === 'EN' ) ? 'Please create reward.' : 'ยังไม่ได้เพิ่มเงินรางวัล'
+        return ( sess && sess.language === 'TH' ) ? 'ยังไม่ได้เพิ่มเงินรางวัล' : 'Please create reward.'
         break;
       default:
-        return ( sess && sess.language === 'EN' ) ? 'No reward' : 'ไม่มีเงินรางวัล'
+        return ( sess && sess.language === 'TH' ) ? 'ไม่มีเงินรางวัล' : 'No reward'
     }
   }
 
@@ -534,7 +534,7 @@ export default function MBReward(props){
             <RedButton className={classes.buttonMargin}
               style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
               onClick={handleCreate}>
-              { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
+              { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
             </RedButton>
           }
           { editting &&
@@ -544,31 +544,31 @@ export default function MBReward(props){
                   onChange={e =>handleRewardChange(e.target.value)}
                   onFocus={e => e.target.select()}
                   onKeyPress={e =>handleRewardKeyPress(e)}
-                  label={ ( sess && sess.language === 'EN' ) ? "Number" : 'ตัวเลข' }
-                  helperText={ ( sess && sess.language === 'EN' ) ? "The number of the player who will get a reward." : 'จำนวนผู้เล่นที่จะได้รางวัล' }
+                  label={ ( sess && sess.language === 'TH' ) ? "ตัวเลข" : 'Number' }
+                  helperText={ ( sess && sess.language === 'TH' ) ? "จำนวนผู้เล่นที่จะได้รางวัล" : 'The number of the player who will get a reward.' }
                   type="number"
                 />
               </ThemeProvider>
             <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
-              { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
             </GreenButton>
             </React.Fragment>
           }
           <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
-            { ( sess && sess.language === 'EN' ) ? "Reset" : 'รีเซ็ต' }
+            { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
           </GreenTextButton>
           <div style={{ flex: 1 }} />
           { window.innerWidth >= 500 && editting &&
             <GreenTextButton
               className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
               onClick={()=>setEditting(false)}>
-              { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+              { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
             </GreenTextButton>
           }
           { !editting &&
             <GreenButton
               className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>
-              { ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' }
+              { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
             </GreenButton>
           }
         </div>
@@ -577,7 +577,7 @@ export default function MBReward(props){
             <GreenTextButton
               className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
               onClick={()=>setEditting(false)}>
-              { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+              { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
             </GreenTextButton>
           }
         </div>
@@ -588,17 +588,17 @@ export default function MBReward(props){
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={
                 window.innerWidth < 700?
-                ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' )
                 :
-                ( ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
               } />
             { window.innerWidth >= 700 &&
               <ListItemText style={{ color: 'white' }} className={classes.listText}
-                primary={ ( ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' )  } />
+                primary={ ( ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' )  } />
             }
             { !( editting && window.innerWidth < 550 ) &&
               <ListItemText style={{ color: 'white' }} className={classes.listPrize}
-                primary={ ( sess && sess.language === 'EN' ) ? "Prize" : 'เงินรางวัล' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "เงินรางวัล" : 'Prize' } />
             }
           </ListItem>
         </List>

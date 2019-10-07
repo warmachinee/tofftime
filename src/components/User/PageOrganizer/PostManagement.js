@@ -218,23 +218,23 @@ export default function PagePost(props){
       <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          { ( sess && sess.language === 'EN' ) ? "Page post" : 'โพสต์ของเพจ' }
+          { ( sess && sess.language === 'TH' ) ? "โพสต์ของเพจ" : 'Page post' }
         </Box>
       </Typography>
       <div style={{ display: 'flex' }}>
         <RedButton style={{ padding: '8px 16px 8px 0' }} variant="contained" color="secondary"
           onClick={()=>handleOpen('create')}>
           <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-          { ( sess && sess.language === 'EN' ) ? "Create" : 'สร้าง' }
+          { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
         </RedButton>
         <div style={{ flex: 1 }} />
         <GreenTextButton style={{ padding: '8px 24px' }}
           variant={ editting? 'text' : 'outlined' }
           onClick={()=>setEditting(!editting)}>
           { editting?
-            ( ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' )
+            ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
             :
-            ( ( sess && sess.language === 'EN' ) ? "Remove" : 'ลบ' )
+            ( ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' )
           }
         </GreenTextButton>
       </div>
@@ -243,7 +243,7 @@ export default function PagePost(props){
           <ListItemAvatar style={{ marginRight: 16 }}>
             <div style={{ margin: 10, width: 60, height: 24 }}></div>
           </ListItemAvatar>
-          <StyledText primary={ ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' } />
+          <StyledText primary={ ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' } />
         </ListItem>
       </List>
       <List className={classes.listRoot}>
@@ -295,9 +295,9 @@ export default function PagePost(props){
           <LabelText
             text={
               clickAction === 'edit' ?
-              ( ( sess && sess.language === 'EN' ) ? "Edit post" : 'แก้ไขโพสต์' )
+              ( ( sess && sess.language === 'TH' ) ? "แก้ไขโพสต์" : 'Edit post' )
               :
-              ( ( sess && sess.language === 'EN' ) ? "Create post" : 'สร้างโพสต์' )
+              ( ( sess && sess.language === 'TH' ) ? "สร้างโพสต์" : 'Create post' )
             } />
           <PageOrganizerPostEditor {...props} clickAction={clickAction} edittingData={edittingData} handleCloseEditor={handleClose} />
         </div>
@@ -307,19 +307,19 @@ export default function PagePost(props){
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'EN' ) ? "Are you sure you want to delete?" : 'ต้องการลบหรือไม่ ?' }
+            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
-            ( { ( sess && sess.language === 'EN' ) ? "Page post" : 'โพสต์ของเพจ' } : { selectedDeleteItem && selectedDeleteItem.message } )
+            ( { ( sess && sess.language === 'TH' ) ? "โพสต์ของเพจ" : 'Page post' } : { selectedDeleteItem && selectedDeleteItem.message } )
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'EN' ) ? "Delete" : 'ลบ' }
+            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
           </RedButton>
         </div>
       </TemplateDialog>

@@ -401,7 +401,7 @@ export default function MBOverview(props){
     <div className={classes.root}>
       { !editting &&
         <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>
-          { ( sess && sess.language === 'EN' ) ? "Edit" : 'แก้ไข' }
+          { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
         </GreenTextButton>
       }
       <div className={classes.grid}>
@@ -410,9 +410,9 @@ export default function MBOverview(props){
             {editting?
               <TextField
                 className={classes.textMatchname}
-                label={ ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน' }
+                label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
                 value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                  ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน'
+                  ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
                 ) }
                 onChange={e =>setSelectedMatchName(e.target.value)}
               />
@@ -420,7 +420,7 @@ export default function MBOverview(props){
               <Typography component="div" className={classes.textMatchname}>
                 <Box className={classes.normal}>
                   { data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                    ( sess && sess.language === 'EN' ) ? "Match name" : 'ชื่อการแข่งขัน'
+                    ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
                   ) }
                 </Box>
               </Typography>
@@ -433,7 +433,7 @@ export default function MBOverview(props){
                   clearable
                   disabled={!editting}
                   className={classes.margin}
-                  label={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' }
+                  label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
                   value={ data?( selectedDate ? selectedDate : new Date(API.handleStringToDate(data.date)) ):new Date() }
@@ -506,7 +506,7 @@ export default function MBOverview(props){
               style={{ textTransform: 'none' }}
               onClick={()=>handleOpen('location')}>
               { data?( selectedField? selectedField.fieldname : data.location ) : (
-                ( sess && sess.language === 'EN' ) ? "Location" : 'สนาม'
+                ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location'
               ) }
               {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
             </GreenTextButton>
@@ -520,29 +520,29 @@ export default function MBOverview(props){
                   (
                     data.class.length >= 2 ?
                     ( data.class.length + (data.scorematch === 1 ? (
-                      ( sess && sess.language === 'EN' ) ? " Classes" : ' ประเภท'
+                      ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Classes'
                     ) : (
-                      ( sess && sess.language === 'EN' ) ? " Flight" : ' ไฟล์ท'
+                      ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
                     )) )
                     :
                     ( data.class.length + (data.scorematch === 1 ? (
-                      ( sess && sess.language === 'EN' ) ? " Class" : ' ประเภท'
+                      ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
                     ) : (
-                      ( sess && sess.language === 'EN' ) ? " Flight" : ' ไฟล์ท'
+                      ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
                     )) )
                   )
                 ):
                 (data.scorematch === 1 ? (
-                  ( sess && sess.language === 'EN' ) ? " Class" : ' ประเภท'
+                  ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
                 ) : (
-                  ( sess && sess.language === 'EN' ) ? " Flight" : ' ไฟล์ท'
+                  ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
                 ))
               }
             </GreenTextButton>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}
               disabled={!editting}>
-              <FormLabel component="legend" style={{ marginLeft: 16 }}>{ ( sess && sess.language === 'EN' ) ? "Privacy" : 'ความเป็นส่วนตัว' }</FormLabel>
+              <FormLabel component="legend" style={{ marginLeft: 16 }}>{ ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }</FormLabel>
               <RadioGroup
                 value={
                   data?( selectedPrivacy? selectedPrivacy : data.privacy ):'public'
@@ -551,19 +551,19 @@ export default function MBOverview(props){
                 <FormControlLabel
                   value={'public'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'EN' ) ? "Public" : 'สาธารณะ' }
+                  label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'friend'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'EN' ) ? "Friend" : 'เพื่อน' }
+                  label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'private'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'EN' ) ? "Private" : 'ส่วนตัว' }
+                  label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
                   labelPlacement="end"
                 />
               </RadioGroup>
@@ -601,11 +601,11 @@ export default function MBOverview(props){
           <div style={{ flex: 2 }}></div>
           <GreenTextButton className={classes.button}
             onClick={()=>handleEditting(false)}>
-            { ( sess && sess.language === 'EN' ) ? "Cancel" : 'ยกเลิก' }
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
           </GreenTextButton>
           <GreenButton className={classes.button}
             onClick={handleEditMatch}>
-            { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
           </GreenButton>
         </div>
         :

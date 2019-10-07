@@ -31,7 +31,7 @@ export default function PageOrganizerCreatePost(props) {
   return (
     <TemplateDialog open={createPostState} handleClose={toggleCreatePost} elementId="create-post-dialog">
       <div className={classes.root}>
-        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Create post" : 'สร้างโพสต์' } />
+        <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างโพสต์" : 'Create post' } />
         <PageOrganizerPostEditor {...props} />
       </div>
     </TemplateDialog>

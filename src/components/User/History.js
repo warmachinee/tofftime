@@ -154,9 +154,7 @@ export default function History(props) {
   const [ checked, setChecked ] = React.useState([]);
 
   function getSortName(name){
-    if(sess && sess.language === 'EN'){
-      return name
-    }else{
+    if(sess && sess.language === 'TH'){
       switch (true) {
         case name === 'unofficial':
           return 'ไม่เป็นทางการ'
@@ -167,6 +165,8 @@ export default function History(props) {
         default:
           return 'ส่วนตัว'
       }
+    }else{
+      return name
     }
   }
 
@@ -237,7 +237,7 @@ export default function History(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'EN' ) ? "History" : 'ประวัติ' } />
+      <LabelText text={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
       <div className={classes.grid}>
         <div
           className={clsx(classes.gridChild,{
@@ -295,14 +295,14 @@ export default function History(props) {
                 [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
                 [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
               })}>
-                <InputLabel>{ (sess && sess.language === 'EN')? 'Type' : 'ประเภท' }</InputLabel>
+                <InputLabel>{ (sess && sess.language === 'TH')? 'ประเภท' : 'Type' }</InputLabel>
                 <Select
                   value={statType}
                   onChange={e => setStatType(e.target.value)}
                 >
-                  <MenuItem value={'total'}>{ (sess && sess.language === 'EN')? 'Total' : 'ทั้งหมด' }</MenuItem>
-                  <MenuItem value={'0'}>{ (sess && sess.language === 'EN')? 'Amateur' : 'มือสมัครเล่น' }</MenuItem>
-                  <MenuItem value={'1'}>{ (sess && sess.language === 'EN')? 'Pro' : 'มืออาชีพ' }</MenuItem>
+                  <MenuItem value={'total'}>{ (sess && sess.language === 'TH')? 'ทั้งหมด' : 'Total' }</MenuItem>
+                  <MenuItem value={'0'}>{ (sess && sess.language === 'TH')? 'มือสมัครเล่น' : 'Amateur' }</MenuItem>
+                  <MenuItem value={'1'}>{ (sess && sess.language === 'TH')? 'มืออาชีพ' : 'Pro' }</MenuItem>
                 </Select>
               </FormControl>
             </form>
@@ -322,21 +322,21 @@ export default function History(props) {
             </ListItemIcon>
             { ( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
               <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                primary={ (sess && sess.language === 'EN')? 'Date' : 'วันที่' } />
+                primary={ (sess && sess.language === 'TH')? 'วันที่' : 'Date' } />
             }
             <ListItemText style={{ color: 'white', width: 100 }}
-              primary={ (sess && sess.language === 'EN')? 'Match' : 'การแข่งขัน' } />
+              primary={ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' } />
 
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
               <ListItemText
                 style={{ width: 100, color: 'white' }}
-                primary={ (sess && sess.language === 'EN')? 'Location' : 'สนาม' } />
+                primary={ (sess && sess.language === 'TH')? 'สนาม' : 'Location' } />
             }
             <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
               <Typography variant="subtitle2" color="textSecondary" style={{ color: 'white' }}>
                 {
                   ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ?
-                  ( (sess && sess.language === 'EN')? 'Handicap' : 'แฮนดิแคป' ) : 'HC'
+                  ( (sess && sess.language === 'TH')? 'แฮนดิแคป' : 'Handicap' ) : 'HC'
                 }
               </Typography>
             </ListItemIcon>

@@ -148,22 +148,22 @@ export default function Management(props) {
   function SystemComponent(){
     return (sess && sess.status === 1) && (
       <React.Fragment>
-        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Management" : 'ระบบการจัดการ' } />
+        <LabelText text={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } />
         <div style={{ marginTop: 36 }}>
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
-              { ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
+              { ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
             </StyledButton>
           </Link>
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
-              { ( sess && sess.language === 'EN' ) ? "Course" : 'สนาม' }
+              { ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' }
             </StyledButton>
           </Link>
           { pageOrganizer &&
             <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} className={classes.linkElement}>
               <StyledButton variant="contained" color="primary" className={classes.button}>
-                { ( sess && sess.language === 'EN' ) ? "Post" : 'โพสต์' }
+                { ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' }
               </StyledButton>
             </Link>
           }

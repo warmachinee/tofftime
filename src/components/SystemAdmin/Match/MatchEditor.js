@@ -99,13 +99,13 @@ export default function MatchEditor(props){
   const [ data, setData ] = React.useState(null)
   const [ activeStep, setActiveStep ] = React.useState(0);
   const labelSteps = [
-    ( ( sess && sess.language === 'EN' ) ? "Detail" : 'รายละเอียด' ),
-    ( ( sess && sess.language === 'EN' ) ? "Invitation & Schedule" : 'การเชิญ และ ตารางเวลา' ),
-    ( ( sess && sess.language === 'EN' ) ? "Player management" : 'ระบบจัดการผู้เล่น' ),
-    ( ( sess && sess.language === 'EN' ) ? "Score calculation" : 'การคำนวนคะแนน' ),
-    ( ( sess && sess.language === 'EN' ) ? "Playoff" : 'เพลย์ออฟ' ),
-    ( ( sess && sess.language === 'EN' ) ? "Reward" : 'รางวัล' ),
-    ( ( sess && sess.language === 'EN' ) ? "Admin" : 'ผู้ดูแลการแข่งขัน' ),
+    ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
+    ( ( sess && sess.language === 'TH' ) ? "การเชิญ และ ตารางเวลา" : 'Invitation & Schedule' ),
+    ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
+    ( ( sess && sess.language === 'TH' ) ? "การคำนวนคะแนน" : 'Score calculation' ),
+    ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+    ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+    ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
   ]
   const maxSteps = labelSteps.length;
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -258,14 +258,14 @@ export default function MatchEditor(props){
           activeStep={activeStep}
           nextButton={
             <BTN.PrimaryText size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
-              { ( sess && sess.language === 'EN' ) ? "Next" : 'ถัดไป' }
+              { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
               {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
             </BTN.PrimaryText>
           }
           backButton={
             <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
               {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-              { ( sess && sess.language === 'EN' ) ? "Back" : 'ย้อนกลับ' }
+              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
             </BTN.PrimaryText>
           }
         />

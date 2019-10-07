@@ -152,9 +152,7 @@ export default function Statistics(props) {
   const [ checked, setChecked ] = React.useState([]);
 
   function getSortName(name){
-    if(sess && sess.language === 'EN'){
-      return name
-    }else{
+    if(sess && sess.language === 'TH'){
       switch (true) {
         case name === 'unofficial':
           return 'ไม่เป็นทางการ'
@@ -165,6 +163,8 @@ export default function Statistics(props) {
         default:
           return 'ส่วนตัว'
       }
+    }else{
+      return name
     }
   }
 
@@ -281,7 +281,7 @@ export default function Statistics(props) {
             [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
             [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
           })}>
-            <InputLabel>{ (sess && sess.language === 'EN')? 'Match' : 'การแข่งขัน' }</InputLabel>
+            <InputLabel>{ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' }</InputLabel>
             <Select
               multiple
               disabled={Boolean(userid)}
@@ -324,7 +324,7 @@ export default function Statistics(props) {
           <div className={classes.statLabel}>
             <GolfCourse className={classes.icon} />
             <Typography variant="body1" className={classes.typo}>
-              { ( sess && sess.language === 'EN' ) ? "Matches" : 'จำนวนการแข่งขัน' }
+              { ( sess && sess.language === 'TH' ) ? "จำนวนการแข่งขัน" : `Matche${ (data && data.matchnum > 1) ? 's': '' }` }
             </Typography>
           </div>
           <div className={classes.valueGrid}>
@@ -345,7 +345,7 @@ export default function Statistics(props) {
           <div className={classes.statLabel}>
             <AssignmentInd className={classes.icon} />
             <Typography variant="body1" className={classes.typo}>
-              { ( sess && sess.language === 'EN' ) ? "Handicap" : 'แฮนดิแคป' }
+              { ( sess && sess.language === 'TH' ) ? "แฮนดิแคป" : 'Handicap' }
             </Typography>
           </div>
           <div className={classes.valueGrid}>

@@ -319,13 +319,13 @@ function Header(props) {
             { window.location.pathname === '/' && window.innerWidth >= 600 &&
               <React.Fragment>
                 <Button size="small" onClick={()=>API.handleScrolllTo('match')}>
-                  { ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' }
+                  { ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
                 </Button>
                 <Button size="small" onClick={()=>API.handleScrolllTo('news')}>
-                  { ( sess && sess.language === 'EN' ) ? "News" : 'ข่าว' }
+                  { ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' }
                 </Button>
                 <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>
-                  { ( sess && sess.language === 'EN' ) ? "Organizer" : 'ผู้จัดการแข่งขัน' }
+                  { ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' }
                 </Button>
                 <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
               </React.Fragment>
@@ -371,7 +371,7 @@ function Header(props) {
             }
             { !( sess && sess.status === 1 ) &&
               <Button className={classes.loginBtn}
-                onClick={handleLogin}>{ ( sess && sess.language === 'EN' ) ? "Login" : 'เข้าสู่ระบบ' }</Button>
+                onClick={handleLogin}>{ ( sess && sess.language === 'TH' ) ? "เข้าสู่ระบบ" : 'Login' }</Button>
             }
           </Toolbar>
         </AppBar>
@@ -389,7 +389,7 @@ function Header(props) {
             !( window.location.pathname === '/' ) &&
             <Link to={`/`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
-                { ( sess && sess.language === 'EN' ) ? "Home" : 'หน้าแรก' }
+                { ( sess && sess.language === 'TH' ) ? "หน้าแรก" : 'Home' }
               </MenuItem>
             </Link>
           }
@@ -398,7 +398,7 @@ function Header(props) {
             !/\/admin/.test(window.location.pathname) &&
             <Link to={`/admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
-                { ( sess && sess.language === 'EN' ) ? "Admin" : 'แอดมิน' }
+                { ( sess && sess.language === 'TH' ) ? "แอดมิน" : 'Admin' }
               </MenuItem>
             </Link>
           }
@@ -407,14 +407,14 @@ function Header(props) {
             !/\/user/.test(window.location.pathname) &&
             <Link to={`/user`/*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
-                { ( sess && sess.language === 'EN' ) ? "User" : 'ผู้ใช้งาน' }
+                { ( sess && sess.language === 'TH' ) ? "ผู้ใช้งาน" : 'User' }
               </MenuItem>
             </Link>
           }
 
           { ( sess && sess.status === 1 ) &&
             <MenuItem onClick={handleLogout}>
-              { ( sess && sess.language === 'EN' ) ? "Log out" : 'ลงชื่อออก' }
+              { ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' }
             </MenuItem>
           }
 
@@ -454,7 +454,7 @@ function Header(props) {
                         variant="body1"
                         style={{ color: "white" }}
                       >
-                        { ( sess && sess.language === 'EN' ) ? "Notifications" : 'การแจ้งเตือน' }
+                        { ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' }
                       </Typography>
                     </Button>
                   </React.Fragment>

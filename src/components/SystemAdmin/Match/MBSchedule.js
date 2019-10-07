@@ -239,10 +239,10 @@ export default function MBSchedule(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
-              { ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ' }
+              { ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "Incomplete" : 'ยังไม่อนุมัติ',
+          text: ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete',
           color: COLOR.red[500]
         });
         break;
@@ -250,10 +250,10 @@ export default function MBSchedule(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
-              { ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ' }
+              { ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "Pending" : 'รอดำเนินการ',
+          text: ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending',
           color: COLOR.amber[500]
         });
         break;
@@ -261,10 +261,10 @@ export default function MBSchedule(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
-              { ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ' }
+              { ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "Complete" : 'สำเร็จ',
+          text: ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete',
           color: COLOR.green[500]
         });
         break;
@@ -272,10 +272,10 @@ export default function MBSchedule(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.grey[800] }}>
-              { ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี' }
+              { ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None' }
             </Typography>
           ),
-          text: ( sess && sess.language === 'EN' ) ? "None" : 'ไม่มี',
+          text: ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None',
           color: COLOR.grey[500]
         });
     }
@@ -563,7 +563,7 @@ export default function MBSchedule(props){
               target='_blank'
               style={{ textDecoration: 'none', color: 'inherit' }}>
               <GreenTextButton className={classes.controlsEditButton}>
-                { ( sess && sess.language === 'EN' ) ? "Form" : 'รายชื่อผู้สมัคร' }
+                { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }
               </GreenTextButton>
             </a>
             { matchDetail && matchDetail.team && matchDetail.team.length > 0 &&
@@ -572,7 +572,7 @@ export default function MBSchedule(props){
                 style={{ textDecoration: 'none', color: 'inherit' }}>
                 <GreenTextButton className={classes.controlsEditButton}>
                   <ClassIcon className={classes.controlsEditButtonIcon} />
-                  { ( sess && sess.language === 'EN' ) ? "Schedule" : 'ตารางการแข่งขัน' }
+                  { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
                 </GreenTextButton>
               </a>
             }
@@ -585,7 +585,7 @@ export default function MBSchedule(props){
             style={{ margin: '2px 0'}}
             onClick={handleAddOpen}>
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-            { ( sess && sess.language === 'EN' ) ? "Invite" : 'ชวนผู้เล่น' }
+            { ( sess && sess.language === 'TH' ) ? "ชวนผู้เล่น" : 'Invite' }
           </RedButton>
           <GreenTextButton
             className={classes.button}
@@ -594,10 +594,10 @@ export default function MBSchedule(props){
             variant="outlined">
             { matchDetail && matchDetail.team && matchDetail.team.length > 0?
               (
-                ( ( sess && sess.language === 'EN' ) ? "Edit Schedule" : 'แก้ไขตารางเวลา' ) + '( ' + matchDetail.team.length + ' )'
+                ( ( sess && sess.language === 'TH' ) ? "แก้ไขตารางเวลา" : 'Edit Schedule' ) + '( ' + matchDetail.team.length + ' )'
               )
               :
-              ( ( sess && sess.language === 'EN' ) ? "Create Schedule" : 'สร้างตารางเวลา' )
+              ( ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create Schedule' )
             }
           </GreenTextButton>
           <div style={{ flex: 1 }} />
@@ -610,15 +610,15 @@ export default function MBSchedule(props){
             { edittingTeam?
               <React.Fragment>
                 <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingTeam}>
-                  { ( sess && sess.language === 'EN' ) ? "Done" : 'เสร็จ' }
+                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
                 </GreenTextButton>
                 <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
-                  { ( sess && sess.language === 'EN' ) ? "Save" : 'บันทึก' }
+                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
                 </GreenButton>
               </React.Fragment>
               :
               <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
-                { ( sess && sess.language === 'EN' ) ? "Player Schedule" : 'ตางรางเวลาของผู้เล่น' }
+                { ( sess && sess.language === 'TH' ) ? "ตางรางเวลาของผู้เล่น" : 'Player Schedule' }
               </GreenTextButton>
             }
           </div>
@@ -629,7 +629,7 @@ export default function MBSchedule(props){
               className={classes.button}
               onClick={handleFetchSwitchHostForm}
               variant="outlined">
-              { ( sess && sess.language === 'EN' ) ? "Switch Host" : 'สลับผู้จัด' }
+              { ( sess && sess.language === 'TH' ) ? "สลับผู้จัด" : 'Switch Host' }
             </GreenTextButton>
           </ListItem>
         }
@@ -640,9 +640,9 @@ export default function MBSchedule(props){
                 <AccessTimeIcon style={{ color: primary[600], marginRight: 4 }} />
                 <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
                   { selectedTeam !== 0 ? (
-                    ( sess && sess.language === 'EN' ) ? "Selected Time  : " : 'เวลาที่เลือก  : '
+                    ( sess && sess.language === 'TH' ) ? "เวลาที่เลือก  : " : 'Selected Time  : '
                   ): (
-                    ( sess && sess.language === 'EN' ) ? "Select Time  : " : 'เลือกเวลา  : '
+                    ( sess && sess.language === 'TH' ) ? "เลือกเวลา  : " : 'Select Time  : '
                   ) }
                 </div>
               </div>
@@ -669,7 +669,7 @@ export default function MBSchedule(props){
             <TextField
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser? ( ( sess && sess.language === 'EN' ) ? "Search player" : 'ค้นหาผู้เล่น' ) : '' }
+              placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search player' ) : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -698,7 +698,7 @@ export default function MBSchedule(props){
             <Typography component="div">
               <Box className={classes.notice} m={1}>
                 { edittingTeam && (
-                  ( sess && sess.language === 'EN' ) ? "Select team and player to change player team." : 'ค้นหาผู้เล่น'
+                  ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Select team and player to change player team.'
                 )}
               </Box>
             </Typography>*/
@@ -710,13 +710,13 @@ export default function MBSchedule(props){
             <ListItemText inset={edittingTeam} style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
-                ( ( sess && sess.language === 'EN' ) ? "Name" : 'ชื่อ' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' )
                 :
-                ( ( sess && sess.language === 'EN' ) ? "First name" : 'ชื่อ' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
               } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-                primary={ ( sess && sess.language === 'EN' ) ? "Last name" : 'นามสกุล' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
             }
             {/*
               <ListItemIcon style={{ justifyContent: 'flex-start' }}>
@@ -725,11 +725,11 @@ export default function MBSchedule(props){
             }
             { window.innerWidth > 600 && edittingTeam &&
               <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}
-                primary={ ( sess && sess.language === 'EN' ) ? "Time" : 'เวลา' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
             }
             { window.innerWidth > 450 && !edittingTeam &&
               <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}
-                primary={ ( sess && sess.language === 'EN' ) ? "Status" : 'สถานะ' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "สถานะ" : 'Status' } />
             }
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
@@ -873,13 +873,13 @@ export default function MBSchedule(props){
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
                     { dataSliced >= data.length ? (
-                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                     ):(
-                      ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                     ) }
                   </Button>
                   { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
                   }
                 </React.Fragment>
               }
@@ -887,13 +887,13 @@ export default function MBSchedule(props){
                 <React.Fragment>
                   <Button fullWidth onClick={handleMore}>
                     { dataSliced >= handleSearch().length ? (
-                      ( sess && sess.language === 'EN' ) ? "Collapse" : 'ย่อทั้งหมด'
+                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
                     ):(
-                      ( sess && sess.language === 'EN' ) ? "More" : 'แสดง'
+                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
                     ) }
                   </Button>
                   { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'EN' ) ? "More all" : 'แสดงทั้งหมด' }</Button>
+                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
                   }
                 </React.Fragment>
               }
@@ -902,7 +902,7 @@ export default function MBSchedule(props){
               <ListItem>
                 <Typography component="div" style={{ width: '100%' }}>
                   <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                    { ( sess && sess.language === 'EN' ) ? "No Reult" : 'ไม่มีผลลัพท์' }
+                    { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Reult' }
                   </Box>
                 </Typography>
               </ListItem>

@@ -131,11 +131,11 @@ export default function PageOrganizerCreatePost(props) {
   return (
     <TemplateDialog open={selectMatchState} handleClose={handleClose} maxWidth={900}>
       <div className={classes.root}>
-        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Select match" : 'เลือกการแข่งขัน' } />
+        <LabelText text={ ( sess && sess.language === 'TH' ) ? "เลือกการแข่งขัน" : 'Select match' } />
         <div className={classes.grid}>
           <BTN.Red style={{ paddingRight: 16 }} onClick={toggleCreateMatch}>
             <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-            { ( sess && sess.language === 'EN' ) ? "Create Match" : 'สร้างการแข่งขัน' }
+            { ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' }
           </BTN.Red>
           <List style={{ marginTop: 16 }}>
             <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
@@ -151,15 +151,15 @@ export default function PageOrganizerCreatePost(props) {
               </ListItemIcon>
               { window.innerWidth >= 600 &&
                 <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                  primary={ ( sess && sess.language === 'EN' ) ? "Date" : 'วันที่' } />
+                  primary={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' } />
               }
               <ListItemText style={{ color: 'white', width: 100 }}
-                primary={ ( sess && sess.language === 'EN' ) ? "Match" : 'การแข่งขัน' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
 
               { window.innerWidth >= 900 &&
                 <ListItemText
                   style={{ width: 100, color: 'white' }}
-                  primary={ ( sess && sess.language === 'EN' ) ? "Location" : 'สนาม' } />
+                  primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location' } />
               }
             </ListItem>
           </List>

@@ -32,6 +32,7 @@ import {
   ArrowBack,
   ArrowDropDown,
   ExpandMore,
+  CheckCircle,
 
 } from '@material-ui/icons';
 
@@ -182,13 +183,19 @@ function ListPredictScore(props){
   }
 
   async function handleFetchSetPredict(){
+    var userid;
+    if(Object.keys(data).find( d => d === 'mainplayer')){
+      userid = data.mainplayer
+    }else{
+      userid = data.userid
+    }
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
       'mmatchsection', {
         action: 'setpredictscore',
         matchid: matchid,
-        userid: data.userid,
+        userid: userid,
         value: parseInt(predictScore)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
@@ -233,6 +240,7 @@ export default function MiniGameMah(props){
   const [ editting, setEditting ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
   const [ userList, setUserList ] = React.useState(null)
+  const [ mainPlayer, setMainPlayer ] = React.useState(null)
   const [ betHole, setBetHole ] = React.useState(null)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ expanded, setExpanded ] = React.useState(false)
@@ -281,6 +289,11 @@ export default function MiniGameMah(props){
         if(d.hole){
           setBetHole(d.hole)
         }
+        if(gameType === 'jao'){
+          if(d.mainplayer){
+            setMainPlayer(d.mainplayer[0])
+          }
+        }
       }
     })
   }
@@ -295,6 +308,82 @@ export default function MiniGameMah(props){
     if(e.key === 'Enter'){
       handleSetUnderOver(action)
     }
+  }
+
+  function mainPlayerComponent(){
+    return (
+      <ListItem
+        className={classes.listPlayer}
+        style={{ border: `2px solid ${COLOR.grey[900]}`, position: 'sticky', top: 48 }}>
+        <ListItemText className={classes.listPlayerName}
+          primary={
+            <React.Fragment>
+              {`${mainPlayer.fullname}  ${mainPlayer.lastname}`}
+              { editting &&
+                <div style={{ marginTop: 16 }}>
+                  <BTN.PrimaryOutlined onClick={()=>handleFetchSetJao(mainPlayer.mainplayer)}>Set Jao</BTN.PrimaryOutlined>
+                </div>
+              }
+              { editting && window.innerWidth < 600 &&
+                <React.Fragment>
+                  <div style={{ marginTop: 16 }}>
+                    <ListPredictScore {...props} data={mainPlayer} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+                  </div>
+                </React.Fragment>
+              }
+            </React.Fragment>
+          }
+          secondary={
+            window.innerWidth < 600 && !editting &&
+            <React.Fragment>
+              <Typography gutterBottom variant="caption" component="span">{`Gross = ${mainPlayer.gross}`}</Typography>
+              <br></br>
+              <Typography variant="caption" component="span">{`SF = ${mainPlayer.sf36sys}`}</Typography>
+            </React.Fragment>
+          } />
+        { editting ?
+          ( window.innerWidth >= 600 &&
+            <ListItemIcon>
+              <ListPredictScore {...props} data={mainPlayer} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+            </ListItemIcon>
+          )
+          :
+          <React.Fragment>
+            { window.innerWidth >= 600 &&
+              <React.Fragment>
+                <ListItemText className={classes.listScore} primary={mainPlayer.gross} />
+                <ListItemText className={classes.listScore} primary={mainPlayer.sf36sys} />
+              </React.Fragment>
+            }
+            <ListItemText className={classes.listPredictScore} primary={mainPlayer.predictscore} />
+            <ListItemText className={classes.listPrice} primary="-" />
+          </React.Fragment>
+        }
+      </ListItem>
+    );
+  }
+
+  async function handleFetchSetJao(userid){
+    console.log(userid);
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'mmatchsection', {
+        action: 'setjao',
+        matchid: matchid,
+        playerid: userid,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ?'success':'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+      if(/success/.test(d.status)){
+        handleMiniGame(matchid, gameType)
+      }
+    })
   }
 
   async function handleChecked(hole){
@@ -336,6 +425,9 @@ export default function MiniGameMah(props){
         variant: /success/.test(d.status) ?'success':'error',
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
+      if(/success/.test(d.status)){
+        handleMiniGame(matchid, gameType)
+      }
     })
   }
 
@@ -357,6 +449,9 @@ export default function MiniGameMah(props){
         variant: /success/.test(d.status) ?'success':'error',
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
+      if(/success/.test(d.status)){
+        handleMiniGame(matchid, gameType)
+      }
     })
   }
 
@@ -381,6 +476,11 @@ export default function MiniGameMah(props){
       }
       if(d.hole){
         setBetHole(d.hole)
+      }
+      if(gameType === 'jao'){
+        if(d.mainplayer){
+          setMainPlayer(d.mainplayer[0])
+        }
       }
     })
   }
@@ -584,6 +684,9 @@ export default function MiniGameMah(props){
                   </React.Fragment>
                 }
               </ListItem>
+              { gameType === 'jao' && mainPlayer &&
+                mainPlayerComponent()
+              }
               { userList &&
                 userList.map( d =>
                 <React.Fragment key={d.userid}>
@@ -592,12 +695,18 @@ export default function MiniGameMah(props){
                       primary={
                         <React.Fragment>
                           {`${d.fullname}  ${d.lastname}`}
-                          <br></br>
-                          <div style={{ marginTop: 16 }}>
-                            { editting && window.innerWidth < 600 &&
-                              <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
-                            }
-                          </div>
+                          { editting &&
+                            <div style={{ marginTop: 16 }}>
+                              <BTN.PrimaryOutlined onClick={()=>handleFetchSetJao(d.userid)}>Set Jao</BTN.PrimaryOutlined>
+                            </div>
+                          }
+                          { editting && window.innerWidth < 600 &&
+                            <React.Fragment>
+                              <div style={{ marginTop: 16 }}>
+                                <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+                              </div>
+                            </React.Fragment>
+                          }
                         </React.Fragment>
                       }
                       secondary={

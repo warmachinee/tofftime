@@ -59,15 +59,18 @@ export default function News(props) {
 
   return(
     <div id="el_news" className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'EN' ) ? "News" : 'ข่าว' } />
-      <div className={classes.grid}>
-        { data?
-          data.map( d => <NewsCard key={d.newsid} {...props} data={d} /> )
-          :
-          Array.from(new Array(3)).map((d, i) => <NewsCard key={i} loading/>)
-        }
-      </div>
-
+      { data && data.length > 0 &&
+        <React.Fragment>
+          <LabelText text={ ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' } />
+          <div className={classes.grid}>
+            { data?
+              data.map( d => <NewsCard key={d.newsid} {...props} data={d} /> )
+              :
+              Array.from(new Array(3)).map((d, i) => <NewsCard key={i} loading/>)
+            }
+          </div>
+        </React.Fragment>
+      }
     </div>
   );
 }

@@ -123,7 +123,7 @@ export default function UpcomingList(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text={ (sess && sess.language === 'EN')? 'Upcoming' : 'เร็วๆนี้' } />
+      <LabelText text={ (sess && sess.language === 'TH')? 'เร็วๆนี้' : 'Upcoming' } />
       <div className={classes.grid}>
         <List>
           <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
@@ -139,15 +139,15 @@ export default function UpcomingList(props) {
             </ListItemIcon>
             { ( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
               <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                primary={ (sess && sess.language === 'EN')? 'Date' : 'วันที่' } />
+                primary={ (sess && sess.language === 'TH')? 'วันที่' : 'Date' } />
             }
             <ListItemText style={{ color: 'white', width: 100 }}
-              primary={ (sess && sess.language === 'EN')? 'Match' : 'การแข่งขัน' } />
+              primary={ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' } />
 
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
               <ListItemText
                 style={{ width: 100, color: 'white' }}
-                primary={ (sess && sess.language === 'EN')? 'Location' : 'สนาม' } />
+                primary={ (sess && sess.language === 'TH')? 'สนาม' : 'Location' } />
             }
           </ListItem>
         </List>

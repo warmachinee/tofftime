@@ -42,7 +42,7 @@ export default function CreateMatchDialog(props) {
   return (
     <TemplateDialog open={createMatchState} handleClose={toggleCreateMatch} maxWidth={700}>
       <div>
-        <LabelText text={ ( sess && sess.language === 'EN' ) ? "Create Match" : 'สร้างการแข่งขัน' } />
+        <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } />
         <MatchStepper {...props} dialogStepper/>
       </div>
     </TemplateDialog>
