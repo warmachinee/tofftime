@@ -5,18 +5,23 @@ import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
 
-import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
+import {
+  Paper,
+  Button,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemSecondaryAction,
+  TextField,
+  Typography,
+  Box,
+  Divider,
+  Menu,
+  MenuItem,
+
+} from '@material-ui/core';
 
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -159,14 +164,39 @@ const GreenTextButton = withStyles(theme => ({
   },
 }))(Button);
 
+const colorsPicker = [
+  'primary',
+  'secondary',
+  'red',
+  'pink',
+  'purple',
+  'deepPurple',
+  'indigo',
+  'blue',
+  'lightBlue',
+  'cyan',
+  'teal',
+  'green',
+  'lightGreen',
+  'lime',
+  'yellow',
+  'amber',
+  'orange',
+  'deepOrange',
+  'brown',
+  'grey',
+  'blueGrey'
+];
+
 export default function MatchClass(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, data, matchid, setData, handleSnackBar } = props
+  const { COLOR, sess, token, setCSRFToken, data, matchid, setData, handleSnackBar } = props
   const [ lists, setLists ] = React.useState([])
   const [ text, setText ] = React.useState('')
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
   const [ classAction, setClassAction ] = React.useState('')
   const [ arrEdit, setArrEdit ] = React.useState([])
+  const [ arrEditColor, setArrEditColor ] = React.useState([])
   const [ arrEditClassno, setArrEditClassno ] = React.useState([])
   const [ selectedDeleteItem, handleSelectedDeleteItem ] = React.useState(null)
   const [ draggedItem, handleDraggedItem ] = React.useState(null)
@@ -225,11 +255,11 @@ export default function MatchClass(props) {
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? d.status : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
       setCSRFToken(csrf)
-      if(d.status === 'success'){
+      if(/success/.test(d.status)){
         if(data.scorematch === 0){
           setText('')
         }
@@ -277,8 +307,8 @@ export default function MatchClass(props) {
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? d.status : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
       }
       setCSRFToken(csrf)
@@ -300,13 +330,13 @@ export default function MatchClass(props) {
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? d.status : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
       setCSRFToken(csrf)
       try {
         handleFetch()
-        if(d.status === 'success'){
+        if(/success/.test(d.status)){
           handleSelectedDeleteItem(null)
           handleConfirmDeleteState(false)
         }
@@ -353,9 +383,91 @@ export default function MatchClass(props) {
         setArrEdit(classname)
         setArrEditClassno(classno)
         setLists(data.class)
+        if(data.scorematch === 2){
+          let classColor = []
+          for(var j = 0;j < data.class.length;j++){
+            classColor.push(data.class[j].color)
+          }
+          setArrEditColor(classColor)
+        }
       }
     }
   },[ data ])
+
+  function ListColorSelector(props){
+    const { index } = props
+    const [ anchorEl, setAnchorEl ] = React.useState(null);
+    const [ buttonHover, setButtonHover ] = React.useState(null)
+
+    function handleMenuClick(event) {
+      setAnchorEl(event.currentTarget);
+    }
+
+    function handleMenuClose() {
+      setAnchorEl(null);
+    }
+
+    async function handleSelectColor(color){
+      const resToken = token? token : await API.xhrGet('getcsrf')
+      await API.xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+          action: 'setcolor',
+          matchid: matchid,
+          classno: arrEditClassno[index],
+          color: color
+      }, (csrf, d) =>{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        setCSRFToken(csrf)
+        try {
+          handleFetch()
+        }catch(err) { console.log(err.message) }
+      })
+    }
+
+    return (
+      <React.Fragment>
+        <Button variant="outlined" onClick={handleMenuClick}
+          style={{
+            marginLeft: 8,
+            color: arrEditColor[index] !==''? COLOR[arrEditColor[index]][600] : 'inherit',
+            backgroundColor: buttonHover ? ( arrEditColor[index] !==''? COLOR[arrEditColor[index]][100] : 'inherit' ) : 'inherit',
+            transition: '.2s',
+            padding: 8
+          }}
+          onMouseEnter={()=>setButtonHover(true)}
+          onMouseLeave={()=>setButtonHover(false)}>
+          { arrEditColor[index] !=='' ?
+            <div style={{
+                width: 16, height: 16,
+                backgroundColor: COLOR[arrEditColor[index]][600],
+                borderRadius: '50%',
+                boxSizing: 'border-box'
+              }} />
+            :
+            '-'
+          }
+        </Button>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          { colorsPicker.map( c =>
+            <MenuItem onClick={()=>handleSelectColor(c)} key={c}>
+              <div style={{ width: 16, height: 16, backgroundColor: COLOR[c][600], marginRight: 12, borderRadius: '50%' }}></div>
+              {c}
+            </MenuItem>
+          )}
+        </Menu>
+      </React.Fragment>
+    );
+  }
 
   return (
     <div>
@@ -378,20 +490,42 @@ export default function MatchClass(props) {
           <ListItem>
             <ListItemText
               style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, color: primary[900] }}
-              primary={ data.scorematch === 1? (
-                ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No class'
-              ) : (
-                ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No flight'
-              ) } />
+              primary={function(){
+                switch (data.scorematch) {
+                  case 0:
+                    return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No flight'
+                    break;
+                  case 1:
+                    return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No class'
+                    break;
+                  default:
+                    return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No Team'
+                }
+              }()} />
           </ListItem>
         }
         { lists && ( classAction === '' || classAction === 'add' ) &&
           lists.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
-                <ListItemText primary={ data.scorematch === 1? d.classname : (
+                <ListItemText primary={ data.scorematch === 0? (
                     arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
-                  ) } />
+                  ) : d.classname } />
+                { data.scorematch === 2 &&
+                  <ListItemIcon>
+                    { arrEditColor[i] !=='' ?
+                      <div style={{
+                          width: 16, height: 16,
+                          backgroundColor: COLOR[arrEditColor[i]][600],
+                          borderRadius: '50%',
+                          boxSizing: 'border-box',
+                          marginLeft: 'auto', marginRight: 'auto',
+                        }} />
+                      :
+                      <div style={{ marginLeft: 'auto', marginRight: 'auto', fontSize: 20 }}>-</div>
+                    }
+                  </ListItemIcon>
+                }
               </ListItem>
             )
           }
@@ -403,29 +537,22 @@ export default function MatchClass(props) {
                 fullWidth
                 autoFocus
                 value={text || ''}
-                type={ data.scorematch === 1? 'text' : 'number' }
-                helperText={
-                  data.scorematch === 1?
-                  ( ( sess && sess.language === 'TH' ) ? 'ใส่ชื่อประเภท' : 'Please input class name.' )
-                  :
-                  ( ( sess && sess.language === 'TH' ) ? 'ใส่ตัวเลข (HC)' : 'Please input number (HC).' )
-                }
+                type={ data.scorematch === 0? 'number' : 'text' }
+                helperText={function(){
+                  switch (data.scorematch) {
+                    case 0:
+                      return ( sess && sess.language === 'TH' ) ? 'ใส่ตัวเลข (HC)' : 'Please input number (HC).'
+                      break;
+                    case 1:
+                      return ( sess && sess.language === 'TH' ) ? 'ใส่ชื่อประเภท' : 'Please input class name.'
+                      break;
+                    default:
+                      return  ( sess && sess.language === 'TH' ) ? 'ใส่ชื่อทีม' : 'Please input team name.'
+                  }
+                }()}
                 onChange={e =>setText(e.target.value)}
                 onKeyPress={e =>handleKeyPress(e.key)}
               />
-            {/* data.scorematch === 0 &&
-                <div style={{ display: 'flex', width: '100%' }}>
-                  <div style={{ marginTop: 'auto', marginBottom: 28, textAlign: 'center', width: 64 }}> {
-                      ( sess && sess.language === 'TH' ) ? 'ถึง' : 'to'
-                    } </div>
-                  <TextField
-                    style={{ marginBottom: 20 }}
-                    fullWidth
-                    type="number"
-                    onKeyPress={e =>handleKeyPress(e.key)}
-                  />
-                </div>*/
-              }
             </ThemeProvider>
             <ListItemIcon className={classes.addClassButtonGrid}>
               <GreenTextButton disabled={!text} className={classes.addClassButton} variant="outlined" onClick={handleAddItem}>
@@ -460,6 +587,9 @@ export default function MatchClass(props) {
                     />
                   </div>
                 }
+                { data.scorematch === 2 &&
+                  <ListColorSelector index={i} />
+                }
               </ListItem>
             )
           }
@@ -468,9 +598,9 @@ export default function MatchClass(props) {
           lists.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
-                <ListItemText primary={ data.scorematch === 1? d.classname : (
+                <ListItemText primary={ data.scorematch === 0? (
                     arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
-                  ) } />
+                  ) : d.classname } />
                 <ListItemSecondaryAction>
                   <IconButton onClick={()=>handleDeleteItem(d)}>
                     <DeleteIcon classes={{ root: classes.deleteIcon }} />

@@ -137,12 +137,12 @@ export default function PageOrganizerOverview(props) {
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? 'success' : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status) ? 'success' : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
       setCSRFToken(csrf)
       try {
-        if(d.status === 'success'){
+        if(/success/.test(d.status)){
           window.location.pathname = '/user'
         }
       }catch(err) { console.log(err.message) }

@@ -85,7 +85,6 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center'
   },
   image: {
-    width: '100%',
     maxWidth: 800,
     height: window.innerWidth * .45,
     maxHeight: 450,
@@ -221,9 +220,18 @@ function MatchDetailBody(props) {
           {handleGetButton()}
           <Typography gutterBottom variant="h6" color="textSecondary">
             { data &&
-              (
-                data.scorematch === 1 ? 'Professional' : 'Amateur'
-              )
+              function(){
+                switch (data.scorematch) {
+                  case 0:
+                    return 'Charity'
+                    break;
+                  case 1:
+                    return 'Professional'
+                    break;
+                  default:
+                    return 'Amateur'
+                }
+              }()
             }
           </Typography>
           <div style={{ display: 'flex' }}>
@@ -288,15 +296,6 @@ function MatchDetailBody(props) {
               })
             }
           </div>
-          {/*
-            <p className={classes.detail}>
-              { data?
-                data.date + data.location
-                :
-                'Match Detail'
-              }
-            </p>*/
-          }
           {/*--------------------End Match Attribute--------------------*/}
         </React.Fragment>
         {/*--------------------End Match Attribute--------------------*/}

@@ -126,7 +126,7 @@ function ScoreRow(props){
         key={row.userid}
         onClick={()=>setExpanded(!expanded)}>
         <div className={classes.tableRank} style={tableCell}>
-          { ( sortBy === 'sf' && data.scorematch === 0 ) ?
+          { ( sortBy === 'sf' && data.scorematch !== 1 ) ?
             index + 1
             :
             row.rank
@@ -400,7 +400,7 @@ export default function ScoreTable(props) {
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
-                    { data.scorematch === 0 &&
+                    { data.scorematch !== 1 &&
                       <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
                     }
                   </React.Fragment>

@@ -108,7 +108,7 @@ export default function SignIn(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleActionStatus(d.status)
-      if(d.status === 'success'){
+      if(/success/.test(d.status)){
         try {
           handleGetUserinfo()
           handleActionStatus(null)
@@ -118,8 +118,8 @@ export default function SignIn(props) {
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success'?'success':'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status)?'success':'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
       }
     })
@@ -145,10 +145,10 @@ export default function SignIn(props) {
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success'?'success':'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status)?'success':'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
-      if(d.status === 'success'){
+      if(/success/.test(d.status)){
         try {
           setUsername(tempUsername)
           setPassword(tempPassword)

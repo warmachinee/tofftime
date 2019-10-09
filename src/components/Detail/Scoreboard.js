@@ -50,7 +50,7 @@ function TabContainer(props) {
         }
         <PrintPDF data={data} userscore={userscore} matchClass={matchClass} sess={sess} sortBy={sortBy} />
         <div style={{ flex: 1 }} />
-        { data && data.scorematch === 0 &&
+        { data && data.scorematch !== 1 &&
           <div>
             <FormControl className={classes.formControl}>
               <InputLabel>{ ( sess && sess.language === 'TH' ) ? "จัดเรียงตาม" : 'Sort by' }</InputLabel>
@@ -157,7 +157,7 @@ export default function Scoreboard(props) {
             matchClass.map( d=>
               d &&
               <StyledTab key={d.classname} label={
-                  data.scorematch === 1 ?
+                  data.scorematch !== 0 ?
                   d.classname
                   :
                   API.handleAmateurClass(d.classno)

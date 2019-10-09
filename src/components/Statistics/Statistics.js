@@ -351,7 +351,7 @@ export default function Statistics(props) {
           <div className={classes.valueGrid}>
             { data &&
               <Typography variant="h3" classes={{ root: classes.value }}>
-                { data.hc ? data.hc.toFixed(2) : '-' }
+                { data.hc ? data.hc : '-' }
               </Typography>
             }
           </div>

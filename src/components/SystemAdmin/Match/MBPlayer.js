@@ -378,8 +378,8 @@ export default function MBPlayer(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status) ? 'success' : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
       })
       await handleFetch()
@@ -401,8 +401,8 @@ export default function MBPlayer(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status) ? 'success' : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         setChecked([])
         try {
@@ -435,7 +435,7 @@ export default function MBPlayer(props){
           state: true,
           message: d.status,
           variant: d.status === 'remove member success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         setChecked([])
         try {
@@ -571,7 +571,7 @@ export default function MBPlayer(props){
                 edittingClass?
                 <React.Fragment>
                   {
-                    matchDetail.scorematch === 1?
+                    matchDetail.scorematch !== 0?
                     <React.Fragment>
                       <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
                         { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
@@ -596,11 +596,18 @@ export default function MBPlayer(props){
                       window.innerWidth > 450? '20%':'10%'
                     }}
                     className={classes.controlsEditButtonIcon} />
-                  { matchDetail.scorematch === 1? (
-                    ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
-                  ) : (
-                    ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
-                  ) }
+                  {function(){
+                    switch (matchDetail.scorematch) {
+                      case 0:
+                        return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
+                        break;
+                      case 1:
+                        return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
+                        break;
+                      default:
+                        return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
+                    }
+                  }()}
                 </GreenTextButton>
               )
             }
@@ -627,44 +634,79 @@ export default function MBPlayer(props){
         </ListItem>
         <ListItem className={classes.controlsSecondary}>
           { edittingClass && matchDetail &&
-            (
-              matchDetail.scorematch === 1?
-              <React.Fragment>
-                <div style={{ display: 'flex' }}>
-                  <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
-                  <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
-                    { selectedClass !== 0 ? (
-                      ( sess && sess.language === 'TH' ) ? "ประเภทที่เลือก  :  " : 'Selected Class  :  '
-                    ) : (
-                      ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select Class'
-                    ) }
-                  </div>
-                </div>
-                <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
-                  { selectedClass !== 0?
-                    matchDetail && matchDetail.class &&
-                    matchDetail.class.filter( item =>{
-                      return item.classno === selectedClass
-                    }).map( d =>
-                      d &&
-                      <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
-                    )
-                    : <React.Fragment>-</React.Fragment>
-                  }
-                </GreenTextButton>
-              </React.Fragment>
-              :
-              <React.Fragment>
-                <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
-                  onClick={()=>handleUpdateFlight('clear')}>
-                  { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
-                </GreenTextButton>
-                <GreenButton className={classes.controlsEditButton2}
-                  onClick={()=>handleUpdateFlight('update')}>
-                  { ( sess && sess.language === 'TH' ) ? "อัพเดท" : 'Update' }
-                </GreenButton>
-              </React.Fragment>
-            )
+            function(){
+              switch (matchDetail.scorematch) {
+                case 0:
+                  return (
+                    <React.Fragment>
+                      <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
+                        onClick={()=>handleUpdateFlight('clear')}>
+                        { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
+                      </GreenTextButton>
+                      <GreenButton className={classes.controlsEditButton2}
+                        onClick={()=>handleUpdateFlight('update')}>
+                        { ( sess && sess.language === 'TH' ) ? "อัพเดท" : 'Update' }
+                      </GreenButton>
+                    </React.Fragment>
+                  );
+                  break;
+                case 1:
+                  return (
+                    <React.Fragment>
+                      <div style={{ display: 'flex' }}>
+                        <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
+                        <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
+                          { selectedClass !== 0 ? (
+                            ( sess && sess.language === 'TH' ) ? "ประเภทที่เลือก  :  " : 'Selected Class  :  '
+                          ) : (
+                            ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select Class'
+                          ) }
+                        </div>
+                      </div>
+                      <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
+                        { selectedClass !== 0?
+                          matchDetail && matchDetail.class &&
+                          matchDetail.class.filter( item =>{
+                            return item.classno === selectedClass
+                          }).map( d =>
+                            d &&
+                            <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
+                          )
+                          : <React.Fragment>-</React.Fragment>
+                        }
+                      </GreenTextButton>
+                    </React.Fragment>
+                  );
+                  break;
+                default:
+                  return (
+                    <React.Fragment>
+                      <div style={{ display: 'flex' }}>
+                        <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
+                        <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
+                          { selectedClass !== 0 ? (
+                            ( sess && sess.language === 'TH' ) ? "ทีมที่เลือก  :  " : 'Selected Team  :  '
+                          ) : (
+                            ( sess && sess.language === 'TH' ) ? "เลือกทีม" : 'Select Team'
+                          ) }
+                        </div>
+                      </div>
+                      <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
+                        { selectedClass !== 0?
+                          matchDetail && matchDetail.class &&
+                          matchDetail.class.filter( item =>{
+                            return item.classno === selectedClass
+                          }).map( d =>
+                            d &&
+                            <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
+                          )
+                          : <React.Fragment>-</React.Fragment>
+                        }
+                      </GreenTextButton>
+                    </React.Fragment>
+                  );
+              }
+            }()
           }
           { editting && checked.length > 0 &&
             <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
@@ -732,11 +774,19 @@ export default function MBPlayer(props){
             }
             { window.innerWidth > 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }}
-                primary={ matchDetail.scorematch === 1? (
-                  ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
-                ) : (
-                  ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
-                ) } />
+                primary={
+                  function(){
+                    switch (matchDetail.scorematch) {
+                      case 0:
+                        return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
+                        break;
+                      case 1:
+                        return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
+                        break;
+                      default:
+                        return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
+                    }
+                  }()} />
             }
             <ListItemIcon style={{ justifyContent: 'flex-start' }}>
               <div style={{ height: 42, width: 42 }}></div>
@@ -811,7 +861,7 @@ export default function MBPlayer(props){
                                     <React.Fragment key={i}>
                                       <br></br>
                                       {
-                                        matchDetail.scorematch === 1 ?
+                                        matchDetail.scorematch !== 0 ?
                                         d.classname
                                         :
                                         String.fromCharCode(65 + value.classno - 1)
@@ -853,7 +903,7 @@ export default function MBPlayer(props){
                                 style={{ justifyContent: 'center' }}
                                 className={classes.listClass}
                                 primary={
-                                  matchDetail.scorematch === 1 ?
+                                  matchDetail.scorematch !== 0 ?
                                   d.classname
                                   :
                                   String.fromCharCode(65 + d.classno - 1)

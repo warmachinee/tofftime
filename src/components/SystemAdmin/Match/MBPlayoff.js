@@ -135,8 +135,8 @@ function PlayoffContainer(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status) ? 'success' : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         try {
           handleUpdatePlayoff(selected)
@@ -310,8 +310,8 @@ export default function MBPlayoff(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status) ? 'success' : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         try {
           handleFetch()
@@ -341,7 +341,7 @@ export default function MBPlayoff(props){
           { matchDetail && matchDetail.class &&
             matchDetail.class.map( d =>
               d && <StyledTab key={d.classname}
-              label={ matchDetail.scorematch === 1 ? d.classname : API.handleAmateurClass(d.classno) } />
+              label={ matchDetail.scorematch !== 0 ? d.classname : API.handleAmateurClass(d.classno) } />
           )}
         </StyledTabs>
       </Paper>

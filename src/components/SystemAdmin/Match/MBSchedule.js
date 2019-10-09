@@ -423,7 +423,7 @@ export default function MBSchedule(props){
           matchid: matchid,
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        if(d.status === 'success'){
+        if(/success/.test(d.status)){
           handleSnackBar({
             state: true,
             message: d.action,
@@ -434,8 +434,8 @@ export default function MBSchedule(props){
           handleSnackBar({
             state: true,
             message: d.status,
-            variant: d.status === 'success' ? 'success' : 'error',
-            autoHideDuration: d.status === 'success'? 2000 : 5000
+            variant: /success/.test(d.status) ? 'success' : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
           })
         }
         try {
@@ -460,8 +460,8 @@ export default function MBSchedule(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? 'success' : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status) ? 'success' : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         setChecked([])
         try {

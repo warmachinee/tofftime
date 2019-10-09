@@ -340,8 +340,8 @@ export default function LocationEditor(props){
         handleSnackBar({
           state: true,
           message: d.status,
-          variant: d.status === 'success' ? d.status : 'error',
-          autoHideDuration: d.status === 'success'? 2000 : 5000
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         try {
           handleEditPicture(d.fieldid)
@@ -376,8 +376,8 @@ export default function LocationEditor(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? d.status : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
       const res = await API.xhrGet('getcsrf')
       setCSRFToken(res.token)

@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
   },
   userlistGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
     boxSizing: 'border-box',
   },
   userlistChildGrid: {
@@ -69,11 +69,11 @@ const useStyles = makeStyles(theme => ({
     width: '100%'
   },
   listScore: {
-    width: '10%',
+    width: 50,
     textAlign: 'right'
   },
   listPrice: {
-    width: '20%',
+    width: 100,
     textAlign: 'right'
   },
   listTotal: {
@@ -93,21 +93,84 @@ const theme = createMuiTheme({
 
 export default function ScoreBoardCharity(props){
   const classes = useStyles();
-  const { API, COLOR, token, setCSRFToken, BTN } = props
-  const hole = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 ]
-  const [ matchid, setMatchid ] = React.useState(null)
-  const [ gameType, setGameType ] = React.useState(null)
+  const { sess, API, COLOR, token, setCSRFToken, BTN , isSupportWebp, handleSnackBar, handleSnackBarL } = props
   const [ playerLimit, setPlayerLimite ] = React.useState(null)
-  const [ under, setUnder ] = React.useState(null)
-  const [ over, setOver ] = React.useState(null)
   const [ editting, setEditting ] = React.useState(false)
+  const [ data, setData ] = React.useState(null)
+  const [ userscore, setUserscore ] = React.useState(null)
+
+  async function handleFetch(){
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      'loadmatchsystem', {
+        action: 'userscore',
+        matchid: parseInt(props.computedMatch.params.matchid)
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(d.status === 'wrong params'){
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }else{
+        setData(d)
+        setUserscore(d.userscore)
+        console.log(d, d.userscore);
+      }
+    })
+  }
+
+  function response(action){
+    const matchid = parseInt(props.computedMatch.params.matchid)
+    const socket = socketIOClient( API.getWebURL() )
+    socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
+      if(messageNew && messageNew.status === 'success'){
+        if(messageNew.hostdetail){
+          handleSnackBarL({
+            state: true,
+            sFULLNAME: messageNew.hostdetail.fullname,
+            sLASTNAME: messageNew.hostdetail.lastname,
+            sOUT: messageNew.hostdetail.sout,
+            sIN: messageNew.hostdetail.sin,
+            sTOTAL: messageNew.hostdetail.gross,
+            sPAR: messageNew.hostdetail.par
+          })
+        }
+        setUserscore(messageNew.result.userscore)
+      }
+    })
+  }
 
   function handleKeyPressPlayerLimit(){
     console.log(playerLimit);
   }
 
   React.useEffect(()=>{
+    response()
+    handleFetch()
     console.log(props);
+    /*
+    if(props.location){
+      const match = matchPath( props.location.pathname, {
+        path: "/match/:matchid/minigame/:gametype",
+      });
+      if(match){
+        var matchid = parseInt(match.params.matchid)
+        var gameType = match.params.gametype
+        setMatchid(matchid)
+        setGameType(gameType === 'jao' ? gameType : 'normal')
+        if(/Mini Game/.test(componentType)){
+          handleFetchMiniGame(matchid, gameType)
+          responseMiniGame(matchid, gameType)
+          setComponentType(gameType === 'jao' ? 'Mini Game Jao' : 'Mini Game Mah')
+        }else{
+
+        }
+      }
+    }*/
   },[ ])
 
   function playerLimitComponent(){
@@ -155,17 +218,26 @@ export default function ScoreBoardCharity(props){
           <ListItemText style={{ color: 'white' }} className={classes.listScore} classes={{ primary: classes.listText }} primary="IN" />
           <ListItemText style={{ color: 'white' }} className={classes.listScore} classes={{ primary: classes.listText }} primary="HC" />
           <ListItemText style={{ color: 'white' }} className={classes.listScore} classes={{ primary: classes.listText }} primary="SF" />
-          <ListItemText style={{ color: 'white' }} className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />
+          {/*
+            <ListItemText style={{ color: 'white' }} className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />*/
+          }
         </ListItem>
-        { hole.map( d =>
-          <React.Fragment key={d}>
+        { userscore &&
+          userscore.map( d =>
+          <React.Fragment key={d.userid}>
             <ListItem className={classes.listPlayer}>
-              <ListItemText className={classes.listPlayerName} classes={{ primary: classes.listText }} primary={`User ${d}`} />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary="OUT" />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary="IN" />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary="HC" />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary="SF" />
-              <ListItemText className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />
+              <ListItemText className={classes.listPlayerName} classes={{ primary: classes.listText }}
+                primary={d.firstname}
+                secondary={
+                  <Typography className={classes.listPlayerName} variant="subtitle1">{d.lastname}</Typography>
+                } />
+              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.out} />
+              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.in} />
+              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.hc} />
+              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.sf}/>
+              {/*
+                <ListItemText className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />*/
+              }
             </ListItem>
             <Divider />
           </React.Fragment>
@@ -192,9 +264,9 @@ export default function ScoreBoardCharity(props){
   },[ window.innerWidth ])
 
   return (
-    <div className={classes.root}>
+    <Paper className={classes.root}>
       {playerLimitComponent()}
       {userListComponent()}
-    </div>
+    </Paper>
   );
 }

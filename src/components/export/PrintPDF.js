@@ -38,7 +38,7 @@ function handlePrint(data, userscore, classname, sess){
 }
 
 function handleDownload(data, userscore, matchClass, sortBy, sess){
-  var matchClassName = data.scorematch === 1 ? matchClass.classname : API.handleAmateurClass(matchClass.classno)
+  var matchClassName = data.scorematch !== 0 ? matchClass.classname : API.handleAmateurClass(matchClass.classno)
   pdfMake.createPdf(PDFFile(data, userscore, matchClassName, sortBy, sess)).download('Score ' + matchClassName + '.pdf');
 }
 
@@ -125,7 +125,7 @@ function PDFFile(data, userscore, classname, sortBy, sess){
         body: [
           [
             {
-              text: ( sortBy === 'sf' && data.scorematch === 0 ) ? i + 1 : userscore[i].rank, fillColor: '#bdbdbd',
+              text: ( sortBy === 'sf' && data.scorematch !== 1 ) ? i + 1 : userscore[i].rank, fillColor: '#bdbdbd',
             },
             {
               text: userscore[i].firstname + '\t' + userscore[i].lastname,

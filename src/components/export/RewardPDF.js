@@ -35,7 +35,7 @@ export default function RewardPDF(props){
 }
 
 function handleDownload(matchClass , reward, data, sortBy, sess){
-  var matchClassName = data.scorematch === 1 ? matchClass.classname : API.handleAmateurClass(matchClass.classno)
+  var matchClassName = data.scorematch !== 0 ? matchClass.classname : API.handleAmateurClass(matchClass.classno)
   pdfMake.createPdf(PDFFile(matchClassName, reward, data, sortBy, sess)).download('Reward ' + matchClassName + '.pdf');
 }
 

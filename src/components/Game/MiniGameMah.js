@@ -38,12 +38,6 @@ import {
 
 import { LDCircular } from './../loading/LDCircular'
 
-const ScoreBoardCharity = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../Detail/ScoreBoardCharity'),
-  loading: () => <LDCircular />
-});
-
-
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
   loading: () => <LDCircular />
@@ -234,16 +228,16 @@ export default function MiniGameMah(props){
   const [ matchid, setMatchid ] = React.useState(null)
   const [ componentType, setComponentType ] = React.useState('Mini Game Mah')
   const [ gameType, setGameType ] = React.useState(null)
-  const [ basePrice, setBasePrice ] = React.useState(null)
+  const [ basePrize, setBasePrize ] = React.useState(null)
   const [ under, setUnder ] = React.useState('')
   const [ over, setOver ] = React.useState('')
   const [ editting, setEditting ] = React.useState(false)
-  const [ data, setData ] = React.useState(null)
   const [ userList, setUserList ] = React.useState(null)
   const [ mainPlayer, setMainPlayer ] = React.useState(null)
   const [ betHole, setBetHole ] = React.useState(null)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ expanded, setExpanded ] = React.useState(false)
+  const listEl = React.useRef(null)
 
   function expandHandler(){
     setExpanded(!expanded)
@@ -256,6 +250,26 @@ export default function MiniGameMah(props){
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  function calculatePrice(diff){
+    var returnPrize;
+    switch (true) {
+      case diff > 0:
+        returnPrize = ( diff * over )
+        if(gameType !== 'jao'){ returnPrize + basePrize }
+        return returnPrize
+        break;
+      case diff < 0:
+        returnPrize = ( Math.abs(diff) * under )
+        if(gameType !== 'jao'){ returnPrize + basePrize }
+        return returnPrize
+        break;
+      default:
+        returnPrize = diff
+        if(gameType !== 'jao'){ returnPrize + basePrize }
+        return returnPrize
+    }
+  }
 
   function handleMenuItemClick(type){
     handleClose()
@@ -276,9 +290,11 @@ export default function MiniGameMah(props){
     const socket = socketIOClient( API.getWebURL() )
     socket.on(`${matchid}-${gameType}-minigame-server-message`, (messageNew) => {
       if(messageNew){
-        console.log(messageNew);
         const d = messageNew.result
-        setData(d)
+        console.log(d);
+        if(d.baseprize){
+          setBasePrize(d.baseprize)
+        }
         if(d.underover){
           setUnder(d.underover[0])
           setOver(d.underover[1])
@@ -291,7 +307,7 @@ export default function MiniGameMah(props){
         }
         if(gameType === 'jao'){
           if(d.mainplayer){
-            setMainPlayer(d.mainplayer[0])
+            setMainPlayer(d.mainplayer)
           }
         }
       }
@@ -321,7 +337,7 @@ export default function MiniGameMah(props){
               {`${mainPlayer.fullname}  ${mainPlayer.lastname}`}
               { editting &&
                 <div style={{ marginTop: 16 }}>
-                  <BTN.PrimaryOutlined onClick={()=>handleFetchSetJao(mainPlayer.mainplayer)}>Set Jao</BTN.PrimaryOutlined>
+                  <BTN.Red onClick={()=>handleFetchSetJao(mainPlayer.mainplayer)}>Unset</BTN.Red>
                 </div>
               }
               { editting && window.innerWidth < 600 &&
@@ -356,7 +372,8 @@ export default function MiniGameMah(props){
               </React.Fragment>
             }
             <ListItemText className={classes.listPredictScore} primary={mainPlayer.predictscore} />
-            <ListItemText className={classes.listPrice} primary="-" />
+            <ListItemText className={classes.listPredictScore} primary="-" />
+            <ListItemText className={classes.listPrice} primary={calculatePrice(0)} />
           </React.Fragment>
         }
       </ListItem>
@@ -364,7 +381,6 @@ export default function MiniGameMah(props){
   }
 
   async function handleFetchSetJao(userid){
-    console.log(userid);
     const resToken = token? token : await API.xhrGet('getcsrf')
     await API.xhrPost(
       token? token : resToken.token,
@@ -416,7 +432,7 @@ export default function MiniGameMah(props){
       'mmatchsection', {
         action: 'setbaseprize',
         matchid: matchid,
-        value: basePrice,
+        value: basePrize,
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSnackBar({
@@ -466,7 +482,9 @@ export default function MiniGameMah(props){
         type: gameType
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setData(d)
+      if(d.baseprize){
+        setBasePrize(d.baseprize)
+      }
       if(d.underover){
         setUnder(d.underover[0])
         setOver(d.underover[1])
@@ -479,27 +497,10 @@ export default function MiniGameMah(props){
       }
       if(gameType === 'jao'){
         if(d.mainplayer){
-          setMainPlayer(d.mainplayer[0])
+          setMainPlayer(d.mainplayer)
         }
       }
     })
-  }
-
-  function handleTempFetch(){
-    var json = '{"hole":["1","5","7"],"underover":["30","70"],"userlist":[{"userid":686853,"fullname":"ภัศดา","lastname":"บุรณศิริ","gross":67,"sf36sys":41,"predictscore":0,"diff":67},{"userid":298863,"fullname":"พรชัย","lastname":"เนียมหมื่นไวย์","gross":70,"sf36sys":41,"predictscore":0,"diff":70},{"userid":290370,"fullname":"ดุสิต","lastname":"สมศักดิ์","gross":72,"sf36sys":38,"predictscore":0,"diff":72},{"userid":175937,"fullname":"ประทีป","lastname":"ค้ายาดี","gross":73,"sf36sys":38,"predictscore":0,"diff":73},{"userid":243286,"fullname":"พัสกร  ","lastname":"ยุพาวัฒนะ","gross":73,"sf36sys":40,"predictscore":0,"diff":73},{"userid":422094,"fullname":"อธิวัฒน์","lastname":"แย้มเรืองรัตน์","gross":74,"sf36sys":39,"predictscore":0,"diff":74},{"userid":127642,"fullname":"ธงชัย","lastname":"แตงอ่อน","gross":74,"sf36sys":38,"predictscore":0,"diff":74},{"userid":383134,"fullname":"สีไพร","lastname":"อภิสนธิ์","gross":74,"sf36sys":37,"predictscore":0,"diff":74},{"userid":121302,"fullname":"อานนท์ ","lastname":"โพธิ์ทอง","gross":75,"sf36sys":38,"predictscore":0,"diff":75},{"userid":158541,"fullname":"Mike","lastname":"Missler","gross":75,"sf36sys":36,"predictscore":0,"diff":75},{"userid":375128,"fullname":"วิชยะ","lastname":"ศรีนาคาร์","gross":75,"sf36sys":37,"predictscore":0,"diff":75},{"userid":859661,"fullname":"พงศ์ภูมินทร์","lastname":"กล้าหาญ","gross":75,"sf36sys":40,"predictscore":0,"diff":75},{"userid":584981,"fullname":"มนัส ","lastname":"สุขเย็น","gross":75,"sf36sys":38,"predictscore":0,"diff":75},{"userid":380855,"fullname":"ประสิทธิ","lastname":"คำภูแสน","gross":75,"sf36sys":41,"predictscore":0,"diff":75},{"userid":825953,"fullname":"สัมพันธ์","lastname":"เรศมณเฑียร","gross":76,"sf36sys":37,"predictscore":0,"diff":76},{"userid":395229,"fullname":"ธวัชชัย ","lastname":"ชายชาญ","gross":76,"sf36sys":39,"predictscore":0,"diff":76},{"userid":154714,"fullname":"ธวัช","lastname":"กุลสุวรรณ","gross":76,"sf36sys":38,"predictscore":0,"diff":76},{"userid":560646,"fullname":"พูลลาภ","lastname":"เยือกเย็น","gross":76,"sf36sys":37,"predictscore":0,"diff":76},{"userid":570929,"fullname":"สมนัส","lastname":"จันทนะ","gross":77,"sf36sys":40,"predictscore":0,"diff":77},{"userid":428247,"fullname":"นิรันทร์","lastname":"ฉัตรไกรศรี","gross":77,"sf36sys":37,"predictscore":0,"diff":77},{"userid":223893,"fullname":"พิทักษ์สรรค์ ","lastname":"นพสิทธิพร","gross":77,"sf36sys":38,"predictscore":0,"diff":77},{"userid":722638,"fullname":"พิทักษ์ ","lastname":"ศรีตะวัน","gross":77,"sf36sys":36,"predictscore":0,"diff":77},{"userid":726183,"fullname":"ทินพันธ์","lastname":"พิลึก","gross":79,"sf36sys":39,"predictscore":0,"diff":79},{"userid":697510,"fullname":"วีรนันท์","lastname":"จันทร์เอียง","gross":80,"sf36sys":36,"predictscore":0,"diff":80},{"userid":735952,"fullname":"ธานนิทร์","lastname":"เหลืองภูมิยุทธ ","gross":80,"sf36sys":37,"predictscore":0,"diff":80},{"userid":381888,"fullname":"ประคอง","lastname":"วระพันธุ์","gross":81,"sf36sys":37,"predictscore":0,"diff":81},{"userid":432045,"fullname":"เยี่ยม","lastname":"สุขัง","gross":81,"sf36sys":37,"predictscore":0,"diff":81},{"userid":186918,"fullname":"สุทธิพันธ์","lastname":"กิมสวัสดิ","gross":81,"sf36sys":36,"predictscore":0,"diff":81},{"userid":344566,"fullname":"ประทีป ","lastname":"แก้ววงษา ","gross":81,"sf36sys":36,"predictscore":0,"diff":81},{"userid":958766,"fullname":"ธนู","lastname":"พุทธสุวรรณ","gross":81,"sf36sys":38,"predictscore":0,"diff":81},{"userid":313675,"fullname":"วสันต์","lastname":"มีลาภ","gross":81,"sf36sys":38,"predictscore":0,"diff":81},{"userid":870523,"fullname":"ดิชพงศ์","lastname":"วงศ์คำจันทร์","gross":81,"sf36sys":37,"predictscore":0,"diff":81},{"userid":283135,"fullname":"วรพล ","lastname":"อ่อนนุช","gross":82,"sf36sys":37,"predictscore":0,"diff":82},{"userid":961801,"fullname":"วิรัตน์","lastname":"แป้นดี","gross":82,"sf36sys":37,"predictscore":0,"diff":82},{"userid":525973,"fullname":"วิริยะ ","lastname":"ใจชื่น","gross":83,"sf36sys":38,"predictscore":0,"diff":83},{"userid":171247,"fullname":"วิชัย ","lastname":"ศรีระผา","gross":83,"sf36sys":35,"predictscore":0,"diff":83},{"userid":452902,"fullname":"ภิรมย์","lastname":"ไพบูลย์ ","gross":84,"sf36sys":38,"predictscore":0,"diff":84},{"userid":531500,"fullname":"ธนกฤต","lastname":"เครื่องสนุก","gross":85,"sf36sys":36,"predictscore":0,"diff":85},{"userid":349921,"fullname":"สนอง ","lastname":"ช้างเนียม","gross":85,"sf36sys":36,"predictscore":0,"diff":85},{"userid":362257,"fullname":"ทวีโชค ","lastname":"พุทธชน","gross":86,"sf36sys":36,"predictscore":0,"diff":86},{"userid":289142,"fullname":"สุชาติ ","lastname":"ทะวะบุตร","gross":87,"sf36sys":37,"predictscore":0,"diff":87}]}'
-    const d = JSON.parse(json)
-    console.log(d);
-    setData(d)
-    if(d.underover){
-      setUnder(d.underover[0])
-      setOver(d.underover[1])
-    }
-    if(d.userlist){
-      setUserList(d.userlist)
-    }
-    if(d.hole){
-      setBetHole(d.hole)
-    }
   }
 
   React.useEffect(()=>{
@@ -520,9 +521,6 @@ export default function MiniGameMah(props){
 
         }
       }
-    }
-    if(/localhost:8080/.test(window.location.href)){
-      handleTempFetch()
     }
   },[ componentType ])
 
@@ -548,40 +546,39 @@ export default function MiniGameMah(props){
           <ArrowDropDown style={{ marginLeft: 8 }} />
         </BTN.PrimaryOutlined>
       </div>
-      { componentType === 'Scoreboard' ?
-        <ScoreBoardCharity {...props} editting={editting} />
-        :
-        <div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1200 }}>
-          <ListItem button onClick={expandHandler}
-            style={{
-              marginTop: 16,
-              boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
-            }}>
-            <ListItemText primary="Panel" />
-            <IconButton
-              disableRipple
-              className={classes.expandIcon}
-              style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
-              onClick={expandHandler}
-              aria-expanded={expanded}
-              aria-label="Show more"
-            >
-              <ExpandMore />
-            </IconButton>
-          </ListItem>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <Paper style={{ padding: '12px', marginBottom: 24 }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditting(!editting)}>{ editting? 'Done' : 'Edit' }</BTN.PrimaryText>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-                <div style={{ marginTop: 12 }}>
+      <div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1200 }}>
+        <ListItem button onClick={expandHandler}
+          style={{
+            marginTop: 16,
+            boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+          }}>
+          <ListItemText primary="Panel" />
+          <IconButton
+            disableRipple
+            className={classes.expandIcon}
+            style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
+            onClick={expandHandler}
+            aria-expanded={expanded}
+            aria-label="Show more"
+          >
+            <ExpandMore />
+          </IconButton>
+        </ListItem>
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Paper style={{ padding: '12px', marginBottom: 24 }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditting(!editting)}>{ editting? 'Done' : 'Edit' }</BTN.PrimaryText>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+              <div style={{ marginTop: 12 }}>
+                { gameType !== 'jao' &&
                   <ThemeProvider theme={theme}>
                     { editting ?
                       <div className={classes.basepriceChildGrid}>
                         <TextField label="Base Price"
                           type="number"
-                          onChange={e =>setBasePrice(e.target.value)}
+                          value={basePrize || ''}
+                          onChange={e =>setBasePrize(e.target.value)}
                           onKeyPress={e =>handleKeyPressBaseprice(e)}
                           onFocus={e => e.target.select()} />
                         <BTN.Primary className={classes.saveButton}
@@ -590,166 +587,175 @@ export default function MiniGameMah(props){
                       :
                       <div className={classes.basepriceChildGrid}>
                         <Typography className={classes.basepriceLabel}>Base Price</Typography>
-                        <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>Base Price</Typography>
+                        <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>{basePrize}</Typography>
                       </div>
                     }
                   </ThemeProvider>
-                </div>
-                <div className={classes.underoverGrid}>
+                }
+              </div>
+              <div className={classes.underoverGrid}>
+                <ThemeProvider theme={theme}>
+                  { editting ?
+                    <div className={classes.underoverChildGrid}>
+                      <TextField label="Under"
+                        type="number"
+                        value={under || ''}
+                        onChange={e =>setUnder(e.target.value)}
+                        onKeyPress={e =>handleKeyPressUnderOver(e, 'under')}
+                        onFocus={e => e.target.select()} />
+                      <BTN.Amber className={classes.saveButton}
+                        onClick={()=>handleSetUnderOver('under')}>Save</BTN.Amber>
+                    </div>
+                    :
+                    <div className={classes.underoverChildGrid}>
+                      <Typography className={classes.underoverLabel}
+                        style={{ backgroundColor: COLOR.amber[400], borderColor: COLOR.amber[700], }}>Under</Typography>
+                      <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.amber[800] }}>
+                        {under}
+                      </Typography>
+                    </div>
+                  }
+                </ThemeProvider>
+                <div style={{ marginLeft: 16 }}>
                   <ThemeProvider theme={theme}>
                     { editting ?
                       <div className={classes.underoverChildGrid}>
-                        <TextField label="Under"
+                        <TextField label="Over"
                           type="number"
-                          value={under || ''}
-                          onChange={e =>setUnder(e.target.value)}
-                          onKeyPress={e =>handleKeyPressUnderOver(e, 'under')}
+                          value={over || ''}
+                          onChange={e =>setOver(e.target.value)}
+                          onKeyPress={e =>handleKeyPressUnderOver(e, 'over')}
                           onFocus={e => e.target.select()} />
-                        <BTN.Amber className={classes.saveButton}
-                          onClick={()=>handleSetUnderOver('under')}>Save</BTN.Amber>
+                        <BTN.Green className={classes.saveButton}
+                          onClick={()=>handleSetUnderOver('over')}>Save</BTN.Green>
                       </div>
                       :
                       <div className={classes.underoverChildGrid}>
                         <Typography className={classes.underoverLabel}
-                          style={{ backgroundColor: COLOR.amber[400], borderColor: COLOR.amber[700], }}>Under</Typography>
-                        <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.amber[800] }}>
-                          {under}
+                          style={{ backgroundColor: COLOR.green[400], borderColor: COLOR.green[700] }}>Over</Typography>
+                        <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.green[800] }}>
+                          {over}
                         </Typography>
                       </div>
                     }
                   </ThemeProvider>
-                  <div style={{ marginLeft: 16 }}>
-                    <ThemeProvider theme={theme}>
-                      { editting ?
-                        <div className={classes.underoverChildGrid}>
-                          <TextField label="Over"
-                            type="number"
-                            value={over || ''}
-                            onChange={e =>setOver(e.target.value)}
-                            onKeyPress={e =>handleKeyPressUnderOver(e, 'over')}
-                            onFocus={e => e.target.select()} />
-                          <BTN.Green className={classes.saveButton}
-                            onClick={()=>handleSetUnderOver('over')}>Save</BTN.Green>
-                        </div>
-                        :
-                        <div className={classes.underoverChildGrid}>
-                          <Typography className={classes.underoverLabel}
-                            style={{ backgroundColor: COLOR.green[400], borderColor: COLOR.green[700] }}>Over</Typography>
-                          <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.green[800] }}>
-                            {over}
-                          </Typography>
-                        </div>
-                      }
-                    </ThemeProvider>
-                  </div>
                 </div>
               </div>
-              <div className={classes.checkboxGrid}>
-                { betHole &&
-                  [0, 3].map( g =>
-                  <div className={classes.checkboxList} key={g}>
-                    { [ g, g + 1, g + 2].map( c =>
-                      <List disablePadding key={c}>
-                        { hole.slice( (c * 3), (c + 1) * 3).map( d =>
-                          <ListItem button key={d} className={classes.checkboxListItem} onClick={()=>handleChecked(d)}>
-                            <StyledCheckbox
-                              disableRipple
-                              checked={ parseInt(betHole.find( bh =>{ return parseInt(bh) === d + 1 })) === d + 1} />
-                            <Typography className={classes.checkboxLabel}>
-                              {`Hole ${d + 1}`}
-                            </Typography>
-                          </ListItem>
-                        )}
-                      </List>
-                    )}
-                  </div>
-                )}
-              </div>
-            </Paper>
-          </Collapse>
-          <div className={classes.gameUserList}>
-            <List disablePadding style={{ overflow: 'auto', height: window.innerHeight * .9 }}>
-              <ListItem style={{ backgroundColor: COLOR.grey[900], position: 'sticky', top: 0 }}>
-                <ListItemText style={{ color: 'white' }} className={classes.listPlayerName} primary="Player" />
-                { !editting &&
-                  <React.Fragment>
-                    { window.innerWidth >= 600 &&
-                      <React.Fragment>
-                        <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="Gross" />
-                        <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="SF" />
-                      </React.Fragment>
-                    }
-                    <ListItemText style={{ color: 'white' }} className={classes.listPredictScore} primary="Predict" />
-                    <ListItemText style={{ color: 'white' }} className={classes.listPrice} primary="+/-" />
-                  </React.Fragment>
-                }
-              </ListItem>
-              { gameType === 'jao' && mainPlayer &&
-                mainPlayerComponent()
+            </div>
+            <div className={classes.checkboxGrid}>
+              { betHole &&
+                [0, 3].map( g =>
+                <div className={classes.checkboxList} key={g}>
+                  { [ g, g + 1, g + 2].map( c =>
+                    <List disablePadding key={c}>
+                      { hole.slice( (c * 3), (c + 1) * 3).map( d =>
+                        <ListItem button key={d} className={classes.checkboxListItem} onClick={()=>handleChecked(d)}>
+                          <StyledCheckbox
+                            disableRipple
+                            checked={ parseInt(betHole.find( bh =>{ return parseInt(bh) === d + 1 })) === d + 1} />
+                          <Typography className={classes.checkboxLabel}>
+                            {`Hole ${d + 1}`}
+                          </Typography>
+                        </ListItem>
+                      )}
+                    </List>
+                  )}
+                </div>
+              )}
+            </div>
+          </Paper>
+        </Collapse>
+        <div className={classes.gameUserList}>
+          <List disablePadding>
+            <ListItem style={{ backgroundColor: COLOR.grey[900], position: 'sticky', top: 0 }}>
+              <ListItemText style={{ color: 'white' }} className={classes.listPlayerName} primary="Player" />
+              { !editting &&
+                <React.Fragment>
+                  { window.innerWidth >= 600 &&
+                    <React.Fragment>
+                      <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="Gross" />
+                      <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="SF" />
+                    </React.Fragment>
+                  }
+                  <ListItemText style={{ color: 'white' }} className={classes.listPredictScore} primary="Predict" />
+                  <ListItemText style={{ color: 'white' }} className={classes.listPredictScore} primary="+/-" />
+                  <ListItemText style={{ color: 'white' }} className={classes.listPrice} primary="Price" />
+                </React.Fragment>
               }
-              { userList &&
-                userList.map( d =>
-                <React.Fragment key={d.userid}>
-                  <ListItem className={classes.listPlayer}>
-                    <ListItemText className={classes.listPlayerName}
-                      primary={
-                        <React.Fragment>
-                          {`${d.fullname}  ${d.lastname}`}
-                          { editting &&
-                            <div style={{ marginTop: 16 }}>
-                              <BTN.PrimaryOutlined onClick={()=>handleFetchSetJao(d.userid)}>Set Jao</BTN.PrimaryOutlined>
-                            </div>
-                          }
-                          { editting && window.innerWidth < 600 &&
-                            <React.Fragment>
-                              <div style={{ marginTop: 16 }}>
-                                <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
-                              </div>
-                            </React.Fragment>
-                          }
-                        </React.Fragment>
-                      }
-                      secondary={
-                        window.innerWidth < 600 && !editting &&
-                        <React.Fragment>
-                          <Typography gutterBottom variant="caption" component="span">{`Gross = ${d.gross}`}</Typography>
-                          <br></br>
-                          <Typography variant="caption" component="span">{`SF = ${d.sf36sys}`}</Typography>
-                        </React.Fragment>
-                      } />
-                    { editting ?
-                      ( window.innerWidth >= 600 &&
-                        <ListItemIcon>
-                          <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
-                        </ListItemIcon>
-                      )
-                      :
+            </ListItem>
+          </List>
+          <List disablePadding>
+            { gameType === 'jao' && mainPlayer &&
+              mainPlayerComponent()
+            }
+          </List>
+          <List disablePadding ref={listEl}
+            style={{
+              overflow: 'auto', maxHeight: window.innerHeight * .5,
+              ...( listEl.current && listEl.current.offsetHeight < listEl.current.scrollHeight ) && { marginRight: -13 }
+            }}>
+            { userList &&
+              userList.map( d =>
+              <React.Fragment key={d.userid}>
+                <ListItem className={classes.listPlayer}>
+                  <ListItemText className={classes.listPlayerName}
+                    primary={
                       <React.Fragment>
-                        { window.innerWidth >= 600 &&
+                        {`${d.fullname}  ${d.lastname}`}
+                        { editting && gameType === 'jao' &&
+                          <div style={{ marginTop: 16 }}>
+                            <BTN.PrimaryOutlined onClick={()=>handleFetchSetJao(d.userid)}>Set to main player</BTN.PrimaryOutlined>
+                          </div>
+                        }
+                        { editting && window.innerWidth < 600 &&
                           <React.Fragment>
-                            <ListItemText className={classes.listScore} primary={d.gross} />
-                            <ListItemText className={classes.listScore} primary={d.sf36sys} />
+                            <div style={{ marginTop: 16 }}>
+                              <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+                            </div>
                           </React.Fragment>
                         }
-                        <ListItemText className={classes.listPredictScore} primary={d.predictscore} />
-                        <ListItemText className={classes.listPrice} primary={d.diff} />
                       </React.Fragment>
                     }
-                  </ListItem>
-                  <Divider />
-                </React.Fragment>
-              )}
-            </List>
-          </div>
+                    secondary={
+                      window.innerWidth < 600 && !editting &&
+                      <React.Fragment>
+                        <Typography gutterBottom variant="caption" component="span">{`Gross = ${d.gross}`}</Typography>
+                        <br></br>
+                        <Typography variant="caption" component="span">{`SF = ${d.sf36sys}`}</Typography>
+                      </React.Fragment>
+                    } />
+                  { editting ?
+                    ( window.innerWidth >= 600 &&
+                      <ListItemIcon>
+                        <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+                      </ListItemIcon>
+                    )
+                    :
+                    <React.Fragment>
+                      { window.innerWidth >= 600 &&
+                        <React.Fragment>
+                          <ListItemText className={classes.listScore} primary={d.gross} />
+                          <ListItemText className={classes.listScore} primary={d.sf36sys} />
+                        </React.Fragment>
+                      }
+                      <ListItemText className={classes.listPredictScore} primary={d.predictscore} />
+                      <ListItemText className={classes.listPredictScore} primary={API.prefixNumber(d.diff)} />
+                      <ListItemText className={classes.listPrice} primary={calculatePrice(d.diff)} />
+                    </React.Fragment>
+                  }
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            )}
+          </List>
         </div>
-      }
+      </div>
       <Menu
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={()=>handleMenuItemClick('Scoreboard')}>Scoreboard</MenuItem>
         { matchid && BTN &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/mah`}>
             <MenuItem onClick={()=>handleMenuItemClick('Mini Game Mah')}>Mini Game Mah</MenuItem>

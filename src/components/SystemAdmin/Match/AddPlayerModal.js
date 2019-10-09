@@ -170,8 +170,8 @@ export default function AddPlayerModal(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? 'success' : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status) ? 'success' : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
     })
   }
@@ -202,7 +202,7 @@ export default function AddPlayerModal(props){
         state: true,
         message: d.status,
         variant: d.status === 'add member success' ? 'success' : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
     })
   }

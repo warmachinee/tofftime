@@ -325,10 +325,10 @@ export default function MBOverview(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? d.status : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
-      if(d.status === 'success'){
+      if(/success/.test(d.status)){
         handleCreatePicture(csrf, d)
       }
     })
@@ -517,26 +517,33 @@ export default function MBOverview(props){
               onClick={()=>handleOpen('class')}>
               { data?
                 ( data.class && !data.class.status &&
-                  (
-                    data.class.length >= 2 ?
-                    ( data.class.length + (data.scorematch === 1 ? (
-                      ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Classes'
-                    ) : (
-                      ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
-                    )) )
-                    :
-                    ( data.class.length + (data.scorematch === 1 ? (
-                      ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
-                    ) : (
-                      ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
-                    )) )
-                  )
+                  `${data.class.length}${function(){
+                    switch (data.scorematch) {
+                      case 0:
+                        return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ` Flight${( data.class.length > 1 ? 's' : '' )}`
+                        break;
+                      case 1:
+                        return ( sess && sess.language === 'TH' ) ? " ประเภท" : ` Class${( data.class.length > 1 ? 'es' : '' )}`
+                        break;
+                      default:
+                        return ( sess && sess.language === 'TH' ) ? " ทีม" : ` Team${( data.class.length > 1 ? 's' : '' )}`
+                    }
+                  }()}`
                 ):
-                (data.scorematch === 1 ? (
-                  ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
-                ) : (
-                  ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
-                ))
+                (
+                  `${function(){
+                    switch (data.scorematch) {
+                      case 0:
+                        return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
+                        break;
+                      case 1:
+                        return ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
+                        break;
+                      default:
+                        return ( sess && sess.language === 'TH' ) ? " ทีม" : ' Team'
+                    }
+                  }()}`
+                )
               }
             </GreenTextButton>
             <FormControl component="fieldset" className={classes.margin}

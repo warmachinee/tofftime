@@ -337,10 +337,10 @@ function CreateMatchBody(props){
       handleSnackBar({
         state: true,
         message: d.status,
-        variant: d.status === 'success' ? d.status : 'error',
-        autoHideDuration: d.status === 'success'? 2000 : 5000
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
-      if(d.status === 'success'){
+      if(/success/.test(d.status)){
         handleCreatePicture(csrf, d)
       }
     })
@@ -427,7 +427,7 @@ function CreateMatchBody(props){
                 />
               </MuiPickersUtilsProvider>
             </ThemeProvider>
-            { selectedMatchType === '1' &&
+            { selectedMatchType !== '0' &&
               <ThemeProvider theme={theme}>
                 <TextField
                   style={{ width: 280, marginTop: 'auto', marginLeft: 16 }}

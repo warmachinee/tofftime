@@ -419,6 +419,19 @@ function filterArr(arr1, arr2){
   return returnArr
 }
 
+function prefixNumber(num){
+  switch (true) {
+    case num > 0:
+      return `+ ${num}`
+      break;
+    case num < 0:
+      return `- ${Math.abs(num)}`
+      break;
+    default:
+      return num
+  }
+}
+
 export {
   webURL,
   getWebURL,
@@ -441,5 +454,6 @@ export {
   handleAmateurClass,
   handleGetUrlParam,
   filterArr,
-
+  prefixNumber,
+  
 }

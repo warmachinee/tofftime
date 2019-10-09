@@ -291,7 +291,7 @@ export default function CreateMatchBody(props){
                         />
                       </MuiPickersUtilsProvider>
                     </ThemeProvider>
-                    { selectedMatchType === '1' &&
+                    { selectedMatchType !== '0' &&
                       <ThemeProvider theme={theme}>
                         <TextField
                           className={classes.textFieldClass}

@@ -182,7 +182,7 @@ export default function SideMenu(props) {
         action: 'switchlanguage'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      if(d.status === 'success'){
+      if(/success/.test(d.status)){
         setTimeout(()=>{
           window.location.pathname = window.location.pathname
         }, 1000)

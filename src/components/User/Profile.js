@@ -354,7 +354,7 @@ export default function Profile(props) {
           ...sendObj
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        if(d.status === 'success'){
+        if(/success/.test(d.status)){
           handleEditPicture(csrf, d)
         }
       })

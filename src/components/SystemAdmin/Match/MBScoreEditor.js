@@ -298,10 +298,18 @@ function MBScoreEditorContainer(props){
             { window.innerWidth > 450 &&
               <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass}
                 primary={
-                  matchDetail.scorematch === 1?
-                  ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' )
-                  :
-                  ( ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight' )
+                  function(){
+                    switch (matchDetail.scorematch) {
+                      case 0:
+                        return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
+                        break;
+                      case 1:
+                        return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
+                        break;
+                      default:
+                        return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
+                    }
+                  }()
                 } />
             }
 
@@ -342,7 +350,7 @@ function MBScoreEditorContainer(props){
                             <React.Fragment key={i}>
                               <br></br>
                               {
-                                matchDetail.scorematch === 1 ?
+                                matchDetail.scorematch !== 0 ?
                                 d.classname
                                 :
                                 String.fromCharCode(65 + value.classno - 1)
@@ -371,7 +379,7 @@ function MBScoreEditorContainer(props){
                         }).map( d =>
                           d &&
                           <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={
-                            matchDetail.scorematch === 1 ?
+                            matchDetail.scorematch !== 0 ?
                             d.classname
                             :
                             String.fromCharCode(65 + value.classno - 1)
