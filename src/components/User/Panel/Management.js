@@ -104,7 +104,7 @@ const StyledButton = withStyles(theme => ({
 
 export default function Management(props) {
   const classes = useStyles();
-  const { sess, pageOrganizer, pageData } = props
+  const { API, sess, pageOrganizer, pageData } = props
 
   const passingProps = {
     API: props.API,

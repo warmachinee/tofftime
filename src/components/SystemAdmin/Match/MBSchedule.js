@@ -84,6 +84,11 @@ const useStyles = makeStyles(theme => ({
     width: '30%',
     textAlign: 'left',
   },
+  listTeam: {
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    width: '60%',
+    textAlign: 'left',
+  },
   margin: {
     margin: theme.spacing(1),
   },
@@ -724,7 +729,7 @@ export default function MBSchedule(props){
               </ListItemIcon>*/
             }
             { window.innerWidth > 600 && edittingTeam &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listTeam}
                 primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
             }
             { window.innerWidth > 450 && !edittingTeam &&
@@ -802,6 +807,8 @@ export default function MBSchedule(props){
                                     <React.Fragment key={i}>
                                       <br></br>
                                       {d.teamname}
+                                      <br></br>
+                                      {d.note}
                                     </React.Fragment>
                                   )
                                 )
@@ -827,17 +834,19 @@ export default function MBSchedule(props){
                         (
                           matchDetail && matchDetail.team ?
                           ( value.teamno === 0 ?
-                            <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
+                            <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
                             :
                             matchDetail.team.filter( d =>{
                               return d.teamno === value.teamno
                             }).map( d =>
                               d &&
-                              <ListItemText key={d.teamname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={d.teamname} />
+                              <ListItemText key={d.teamname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listTeam}
+                                primary={d.teamname}
+                                secondary={d.note} />
                             )
                           )
                           :
-                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
+                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
                         )
                       }
                       { window.innerWidth > 400 && !edittingTeam &&

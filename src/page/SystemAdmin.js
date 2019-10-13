@@ -167,7 +167,7 @@ const StyledButton = withStyles(theme => ({
 
 export default function SystemAdmin(props) {
   const classes = useStyles();
-  const { sess } = props
+  const { API, sess } = props
 
   const passingProps = {
     API: props.API,
@@ -183,6 +183,8 @@ export default function SystemAdmin(props) {
     handleSnackBar: props.handleSnackBar,
     location: props.location
   }
+
+  //const passingProps = { ...API.objectException(props, ['path'])}
 
   function SystemComponent(){
     return sess && sess.status === 1 && (

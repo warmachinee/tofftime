@@ -130,13 +130,6 @@ export default function Announcement(props){
   const [ edittingData, setEdittingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
 
-  const passingProps = {
-    token: token,
-    setCSRFToken: setCSRFToken,
-    handleSnackBar: handleSnackBar,
-    isSupportWebp: isSupportWebp
-  }
-
   function handleOpen(action){
     setClickAction(action)
     setOpen(!open)
@@ -269,7 +262,7 @@ export default function Announcement(props){
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
         <AnnouncementEditor
-          {...passingProps}
+          {...props}
           clickAction={clickAction}
           setData={setData}
           edittingData={edittingData} />

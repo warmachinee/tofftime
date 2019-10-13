@@ -235,14 +235,14 @@ function MatchDetailBody(props) {
             }
           </Typography>
           <div style={{ display: 'flex' }}>
-            { BTN && data && data.team && data.team.length > 0 &&
-              <BTN.NoStyleLink to={`/schedule/${matchid}`}>
-                <BTN.PrimaryText>{ ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }</BTN.PrimaryText>
-              </BTN.NoStyleLink>
-            }
             { matchid && BTN &&
               <BTN.NoStyleLink to={`/matchform/${matchid}`}>
                 <BTN.PrimaryText>{ ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }</BTN.PrimaryText>
+              </BTN.NoStyleLink>
+            }
+            { BTN && data && data.team && data.team.length > 0 &&
+              <BTN.NoStyleLink to={`/schedule/${matchid}`}>
+                <BTN.PrimaryText>{ ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }</BTN.PrimaryText>
               </BTN.NoStyleLink>
             }
             <div style={{ flex: 1 }} />
@@ -331,6 +331,11 @@ function MatchDetailBody(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
+        { matchid && BTN &&
+          <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/scoreboard`}>
+            <MenuItem onClick={handleClose}>Scoreboard</MenuItem>
+          </Link>
+        }
         { matchid && BTN &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/mah`}>
             <MenuItem onClick={handleClose}>Mah</MenuItem>

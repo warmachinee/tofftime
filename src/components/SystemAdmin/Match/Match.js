@@ -39,7 +39,7 @@ const RouteMatchEditor = Loadable.Map({
 });
 
 export default function Match(props){
-  const { sess, pageOrganizer, pageData } = props
+  const { API, sess, pageOrganizer, pageData } = props
 
   const passingProps = {
     API: props.API,
@@ -79,6 +79,7 @@ export default function Match(props){
       toggleCreatePost: props.toggleCreatePost,
     })
   }
+
 
   return(
     <Switch>

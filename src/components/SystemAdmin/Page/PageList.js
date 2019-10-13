@@ -129,13 +129,6 @@ export default function PageList(props){
   const [ open, setOpen ] = React.useState(false);
   const [ editting, setEditting ] = React.useState(false)
 
-  const passingProps = {
-    token: token,
-    setCSRFToken: setCSRFToken,
-    handleSnackBar: handleSnackBar,
-    isSupportWebp: isSupportWebp
-  }
-
   function handleOpen(){
     setOpen(true);
   };
@@ -294,7 +287,7 @@ export default function PageList(props){
 
       </List>
       <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
-        <AddPageModal {...passingProps} setData={setData} />
+        <AddPageModal {...props} setData={setData} />
       </TemplateDialog>
     </div>
   );

@@ -44,13 +44,13 @@ export default function SnackBarAlert(props) {
     success: <CheckCircleIcon className={classes.icon} />,
     error: <ErrorIcon className={classes.icon} />,
   };
+
   return (
     <Snackbar
       key={message}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        open={open}
-        autoHideDuration={autoHideDuration}
-        onClose={onClose}
+      open={open}
+      autoHideDuration={autoHideDuration}
       >
       <SnackbarContent
         className={classes[variant]}

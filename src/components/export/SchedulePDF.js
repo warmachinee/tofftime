@@ -45,7 +45,11 @@ function PDFFile(data, matchDetail, sess){
         }).map( md => md.teamname )
       )},
       {text: data[i].fullname + '\t' + data[i].lastname, alignment: 'left', margin: [16, 0, 0, 0]},
-      {text: ''}
+      {text: (
+        matchDetail.team.filter( item =>{
+          return item.teamno === data[i].teamno
+        }).map( md => md.note )
+      )}
     )
     player.push(arr)
   }

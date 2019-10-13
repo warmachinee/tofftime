@@ -63,11 +63,11 @@ export default function MatchList(props) {
           </div>
         </React.Fragment>
       }
-      { data && data.filter( item =>{ return item.typescore === 0 }).length > 0 &&
+      { data && data.filter( item =>{ return item.typescore !== 1 }).length > 0 &&
         <React.Fragment>
           <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแข่งขันมือสมัครเล่น" : 'Amateur match' } />
           <div className={classes.grid}>
-            { data.filter( item =>{ return item.typescore === 0 }).map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
+            { data.filter( item =>{ return item.typescore !== 1 }).map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
           </div>
         </React.Fragment>
       }

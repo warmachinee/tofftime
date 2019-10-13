@@ -208,13 +208,6 @@ export default function User(props){
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
 
-  const passingProps = {
-    token: token,
-    setCSRFToken: setCSRFToken,
-    handleSnackBar: handleSnackBar,
-    isSupportWebp: isSupportWebp
-  }
-
   function handleOpen(d){
     setOpen(!open)
     setEdittingUser(d)

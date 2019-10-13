@@ -246,7 +246,7 @@ export default function MatchEditor(props){
         }
       </Typography>
       <Paper className={classes.paper}>
-        <Button style={{ boxSizing: 'border-box', marginLeft: 36, marginTop: 16 }} onClick={handleClick}>
+        <Button style={{ boxSizing: 'border-box', marginLeft: 36, marginTop: 16, textTransform: 'none' }} onClick={handleClick}>
           <LabelText paddingTop={0} paddingLeft={0} text={labelSteps[activeStep]} />
           <ArrowDropDownIcon fontSize="large" style={{ marginLeft: 8, marginTop: 12 }} />
         </Button>

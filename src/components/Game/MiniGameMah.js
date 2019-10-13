@@ -38,15 +38,25 @@ import {
 
 import { LDCircular } from './../loading/LDCircular'
 
+const ListPredictScore = Loadable({
+  loader: () => import(/* webpackChunkName: "ListPredictScore" */'./ListPredictScore'),
+  loading: () => <LDCircular />
+});
+
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loading: () => <LDCircular />
+});
+
+const ScoreBoardCharity = Loadable({
+  loader: () => import(/* webpackChunkName: "ScoreBoardCharity" */'./../Detail/ScoreBoardCharity'),
   loading: () => <LDCircular />
 });
 
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
-    maxWidth: 1600,
+    maxWidth: 1200,
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
@@ -165,62 +175,6 @@ const theme = createMuiTheme({
   },
 });
 
-function ListPredictScore(props){
-  const classes = useStyles();
-  const { API, BTN, COLOR, token, setCSRFToken, handleSnackBar, data, matchid, gameType, handleMiniGame } = props
-  const [ predictScore, setPredictScore ] = React.useState(data.predictscore)
-
-  function handleKeyPressSetPredictScore(e){
-    if(e.key === 'Enter'){
-      handleFetchSetPredict()
-    }
-  }
-
-  async function handleFetchSetPredict(){
-    var userid;
-    if(Object.keys(data).find( d => d === 'mainplayer')){
-      userid = data.mainplayer
-    }else{
-      userid = data.userid
-    }
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
-      token? token : resToken.token,
-      'mmatchsection', {
-        action: 'setpredictscore',
-        matchid: matchid,
-        userid: userid,
-        value: parseInt(predictScore)
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ?'success':'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
-      if(/success/.test(d.status)){
-        handleMiniGame(matchid, gameType)
-      }
-    })
-  }
-
-  return (
-    <ThemeProvider theme={theme}>
-      <div className={classes.basepriceChildGrid}>
-        <TextField label="Predict Score"
-          value={predictScore || 0}
-          type="number"
-          onChange={e =>setPredictScore(e.target.value)}
-          onKeyPress={e =>handleKeyPressSetPredictScore(e)}
-          onFocus={e => e.target.select()} />
-        <BTN.Primary className={classes.saveButton}
-          onClick={handleFetchSetPredict}>Save</BTN.Primary>
-      </div>
-    </ThemeProvider>
-  );
-}
-
 export default function MiniGameMah(props){
   const classes = useStyles();
   const { API, BTN, COLOR, token, setCSRFToken, handleSnackBar, } = props
@@ -233,7 +187,6 @@ export default function MiniGameMah(props){
   const [ over, setOver ] = React.useState('')
   const [ editting, setEditting ] = React.useState(false)
   const [ userList, setUserList ] = React.useState(null)
-  const [ mainPlayer, setMainPlayer ] = React.useState(null)
   const [ betHole, setBetHole ] = React.useState(null)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ expanded, setExpanded ] = React.useState(false)
@@ -256,17 +209,17 @@ export default function MiniGameMah(props){
     switch (true) {
       case diff > 0:
         returnPrize = ( diff * over )
-        if(gameType !== 'jao'){ returnPrize + basePrize }
+        if(gameType !== 'jao'){ returnPrize = returnPrize + basePrize }
         return returnPrize
         break;
       case diff < 0:
         returnPrize = ( Math.abs(diff) * under )
-        if(gameType !== 'jao'){ returnPrize + basePrize }
+        if(gameType !== 'jao'){ returnPrize = returnPrize + basePrize }
         return returnPrize
         break;
       default:
         returnPrize = diff
-        if(gameType !== 'jao'){ returnPrize + basePrize }
+        if(gameType !== 'jao'){ returnPrize = returnPrize + basePrize }
         return returnPrize
     }
   }
@@ -291,7 +244,6 @@ export default function MiniGameMah(props){
     socket.on(`${matchid}-${gameType}-minigame-server-message`, (messageNew) => {
       if(messageNew){
         const d = messageNew.result
-        console.log(d);
         if(d.baseprize){
           setBasePrize(d.baseprize)
         }
@@ -304,11 +256,6 @@ export default function MiniGameMah(props){
         }
         if(d.hole){
           setBetHole(d.hole)
-        }
-        if(gameType === 'jao'){
-          if(d.mainplayer){
-            setMainPlayer(d.mainplayer)
-          }
         }
       }
     })
@@ -324,60 +271,6 @@ export default function MiniGameMah(props){
     if(e.key === 'Enter'){
       handleSetUnderOver(action)
     }
-  }
-
-  function mainPlayerComponent(){
-    return (
-      <ListItem
-        className={classes.listPlayer}
-        style={{ border: `2px solid ${COLOR.grey[900]}`, position: 'sticky', top: 48 }}>
-        <ListItemText className={classes.listPlayerName}
-          primary={
-            <React.Fragment>
-              {`${mainPlayer.fullname}  ${mainPlayer.lastname}`}
-              { editting &&
-                <div style={{ marginTop: 16 }}>
-                  <BTN.Red onClick={()=>handleFetchSetJao(mainPlayer.mainplayer)}>Unset</BTN.Red>
-                </div>
-              }
-              { editting && window.innerWidth < 600 &&
-                <React.Fragment>
-                  <div style={{ marginTop: 16 }}>
-                    <ListPredictScore {...props} data={mainPlayer} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
-                  </div>
-                </React.Fragment>
-              }
-            </React.Fragment>
-          }
-          secondary={
-            window.innerWidth < 600 && !editting &&
-            <React.Fragment>
-              <Typography gutterBottom variant="caption" component="span">{`Gross = ${mainPlayer.gross}`}</Typography>
-              <br></br>
-              <Typography variant="caption" component="span">{`SF = ${mainPlayer.sf36sys}`}</Typography>
-            </React.Fragment>
-          } />
-        { editting ?
-          ( window.innerWidth >= 600 &&
-            <ListItemIcon>
-              <ListPredictScore {...props} data={mainPlayer} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
-            </ListItemIcon>
-          )
-          :
-          <React.Fragment>
-            { window.innerWidth >= 600 &&
-              <React.Fragment>
-                <ListItemText className={classes.listScore} primary={mainPlayer.gross} />
-                <ListItemText className={classes.listScore} primary={mainPlayer.sf36sys} />
-              </React.Fragment>
-            }
-            <ListItemText className={classes.listPredictScore} primary={mainPlayer.predictscore} />
-            <ListItemText className={classes.listPredictScore} primary="-" />
-            <ListItemText className={classes.listPrice} primary={calculatePrice(0)} />
-          </React.Fragment>
-        }
-      </ListItem>
-    );
   }
 
   async function handleFetchSetJao(userid){
@@ -495,11 +388,6 @@ export default function MiniGameMah(props){
       if(d.hole){
         setBetHole(d.hole)
       }
-      if(gameType === 'jao'){
-        if(d.mainplayer){
-          setMainPlayer(d.mainplayer)
-        }
-      }
     })
   }
 
@@ -512,13 +400,11 @@ export default function MiniGameMah(props){
         var matchid = parseInt(match.params.matchid)
         var gameType = match.params.gametype
         setMatchid(matchid)
-        setGameType(gameType === 'jao' ? gameType : 'normal')
+        setGameType(gameType === 'mah' ? 'normal' : gameType)
         if(/Mini Game/.test(componentType)){
           handleFetchMiniGame(matchid, gameType)
           responseMiniGame(matchid, gameType)
           setComponentType(gameType === 'jao' ? 'Mini Game Jao' : 'Mini Game Mah')
-        }else{
-
         }
       }
     }
@@ -538,235 +424,241 @@ export default function MiniGameMah(props){
   },[ window.innerWidth ])
 
   return (
-    <Paper className={classes.root}>
-      <GoBack />
-      <div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1200 }}>
-        <BTN.PrimaryOutlined onClick={handleClick}>
-          {componentType}
-          <ArrowDropDown style={{ marginLeft: 8 }} />
-        </BTN.PrimaryOutlined>
-      </div>
-      <div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1200 }}>
-        <ListItem button onClick={expandHandler}
-          style={{
-            marginTop: 16,
-            boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
-          }}>
-          <ListItemText primary="Panel" />
-          <IconButton
-            disableRipple
-            className={classes.expandIcon}
-            style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
-            onClick={expandHandler}
-            aria-expanded={expanded}
-            aria-label="Show more"
-          >
-            <ExpandMore />
-          </IconButton>
-        </ListItem>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
-          <Paper style={{ padding: '12px', marginBottom: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditting(!editting)}>{ editting? 'Done' : 'Edit' }</BTN.PrimaryText>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-              <div style={{ marginTop: 12 }}>
-                { gameType !== 'jao' &&
-                  <ThemeProvider theme={theme}>
-                    { editting ?
-                      <div className={classes.basepriceChildGrid}>
-                        <TextField label="Base Price"
-                          type="number"
-                          value={basePrize || ''}
-                          onChange={e =>setBasePrize(e.target.value)}
-                          onKeyPress={e =>handleKeyPressBaseprice(e)}
-                          onFocus={e => e.target.select()} />
-                        <BTN.Primary className={classes.saveButton}
-                          onClick={handleSetBaseprice}>Save</BTN.Primary>
-                      </div>
-                      :
-                      <div className={classes.basepriceChildGrid}>
-                        <Typography className={classes.basepriceLabel}>Base Price</Typography>
-                        <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>{basePrize}</Typography>
-                      </div>
-                    }
-                  </ThemeProvider>
-                }
-              </div>
-              <div className={classes.underoverGrid}>
-                <ThemeProvider theme={theme}>
-                  { editting ?
-                    <div className={classes.underoverChildGrid}>
-                      <TextField label="Under"
-                        type="number"
-                        value={under || ''}
-                        onChange={e =>setUnder(e.target.value)}
-                        onKeyPress={e =>handleKeyPressUnderOver(e, 'under')}
-                        onFocus={e => e.target.select()} />
-                      <BTN.Amber className={classes.saveButton}
-                        onClick={()=>handleSetUnderOver('under')}>Save</BTN.Amber>
-                    </div>
-                    :
-                    <div className={classes.underoverChildGrid}>
-                      <Typography className={classes.underoverLabel}
-                        style={{ backgroundColor: COLOR.amber[400], borderColor: COLOR.amber[700], }}>Under</Typography>
-                      <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.amber[800] }}>
-                        {under}
-                      </Typography>
-                    </div>
-                  }
-                </ThemeProvider>
-                <div style={{ marginLeft: 16 }}>
-                  <ThemeProvider theme={theme}>
-                    { editting ?
-                      <div className={classes.underoverChildGrid}>
-                        <TextField label="Over"
-                          type="number"
-                          value={over || ''}
-                          onChange={e =>setOver(e.target.value)}
-                          onKeyPress={e =>handleKeyPressUnderOver(e, 'over')}
-                          onFocus={e => e.target.select()} />
-                        <BTN.Green className={classes.saveButton}
-                          onClick={()=>handleSetUnderOver('over')}>Save</BTN.Green>
-                      </div>
-                      :
-                      <div className={classes.underoverChildGrid}>
-                        <Typography className={classes.underoverLabel}
-                          style={{ backgroundColor: COLOR.green[400], borderColor: COLOR.green[700] }}>Over</Typography>
-                        <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.green[800] }}>
-                          {over}
-                        </Typography>
-                      </div>
-                    }
-                  </ThemeProvider>
-                </div>
-              </div>
-            </div>
-            <div className={classes.checkboxGrid}>
-              { betHole &&
-                [0, 3].map( g =>
-                <div className={classes.checkboxList} key={g}>
-                  { [ g, g + 1, g + 2].map( c =>
-                    <List disablePadding key={c}>
-                      { hole.slice( (c * 3), (c + 1) * 3).map( d =>
-                        <ListItem button key={d} className={classes.checkboxListItem} onClick={()=>handleChecked(d)}>
-                          <StyledCheckbox
-                            disableRipple
-                            checked={ parseInt(betHole.find( bh =>{ return parseInt(bh) === d + 1 })) === d + 1} />
-                          <Typography className={classes.checkboxLabel}>
-                            {`Hole ${d + 1}`}
-                          </Typography>
-                        </ListItem>
-                      )}
-                    </List>
-                  )}
-                </div>
-              )}
-            </div>
-          </Paper>
-        </Collapse>
-        <div className={classes.gameUserList}>
-          <List disablePadding>
-            <ListItem style={{ backgroundColor: COLOR.grey[900], position: 'sticky', top: 0 }}>
-              <ListItemText style={{ color: 'white' }} className={classes.listPlayerName} primary="Player" />
-              { !editting &&
-                <React.Fragment>
-                  { window.innerWidth >= 600 &&
-                    <React.Fragment>
-                      <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="Gross" />
-                      <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="SF" />
-                    </React.Fragment>
-                  }
-                  <ListItemText style={{ color: 'white' }} className={classes.listPredictScore} primary="Predict" />
-                  <ListItemText style={{ color: 'white' }} className={classes.listPredictScore} primary="+/-" />
-                  <ListItemText style={{ color: 'white' }} className={classes.listPrice} primary="Price" />
-                </React.Fragment>
-              }
-            </ListItem>
-          </List>
-          <List disablePadding>
-            { gameType === 'jao' && mainPlayer &&
-              mainPlayerComponent()
-            }
-          </List>
-          <List disablePadding ref={listEl}
+    gameType === 'scoreboard' ?
+    (
+      <ScoreBoardCharity {...props} />
+    )
+    :
+    (
+      <Paper className={classes.root}>
+        <GoBack />
+        <div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1200 }}>
+          <BTN.PrimaryOutlined onClick={handleClick}>
+            {componentType}
+            <ArrowDropDown style={{ marginLeft: 8 }} />
+          </BTN.PrimaryOutlined>
+        </div>
+        <div style={{ marginLeft: 'auto', marginRight: 'auto', maxWidth: 1200 }}>
+          <ListItem button onClick={expandHandler}
             style={{
-              overflow: 'auto', maxHeight: window.innerHeight * .5,
-              ...( listEl.current && listEl.current.offsetHeight < listEl.current.scrollHeight ) && { marginRight: -13 }
+              marginTop: 16,
+              boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
             }}>
-            { userList &&
-              userList.map( d =>
-              <React.Fragment key={d.userid}>
-                <ListItem className={classes.listPlayer}>
-                  <ListItemText className={classes.listPlayerName}
-                    primary={
+            <ListItemText primary="Panel" />
+            <IconButton
+              disableRipple
+              className={classes.expandIcon}
+              style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
+              onClick={expandHandler}
+              aria-expanded={expanded}
+              aria-label="Show more"
+            >
+              <ExpandMore />
+            </IconButton>
+          </ListItem>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <Paper style={{ padding: '12px', marginBottom: 24 }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditting(!editting)}>{ editting? 'Done' : 'Edit' }</BTN.PrimaryText>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                <div style={{ marginTop: 12 }}>
+                  { gameType !== 'jao' &&
+                    <ThemeProvider theme={theme}>
+                      { editting ?
+                        <div className={classes.basepriceChildGrid}>
+                          <TextField label="Base Price"
+                            type="number"
+                            value={basePrize || ''}
+                            onChange={e =>setBasePrize(e.target.value)}
+                            onKeyPress={e =>handleKeyPressBaseprice(e)}
+                            onFocus={e => e.target.select()} />
+                          <BTN.Primary className={classes.saveButton}
+                            onClick={handleSetBaseprice}>Save</BTN.Primary>
+                        </div>
+                        :
+                        <div className={classes.basepriceChildGrid}>
+                          <Typography className={classes.basepriceLabel}>Base Price</Typography>
+                          <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>{basePrize}</Typography>
+                        </div>
+                      }
+                    </ThemeProvider>
+                  }
+                </div>
+                <div className={classes.underoverGrid}>
+                  <ThemeProvider theme={theme}>
+                    <div style={{ margin: 6 }}>
+                      { editting ?
+                        <div className={classes.underoverChildGrid}>
+                          <TextField label="Under"
+                            type="number"
+                            value={under || ''}
+                            onChange={e =>setUnder(e.target.value)}
+                            onKeyPress={e =>handleKeyPressUnderOver(e, 'under')}
+                            onFocus={e => e.target.select()} />
+                          <BTN.Amber className={classes.saveButton}
+                            onClick={()=>handleSetUnderOver('under')}>Save</BTN.Amber>
+                        </div>
+                        :
+                        <div className={classes.underoverChildGrid}>
+                          <Typography className={classes.underoverLabel}
+                            style={{ backgroundColor: COLOR.amber[400], borderColor: COLOR.amber[700], }}>Under</Typography>
+                          <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.amber[800] }}>
+                            {under}
+                          </Typography>
+                        </div>
+                      }
+                    </div>
+                    <div style={{ margin: 6 }}>
+                      { editting ?
+                        <div className={classes.underoverChildGrid}>
+                          <TextField label="Over"
+                            type="number"
+                            value={over || ''}
+                            onChange={e =>setOver(e.target.value)}
+                            onKeyPress={e =>handleKeyPressUnderOver(e, 'over')}
+                            onFocus={e => e.target.select()} />
+                          <BTN.Green className={classes.saveButton}
+                            onClick={()=>handleSetUnderOver('over')}>Save</BTN.Green>
+                        </div>
+                        :
+                        <div className={classes.underoverChildGrid}>
+                          <Typography className={classes.underoverLabel}
+                            style={{ backgroundColor: COLOR.green[400], borderColor: COLOR.green[700] }}>Over</Typography>
+                          <Typography style={{ padding: '6px 8px', marginLeft: 12, color: COLOR.green[800] }}>
+                            {over}
+                          </Typography>
+                        </div>
+                      }
+                    </div>
+                  </ThemeProvider>
+                </div>
+              </div>
+              <div className={classes.checkboxGrid}>
+                { betHole &&
+                  [0, 3].map( g =>
+                  <div className={classes.checkboxList} key={g}>
+                    { [ g, g + 1, g + 2].map( c =>
+                      <List disablePadding key={c}>
+                        { hole.slice( (c * 3), (c + 1) * 3).map( d =>
+                          <ListItem button key={d} className={classes.checkboxListItem} onClick={()=>handleChecked(d)}>
+                            <StyledCheckbox
+                              disableRipple
+                              checked={ parseInt(betHole.find( bh =>{ return parseInt(bh) === d + 1 })) === d + 1} />
+                            <Typography className={classes.checkboxLabel}>
+                              {`Hole ${d + 1}`}
+                            </Typography>
+                          </ListItem>
+                        )}
+                      </List>
+                    )}
+                  </div>
+                )}
+              </div>
+            </Paper>
+          </Collapse>
+          <div className={classes.gameUserList}>
+            <List disablePadding>
+              <ListItem style={{ backgroundColor: COLOR.grey[900], position: 'sticky', top: 0 }}>
+                { editting && gameType === 'jao' &&
+                  <ListItemText style={{ color: 'white', width: 120 }} primary="Main player" />
+                }
+                <ListItemText style={{ color: 'white' }} className={classes.listPlayerName} primary="Player" />
+                { !editting &&
+                  <React.Fragment>
+                    { window.innerWidth >= 600 &&
                       <React.Fragment>
-                        {`${d.fullname}  ${d.lastname}`}
-                        { editting && gameType === 'jao' &&
-                          <div style={{ marginTop: 16 }}>
-                            <BTN.PrimaryOutlined onClick={()=>handleFetchSetJao(d.userid)}>Set to main player</BTN.PrimaryOutlined>
-                          </div>
-                        }
-                        { editting && window.innerWidth < 600 &&
-                          <React.Fragment>
-                            <div style={{ marginTop: 16 }}>
-                              <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
-                            </div>
-                          </React.Fragment>
-                        }
+                        <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="Gross" />
+                        <ListItemText style={{ color: 'white' }} className={classes.listScore} primary="SF" />
                       </React.Fragment>
                     }
-                    secondary={
-                      window.innerWidth < 600 && !editting &&
-                      <React.Fragment>
-                        <Typography gutterBottom variant="caption" component="span">{`Gross = ${d.gross}`}</Typography>
-                        <br></br>
-                        <Typography variant="caption" component="span">{`SF = ${d.sf36sys}`}</Typography>
-                      </React.Fragment>
-                    } />
-                  { editting ?
-                    ( window.innerWidth >= 600 &&
-                      <ListItemIcon>
-                        <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+                    <ListItemText style={{ color: 'white' }} className={classes.listPredictScore} primary="Predict" />
+                    <ListItemText style={{ color: 'white' }} className={classes.listPredictScore} primary="+/-" />
+                    <ListItemText style={{ color: 'white' }} className={classes.listPrice} primary="Price" />
+                  </React.Fragment>
+                }
+              </ListItem>
+            </List>
+            <List disablePadding ref={listEl}
+              style={{
+                overflow: 'auto', maxHeight: window.innerHeight * .5,
+                ...( listEl.current && listEl.current.offsetHeight < listEl.current.scrollHeight ) && { marginRight: -13 }
+              }}>
+              { userList &&
+                userList.map( d =>
+                <React.Fragment key={d.userid}>
+                  <ListItem className={classes.listPlayer} style={{ border: d.mainplayer ? `2px solid ${COLOR.grey[900]}` : 'none' }}>
+                    { editting && gameType === 'jao' &&
+                      <ListItemIcon style={{ width: 120 }}>
+                        <StyledCheckbox
+                          checked={d.mainplayer}
+                          onChange={()=>handleFetchSetJao(d.userid)} />
                       </ListItemIcon>
-                    )
-                    :
-                    <React.Fragment>
-                      { window.innerWidth >= 600 &&
+                    }
+                    <ListItemText className={classes.listPlayerName}
+                      primary={
                         <React.Fragment>
-                          <ListItemText className={classes.listScore} primary={d.gross} />
-                          <ListItemText className={classes.listScore} primary={d.sf36sys} />
+                          {`${d.fullname}  ${d.lastname}`}
+                          { editting && window.innerWidth < 600 &&
+                            <React.Fragment>
+                              <div style={{ marginTop: 16 }}>
+                                <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+                              </div>
+                            </React.Fragment>
+                          }
                         </React.Fragment>
                       }
-                      <ListItemText className={classes.listPredictScore} primary={d.predictscore} />
-                      <ListItemText className={classes.listPredictScore} primary={API.prefixNumber(d.diff)} />
-                      <ListItemText className={classes.listPrice} primary={calculatePrice(d.diff)} />
-                    </React.Fragment>
-                  }
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            )}
-          </List>
+                      secondary={
+                        window.innerWidth < 600 && !editting &&
+                        <React.Fragment>
+                          <Typography gutterBottom variant="caption" component="span">{`Gross = ${d.gross}`}</Typography>
+                          <br></br>
+                          <Typography variant="caption" component="span">{`SF = ${d.sf36sys}`}</Typography>
+                        </React.Fragment>
+                      } />
+                    { editting ?
+                      ( window.innerWidth >= 600 &&
+                        <ListItemIcon>
+                          <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
+                        </ListItemIcon>
+                      )
+                      :
+                      <React.Fragment>
+                        { window.innerWidth >= 600 &&
+                          <React.Fragment>
+                            <ListItemText className={classes.listScore} primary={d.gross} />
+                            <ListItemText className={classes.listScore} primary={d.sf36sys} />
+                          </React.Fragment>
+                        }
+                        <ListItemText className={classes.listPredictScore} primary={d.predictscore} />
+                        <ListItemText className={classes.listPredictScore} primary={API.prefixNumber(d.diff)} />
+                        <ListItemText className={classes.listPrice} primary={calculatePrice(d.diff)} />
+                      </React.Fragment>
+                    }
+                  </ListItem>
+                  <Divider />
+                </React.Fragment>
+              )}
+            </List>
+          </div>
         </div>
-      </div>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        { matchid && BTN &&
-          <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/mah`}>
-            <MenuItem onClick={()=>handleMenuItemClick('Mini Game Mah')}>Mini Game Mah</MenuItem>
-          </Link>
-        }
-        { matchid && BTN &&
-          <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/jao`}>
-            <MenuItem onClick={()=>handleMenuItemClick('Mini Game Jao')}>Mini Game Jao</MenuItem>
-          </Link>
-        }
-      </Menu>
-    </Paper>
-  );
+        <Menu
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}>
+          { matchid && BTN &&
+            <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/mah`}>
+              <MenuItem onClick={()=>handleMenuItemClick('Mini Game Mah')}>Mini Game Mah</MenuItem>
+            </Link>
+          }
+          { matchid && BTN &&
+            <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/jao`}>
+              <MenuItem onClick={()=>handleMenuItemClick('Mini Game Jao')}>Mini Game Jao</MenuItem>
+            </Link>
+          }
+        </Menu>
+      </Paper>
+    )
+  )
 }

@@ -5,14 +5,20 @@ import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
 
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import {
+  Switch,
+  Divider,
+  Typography,
+  Box,
+  Button,
+  TextField,
+  FormControl,
+  FormControlLabel,
+  List,
+  ListItem,
+  ListItemText,
+
+} from '@material-ui/core';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -47,6 +53,13 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2),
     marginTop: 24
   },
+  editNoteGrid: {
+    display: 'flex', width: '100%'
+  },
+  saveButton: {
+    marginTop: 'auto',
+    marginLeft: 12
+  },
 
 }));
 
@@ -77,12 +90,61 @@ const theme = createMuiTheme({
 
 export default function MatchTeam(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, handleTeamClose } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, handleTeamClose } = props
   const [ currentTime, setCurrentTime ] = React.useState(API.getTodayTime())
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ period, setPeriod ] = React.useState(0)
   const [ person, setPerson] = React.useState(0)
   const [ autoGen, setAutoGen ] = React.useState(false)
+  const [ editting, setEditting ] = React.useState(false)
+
+  function EditNoteComponent(props){
+    const { data } = props
+    const [ note, setNote ] = React.useState(data.note)
+
+    function handleKeyPressEditNote(e){
+      if (e.key === 'Enter'){
+        handleEditTeamNote()
+      }
+    }
+
+    async function handleEditTeamNote(){
+      if(matchid){
+        const resToken = token? token : await API.xhrGet('getcsrf')
+        await API.xhrPost(
+          token? token : resToken.token,
+          sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+            action: 'noteteam',
+            matchid: matchid,
+            teamno: data.teamno,
+            note: note
+        }, (csrf, d) =>{
+          setCSRFToken(csrf)
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? 'success' : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+          if(/success/.test(d.status)){
+            handleFetchMatchDetail()
+          }
+        })
+      }
+    }
+
+    return (
+      <div className={classes.editNoteGrid}>
+        <TextField label="Note"
+          value={note || ''}
+          onChange={e =>setNote(e.target.value)}
+          onKeyPress={e =>handleKeyPressEditNote(e)}
+          onFocus={e => e.target.select()} />
+        <BTN.Primary className={classes.saveButton}
+          onClick={handleEditTeamNote}>Save</BTN.Primary>
+      </div>
+    );
+  }
 
   function handleKeyPress(e){
     if (e === 'Enter'){
@@ -100,7 +162,7 @@ export default function MatchTeam(props) {
       person: person
     }
 
-    if(!autoGen){
+    if(autoGen){
       Object.assign(sendObj, { gen: 'true' });
     }
 
@@ -208,6 +270,39 @@ export default function MatchTeam(props) {
                     label="Auto gen"
                   />
                 </FormControl>
+              </div>
+            }
+            { matchDetail && matchDetail.team.length !== 0 &&
+              <div style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <BTN.PrimaryText onClick={()=>setEditting(!editting)}>{ editting ? 'Done' : 'Edit' }</BTN.PrimaryText>
+                </div>
+                <List>
+                  <ListItem style={{ backgroundColor: grey[900] }}>
+                    <ListItemText style={{ color: 'white', width: '100%' }} primary="Team" />
+                    { !editting &&
+                      <ListItemText style={{ color: 'white', width: '100%' }} primary="Note" />
+                    }
+                  </ListItem>
+                  { matchDetail &&
+                    matchDetail.team.map( t =>
+                      <ListItem>
+                        <ListItemText style={{ width: '100%' }} primary={t.teamname} />
+                        <ListItemText style={{ width: '100%' }} primary={
+                          <React.Fragment>
+                            { editting ?
+                              <div style={{ marginTop: 16 }}>
+                                <EditNoteComponent data={t} />
+                              </div>
+                              :
+                              ( t.note === '' ? '-' : t.note )
+                            }
+                          </React.Fragment>
+                          } />
+                      </ListItem>
+                    )
+                  }
+                </List>
               </div>
             }
             <GreenButton

@@ -383,7 +383,7 @@ export default function MatchClass(props) {
         setArrEdit(classname)
         setArrEditClassno(classno)
         setLists(data.class)
-        if(data.scorematch === 2){
+        if(data.scorematch !== 0){
           let classColor = []
           for(var j = 0;j < data.class.length;j++){
             classColor.push(data.class[j].color)
@@ -435,14 +435,14 @@ export default function MatchClass(props) {
         <Button variant="outlined" onClick={handleMenuClick}
           style={{
             marginLeft: 8,
-            color: arrEditColor[index] !==''? COLOR[arrEditColor[index]][600] : 'inherit',
-            backgroundColor: buttonHover ? ( arrEditColor[index] !==''? COLOR[arrEditColor[index]][100] : 'inherit' ) : 'inherit',
+            color: ( arrEditColor[index] !=='' && arrEditColor[index] !=='none' ) ? COLOR[arrEditColor[index]][600] : COLOR.grey[600] ,
+            backgroundColor: buttonHover ? ( ( arrEditColor[index] !=='' && arrEditColor[index] !=='none' ) ? COLOR[arrEditColor[index]][100] : COLOR.grey[100] ) : 'inherit',
             transition: '.2s',
             padding: 8
           }}
           onMouseEnter={()=>setButtonHover(true)}
           onMouseLeave={()=>setButtonHover(false)}>
-          { arrEditColor[index] !=='' ?
+          { ( arrEditColor[index] !=='' && arrEditColor[index] !=='none' ) ?
             <div style={{
                 width: 16, height: 16,
                 backgroundColor: COLOR[arrEditColor[index]][600],
@@ -450,7 +450,7 @@ export default function MatchClass(props) {
                 boxSizing: 'border-box'
               }} />
             :
-            '-'
+            'No Color'
           }
         </Button>
         <Menu
@@ -458,6 +458,9 @@ export default function MatchClass(props) {
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
         >
+          <MenuItem onClick={()=>handleSelectColor('none')}>
+            None
+          </MenuItem>
           { colorsPicker.map( c =>
             <MenuItem onClick={()=>handleSelectColor(c)} key={c}>
               <div style={{ width: 16, height: 16, backgroundColor: COLOR[c][600], marginRight: 12, borderRadius: '50%' }}></div>
@@ -511,9 +514,10 @@ export default function MatchClass(props) {
                 <ListItemText primary={ data.scorematch === 0? (
                     arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
                   ) : d.classname } />
-                { data.scorematch === 2 &&
+                { data.scorematch !== 0 &&
                   <ListItemIcon>
-                    { arrEditColor[i] !=='' ?
+                    <ListColorSelector index={i} />
+                    {/* ( arrEditColor[i] !=='' && arrEditColor[i] !=='none' ) ?
                       <div style={{
                           width: 16, height: 16,
                           backgroundColor: COLOR[arrEditColor[i]][600],
@@ -522,7 +526,7 @@ export default function MatchClass(props) {
                           marginLeft: 'auto', marginRight: 'auto',
                         }} />
                       :
-                      <div style={{ marginLeft: 'auto', marginRight: 'auto', fontSize: 20 }}>-</div>
+                      <div style={{ marginLeft: 'auto', marginRight: 'auto' }}>No color</div>*/
                     }
                   </ListItemIcon>
                 }
@@ -587,7 +591,7 @@ export default function MatchClass(props) {
                     />
                   </div>
                 }
-                { data.scorematch === 2 &&
+                { data.scorematch !== 0 &&
                   <ListColorSelector index={i} />
                 }
               </ListItem>

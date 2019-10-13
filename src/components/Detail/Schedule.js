@@ -37,10 +37,10 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     margin: '0 5%',
-    [theme.breakpoints.up(500)]: {
+    [theme.breakpoints.up(600)]: {
       margin: '0 5%',
     },
-    [theme.breakpoints.up(700)]: {
+    [theme.breakpoints.up(800)]: {
       margin: '0 72px',
     },
   },
@@ -59,9 +59,12 @@ const useStyles = makeStyles(theme => ({
   },
   listLastname: {
     width: '100%',
-    [theme.breakpoints.down(700)]: {
+    [theme.breakpoints.down(800)]: {
       display: 'none'
     },
+  },
+  listNote: {
+    width: '60%',
   },
   name: {
     overflow: 'hidden',
@@ -165,11 +168,17 @@ export default function Schedule(props) {
                 primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
                 primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Lastname' } />
+              { window.innerWidth >= 600 &&
+                <ListItemText className={classes.listNote} style={{ color: 'white' }}
+                  primary={ ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' } />
+              }
             </ListItem>
           </List>
           <List disablePadding>
             { data &&
-              data.map( (d, i) =>
+              data.filter( item =>{
+                return item.teamno !== 0
+              }).map( (d, i) =>
                 <React.Fragment key={i}>
                   <ListItem style={{
                       backgroundColor: d.teamno % 2 === 1 ? 'inherit' : COLOR.grey[200]
@@ -184,6 +193,19 @@ export default function Schedule(props) {
                       matchDetail.team.filter( item =>{
                         return item.teamno === d.teamno
                       }).map( md => md.teamname )
+                    }
+                    secondary={
+                      window.innerWidth < 600 &&
+                      <React.Fragment>
+                        {
+                          d.teamno === 0 ?
+                          '-'
+                          :
+                          matchDetail.team.filter( item =>{
+                            return item.teamno === d.teamno
+                          }).map( md => md.note )
+                        }
+                      </React.Fragment>
                     } />
                     <ListItemText
                       className={classes.listName}
@@ -191,13 +213,17 @@ export default function Schedule(props) {
                         <Typography className={classes.name} variant="body2" component="div" style={{ display: 'flex' }}>
                           {d.fullname}
                           <div style={{ width: 16 }} />
-                          { (window.innerWidth >= 500 && window.innerWidth < 700) ? d.lastname : ''}
+                          { (window.innerWidth >= 600 && window.innerWidth < 800) ? d.lastname : ''}
                         </Typography>
                       }
                       secondary={
-                        <Typography className={classes.name} variant="body2">
-                          { window.innerWidth < 500 ? d.lastname : ''}
-                        </Typography>
+                        <React.Fragment>
+                          { window.innerWidth < 600 &&
+                            <Typography className={classes.name} variant="body2">
+                              {d.lastname}
+                            </Typography>
+                          }
+                        </React.Fragment>
                       } />
                     <ListItemText
                       className={classes.listLastname}
@@ -208,6 +234,18 @@ export default function Schedule(props) {
                           </Typography>
                         </React.Fragment>
                       } />
+                    { window.innerWidth >= 600 &&
+                      <ListItemText
+                        className={classes.listNote}
+                        primary={
+                        d.teamno === 0 ?
+                        '-'
+                        :
+                        matchDetail.team.filter( item =>{
+                          return item.teamno === d.teamno
+                        }).map( md => md.note )
+                      } />
+                    }
                   </ListItem>
                   <Divider />
                 </React.Fragment>

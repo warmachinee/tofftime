@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { makeStyles, withStyles, createMuiTheme, useTheme  } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
@@ -36,7 +36,7 @@ const GoBack = Loadable({
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
-    maxWidth: 1600,
+    maxWidth: 1200,
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
@@ -66,7 +66,8 @@ const useStyles = makeStyles(theme => ({
     marginRight: 'auto',
   },
   listPlayerName: {
-    width: '100%'
+    width: '100%',
+    fontSize: 14
   },
   listScore: {
     width: 50,
@@ -93,11 +94,55 @@ const theme = createMuiTheme({
 
 export default function ScoreBoardCharity(props){
   const classes = useStyles();
+  const stylesTheme = useTheme();
   const { sess, API, COLOR, token, setCSRFToken, BTN , isSupportWebp, handleSnackBar, handleSnackBarL } = props
-  const [ playerLimit, setPlayerLimite ] = React.useState(null)
+  const [ playerLimit, setPlayerLimit ] = React.useState({
+    min: 0,
+    max: 0,
+    current: 0
+  })
   const [ editting, setEditting ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
   const [ userscore, setUserscore ] = React.useState(null)
+
+  function handlePlayerLimitCal(data){
+    const arrLength = []
+    const userscore = data.userscore
+    if(data.class){
+      data.class.forEach( e =>{
+        var userscoreFiltered = userscore.filter( item =>{ return item.classno === e.classno } )
+        //console.log(userscoreFiltered)
+        arrLength.push(userscoreFiltered.length)
+      })
+      //console.log('arrLength', arrLength);
+      //console.log('max', Math.max(...arrLength));
+      setPlayerLimit({...playerLimit, current: Math.max(...arrLength), max: Math.max(...arrLength) })
+    }
+  }
+
+  function handlePlayerLimit(value){
+    if(value >= playerLimit.min && value <= playerLimit.max){
+      setPlayerLimit({...playerLimit, current: parseInt(value)})
+    }else{
+      if(value < playerLimit.min){
+        setPlayerLimit({...playerLimit, current: playerLimit.min})
+      }else{
+        setPlayerLimit({...playerLimit, current: playerLimit.max})
+      }
+      handleSnackBar({
+        state: true,
+        message: `min = 0, max = ${playerLimit.max}`,
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+    }
+  }
+
+  function userTotalScore(arr){
+    var sum = 0;
+    arr.forEach( e =>{ sum += e.sf })
+    return sum
+  }
 
   async function handleFetch(){
     const resToken = token? token : await API.xhrGet('getcsrf')
@@ -118,80 +163,61 @@ export default function ScoreBoardCharity(props){
       }else{
         setData(d)
         setUserscore(d.userscore)
-        console.log(d, d.userscore);
+        handlePlayerLimitCal(d)
       }
     })
   }
 
-  function response(action){
+  function response(){
     const matchid = parseInt(props.computedMatch.params.matchid)
     const socket = socketIOClient( API.getWebURL() )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
       if(messageNew && messageNew.status === 'success'){
-        if(messageNew.hostdetail){
+        const d = messageNew.result
+        const dh = messageNew.hostdetail
+        if(dh){
           handleSnackBarL({
             state: true,
-            sFULLNAME: messageNew.hostdetail.fullname,
-            sLASTNAME: messageNew.hostdetail.lastname,
-            sOUT: messageNew.hostdetail.sout,
-            sIN: messageNew.hostdetail.sin,
-            sTOTAL: messageNew.hostdetail.gross,
-            sPAR: messageNew.hostdetail.par
+            sFULLNAME: dh.fullname,
+            sLASTNAME: dh.lastname,
+            sOUT: dh.sout,
+            sIN: dh.sin,
+            sTOTAL: dh.gross,
+            sPAR: dh.par
           })
         }
-        setUserscore(messageNew.result.userscore)
+        setUserscore(d.userscore)
+        handlePlayerLimitCal(d)
       }
     })
-  }
-
-  function handleKeyPressPlayerLimit(){
-    console.log(playerLimit);
   }
 
   React.useEffect(()=>{
     response()
     handleFetch()
-    console.log(props);
-    /*
-    if(props.location){
-      const match = matchPath( props.location.pathname, {
-        path: "/match/:matchid/minigame/:gametype",
-      });
-      if(match){
-        var matchid = parseInt(match.params.matchid)
-        var gameType = match.params.gametype
-        setMatchid(matchid)
-        setGameType(gameType === 'jao' ? gameType : 'normal')
-        if(/Mini Game/.test(componentType)){
-          handleFetchMiniGame(matchid, gameType)
-          responseMiniGame(matchid, gameType)
-          setComponentType(gameType === 'jao' ? 'Mini Game Jao' : 'Mini Game Mah')
-        }else{
-
-        }
-      }
-    }*/
   },[ ])
 
   function playerLimitComponent(){
+
     return (
-      <div style={{ margin: '12px auto', maxWidth: 1200 }}>
+      <div style={{ margin: '12px auto', display: 'flex', justifyContent: 'space-between' }}>
         <ThemeProvider theme={theme}>
           { editting ?
             <div className={classes.playerLimitChildGrid}>
               <TextField label="Player Limit"
-                onChange={e =>setPlayerLimite(e.target.value)}
-                onKeyPress={e =>handleKeyPressPlayerLimit(e)} />
-              <BTN.Primary className={classes.saveButton}
-                onClick={handleSetBaseprice}>Save</BTN.Primary>
+                value={!isNaN(playerLimit.current) ? playerLimit.current : ''}
+                type="number"
+                onChange={e =>handlePlayerLimit(e.target.value)}
+                onFocus={e => e.target.select()} />
             </div>
             :
             <div className={classes.playerLimitChildGrid}>
               <Typography className={classes.playerLimitLabel}>Player Limit</Typography>
-              <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>Player Limit</Typography>
+              <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>{playerLimit.current}</Typography>
             </div>
           }
         </ThemeProvider>
+        <BTN.PrimaryText onClick={()=>setEditting(!editting)}>{ editting ? 'Done' : 'Edit' }</BTN.PrimaryText>
       </div>
     );
   }
@@ -199,31 +225,38 @@ export default function ScoreBoardCharity(props){
   function userListComponent(){
     return (
       <div className={classes.userlistGrid}>
-        { [0,1,2,3].map( d =>
-          <div key={d} className={classes.userlistChildGrid}>
-            {userListTable()}
-          </div>
-        )}
+        { data.class &&
+          data.class.map( d =>
+            <div key={d.classno} className={classes.userlistChildGrid}>
+              {userListTable(d)}
+            </div>
+          )
+        }
       </div>
     );
   }
 
-  function userListTable(){
+  function userListTable(data){
 
     return (
       <List disablePadding>
-        <ListItem style={{ backgroundColor: COLOR.grey[900] }}>
-          <ListItemText style={{ color: 'white' }} className={classes.listPlayerName} classes={{ primary: classes.listText }} primary="Player" />
-          <ListItemText style={{ color: 'white' }} className={classes.listScore} classes={{ primary: classes.listText }} primary="OUT" />
-          <ListItemText style={{ color: 'white' }} className={classes.listScore} classes={{ primary: classes.listText }} primary="IN" />
-          <ListItemText style={{ color: 'white' }} className={classes.listScore} classes={{ primary: classes.listText }} primary="HC" />
-          <ListItemText style={{ color: 'white' }} className={classes.listScore} classes={{ primary: classes.listText }} primary="SF" />
+        <ListItem style={{ backgroundColor: data.color !== ''? COLOR[data.color][900] : COLOR.grey[900] }}>
+          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+            className={classes.listPlayerName} classes={{ primary: classes.listText }} primary="Player" />
+          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+            className={classes.listScore} classes={{ primary: classes.listText }} primary="OUT" />
+          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+            className={classes.listScore} classes={{ primary: classes.listText }} primary="IN" />
+          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+            className={classes.listScore} classes={{ primary: classes.listText }} primary="HC" />
+          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+            className={classes.listScore} classes={{ primary: classes.listText }} primary="SF" />
           {/*
             <ListItemText style={{ color: 'white' }} className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />*/
           }
         </ListItem>
         { userscore &&
-          userscore.map( d =>
+          userscore.filter( item =>{ return item.classno === data.classno }).slice(0, playerLimit.current).map( d =>
           <React.Fragment key={d.userid}>
             <ListItem className={classes.listPlayer}>
               <ListItemText className={classes.listPlayerName} classes={{ primary: classes.listText }}
@@ -242,10 +275,14 @@ export default function ScoreBoardCharity(props){
             <Divider />
           </React.Fragment>
         )}
-        <ListItem>
-          <ListItemText classes={{ primary: classes.listText }} primary="Total" />
-          <ListItemText className={classes.listTotal} classes={{ primary: classes.listText }} primary="Price" />
-        </ListItem>
+        { userscore &&
+          <ListItem>
+            <ListItemText classes={{ primary: classes.listText }} primary="Total" />
+            <ListItemText className={classes.listTotal} classes={{ primary: classes.listText }}
+              primary={userTotalScore(userscore.filter( item =>{ return item.classno === data.classno }).slice(0, playerLimit.current))} />
+          </ListItem>
+        }
+
       </List>
     );
   }
@@ -265,8 +302,9 @@ export default function ScoreBoardCharity(props){
 
   return (
     <Paper className={classes.root}>
-      {playerLimitComponent()}
-      {userListComponent()}
+      <GoBack />
+      { data && userscore && playerLimitComponent() }
+      { data && userListComponent() }
     </Paper>
   );
 }

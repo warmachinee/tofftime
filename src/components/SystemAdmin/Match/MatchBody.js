@@ -19,6 +19,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -89,6 +95,9 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up(500)]: {
       margin: theme.spacing(1,0),
     },
+  },
+  formControl: {
+    margin: theme.spacing(0, 1.5),
   },
 
 }))
@@ -206,6 +215,11 @@ export default function MatchBody(props){
   const [ removeData, setRemoveData ] = React.useState(null)
   const [ confirmPasswordState, handleConfirmPasswordState ] = React.useState(false)
   const [ confirmPassword, setConfirmPassword ] = React.useState(null)
+  const [ matchOwnerStatus, setMatchOwnerStatus ] = React.useState('mine');
+
+  const handleChange = event => {
+    setMatchOwnerStatus(event.target.value);
+  };
 
   function toggleEditting(){
     setEditting(!editting)
@@ -319,9 +333,39 @@ export default function MatchBody(props){
     })
   }
 
+  async function handleFetchAdminMatch(){
+    var arrData = []
+    const resToken = token? token : await API.xhrGet('getcsrf')
+    await API.xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadmatch' : 'loadusersystem', {
+        ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'adminmatch' }
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(!d.status){
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === 1
+          })
+        )
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === -1
+          })
+        )
+        setDataClassed(arrData)
+      }
+      setData(d)
+    })
+  }
+
   React.useEffect(()=>{
-    handleFetch()
-  },[ data ])
+    if(matchOwnerStatus === 'mine'){
+      handleFetch()
+    }else{
+      handleFetchAdminMatch()
+    }
+  },[ matchOwnerStatus ])
 
   return(
     <div className={classes.root}>
@@ -332,7 +376,18 @@ export default function MatchBody(props){
         </Box>
       </Typography>
       <CreateMatch setData={setData} setDataClassed={setDataClassed} {...props} />
-      <div style={{ display: 'flex', margin: '24px 16px 0 0', justifyContent: 'space-between' }}>
+      { sess && sess.typeid !== 'admin' &&
+        <div style={{ marginTop: 24 }}>
+          <FormControl component="fieldset" className={classes.formControl}>
+            <FormLabel component="legend">Type</FormLabel>
+            <RadioGroup value={matchOwnerStatus} onChange={handleChange}>
+              <FormControlLabel value="mine" control={<Radio />} label="My match" />
+              <FormControlLabel value="admin" control={<Radio />} label="Admin" />
+            </RadioGroup>
+          </FormControl>
+        </div>
+      }
+      <div style={{ display: 'flex', marginTop: 24, justifyContent: 'space-between' }}>
         <GreenTextButton color="primary" onClick={toggleEdittingDisplay}>
           { edittingDisplay?
             ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )

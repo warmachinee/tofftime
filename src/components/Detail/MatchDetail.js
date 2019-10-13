@@ -24,23 +24,6 @@ const RouteMatchDetailBody = Loadable.Map({
   loading: () => <LDCircular />
 });
 
-const RouteScoreBoardCharity = Loadable.Map({
-  loader: {
-    ScoreBoardCharity: () => import(/* webpackChunkName: "ScoreBoardCharity" */'./ScoreBoardCharity'),
-  },
-  render(loaded, props) {
-    let Component = loaded.ScoreBoardCharity.default;
-    return (
-      <Route
-        {...props}
-        render={()=> (
-          <Component {...props} />
-        )} />
-    )
-  },
-  loading: () => <LDCircular />
-});
-
 const RouteMiniGameMah = Loadable.Map({
   loader: {
     MiniGameMah: () => import(/* webpackChunkName: "MiniGameMah" */'./../Game/MiniGameMah'),
@@ -85,6 +68,9 @@ export default function MatchDetail(props){
         setData(d)
         setUserscore(d.userscore)
         setRawUserscore(d)
+        if(d.scorematch !== 1){
+          setSortBy(d.scorematch === 0? 'net' : 'sf')
+        }
       }
     })
   }
@@ -133,11 +119,6 @@ export default function MatchDetail(props){
         sortBy={sortBy}
         setSortBy={setSortBy}
         matchid={parseInt(props.computedMatch.params.matchid)} />
-      {/*
-        <RouteScoreBoardCharity
-          path={`/match/${props.computedMatch.params.matchid}/minigame/:gametype`}
-          {...props} />
-        */}
       <RouteMiniGameMah
         path={`/match/${props.computedMatch.params.matchid}/minigame/:gametype`}
         {...props} />

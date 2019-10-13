@@ -120,13 +120,6 @@ export default function MatchList(props){
   const [ open, setOpen ] = React.useState(false);
   const [ editting, setEditting ] = React.useState(false)
 
-  const passingProps = {
-    token: token,
-    setCSRFToken: setCSRFToken,
-    handleSnackBar: handleSnackBar,
-    isSupportWebp: isSupportWebp
-  }
-
   function handleOpen(){
     setOpen(true);
   };
@@ -281,7 +274,7 @@ export default function MatchList(props){
 
       </List>
       <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
-        <AddMatchModal {...passingProps} setData={setData} />
+        <AddMatchModal {...props} setData={setData} />
       </TemplateDialog>
     </div>
   );

@@ -20,7 +20,7 @@ const RouteCourseBody = Loadable.Map({
 });
 
 export default function Course(props){
-  const { sess, pageOrganizer, pageData } = props
+  const { API, sess, pageOrganizer, pageData } = props
 
   const passingProps = {
     API: props.API,
