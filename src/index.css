@@ -65,6 +65,37 @@ code {
     monospace;
 }
 
+*.alignLeft {
+	text-align: left;
+}
+*.alignCenter {
+	text-align: center;
+}
+*.alignRight {
+	text-align: right;
+}
+
+.header-one {
+	font-size: 36px;
+	font-weight: bold;
+}
+
+.superFancyBlockquote,
+.draftJsContent blockquote {
+  color: #999;
+  font-family: 'Hoefler Text', Georgia, serif;
+  font-style: italic;
+  text-align: center;
+}
+
+figure img[class*="draftJsEmojiPlugin__image"] {
+	max-width: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+
 /*-------------------- Scrollbar --------------------*/
 /*
 ::-webkit-scrollbar {

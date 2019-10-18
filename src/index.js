@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from "react-router-dom";
 import './index.css';
 import App from './App';
+import RichTextEditor from './components/RichTextEditor'
 import * as serviceWorker from './serviceWorker';
 
 const RenderApp = (
   <Router>
-    <App />
+    <RichTextEditor />
   </Router>
 );
 ReactDOM.render(RenderApp, document.getElementById('root'));
@@ -16,4 +17,4 @@ ReactDOM.render(RenderApp, document.getElementById('root'));
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 //serviceWorker.unregister();
-serviceWorker.register();
+//serviceWorker.register();

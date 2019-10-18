@@ -227,6 +227,11 @@ const RouteScoreDisplay = Loadable.Map({
   loading: () => null
 });
 
+const RichTextEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "RichTextEditor" */'./components/RichTextEditor'),
+  loading: () => null
+});
+
 const Header = Loadable({
   loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
   loading: () => null
@@ -262,11 +267,8 @@ const Footer = Loadable({
   loading: () => null
 });
 
-
-import MiniGameMah from './components/Game/MiniGameMah'
-
 export default function App() {
-  const [ passwordAccess, setPasswordAccess ] = React.useState(true ? null : 'cat15000')
+  const [ passwordAccess, setPasswordAccess ] = React.useState(!true ? null : 'cat15000')
   const [ token, setCSRFToken ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ drawerState, setDrawerState ] = React.useState(false);
@@ -362,7 +364,7 @@ export default function App() {
 
   return (
     <React.Fragment>
-      { passwordAccess === 'cat15000' || ( sess && sess.status === 1 )?
+      { ( passwordAccess === 'cat15000' || ( sess && sess.status === 1 ) ) ?
         <div style={{ backgroundColor: '#f5f7f8' }}>
 
           { !/\/user|\/organizer/.test(window.location.pathname) &&
@@ -372,7 +374,7 @@ export default function App() {
               handleOpen={toggleDialog} />
           }
 
-          { true?
+          { !true ?
             <Switch>
               <RouteMain exact path="/"
                 {...passingProps} />
@@ -407,7 +409,7 @@ export default function App() {
               <Route component={NoMatch} />
             </Switch>
             :
-            <MiniGameMah {...passingProps} />
+            <RichTextEditor  />
           }
 
           { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&
@@ -474,6 +476,7 @@ export default function App() {
             variant="outlined"
             type="password"
             onChange={e => setPasswordAccess(e.target.value)} />
+
         </div>
       }
     </React.Fragment>

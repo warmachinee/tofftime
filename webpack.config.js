@@ -4,7 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { styles } = require( '@ckeditor/ckeditor5-dev-utils' );
 
 module.exports = {
-  mode: 'production'/*production*//*development*/,
+  mode: 'development'/*production*//*development*/,
   entry: {
     app: './src/index.js',
   },
@@ -48,6 +48,12 @@ module.exports = {
             ]
           }
         }
+      },
+      {
+        test: /plugin\.css$/,
+        loaders: [
+          'style-loader', 'css',
+        ],
       },
       {
         test: /\.css$/i,
