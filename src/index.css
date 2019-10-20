@@ -65,6 +65,10 @@ code {
     monospace;
 }
 
+.draftJsEditorContent:not(.ol-item) {
+  counter-reset: ol-counter;
+}
+
 *.alignLeft {
 	text-align: left;
 }
@@ -75,17 +79,104 @@ code {
 	text-align: right;
 }
 
-.header-one {
-	font-size: 36px;
-	font-weight: bold;
+#active-atomic {
+	border: 10px solid black
 }
 
-.superFancyBlockquote,
-.draftJsContent blockquote {
-  color: #999;
-  font-family: 'Hoefler Text', Georgia, serif;
-  font-style: italic;
-  text-align: center;
+.atomic {
+	display: flex;
+	justify-content: space-around;
+}
+
+.atomic.alignLeft {
+	display: flex;
+	justify-content: flex-start;
+}
+.atomic.alignCenter {
+	display: flex;
+	justify-content: space-around;
+}
+.atomic.alignRight {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.header-one {
+	font-size: 6rem;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 300;
+	line-height: 1;
+	letter-spacing: -0.01562em;
+}
+.header-two {
+	font-size: 3.75rem;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 300;
+	line-height: 1;
+	letter-spacing: -0.01562em;
+}
+.header-three {
+	font-size: 3rem;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 400;
+	line-height: 1.04;
+	letter-spacing: 0em;
+}
+.header-four {
+	font-size: 2.125rem;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 400;
+	line-height: 1.17;
+	letter-spacing: 0.00735em;
+}
+.header-five {
+	font-size: 1.5rem;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 400;
+	line-height: 1.33;
+	letter-spacing: 0em;
+}
+.header-six {
+	font-size: 1.25rem;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 500;
+	line-height: 1.6;
+	letter-spacing: 0.0075em;
+}
+.blockquote {
+	border-left: 5px solid #eee;
+	color: #666;
+	font-family: Hoefler Text,Georgia,serif;
+	font-style: italic;
+	margin: 16px 0;
+	padding: 10px 20px;
+}
+.ul-item {
+	display: list-item;
+	list-style-type: disc;
+	margin: 0 0 10px calc(25px + 1.5em);
+	padding: 0;
+}
+.ol-item {
+	display: flex;
+	list-style-type: none;
+	margin: 0 0 10px calc(25px + 1.5em);
+	padding: 0;
+}
+.ol-item::before {
+  /* Increment "ol-counter" by 1 */
+  counter-increment: ol-counter;
+  content: counter(ol-counter) ". ";
+}
+.code-block {
+	background-color: rgba(0,0,0,.05);
+	font-family: Inconsolata,Menlo,Consolas,monospace;
+	font-size: 16px;
+	padding: 20px;
+}
+.draftJsEditorContent a {
+	color: #1e88e5;
+	text-decoration: none;
 }
 
 figure img[class*="draftJsEmojiPlugin__image"] {
