@@ -161,8 +161,8 @@ export default function News(props){
   }
 
   async function handleFetchDelete(data){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'newsmain', {
         action: 'delete',
@@ -185,8 +185,8 @@ export default function News(props){
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet('loadgeneral',
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const d = await API._xhrGet('loadgeneral',
     `?_csrf=${token? token : resToken.token}&action=newslist`
     )
     setCSRFToken(d.token)
@@ -237,7 +237,7 @@ export default function News(props){
                     d.picture?
                       <Avatar
                         alt={d.title}
-                        src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
+                        src={API._getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
                       <ImageIcon className={classes.bigAvatar} />

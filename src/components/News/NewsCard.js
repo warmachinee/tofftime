@@ -114,7 +114,7 @@ export default function NewsCard(props) {
           <BTN.NoStyleLink to={`/news/${data.newsid}`}>
             <img
               className={classes.image}
-              src={API.getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
+              src={API._getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
               onError={()=>setPictureURL(null)} />
           </BTN.NoStyleLink>
           :
@@ -128,7 +128,7 @@ export default function NewsCard(props) {
               {data.title}
             </Typography>
             <Typography gutterBottom display="block" variant="caption" color="textSecondary" className={classes.date}>
-              { API.handleGetDate(data.createdate)}
+              { API._dateToString(data.createdate)}
             </Typography>
             <Typography variant="body2" color="textSecondary" className={classes.subtitle}>
               {data.subtitle}

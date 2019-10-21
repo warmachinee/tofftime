@@ -91,7 +91,7 @@ const theme = createMuiTheme({
 export default function MatchTeam(props) {
   const classes = useStyles();
   const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, handleTeamClose } = props
-  const [ currentTime, setCurrentTime ] = React.useState(API.getTodayTime())
+  const [ currentTime, setCurrentTime ] = React.useState(API._getTodayTime())
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ period, setPeriod ] = React.useState(0)
   const [ person, setPerson] = React.useState(0)
@@ -110,8 +110,8 @@ export default function MatchTeam(props) {
 
     async function handleEditTeamNote(){
       if(matchid){
-        const resToken = token? token : await API.xhrGet('getcsrf')
-        await API.xhrPost(
+        const resToken = token? token : await API._xhrGet('getcsrf')
+        await API._xhrPost(
           token? token : resToken.token,
           sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
             action: 'noteteam',
@@ -153,7 +153,7 @@ export default function MatchTeam(props) {
   }
 
   async function handleSchedule(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: ( matchDetail && matchDetail.team.length === 0 ) ? 'createschedule' : 'editschedule',
       matchid: parseInt(matchid),
@@ -166,7 +166,7 @@ export default function MatchTeam(props) {
       Object.assign(sendObj, { gen: 'true' });
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         ...sendObj
@@ -186,8 +186,8 @@ export default function MatchTeam(props) {
 
   async function handleFetchMatchDetail(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',

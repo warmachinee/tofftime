@@ -175,8 +175,8 @@ export default function SideMenu(props) {
   }
 
   async function handleSwitchLanguage(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'uusersystem', {
         action: 'switchlanguage'
@@ -191,7 +191,7 @@ export default function SideMenu(props) {
   }
 
   async function handleLogout(){
-    const data = await API.xhrGet('logout')
+    const data = await API._xhrGet('logout')
     setCSRFToken(data.token)
     if( data && data.response.status === 'success' ){
       handleGetUserinfo()
@@ -199,8 +199,8 @@ export default function SideMenu(props) {
   }
 
   async function handleGetUserinfo(){
-    const resToken = await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = await API._xhrGet('getcsrf')
+    await API._xhrPost(
       resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
@@ -264,7 +264,7 @@ export default function SideMenu(props) {
                             [classes.avatarImageInfo]: open,
                             [classes.avatarImage]: !open
                           })}
-                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle
                           style={{ transition: '.2s', color: COLOR.grey[900] }}
@@ -284,7 +284,7 @@ export default function SideMenu(props) {
                             [classes.avatarImageInfo]: open,
                             [classes.avatarImage]: !open
                           })}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle
                           style={{ transition: '.2s', color: COLOR.grey[900] }}
@@ -374,7 +374,7 @@ export default function SideMenu(props) {
                 <ListItemIcon>
                   { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
-                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                      src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                     :
                     <AccountCircle classes={{ root: classes.avatar }} />
                   }
@@ -391,7 +391,7 @@ export default function SideMenu(props) {
               <Flag />
             </ListItemIcon>
             <ListItemText className={classes.listTitle}
-              primary={ ( sess && sess.language === 'TH' ) ? "สร้างเพจ" : 'Create Page' } />
+              primary={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
           </ListItem>
           <ListPage {...props} />
         </List>

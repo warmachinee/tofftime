@@ -52,13 +52,13 @@ export default function SideDrawer(props) {
   } = props
 
   function handleScroll(element){
-    API.handleScrolllTo(element)
+    API._handleScrolllTo(element)
     //setTimeout(()=>{ drawerClose() }, 1000)
   }
 
   async function handleGetUserinfo(){
-    const resToken = await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = await API._xhrGet('getcsrf')
+    await API._xhrPost(
       resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
@@ -68,7 +68,7 @@ export default function SideDrawer(props) {
   }
 
   async function handleLogout(){
-    const data = await API.xhrGet('logout')
+    const data = await API._xhrGet('logout')
     setCSRFToken(data.token)
     if( data && data.response.status === 'success' ){
       handleGetUserinfo()
@@ -77,14 +77,14 @@ export default function SideDrawer(props) {
   }
 
   async function handleFetchInfo(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d[0])
+      handleAccountData(d)
     })
   }
 
@@ -111,7 +111,7 @@ export default function SideDrawer(props) {
                   { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
                       onClick={drawerClose}
-                      src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                      src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                     :
                     <AccountIcon onClick={drawerClose} classes={{ root: classes.avatar }} />
                   }
@@ -144,9 +144,9 @@ export default function SideDrawer(props) {
               </ListItemIcon>
               <ListItemText primary="Notification" />
             </ListItem>
-            <Button size="small" onClick={()=>API.handleScrolllTo('match')}>Match</Button>
-            <Button size="small" onClick={()=>API.handleScrolllTo('news')}>News</Button>
-            <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>Organizer</Button>
+            <Button size="small" onClick={()=>API._handleScrolllTo('match')}>Match</Button>
+            <Button size="small" onClick={()=>API._handleScrolllTo('news')}>News</Button>
+            <Button size="small" onClick={()=>API._handleScrolllTo('organizer')}>Organizer</Button>
             <ListItem button>
               <ListItemIcon>
                 <MailIcon />

@@ -215,7 +215,7 @@ export default function PageOrganizerPostEditor(props) {
   }
 
   async function handleFetchCreatePost(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'post',
@@ -247,7 +247,7 @@ export default function PageOrganizerPostEditor(props) {
       }
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'ppagesection', {
         ...sendObj
@@ -275,8 +275,8 @@ export default function PageOrganizerPostEditor(props) {
     }
     if(selectedFile){
       formData.append('postimage', selectedFile)
-      const response = await API.fetchPostFile('ppagesection',`?_csrf=${csrf}`, sendObj, formData)
-      const res = await API.xhrGet('getcsrf')
+      const response = await API._fetchPostFile('ppagesection',`?_csrf=${csrf}`, sendObj, formData)
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken(res.token)
       handleSnackBar({
         state: true,
@@ -306,7 +306,7 @@ export default function PageOrganizerPostEditor(props) {
   }
 
   async function handleFetchEditPost(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'edit',
@@ -341,7 +341,7 @@ export default function PageOrganizerPostEditor(props) {
       }
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'ppagesection', {
         ...sendObj
@@ -364,11 +364,11 @@ export default function PageOrganizerPostEditor(props) {
         postid: edittingData.postid,
         photopath: 'true'
       }
-      var resToken = token? token : await API.xhrGet('getcsrf')
+      var resToken = token? token : await API._xhrGet('getcsrf')
       const formData = new FormData()
       formData.append('postimage', selectedFile)
-      const response = await API.fetchPostFile('ppagesection',`?_csrf=${token? token : resToken.token}`, sendObj, formData)
-      const res = await API.xhrGet('getcsrf')
+      const response = await API._fetchPostFile('ppagesection',`?_csrf=${token? token : resToken.token}`, sendObj, formData)
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken(res.token)
       handleSnackBar({
         state: true,
@@ -383,8 +383,8 @@ export default function PageOrganizerPostEditor(props) {
   }
 
   async function handleFetchDetail(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'ploadpage', {
         action: 'postdetail',
@@ -402,11 +402,11 @@ export default function PageOrganizerPostEditor(props) {
       setSelectedTypePost(d.type)
 
       if(d.photopath){
-        setTempFile(API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ))
+        setTempFile(API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ))
       }
 
       if(d.messagedetail && d.type === 'match'){
-        setSelectedMatch(d.messagedetail[0])
+        setSelectedMatch(d.messagedetail)
       }
 
       if(d.messagedetail && d.type === 'announce'){

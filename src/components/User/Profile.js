@@ -279,7 +279,7 @@ export default function Profile(props) {
   }
 
   async function handleSave(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'editprofile',
     };
@@ -309,11 +309,11 @@ export default function Profile(props) {
     }
 
     if(accountData.birthdate){
-      if(API.handleDateToString(accountData.birthdate) !== API.handleDateToString(edittingData.birthdate)){
-        Object.assign(sendObj, { birthdate: API.handleDateToString(edittingData.birthdate) });
+      if(API._dateSendToAPI(accountData.birthdate) !== API._dateSendToAPI(edittingData.birthdate)){
+        Object.assign(sendObj, { birthdate: API._dateSendToAPI(edittingData.birthdate) });
       }
     }else{
-      Object.assign(sendObj, { birthdate: API.handleDateToString(edittingData.birthdate) });
+      Object.assign(sendObj, { birthdate: API._dateSendToAPI(edittingData.birthdate) });
     }
 
     if(accountData.favgolf !== edittingData.favgolf){
@@ -348,7 +348,7 @@ export default function Profile(props) {
 
     if(Object.keys(sendObj).length > 1){
 
-      await API.xhrPost(
+      await API._xhrPost(
         token? token : resToken.token,
         'uusersystem', {
           ...sendObj
@@ -372,13 +372,13 @@ export default function Profile(props) {
     const formData = new FormData()
     if(selectedFile){
       formData.append('profileimage', selectedFile)
-      const response = await API.fetchPostFile(
+      const response = await API._fetchPostFile(
         'uusersystem',
         `?_csrf=${csrf}`, {
         action: 'uploadimg',
         photopath: true,
       }, formData)
-      const res = await API.xhrGet('getcsrf')
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken( res.token )
       status = response.status
     }else{
@@ -397,23 +397,23 @@ export default function Profile(props) {
   }
 
   async function handleFetchInfo(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d[0])
+      handleAccountData(d)
       setEdittingData({
-        fullname: d[0].fullname ? d[0].fullname : '',
-        lastname: d[0].lastname ? d[0].lastname : '',
-        displayname: d[0].nickname ? d[0].nickname : '',
-        tel: d[0].tel ? d[0].tel : '',
-        gender: d[0].gender ? d[0].gender : '',
-        birthdate: d[0].birthdate ? new Date(d[0].birthdate) : null,
-        favgolf: d[0].favgolf ? d[0].favgolf : '',
-        privacy: d[0].privacy ? d[0].privacy : 'public',
+        fullname: d.fullname ? d.fullname : '',
+        lastname: d.lastname ? d.lastname : '',
+        displayname: d.nickname ? d.nickname : '',
+        tel: d.tel ? d.tel : '',
+        gender: d.gender ? d.gender : '',
+        birthdate: d.birthdate ? new Date(d.birthdate) : null,
+        favgolf: d.favgolf ? d.favgolf : '',
+        privacy: d.privacy ? d.privacy : 'public',
       })
     })
   }
@@ -466,7 +466,7 @@ export default function Profile(props) {
                         selectedFile ?
                         tempFile
                         :
-                        API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+                        API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
                       } />
                     :
                     ( selectedFile ?
@@ -490,7 +490,7 @@ export default function Profile(props) {
                         accountData.photopath ?
                         <Avatar className={classes.avatarImage}
                           style={{ cursor: 'pointer' }}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircleIcon
                           style={{ cursor: 'pointer' }}
@@ -703,7 +703,7 @@ export default function Profile(props) {
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
                     { ( sess && sess.language === 'TH' ) ? "วันเกิด" : 'Birthday' } :
-                    {accountData.birthdate && API.dateToString(accountData.birthdate)}
+                    {accountData.birthdate && API._dateToString(accountData.birthdate)}
                   </Typography>
                 </ListItem>
               </List>

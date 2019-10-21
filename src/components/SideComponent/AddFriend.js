@@ -80,7 +80,7 @@ export default function AddFriend(props) {
     if(e){
       setSearchUser(e.target.value)
       if(sess){
-        const socket = socketIOClient( API.getWebURL() )
+        const socket = socketIOClient( API._getWebURL() )
         socket.emit('search-client-message', {
           action: "person",
           userid: sess.userid,
@@ -94,7 +94,7 @@ export default function AddFriend(props) {
 
   function responsePerson(){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
         setData(messageNew.result.infolist)
       })
@@ -185,7 +185,7 @@ function ListPlayerItem(props) {
     if(sess){
       responseConfirmFriend(sess.userid, userid)
       setTimeout(()=>{
-        const socket = socketIOClient( API.getWebURL() )
+        const socket = socketIOClient( API._getWebURL() )
         socket.emit('friend-client-message', {
           action: action,
           userid: sess.userid,
@@ -197,7 +197,7 @@ function ListPlayerItem(props) {
 
   function responseConfirmFriend(sessid, targetid){
     if(sessid && targetid){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
         if(messageNew && messageNew.status === 'success' && messageNew.result && messageNew.result.status === 'success'){
           handleClose()
@@ -230,7 +230,7 @@ function ListPlayerItem(props) {
         <ListItemIcon onClick={handleMenuClick}>
           { data.photopath ?
             <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+              src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
             :
             <AccountCircle classes={{ root: classes.avatar }} />
           }

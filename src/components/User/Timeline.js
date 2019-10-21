@@ -75,22 +75,22 @@ export default function Timeline(props) {
   }
 
   async function handleFetchInfo(userid){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'info',
         targetuser: userid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setData(d[0])
+      setData(d)
     })
     await handleFetchFriend()
   }
 
   async function handleFetchFriend(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'friend',

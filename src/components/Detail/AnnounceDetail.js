@@ -50,13 +50,13 @@ export default function AnnounceDetail(props){
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const announceid = parseInt(props.computedMatch.params.detailparam)
-    const d = await API.xhrGet('loadgeneral',
+    const d = await API._xhrGet('loadgeneral',
     `?_csrf=${token? token : resToken.token}&action=announcedetail&announceid=${announceid}`
     )
     setCSRFToken(d.token)
-    setData(d.response[0])
+    setData(d.response)
   }
 
   React.useEffect(()=>{
@@ -73,7 +73,7 @@ export default function AnnounceDetail(props){
             {data.title}
           </Typography>
           { data.picture &&
-            <img className={classes.img} src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            <img className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
           <DetailComponent announcedetail={data.announcedetail} />
         </div>

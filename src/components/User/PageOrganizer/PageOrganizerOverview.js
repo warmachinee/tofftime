@@ -117,7 +117,7 @@ export default function PageOrganizerOverview(props) {
   }
 
   async function handleFetchRemove(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'delete',
       pageid: pageData.pageid,
@@ -129,7 +129,7 @@ export default function PageOrganizerOverview(props) {
       Object.assign(sendObj, { password: '1234' });
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'ppagesystem', {
         ...sendObj
@@ -157,7 +157,7 @@ export default function PageOrganizerOverview(props) {
             <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
               { pageData.logo ?
                 <Avatar className={classes.avatarImage}
-                  src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                  src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
                 :
                 <AccountCircleIcon classes={{ root: classes.avatar }} />
               }

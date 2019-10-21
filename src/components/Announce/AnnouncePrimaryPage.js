@@ -165,7 +165,7 @@ export default function AnnouncePrimaryPage(props) {
                 <BTN.NoStyleLink to={`/post/${pageid}/${d.postid}`}>
                   { d.photopath ?
                     <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
-                      src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                      src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
                     :
                     <Skeleton
                       className={classes.skeleton}

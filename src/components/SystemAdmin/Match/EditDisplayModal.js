@@ -109,8 +109,8 @@ export default function EditDisplayModal(props){
 
   async function handleEditNote(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'editnote',
@@ -131,8 +131,8 @@ export default function EditDisplayModal(props){
 
   async function handleSetDisplay(d){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'displaymatchsystem' : 'mdisplaymatchsystem', {
           action: 'user',

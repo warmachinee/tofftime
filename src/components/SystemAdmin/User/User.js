@@ -312,8 +312,8 @@ export default function User(props){
   }
 
   async function handleCreatePlayer(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'usersystem', {
         action: 'create',
@@ -343,8 +343,8 @@ export default function User(props){
   }
 
   async function handleLoadUser(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loaduser', {
         action: 'userlist'

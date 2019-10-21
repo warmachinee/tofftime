@@ -72,7 +72,7 @@ export default function UserOverview(props) {
             <IconButton style={{ padding: 4 }} onClick={handleDoneAndClose}>
               { data.photopath ?
                 <Avatar className={classes.avatarImage}
-                  src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                  src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                 :
                 <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR.grey[900] }} />
               }

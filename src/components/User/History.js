@@ -182,7 +182,7 @@ export default function History(props) {
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'history'
     }
@@ -198,7 +198,7 @@ export default function History(props) {
       }
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem' , {
         ...sendObj

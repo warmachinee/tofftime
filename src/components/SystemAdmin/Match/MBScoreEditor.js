@@ -492,7 +492,7 @@ export default function MBScoreEditor(props){
 
   function handleScoreDisplay(newVal){
     return new Promise(resolve => {
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.emit('player-show-client-message', {
         action: "showplayerscore",
         matchid: matchid,
@@ -511,7 +511,7 @@ export default function MBScoreEditor(props){
   }, [ arrScore, oldSelected, selected ])
 
   function handleUpdateScore(){
-    const socket = socketIOClient( API.getWebURL() )
+    const socket = socketIOClient( API._getWebURL() )
     socket.emit('admin-match-client-message', {
       action: "scorebysystemadmin",
       matchid: matchid,
@@ -527,8 +527,8 @@ export default function MBScoreEditor(props){
 
   async function handleFetch(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'userlist',
@@ -558,8 +558,8 @@ export default function MBScoreEditor(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
@@ -649,14 +649,14 @@ export default function MBScoreEditor(props){
       </ThemeProvider>
       <Typography component="div" style={{ display: 'flex' }}>
         <Box className={classes.text} m={1}>
-          OUT = {API.handleHoleSum(arrScore, 'out')}
+          OUT = {API._handleHoleSum(arrScore, 'out')}
         </Box>
         <Box className={classes.text} m={1}>
-          IN = {API.handleHoleSum(arrScore, 'in')}
+          IN = {API._handleHoleSum(arrScore, 'in')}
         </Box>
         <div style={{ flex: 1 }} />
         <Box className={classes.textHighlight} m={1}>
-          Total = {API.handleHoleSum(arrScore, 'out') + API.handleHoleSum(arrScore, 'in')}
+          Total = {API._handleHoleSum(arrScore, 'out') + API._handleHoleSum(arrScore, 'in')}
         </Box>
       </Typography>
       <div className={classes.controls}>

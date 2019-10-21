@@ -75,10 +75,10 @@ export default function OrganizerMatchCard(props) {
 
   function handleJoinMatch(){
     if(sess && sess.status === 1){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.emit('match-request-client-message', {
         action: 'join',
-        matchid: data.messagedetail[0].matchid,
+        matchid: data.messagedetail.matchid,
         userid: sess.userid,
       })
       setTimeout(()=>{
@@ -90,18 +90,18 @@ export default function OrganizerMatchCard(props) {
   }
 
   function handleGetButton(){
-    if(BTN && data && data.messagedetail[0].matchstatus === 0){
+    if(BTN && data && data.messagedetail.matchstatus === 0){
       switch (true) {
-        case data.messagedetail[0].permission === 'host' || data.messagedetail[0].permission === 'admin':
+        case data.messagedetail.permission === 'host' || data.messagedetail.permission === 'admin':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
-              <BTN.NoStyleLink to={`/user/management/match/${data.messagedetail[0].matchid}`}>
+              <BTN.NoStyleLink to={`/user/management/match/${data.messagedetail.matchid}`}>
                 <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
               </BTN.NoStyleLink>
             </div>
           )
           break;
-        case data.messagedetail[0].permission === 'none':
+        case data.messagedetail.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
               { joinStatus?
@@ -131,16 +131,16 @@ export default function OrganizerMatchCard(props) {
       { data &&
         (
           ( data.messagedetail && data.photopath ) ?
-          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+          <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
             <img className={classes.image}
-              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
           </BTN.NoStyleLink>
           :
           (
-            ( data.messagedetail && data.messagedetail[0].photopath ) ?
-            <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+            ( data.messagedetail && data.messagedetail.photopath ) ?
+            <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
               <img className={classes.image}
-                src={API.getPictureUrl(data.messagedetail[0].photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             </BTN.NoStyleLink>
             :
             <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />
@@ -149,24 +149,24 @@ export default function OrganizerMatchCard(props) {
       }
       { ( data && data.messagedetail )?
         <Box className={classes.box}>
-          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+          <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
             <Typography gutterBottom variant="body1" className={classes.title}>
               {data.message}
             </Typography>
           </BTN.NoStyleLink>
-          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+          <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-              {data.messagedetail[0].matchname}
+              {data.messagedetail.matchname}
             </Typography>
           </BTN.NoStyleLink>
-          <BTN.NoStyleLink to={`/match/${data.messagedetail[0].matchid}`}>
+          <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
               <LocationOnIcon fontSize="small" className={classes.locationIcon} />
-              {data.messagedetail[0].fieldname + `(${data.messagedetail[0].fieldversion})`}
+              {data.messagedetail.fieldname + `(${data.messagedetail.fieldversion})`}
             </Typography>
           </BTN.NoStyleLink>
           <Typography variant="caption" color="textSecondary">
-            {/*${data.views + 'views'} • */`${API.handleGetDate(data.messagedetail[0].matchdate)}`}
+            {/*${data.views + ' views'} • */`${API._dateToString(data.messagedetail.matchdate)}`}
           </Typography>
         </Box>
         :

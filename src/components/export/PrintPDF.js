@@ -38,7 +38,7 @@ function handlePrint(data, userscore, classname, sess){
 }
 
 function handleDownload(data, userscore, matchClass, sortBy, sess){
-  var matchClassName = data.scorematch !== 0 ? matchClass.classname : API.handleAmateurClass(matchClass.classno)
+  var matchClassName = data.scorematch !== 0 ? matchClass.classname : API._handleAmateurClass(matchClass.classno)
   pdfMake.createPdf(PDFFile(data, userscore, matchClassName, sortBy, sess)).download('Score ' + matchClassName + '.pdf');
 }
 

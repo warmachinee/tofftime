@@ -11,8 +11,8 @@ export default function PageOrganizer(props) {
 
   async function handleFetch(){
     if(sess){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadpage' : 'ploadpage', {
           action: 'detail',
@@ -31,14 +31,14 @@ export default function PageOrganizer(props) {
   }
 
   async function handleFetchInfo(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d[0])
+      handleAccountData(d)
     })
     if(props.computedMatch){
       await handleFetch()

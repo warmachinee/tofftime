@@ -49,8 +49,8 @@ export default function MatchDetail(props){
   const [ sortBy, setSortBy ] = React.useState('net')
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',
@@ -77,7 +77,7 @@ export default function MatchDetail(props){
 
   function response(action){
     const matchid = parseInt(props.computedMatch.params.matchid)
-    const socket = socketIOClient( API.getWebURL() )
+    const socket = socketIOClient( API._getWebURL() )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
       if(messageNew && messageNew.status === 'success'){
         if(messageNew.hostdetail){

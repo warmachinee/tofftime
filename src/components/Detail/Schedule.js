@@ -81,8 +81,8 @@ export default function Schedule(props) {
   const [ data, setData ] = React.useState(null)
 
   async function handleFetchSchedule(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'schedule',
@@ -94,8 +94,8 @@ export default function Schedule(props) {
   }
 
   async function handleFetchMatchDetail(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',

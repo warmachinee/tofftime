@@ -97,8 +97,8 @@ export default function Dialog(props) {
   const container = React.useRef(null);
 
   async function handleGetUserinfo(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
@@ -108,8 +108,8 @@ export default function Dialog(props) {
   }
 
   async function handleSignIn(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'login', {
         username: username,
@@ -137,8 +137,8 @@ export default function Dialog(props) {
   async function handleSignUp(d){
     const tempUsername = d.username
     const tempPassword = d.password
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'register', {
         username: d.username,

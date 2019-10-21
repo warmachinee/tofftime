@@ -97,7 +97,7 @@ export default function HistoryList(props) {
                     [classes.imageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
                     [classes.imageDown]: open ? window.innerWidth < 740 : window.innerWidth < 500
                   })}
-                    src={API.getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                    src={API._getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
                   :
                   <Skeleton className={clsx({
                     [classes.imageUp]: open ? window.innerWidth >= 740 : window.innerWidth >= 500,
@@ -109,13 +109,13 @@ export default function HistoryList(props) {
                 <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%' }}
                   primary={
                     <Typography variant="subtitle2" color="textSecondary">
-                      {API.dateToString(data.matchdate)}
+                      {API._dateToString(data.matchdate)}
                     </Typography>
                   }
                   secondary={
                     <React.Fragment>
                       <Typography variant="caption" color="textSecondary">
-                        {data.views + 'views'}
+                        {data.views + ' views'}
                       </Typography>
                     </React.Fragment>
                   } />
@@ -137,7 +137,7 @@ export default function HistoryList(props) {
                   <React.Fragment>
                     { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
                       <Typography variant="caption" color="textSecondary">
-                        {`${API.dateToString(data.matchdate)} • ${data.views + 'views'}`}
+                        {`${API._dateToString(data.matchdate)} • ${data.views + ' views'}`}
                       </Typography>
                     }
                     <Typography variant="body2" color="textPrimary" className={classes.listTitle}>

@@ -94,15 +94,15 @@ export default function OverviewProfile(props) {
   }
 
   async function handleFetchInfo(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'info',
         targetuser: userid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setData(d[0])
+      setData(d)
     })
   }
 
@@ -125,7 +125,7 @@ export default function OverviewProfile(props) {
           <div className={classes.imageGrid}>
             { data.photopath ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
               :
               <AccountCircle classes={{ root: classes.avatar }} />
             }

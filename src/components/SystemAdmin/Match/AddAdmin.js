@@ -139,8 +139,8 @@ function ListMenu(props) {
   }
 
   async function handleSelectRole(val, role){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'setadmin',
@@ -157,8 +157,8 @@ function ListMenu(props) {
 
   async function handleLoadUser(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'userlist',
@@ -185,8 +185,8 @@ function ListMenu(props) {
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
         action: 'admin',
@@ -294,8 +294,8 @@ export default function AddAdmin(props){
   }
 
   async function handleCreatePlayer(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'usersystem', {
         action: 'create',
@@ -317,8 +317,8 @@ export default function AddAdmin(props){
 
   async function handleLoadUser(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'userlist',

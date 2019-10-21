@@ -168,7 +168,7 @@ export default function AnnouncePrimary(props) {
                 <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
                   { d.picture ?
                     <img className={classes.sliderItem} style={{ height: window.innerWidth * .6 }}
-                      src={API.getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                      src={API._getPictureUrl(d.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
                     :
                     <Skeleton
                       className={classes.skeleton}

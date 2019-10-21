@@ -198,7 +198,7 @@ export default function LocationList(props){
     if(e){
       setSearchField(e.target.value)
       if(sess){
-        const socket = socketIOClient( API.getWebURL() )
+        const socket = socketIOClient( API._getWebURL() )
         socket.emit('search-client-message', {
           action: "field",
           userid: sess.userid,
@@ -212,7 +212,7 @@ export default function LocationList(props){
 
   function responseField(){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sess.userid}-field-search-server-message`, (messageNew) => {
         setData(messageNew.result.infolist)
       })
@@ -220,8 +220,8 @@ export default function LocationList(props){
   }
 
   async function handleLoadField(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadfield' : 'loadusersystem', {
         ...(sess.typeid === 'admin')? { action: 'list' } : {
@@ -235,8 +235,8 @@ export default function LocationList(props){
   }
 
   async function handleDeleteField(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
         action: 'delete',
@@ -385,8 +385,8 @@ function ListField(props){
   }
 
   async function handleFetchLoadFieldVersion(fieldid){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
         action: 'versioncount',
@@ -410,7 +410,7 @@ function ListField(props){
         <ListItemIcon className={classes.listImage}>
           { data.photopath ?
             <img className={classes.image}
-              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
+              src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
             :
             <Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate />
           }

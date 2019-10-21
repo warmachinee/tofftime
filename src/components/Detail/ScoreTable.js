@@ -328,7 +328,6 @@ export default function ScoreTable(props) {
 
   return (
     <div>
-      {/*--------------------Table Head--------------------*/}
       <Grow in={op}>
         <AppBar
           ref={inputEl}
@@ -417,7 +416,6 @@ export default function ScoreTable(props) {
           </Table>
         </AppBar>
       </Zoom>
-      {/*--------------------End Table Head--------------------*/}
       <Paper className={classes.root}>
         { userscore && userscore.filter( d =>{
           return ( d && d.classno === matchClass.classno )

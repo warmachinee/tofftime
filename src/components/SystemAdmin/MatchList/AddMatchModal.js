@@ -104,8 +104,8 @@ export default function AddMatchModal(props){
   }
 
   async function handleAddMatch(d){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'matchmain', {
         action: 'add',
@@ -127,8 +127,8 @@ export default function AddMatchModal(props){
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmainpage', {
         action: 'match',
@@ -139,8 +139,8 @@ export default function AddMatchModal(props){
   }
 
   async function handleLoadMatch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmatch', {
         action: 'list',

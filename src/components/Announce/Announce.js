@@ -47,8 +47,8 @@ export default function Announce(props) {
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet('loadgeneral',
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const d = await API._xhrGet('loadgeneral',
     `?_csrf=${token? token : resToken.token}&action=announcelist`
     )
     setCSRFToken(d.token)

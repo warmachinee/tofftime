@@ -211,8 +211,8 @@ export default function NewsEditor(props) {
       Object.assign(sendObj, { newsdetail:  detail});
     }
 
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'newsmain', {
         ...sendObj
@@ -233,16 +233,16 @@ export default function NewsEditor(props) {
   }
 
   async function handleEditPicture(){
-    var resToken = token? token : await API.xhrGet('getcsrf')
+    var resToken = token? token : await API._xhrGet('getcsrf')
     const formData = new FormData()
     formData.append('newsimage', selectedFile)
-    const d = await API.fetchPostFile('newsmain',`?_csrf=${token? token : res.token}`, {
+    const d = await API._fetchPostFile('newsmain',`?_csrf=${token? token : res.token}`, {
       action: 'edit',
       newsid: edittingData.newsid,
       photopath: true,
       display: true,
     }, formData)
-    resToken = await API.xhrGet('getcsrf')
+    resToken = await API._xhrGet('getcsrf')
     setCSRFToken(resToken.token)
     handleSnackBar({
       state: true,
@@ -254,7 +254,7 @@ export default function NewsEditor(props) {
   }
 
   async function handleCreate(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'create',
@@ -273,7 +273,7 @@ export default function NewsEditor(props) {
       Object.assign(sendObj, { newsdetail:  detail});
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'newsmain', {
         ...sendObj
@@ -294,8 +294,8 @@ export default function NewsEditor(props) {
     }
     if(selectedFile){
       formData.append('newsimage', selectedFile)
-      const response = await API.fetchPostFile('newsmain',`?_csrf=${csrf}`, sendObj, formData)
-      const res = await API.xhrGet('getcsrf')
+      const response = await API._fetchPostFile('newsmain',`?_csrf=${csrf}`, sendObj, formData)
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken(res.token)
       handleSnackBar({
         state: true,
@@ -323,8 +323,8 @@ export default function NewsEditor(props) {
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmainpage', {
         action: 'news',
@@ -335,15 +335,15 @@ export default function NewsEditor(props) {
   }
 
   async function handleFetchDetail(newsid){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet('loadgeneral',
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const d = await API._xhrGet('loadgeneral',
     `?_csrf=${token? token : resToken.token}&action=newsdetail&newsid=${edittingData.newsid}`
     )
     setCSRFToken(d.token)
-    setTitle(d.response[0].title)
-    setSubtitle(d.response[0].subtitle)
-    setDetail(d.response[0].newsdetail)
-    setDataDetail(d.response[0])
+    setTitle(d.response.title)
+    setSubtitle(d.response.subtitle)
+    setDetail(d.response.newsdetail)
+    setDataDetail(d.response)
   }
 
   React.useEffect(()=>{

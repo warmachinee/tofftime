@@ -68,8 +68,8 @@ export default function OrganizerOverview(props) {
   const [ data, setData ] = React.useState(null)
 
   async function handleToggleFollow(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'uusersystem' , {
         action: 'pagefollow',
@@ -81,8 +81,8 @@ export default function OrganizerOverview(props) {
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       ( sess && sess.status === 1 ) ? 'ploadpage' : 'mloadpage' , {
         action: 'detail',
@@ -109,7 +109,7 @@ export default function OrganizerOverview(props) {
           <div className={classes.imageGrid}>
             { data.logo ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(data.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                src={API._getPictureUrl(data.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
               :
               <AccountCircleIcon classes={{ root: classes.avatar }} />
             }

@@ -112,7 +112,7 @@ export default function AnnounceSecondary(props) {
               marginRight: window.innerWidth >= 900? 0 : 24,
             }}>
             { data[0].picture ?
-              <img className={classes.item} src={API.getPictureUrl(data[0].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              <img className={classes.item} src={API._getPictureUrl(data[0].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
               :
               <Skeleton className={classes.skeleton} />
             }
@@ -136,7 +136,7 @@ export default function AnnounceSecondary(props) {
         <BTN.NoStyleLink to={`/announce/${data[1].announceid}`}>
           <div className={classes.itemGrid}>
             { data[1].picture ?
-              <img className={classes.item} src={API.getPictureUrl(data[1].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              <img className={classes.item} src={API._getPictureUrl(data[1].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
               :
               <Skeleton className={classes.skeleton} />
             }

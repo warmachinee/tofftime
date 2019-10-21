@@ -58,7 +58,6 @@ const useStyles = makeStyles(theme => ({
   title: {
     color: primary[900],
     fontWeight: 600,
-    fontVariant: 'petite-caps',
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
   date: {
@@ -157,7 +156,7 @@ function MatchDetailBody(props) {
 
   function handleJoinMatch(){
     if(sess && sess.status === 1){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.emit('match-request-client-message', {
         action: 'join',
         matchid: matchid,
@@ -207,10 +206,7 @@ function MatchDetailBody(props) {
   return (
     <Paper className={classes.root}>
       <GoBack />
-
-      {/*--------------------Content--------------------*/}
       <div className={classes.content}>
-        {/*--------------------Match Attribute--------------------*/}
         <React.Fragment>
           <Tooltip gutterBottom title={data?data.title:'Match Title'} placement="top-start">
             <Typography classes={{ root: classes.title }} variant="h5">
@@ -264,7 +260,7 @@ function MatchDetailBody(props) {
           <div className={classes.imageGrid}>
             { data && data.picture &&
               <img align="left" className={classes.image}
-                src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
           </div>
           <div style={{ marginTop: 16 }}>
@@ -274,7 +270,7 @@ function MatchDetailBody(props) {
                   return(
                     <div style={{ display: 'flex' }} key={d.classno}>
                       <Typography style={{ fontWeight: 600, marginRight: 12 }} variant="body1">
-                        Flight {API.handleAmateurClass(d.classno)}
+                        Flight {API._handleAmateurClass(d.classno)}
                       </Typography>
                       <Typography>
                         handicap {d.classname} - up
@@ -285,7 +281,7 @@ function MatchDetailBody(props) {
                   return (
                     <div style={{ display: 'flex' }} key={d.classno}>
                       <Typography style={{ fontWeight: 600, marginRight: 12 }} variant="body1">
-                        Flight {API.handleAmateurClass(d.classno)}
+                        Flight {API._handleAmateurClass(d.classno)}
                       </Typography>
                       <Typography>
                         handicap {d.classname} - {parseInt(data.class[i + 1].classname) - 1}
@@ -296,9 +292,7 @@ function MatchDetailBody(props) {
               })
             }
           </div>
-          {/*--------------------End Match Attribute--------------------*/}
         </React.Fragment>
-        {/*--------------------End Match Attribute--------------------*/}
         <React.Fragment>
           <ListItem button onClick={expandHandler}
             style={{
@@ -324,7 +318,6 @@ function MatchDetailBody(props) {
           </Collapse>
         </React.Fragment>
       </div>
-      {/*--------------------End Content--------------------*/}
       <Menu
         anchorEl={anchorEl}
         keepMounted

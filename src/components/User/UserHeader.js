@@ -136,7 +136,7 @@ export default function UserHeader(props) {
   }
 
   async function handleLogout(){
-    const data = await API.xhrGet('logout')
+    const data = await API._xhrGet('logout')
     setCSRFToken(data.token)
     if( data && data.response.status === 'success' ){
       handleGetUserinfo()
@@ -144,8 +144,8 @@ export default function UserHeader(props) {
   }
 
   async function handleGetUserinfo(){
-    const resToken = await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = await API._xhrGet('getcsrf')
+    await API._xhrPost(
       resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
@@ -156,7 +156,7 @@ export default function UserHeader(props) {
   }
 
   function handleNotifications(){
-    const endpoint = API.getWebURL()
+    const endpoint = API._getWebURL()
     const socket = socketIOClient(endpoint)
     socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
       if(messageNew){
@@ -166,8 +166,8 @@ export default function UserHeader(props) {
   }
 
   async function handleFetchNotifications(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'notification'
@@ -256,7 +256,7 @@ export default function UserHeader(props) {
                       (
                         pageData.logo ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle classes={{ root: classes.avatar }} />
                       )
@@ -264,7 +264,7 @@ export default function UserHeader(props) {
                       (
                         accountData.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle classes={{ root: classes.avatar }} />
                       )
@@ -287,7 +287,7 @@ export default function UserHeader(props) {
                         (
                           pageData.logo ?
                           <Avatar className={classes.avatarImage}
-                            src={API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                            src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                           :
                           <AccountCircle classes={{ root: classes.avatar }} />
                         )
@@ -295,7 +295,7 @@ export default function UserHeader(props) {
                         (
                           accountData.photopath ?
                           <Avatar className={classes.avatarImage}
-                            src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                            src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                           :
                           <AccountCircle classes={{ root: classes.avatar }} />
                         )

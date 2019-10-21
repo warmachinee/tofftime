@@ -165,7 +165,7 @@ export default function MatchStepper(props) {
       scorematch: parseInt(selectedMatchType),
       class: matchClass,
       privacy: selectedPrivacy,
-      matchdate: API.handleDateToString(selectedDate),
+      matchdate: API._dateSendToAPI(selectedDate),
     }
 
     if(selectedFieldVersion !== 1){
@@ -176,8 +176,8 @@ export default function MatchStepper(props) {
       Object.assign(sendObj, { pageid: pageData.pageid });
     }
 
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mmatchsystem', {
         ...sendObj
@@ -200,14 +200,14 @@ export default function MatchStepper(props) {
     const formData = new FormData()
     if(selectedFile){
       formData.append('matchimage', selectedFile)
-      const response = await API.fetchPostFile(
+      const response = await API._fetchPostFile(
         'mmatchsystem',
         `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: d.matchid,
         photopath: true,
       }, formData)
-      const resToken = await API.xhrGet('getcsrf')
+      const resToken = await API._xhrGet('getcsrf')
       setCSRFToken(resToken.token)
       status = response.status
     }else{

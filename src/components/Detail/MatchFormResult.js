@@ -139,15 +139,15 @@ export default function MatchFormResult(props) {
 
   function handleResponseForm(){
     const matchid = parseInt(props.computedMatch.params.matchid)
-    const socket = socketIOClient( API.getWebURL() )
+    const socket = socketIOClient( API._getWebURL() )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
       setData(messageNew)
     })
   }
 
   async function handleFetchForm(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'form',
@@ -159,8 +159,8 @@ export default function MatchFormResult(props) {
   }
 
   async function handleFetchMatchDetail(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',
@@ -229,7 +229,7 @@ export default function MatchFormResult(props) {
                     <ListItemIcon className={classes.listPicture}>
                       { d.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircle classes={{ root: classes.avatar }} />
                       }
@@ -256,7 +256,7 @@ export default function MatchFormResult(props) {
                             {getStatus(d.status).text}
                           </Typography>
                           <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
-                            {API.handleGetDate(d.createdate)}
+                            {API._dateToString(d.createdate)}
                           </Typography>
                         </React.Fragment>
                       } />
@@ -274,7 +274,7 @@ export default function MatchFormResult(props) {
                       secondary={
                         window.innerWidth >= 500 && d.createdate &&
                           <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
-                            {API.handleGetDate(d.createdate)}
+                            {API._dateToString(d.createdate)}
                           </Typography>
                       } />
                   </ListItem>

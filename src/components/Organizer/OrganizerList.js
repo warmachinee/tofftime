@@ -70,8 +70,8 @@ export default function OrganizerList(props) {
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mloadpage', {
         action: 'list',
@@ -106,7 +106,7 @@ export default function OrganizerList(props) {
                 <BTN.NoStyleLink to={`/page/${d.pageid}`}>
                   { d.logo ?
                     <IconButton className={classes.iconButton}>
-                      <Avatar className={classes.avatar} src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                      <Avatar className={classes.avatar} src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
                     </IconButton>
                     :
                     <IconButton className={classes.iconButton}>

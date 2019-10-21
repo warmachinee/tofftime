@@ -107,7 +107,7 @@ export default function OrganizerPostCard(props) {
           <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
             <img
               className={classes.image}
-              src={API.getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
+              src={API._getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
               onError={()=>setPictureURL(null)} />
           </BTN.NoStyleLink>
           :
@@ -125,7 +125,7 @@ export default function OrganizerPostCard(props) {
             </BTN.NoStyleLink>
             <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
               <Typography gutterBottom display="block" variant="caption" color="textSecondary" className={classes.date}>
-                { API.handleGetDate(data.createdate)}
+                { API._dateToString(data.createdate)}
               </Typography>
             </BTN.NoStyleLink>
           </React.Fragment>

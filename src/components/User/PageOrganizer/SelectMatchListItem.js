@@ -102,7 +102,7 @@ export default function SelectMatchListItem(props) {
                   [classes.imageUp]: window.innerWidth >= 500,
                   [classes.imageDown]: window.innerWidth < 500
                 })}
-                  src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                  src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
                 :
                 <Skeleton className={clsx({
                   [classes.imageUp]: window.innerWidth >= 500,
@@ -114,13 +114,13 @@ export default function SelectMatchListItem(props) {
               <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%' }}
                 primary={
                   <Typography variant="subtitle2" color="textSecondary">
-                    {API.handleGetDate(data.date)}
+                    {API._dateToString(data.date)}
                   </Typography>
                 }
                 secondary={
                   <React.Fragment>
                     <Typography variant="caption" color="textSecondary">
-                      {data.views + 'views'}
+                      {data.views + ' views'}
                     </Typography>
                   </React.Fragment>
                 } />
@@ -132,7 +132,7 @@ export default function SelectMatchListItem(props) {
                 <React.Fragment>
                   { !(window.innerWidth >= 600) &&
                     <Typography variant="caption" color="textSecondary">
-                      {`${API.handleGetDate(data.date)} • ${data.views + 'views'}`}
+                      {`${API._dateToString(data.date)} • ${data.views + ' views'}`}
                     </Typography>
                   }
                   <Typography variant="body2" color="textPrimary" className={classes.listTitle}>

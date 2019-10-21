@@ -206,8 +206,8 @@ export default function AnnouncementEditor(props) {
       Object.assign(sendObj, { announcedetail:  detail});
     }
 
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'announcemain', {
         ...sendObj
@@ -228,16 +228,16 @@ export default function AnnouncementEditor(props) {
   }
 
   async function handleEditPicture(){
-    var resToken = token? token : await API.xhrGet('getcsrf')
+    var resToken = token? token : await API._xhrGet('getcsrf')
     const formData = new FormData()
     formData.append('announceimage', selectedFile)
-    const d = await API.fetchPostFile('announcemain',`?_csrf=${token? token : res.token}`, {
+    const d = await API._fetchPostFile('announcemain',`?_csrf=${token? token : res.token}`, {
       action: 'edit',
       announceid: edittingData.announceid,
       photopath: true,
       display: true,
     }, formData)
-    resToken = await API.xhrGet('getcsrf')
+    resToken = await API._xhrGet('getcsrf')
     setCSRFToken(resToken.token)
     handleSnackBar({
       state: true,
@@ -249,7 +249,7 @@ export default function AnnouncementEditor(props) {
   }
 
   async function handleCreate(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'create',
@@ -264,7 +264,7 @@ export default function AnnouncementEditor(props) {
       Object.assign(sendObj, { announcedetail:  detail});
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'announcemain', {
         ...sendObj
@@ -285,8 +285,8 @@ export default function AnnouncementEditor(props) {
     }
     if(selectedFile){
       formData.append('announceimage', selectedFile)
-      const response = await API.fetchPostFile('announcemain',`?_csrf=${csrf}`, sendObj, formData)
-      const res = await API.xhrGet('getcsrf')
+      const response = await API._fetchPostFile('announcemain',`?_csrf=${csrf}`, sendObj, formData)
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken(res.token)
       handleSnackBar({
         state: true,
@@ -314,19 +314,19 @@ export default function AnnouncementEditor(props) {
   }
 
   async function handleFetchDetail(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet('loadgeneral',
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const d = await API._xhrGet('loadgeneral',
     `?_csrf=${token? token : resToken.token}&action=announcedetail&announceid=${edittingData.announceid}`
     )
     setCSRFToken(d.token)
-    setTitle(d.response[0].title)
-    setDetail(d.response[0].announcedetail)
-    setDataDetail(d.response[0])
+    setTitle(d.response.title)
+    setDetail(d.response.announcedetail)
+    setDataDetail(d.response)
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmainpage', {
         action: 'announce',

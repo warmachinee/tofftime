@@ -114,7 +114,7 @@ export default function Scoreboard(props) {
   }
 
   async function handleFetch(){
-    await API.xhrPost(
+    await API._xhrPost(
       props.token,
       'loadmatchsystem', {
         action: 'reward',
@@ -160,7 +160,7 @@ export default function Scoreboard(props) {
                   data.scorematch !== 0 ?
                   d.classname
                   :
-                  API.handleAmateurClass(d.classno)
+                  API._handleAmateurClass(d.classno)
                 } />
             )
           }

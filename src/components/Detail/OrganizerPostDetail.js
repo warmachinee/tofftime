@@ -52,8 +52,8 @@ export default function OrganizerPostDetail(props){
   async function handleFetch(){
     const pageid = parseInt(props.computedMatch.params.pageid)
     const postid = parseInt(props.computedMatch.params.postid)
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mloadpage', {
         action: 'postdetail',
@@ -87,7 +87,7 @@ export default function OrganizerPostDetail(props){
             }
           </Typography>
           { data.photopath &&
-            <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            <img className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
           <DetailComponent
             messagedetail={

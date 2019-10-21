@@ -287,14 +287,14 @@ export default function MBOverview(props){
   }
 
   async function handleEditMatch(){
-    let res = await API.xhrGet('getcsrf')
+    let res = await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'edit',
       matchid: parseInt(matchid)
     };
 
     if(selectedDate){
-      Object.assign(sendObj, { matchdate: API.handleDateToString(selectedDate) });
+      Object.assign(sendObj, { matchdate: API._dateSendToAPI(selectedDate) });
     }
 
     if(selectedField){
@@ -317,7 +317,7 @@ export default function MBOverview(props){
       Object.assign(sendObj, { scorematch: parseInt(selectedMatchType) });
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin'? 'matchsystem' : 'mmatchsystem', sendObj,
       (csrf, d) =>{
@@ -339,14 +339,14 @@ export default function MBOverview(props){
     const formData = new FormData()
     if(selectedFile){
       formData.append('matchimage', selectedFile)
-      const response = await API.fetchPostFile(
+      const response = await API._fetchPostFile(
         sess.typeid === 'admin'? 'matchsystem' : 'mmatchsystem',
         `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: parseInt(matchid),
         photopath: true,
       }, formData)
-      const res = await API.xhrGet('getcsrf')
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken( res.token )
       status = response.status
     }else{
@@ -366,8 +366,8 @@ export default function MBOverview(props){
 
   async function handleFetch(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin'? 'loadmatch' :'mloadmatch', {
           action: 'detail',
@@ -436,7 +436,7 @@ export default function MBOverview(props){
                   label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
-                  value={ data?( selectedDate ? selectedDate : new Date(API.handleStringToDate(data.date)) ):new Date() }
+                  value={ data?( selectedDate ? selectedDate : new Date(data.date) ):new Date() }
                   onChange={date => handleDateChange(date)}
                 />
               </MuiPickersUtilsProvider>
@@ -453,7 +453,7 @@ export default function MBOverview(props){
                   selectedFile && tempFile ?
                   tempFile
                   :
-                  API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+                  API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
                 } />
               { editting && imgRef.current &&
                 <div

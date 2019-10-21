@@ -70,12 +70,11 @@ const useStyles = makeStyles(theme => ({
 export default function MatchCard(props) {
   const classes = useStyles();
   const { API, BTN, sess, data, isSupportWebp, chkUserid, pageOrganizer, pageData } = props
-  const [ paperHover, setPaperHover ] = React.useState(0)
   const [ joinStatus, setJoinStatus ] = React.useState(false)
 
   function handleJoinMatch(){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.emit('match-request-client-message', {
         action: 'join',
         matchid: data.matchid,
@@ -120,28 +119,17 @@ export default function MatchCard(props) {
   return(
     <Paper
       className={classes.root}
-      elevation={ ( data && window.innerWidth >= 600 ) ? paperHover : 1}
-      {...data?
-        {
-          onMouseEnter: ()=>setPaperHover(3),
-          onMouseLeave: ()=>setPaperHover(0),
-        } : null
-      }>
+      elevation={1}>
       { ( data && data.matchphoto ) ?
         <BTN.NoStyleLink to={`/match/${data.matchid}`}>
           <img className={classes.image}
-            src={API.getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            src={API._getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
         </BTN.NoStyleLink>
         :
         <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />
       }
       { data ?
         <Box className={classes.box}>
-          <BTN.NoStyleLink to={`/match/${data.matchid}`}>
-            <Typography gutterBottom variant="body1" className={classes.title}>
-              {data.matchname}
-            </Typography>
-          </BTN.NoStyleLink>
           <Typography gutterBottom variant="body2"
             style={{
               color: data.typescore === 1 ? primary[700] : 'inherit',
@@ -152,14 +140,18 @@ export default function MatchCard(props) {
             }
           </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>
+            <Typography gutterBottom variant="body1" className={classes.title}>
+              {data.matchname}
+            </Typography>
+            <Typography gutterBottom variant="body2">
+              {API._dateToString(data.matchdate)}
+            </Typography>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
               <LocationOnIcon fontSize="small" className={classes.locationIcon} />
               {data.fieldname}
             </Typography>
-          </BTN.NoStyleLink>
-          <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography variant="caption" color="textSecondary">
-              {`${data.views + 'views'} • ${API.handleDateToString(data.matchdate)}`}
+              {`${data.views + ' views'}`}
             </Typography>
           </BTN.NoStyleLink>
         </Box>

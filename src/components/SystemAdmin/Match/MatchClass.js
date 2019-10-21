@@ -244,8 +244,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchAdd(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classadd',
@@ -271,8 +271,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchEdit(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classedit',
@@ -319,8 +319,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetchRemove(d){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classremove',
@@ -345,8 +345,8 @@ export default function MatchClass(props) {
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
         action: 'detail',
@@ -408,8 +408,8 @@ export default function MatchClass(props) {
     }
 
     async function handleSelectColor(color){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'setcolor',

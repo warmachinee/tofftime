@@ -160,8 +160,8 @@ export default function CourseBody(props){
   }
 
   async function handleFetchToggleOfficial(data){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'fieldsystem', {
         action: 'togglecustom',
@@ -181,8 +181,8 @@ export default function CourseBody(props){
   }
 
   async function handleDeleteField(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
         action: 'delete',
@@ -204,8 +204,8 @@ export default function CourseBody(props){
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadfield' : 'loadusersystem', {
         ...(sess.typeid === 'admin') ? { action: 'list' } : {
@@ -306,7 +306,7 @@ export default function CourseBody(props){
                 <ListItemIcon className={classes.listImage}>
                   { d.photopath ?
                     <img className={classes.image}
-                      src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
+                      src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
                     :
                     <Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate />
                   }

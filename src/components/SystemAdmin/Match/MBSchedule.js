@@ -412,7 +412,7 @@ export default function MBSchedule(props){
   }
 
   function handleResponseForm(){
-    const socket = socketIOClient( API.getWebURL() )
+    const socket = socketIOClient( API._getWebURL() )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
       setData(API.sortArrByDate(messageNew, 'createdate', 'fullname'))
     })
@@ -420,8 +420,8 @@ export default function MBSchedule(props){
 
   async function handleFetchSwitchHostForm(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'switchhostform',
@@ -452,8 +452,8 @@ export default function MBSchedule(props){
 
   async function handleSetTeam(userid, teamno){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'editteam',
@@ -478,8 +478,8 @@ export default function MBSchedule(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
@@ -507,8 +507,8 @@ export default function MBSchedule(props){
 
   async function handleFetchSchedule(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'schedule',
@@ -523,8 +523,8 @@ export default function MBSchedule(props){
 
   async function handleFetchForm(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'form',
@@ -821,7 +821,7 @@ export default function MBSchedule(props){
                             }
                             { window.innerWidth < 600 && !edittingTeam && value.createdate &&
                               <Typography variant="caption" display="block">
-                                {API.handleGetDate(value.createdate)}
+                                {API._dateToString(value.createdate)}
                               </Typography>
                             }
                           </React.Fragment>
@@ -867,7 +867,7 @@ export default function MBSchedule(props){
                           secondary={
                             window.innerWidth >= 600 && !edittingTeam && value.createdate &&
                               <Typography variant="caption" display="block" style={{ color: grey[500] }}>
-                                {API.handleGetDate(value.createdate)}
+                                {API._dateToString(value.createdate)}
                               </Typography>
                           } />
                       }

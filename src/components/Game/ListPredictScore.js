@@ -78,8 +78,8 @@ export default function ListPredictScore(props){
     }else{
       userid = data.userid
     }
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mmatchsection', {
         action: 'setpredictscore',

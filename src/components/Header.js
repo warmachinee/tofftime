@@ -216,8 +216,8 @@ function Header(props) {
   }
 
   async function handleGetUserinfo(){
-    const resToken = await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = await API._xhrGet('getcsrf')
+    await API._xhrPost(
       resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
@@ -228,7 +228,7 @@ function Header(props) {
   }
 
   async function handleLogout(){
-    const data = await API.xhrGet('logout')
+    const data = await API._xhrGet('logout')
     setCSRFToken(data.token)
     if( data && data.response.status === 'success' ){
       handleGetUserinfo()
@@ -318,13 +318,13 @@ function Header(props) {
             <div className={classes.grow} />
             { window.location.pathname === '/' && window.innerWidth >= 600 &&
               <React.Fragment>
-                <Button size="small" onClick={()=>API.handleScrolllTo('match')}>
+                <Button size="small" onClick={()=>API._handleScrolllTo('match')}>
                   { ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
                 </Button>
-                <Button size="small" onClick={()=>API.handleScrolllTo('news')}>
+                <Button size="small" onClick={()=>API._handleScrolllTo('news')}>
                   { ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' }
                 </Button>
-                <Button size="small" onClick={()=>API.handleScrolllTo('organizer')}>
+                <Button size="small" onClick={()=>API._handleScrolllTo('organizer')}>
                   { ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' }
                 </Button>
                 <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
@@ -348,7 +348,7 @@ function Header(props) {
                       style={{ padding: 8 }}>
                       { accountData.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountIcon classes={{ root: classes.avatar }} />
                       }

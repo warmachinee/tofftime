@@ -97,7 +97,7 @@ export default function MatchTeam(props) {
   const { sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp, selectedUser, handleClose } = props
 
   function handleUpdateForm(action){
-    const socket = socketIOClient(API.getWebURL())
+    const socket = socketIOClient(API._getWebURL())
     socket.emit('match-request-client-message', {
       action: "confirm",
       matchid: matchid,
@@ -115,7 +115,7 @@ export default function MatchTeam(props) {
         </Typography>
         { ( selectedUser && selectedUser.photopath ) ?
           <img align="left" className={classes.image}
-            src={API.getPictureUrl(selectedUser.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            src={API._getPictureUrl(selectedUser.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
           :
           <div className={classes.matchImgTemp}
             style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>

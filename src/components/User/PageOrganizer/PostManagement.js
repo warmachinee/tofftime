@@ -171,8 +171,8 @@ export default function PagePost(props){
   }
 
   async function handleFetchDelete(data){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'ppagesection', {
         action: 'deletepost',
@@ -196,8 +196,8 @@ export default function PagePost(props){
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'ploadpage', {
         action: 'postlist',
@@ -257,7 +257,7 @@ export default function PagePost(props){
                     d.photopath?
                       <Avatar
                         alt={d.message.split('<$$split$$>')[0]}
-                        src={API.getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
+                        src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
                       <ImageIcon className={classes.bigAvatar} />

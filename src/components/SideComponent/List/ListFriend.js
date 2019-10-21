@@ -69,8 +69,8 @@ export default function ListFriend(props) {
   const [ open, setOpen ] = React.useState(false)
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'friend',
@@ -151,7 +151,7 @@ function ListFriendItem(props) {
     if(sess){
       responseConfirmFriend(sess.userid, userid)
       setTimeout(()=>{
-        const socket = socketIOClient( API.getWebURL() )
+        const socket = socketIOClient( API._getWebURL() )
         socket.emit('friend-client-message', {
           action: action,
           userid: sess.userid,
@@ -163,7 +163,7 @@ function ListFriendItem(props) {
 
   function responseConfirmFriend(sessid, targetid){
     if(sessid && targetid){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
         if(messageNew && messageNew.status === 'success' && messageNew.result && messageNew.result.status === 'success'){
           handleClose()
@@ -176,8 +176,8 @@ function ListFriendItem(props) {
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'friend',
@@ -195,7 +195,7 @@ function ListFriendItem(props) {
         <ListItemIcon>
           { data.photopath ?
             <Avatar className={classes.avatarImage}
-              src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+              src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
             :
             <AccountCircle classes={{ root: classes.avatar }} />
           }

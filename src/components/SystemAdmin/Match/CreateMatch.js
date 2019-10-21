@@ -320,15 +320,15 @@ function CreateMatchBody(props){
       scorematch: parseInt(selectedMatchType),
       class: matchClass,
       privacy: selectedPrivacy,
-      matchdate: API.handleDateToString(selectedDate),
+      matchdate: API._dateSendToAPI(selectedDate),
     }
 
     if(selectedFieldVersion !== 1){
       Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
     }
 
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'matchsystem', {
         ...sendObj
@@ -351,14 +351,14 @@ function CreateMatchBody(props){
     const formData = new FormData()
     if(selectedFile){
       formData.append('matchimage', selectedFile)
-      const response = await API.fetchPostFile(
+      const response = await API._fetchPostFile(
         'matchsystem',
         `?_csrf=${csrf}`, {
         action: 'edit',
         matchid: d.matchid,
         photopath: true,
       }, formData)
-      const resToken = await API.xhrGet('getcsrf')
+      const resToken = await API._xhrGet('getcsrf')
       setCSRFToken(resToken.token)
       status = response.status
     }else{
@@ -375,8 +375,8 @@ function CreateMatchBody(props){
 
   async function handleFetch(){
     var arrData = []
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadmatch' : 'loadusersystem', {
         ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'creator' }
@@ -419,7 +419,7 @@ function CreateMatchBody(props){
                   clearable
                   style={{ marginTop: 24 }}
                   className={classes.margin}
-                  label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }
+                  label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Number of teams' }
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
                   value={selectedDate}
@@ -431,7 +431,7 @@ function CreateMatchBody(props){
               <ThemeProvider theme={theme}>
                 <TextField
                   style={{ width: 280, marginTop: 'auto', marginLeft: 16 }}
-                  label={ ( sess && sess.language === 'TH' ) ? "จำนวนประเภทการแข่งขัน" : 'Class' }
+                  label={ ( sess && sess.language === 'TH' ) ? "จำนวนทีม" : 'Number of teams' }
                   value={matchClass}
                   type="number"
                   variant="outlined"

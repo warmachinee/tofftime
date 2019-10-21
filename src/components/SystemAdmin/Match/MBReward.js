@@ -155,8 +155,8 @@ function RewardContainer(props){
     userid.push(data.userid)
     prize.push(parseInt(edittingData))
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'prize',
@@ -180,8 +180,8 @@ function RewardContainer(props){
 
   async function handleFetch(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'reward',
@@ -213,8 +213,8 @@ function RewardContainer(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
@@ -355,8 +355,8 @@ export default function MBReward(props){
 
   async function handleCreate(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'create',
@@ -383,8 +383,8 @@ export default function MBReward(props){
     classno.push(matchDetail.class[value].classno)
     customsequence.push(parseInt(rewardEdit))
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'edit',
@@ -410,8 +410,8 @@ export default function MBReward(props){
     let classno = []
     classno.push(matchDetail.class[value].classno)
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'clear',
@@ -434,8 +434,8 @@ export default function MBReward(props){
 
   async function handleFetch(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'reward',
@@ -467,8 +467,8 @@ export default function MBReward(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',
@@ -523,7 +523,7 @@ export default function MBReward(props){
           { matchDetail && matchDetail.class &&
             matchDetail.class.map( d=>
               d &&
-              <StyledTab key={d.classname} label={ matchDetail.scorematch !== 0? d.classname : API.handleAmateurClass(d.classno) } />
+              <StyledTab key={d.classname} label={ matchDetail.scorematch !== 0? d.classname : API._handleAmateurClass(d.classno) } />
             )
           }
         </StyledTabs>

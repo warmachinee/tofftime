@@ -104,8 +104,8 @@ export default function AddPageModal(props){
   }
 
   async function handleAddPage(d){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'pagemain', {
         action: 'add',
@@ -127,8 +127,8 @@ export default function AddPageModal(props){
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mloadpage', {
         action: 'list',
@@ -148,8 +148,8 @@ export default function AddPageModal(props){
   }
 
   async function handleLoadPage(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadpage', {
         action: 'list',

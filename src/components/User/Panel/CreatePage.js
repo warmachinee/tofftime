@@ -156,8 +156,8 @@ export default function CreatePage(props) {
   }
 
   async function handleCreatePage(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'ppagesystem', {
         action: 'create',
@@ -177,8 +177,8 @@ export default function CreatePage(props) {
     }
     if(selectedFile){
       formData.append('pageimage', selectedFile)
-      const response = await API.fetchPostFile('ppagesystem',`?_csrf=${csrf}`, sendObj, formData)
-      const res = await API.xhrGet('getcsrf')
+      const response = await API._fetchPostFile('ppagesystem',`?_csrf=${csrf}`, sendObj, formData)
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken( res.token )
       handleSnackBar({
         state: true,
@@ -206,7 +206,7 @@ export default function CreatePage(props) {
   return (
     <TemplateDialog open={createPageState} handleClose={toggleCreatePage} maxWidth={450}>
       <div className={classes.root}>
-        <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างเพจ" : 'Create page' } />
+        <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
         <div style={{ marginTop: 24 }}>
           <ThemeProvider theme={theme}>
             <TextField

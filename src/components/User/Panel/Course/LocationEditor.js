@@ -317,7 +317,7 @@ export default function LocationEditor(props){
   }
 
   async function handleCreate(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: sess.typeid === 'admin' ? 'create' : 'createcustom',
       fieldtype: pageOrganizer ? pageData.pageid : 0,
@@ -352,7 +352,7 @@ export default function LocationEditor(props){
     }
 
     if(Object.keys(sendObj).length >= 4){
-      await API.xhrPost(
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
           ...sendObj
@@ -390,8 +390,8 @@ export default function LocationEditor(props){
         fieldid: fieldid,
         photopath: true,
       });
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      const d = await API.fetchPostFile(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      const d = await API._fetchPostFile(
         sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem',
         `?_csrf=${token? token : resToken.token}`, sendObj, formData)
       handleSnackBar({
@@ -400,7 +400,7 @@ export default function LocationEditor(props){
         variant: /success/.test(d.status) ? d.status : 'error',
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
-      const res = await API.xhrGet('getcsrf')
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken(res.token)
       try {
         setPageState('select')
@@ -409,7 +409,7 @@ export default function LocationEditor(props){
   }
 
   async function handleEdit(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const formData = new FormData()
     const sendObj = {
       action: 'edit',
@@ -441,7 +441,7 @@ export default function LocationEditor(props){
       }
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem', {
         ...sendObj
@@ -471,9 +471,9 @@ export default function LocationEditor(props){
   }
 
   async function handleFetchLoadFieldVersion(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     if(edittingField){
-      await API.xhrPost(
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
           action: 'versioncount',
@@ -489,9 +489,9 @@ export default function LocationEditor(props){
   }
 
   async function handleFetchLoadField(version){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     if(edittingField){
-      await API.xhrPost(
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
           action: 'score',
@@ -503,7 +503,7 @@ export default function LocationEditor(props){
           setHoleScore(d.fieldscore)
           setHCPScore(d.hfieldscore)
           setLocation(edittingField.fieldname)
-          setTempFile(API.getPictureUrl(edittingField.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString())
+          setTempFile(API._getPictureUrl(edittingField.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString())
         }catch(err) { console.log(err.message) }
       })
     }

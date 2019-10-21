@@ -138,8 +138,8 @@ export default function PageList(props){
   };
 
   async function handleRemove(d){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'pagemain', {
         action: 'remove',
@@ -161,8 +161,8 @@ export default function PageList(props){
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mloadpage', {
         action: 'list',
@@ -247,7 +247,7 @@ export default function PageList(props){
                     d.logo?
                       <Avatar
                         alt={d.title}
-                        src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
+                        src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
                       <AccountCircleIcon className={classes.bigAvatar} />

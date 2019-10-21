@@ -41,8 +41,8 @@ export default function ListPage(props) {
   } = props
 
   async function handleFetchPage(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'pagelist'
@@ -67,7 +67,7 @@ export default function ListPage(props) {
               <ListItemIcon>
                 { d.logo ?
                   <Avatar className={classes.avatarImage}
-                    src={API.getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                    src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                   :
                   <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }} />
                 }

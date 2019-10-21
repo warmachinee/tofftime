@@ -207,7 +207,7 @@ export default function FriendFollowList(props) {
                           { item.picture ?
                             /*
                             <Avatar className={classes.avatarImage}
-                              src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />*/
+                              src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />*/
                             <Avatar className={classes.avatarImage}
                               src={item.picture} />
                             :
@@ -252,7 +252,7 @@ export default function FriendFollowList(props) {
                       { item.picture ?
                         /*
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />*/
+                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />*/
                         <Avatar className={classes.avatarImage}
                           src={item.picture} />
                         :

@@ -162,8 +162,8 @@ export default function MatchEditor(props){
   }
 
   async function handleFetch(matchid){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin'? 'loadmatch' : 'mloadmatch', {
         action: 'detail',

@@ -42,7 +42,7 @@ export default function Upcoming(props) {
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'upcoming'
     }
@@ -51,7 +51,7 @@ export default function Upcoming(props) {
       Object.assign(sendObj, { targetuser: userid });
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem' , {
         ...sendObj

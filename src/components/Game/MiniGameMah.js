@@ -231,7 +231,7 @@ export default function MiniGameMah(props){
 
   function handleMiniGame(matchid, type){
     const gameType = type === 'jao' ? type : 'normal'
-    const socket = socketIOClient( API.getWebURL() )
+    const socket = socketIOClient( API._getWebURL() )
     socket.emit('minigame-client-message', {
       action: gameType,
       matchid: matchid,
@@ -240,7 +240,7 @@ export default function MiniGameMah(props){
 
   function responseMiniGame(matchid, type){
     const gameType = type === 'jao' ? type : 'normal'
-    const socket = socketIOClient( API.getWebURL() )
+    const socket = socketIOClient( API._getWebURL() )
     socket.on(`${matchid}-${gameType}-minigame-server-message`, (messageNew) => {
       if(messageNew){
         const d = messageNew.result
@@ -274,8 +274,8 @@ export default function MiniGameMah(props){
   }
 
   async function handleFetchSetJao(userid){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mmatchsection', {
         action: 'setjao',
@@ -296,8 +296,8 @@ export default function MiniGameMah(props){
   }
 
   async function handleChecked(hole){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mmatchsection', {
         action: 'fixhole',
@@ -319,8 +319,8 @@ export default function MiniGameMah(props){
   }
 
   async function handleSetBaseprice(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mmatchsection', {
         action: 'setbaseprize',
@@ -341,8 +341,8 @@ export default function MiniGameMah(props){
   }
 
   async function handleSetUnderOver(action){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'mmatchsection', {
         action: 'underover',
@@ -366,8 +366,8 @@ export default function MiniGameMah(props){
 
   async function handleFetchMiniGame(matchid, type){
     const gameType = type === 'jao' ? type : 'normal'
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'minigame',
@@ -631,7 +631,7 @@ export default function MiniGameMah(props){
                           </React.Fragment>
                         }
                         <ListItemText className={classes.listPredictScore} primary={d.predictscore} />
-                        <ListItemText className={classes.listPredictScore} primary={API.prefixNumber(d.diff)} />
+                        <ListItemText className={classes.listPredictScore} primary={API._prefixNumber(d.diff)} />
                         <ListItemText className={classes.listPrice} primary={calculatePrice(d.diff)} />
                       </React.Fragment>
                     }

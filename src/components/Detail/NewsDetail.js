@@ -51,12 +51,12 @@ export default function NewsDetail(props){
 
   async function handleFetch(){
     const newsid = parseInt(props.computedMatch.params.detailparam)
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    const d = await API.xhrGet('loadgeneral',
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const d = await API._xhrGet('loadgeneral',
     `?_csrf=${token? token : resToken.token}&action=newsdetail&newsid=${newsid}`
     )
     setCSRFToken(d.token)
-    setData(d.response[0])
+    setData(d.response)
   }
 
   React.useEffect(()=>{
@@ -78,7 +78,7 @@ export default function NewsDetail(props){
               {data && data.submessage ? data.submessage : ''}
             </Typography>
             { data && data.photopath &&
-              <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              <img className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
             <DetailComponent newsdetail={data && data.messagedetail ? data.messagedetail : ''} />
           </div>
@@ -96,7 +96,7 @@ export default function NewsDetail(props){
               </Typography>
               {
                 d.picture &&
-                  <img className={classes.img} src={API.getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                  <img className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
               }
               <DetailComponent newsdetail={d.newsdetail} />
             </div>
@@ -109,7 +109,7 @@ export default function NewsDetail(props){
           </Typography>
           {
             data.picture &&
-              <img className={classes.img} src={API.getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              <img className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
           <Typography variant="h5">
             {data.subtitle}

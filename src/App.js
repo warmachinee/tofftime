@@ -268,7 +268,7 @@ const Footer = Loadable({
 });
 
 export default function App() {
-  const [ passwordAccess, setPasswordAccess ] = React.useState(!true ? null : 'cat15000')
+  const [ passwordAccess, setPasswordAccess ] = React.useState(true ? null : 'cat15000')
   const [ token, setCSRFToken ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ drawerState, setDrawerState ] = React.useState(false);
@@ -341,8 +341,8 @@ export default function App() {
   }
 
   async function handleGetUserinfo(){
-    const resToken = await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = await API._xhrGet('getcsrf')
+    await API._xhrPost(
       resToken.token,
       'userinfo', {
     }, (csrf, d) =>{
@@ -374,7 +374,7 @@ export default function App() {
               handleOpen={toggleDialog} />
           }
 
-          { !true ?
+          { true ?
             <Switch>
               <RouteMain exact path="/"
                 {...passingProps} />

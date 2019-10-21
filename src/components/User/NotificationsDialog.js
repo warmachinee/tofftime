@@ -181,7 +181,7 @@ function ListNotiItem(props) {
 
   function handleJoinMatch(userid, action, side){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.emit('match-request-client-message', {
         action: 'confirm',
         matchid: data.typeid,
@@ -196,7 +196,7 @@ function ListNotiItem(props) {
 
   function handleConfirmFriend(userid, action){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.emit('friend-client-message', {
         action: 'confirm',
         userid: sess.userid,
@@ -210,8 +210,8 @@ function ListNotiItem(props) {
   }
 
   async function handleFetchNotifications(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'notification'
@@ -229,7 +229,7 @@ function ListNotiItem(props) {
             <Avatar
               style={{ transition: '.2s' }}
               className={classes.avatarImage}
-              src={API.getPictureUrl(data.fromdetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+              src={API._getPictureUrl(data.fromdetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
             :
             <AccountCircle
               style={{ color: COLOR.grey[900] }}

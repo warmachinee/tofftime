@@ -148,7 +148,7 @@ export default function AddPlayerModal(props){
   const [ lastname, setLastname ] = React.useState('')
 
   function handleInviteUser(d){
-    const socket = socketIOClient( API.getWebURL() )//[0] : hostid , [1] : targetuserid
+    const socket = socketIOClient( API._getWebURL() )//[0] : hostid , [1] : targetuserid
 
     socket.emit('match-request-client-message', {
       action: "invite",
@@ -158,8 +158,8 @@ export default function AddPlayerModal(props){
   }
 
   async function handleCreatePlayer(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'usersystem', {
         action: 'create',
@@ -177,8 +177,8 @@ export default function AddPlayerModal(props){
   }
 
   async function handleLoadUser(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loaduser' : 'mloaduser', {
         action: 'userlist'
@@ -189,8 +189,8 @@ export default function AddPlayerModal(props){
   }
 
   async function handleAddUser(d){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
         action: 'add',
@@ -209,8 +209,8 @@ export default function AddPlayerModal(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatchsystem' : 'mloadmatch', {
           action: 'detail',
@@ -241,7 +241,7 @@ export default function AddPlayerModal(props){
     if(e){
       setSearchUser(e.target.value)
       if(sess){
-        const socket = socketIOClient( API.getWebURL() )
+        const socket = socketIOClient( API._getWebURL() )
         socket.emit('search-client-message', {
           action: "person",
           userid: sess.userid,
@@ -255,7 +255,7 @@ export default function AddPlayerModal(props){
 
   function responsePlayer(){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
         setData(messageNew.result.infolist)
       })
@@ -348,7 +348,7 @@ export default function AddPlayerModal(props){
                     <ListItemIcon>
                       { value.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API.getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={API._getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                         :
                         <AccountCircleIcon classes={{ root: classes.avatar }} />
                       }

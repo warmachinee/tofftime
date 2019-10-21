@@ -95,8 +95,8 @@ function ListMenu(props) {
   }
 
   async function handleSelectRole(val, role){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'ppagesection', {
         action: 'setadmin',
@@ -119,8 +119,8 @@ function ListMenu(props) {
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'ploadpage', {
         action: 'admin',
@@ -146,7 +146,7 @@ function ListMenu(props) {
           <ListItemIcon>
             { value.photopath ?
               <Avatar className={classes.avatarImage}
-                src={API.getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                src={API._getPictureUrl(value.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
               :
               <AccountCircleIcon classes={{ root: classes.avatar }} />
             }
@@ -189,7 +189,7 @@ export default function AddAdmin(props){
     if(e){
       setSearchUser(e.target.value)
       if(sess){
-        const socket = socketIOClient( API.getWebURL() )
+        const socket = socketIOClient( API._getWebURL() )
         socket.emit('search-client-message', {
           action: "person",
           userid: sess.userid,
@@ -203,7 +203,7 @@ export default function AddAdmin(props){
 
   function responsePerson(){
     if(sess){
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
         setData(messageNew.result.infolist)
       })

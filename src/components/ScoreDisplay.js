@@ -93,7 +93,7 @@ export default function ScoreDisplay(props){
   const [ host, setHost ] = React.useState(null)
 
   function handleFetch(){
-    const socket = socketIOClient( API.getWebURL() )
+    const socket = socketIOClient( API._getWebURL() )
     const userid = hostUserid? hostUserid : parseInt(props.computedMatch.params.userid)
     socket.on(`${matchid}-${userid}-show-server-message`, (messageNew) => {
       if(messageNew.status === 'success'){
@@ -155,14 +155,14 @@ export default function ScoreDisplay(props){
       </ThemeProvider>
       <Typography component="div" style={{ display: 'flex' }}>
         <Box className={classes.text} m={1}>
-          OUT = {API.handleHoleSum(arrScore, 'out')}
+          OUT = {API._handleHoleSum(arrScore, 'out')}
         </Box>
         <Box className={classes.text} m={1}>
-          IN = {API.handleHoleSum(arrScore, 'in')}
+          IN = {API._handleHoleSum(arrScore, 'in')}
         </Box>
         <div style={{ flex: 1 }} />
         <Box className={classes.textHighlight} m={1}>
-          Total = {API.handleHoleSum(arrScore, 'out') + API.handleHoleSum(arrScore, 'in')}
+          Total = {API._handleHoleSum(arrScore, 'out') + API._handleHoleSum(arrScore, 'in')}
         </Box>
       </Typography>
     </div>

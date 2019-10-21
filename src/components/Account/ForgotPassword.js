@@ -62,8 +62,8 @@ export default function SignInComponent(props){
   }
 
   async function handleForgot(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'forgotpassword', {
         email: forgotEmail

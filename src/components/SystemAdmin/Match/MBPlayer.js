@@ -366,8 +366,8 @@ export default function MBPlayer(props){
 
   async function handleUpdateFlight(flightaction){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'flight',
@@ -388,8 +388,8 @@ export default function MBPlayer(props){
 
   async function handleSetClass(userid, classno){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'setclass',
@@ -422,8 +422,8 @@ export default function MBPlayer(props){
       }
     }
     if(sess.typeid === 'admin' && matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'remove',
@@ -443,7 +443,7 @@ export default function MBPlayer(props){
         }catch(err) { console.log(err.message) }
       })
     }else{
-      const socket = socketIOClient( API.getWebURL() )
+      const socket = socketIOClient( API._getWebURL() )
       socket.emit('match-request-client-message', {
         action: "confirm",
         matchid: matchid,
@@ -455,8 +455,8 @@ export default function MBPlayer(props){
 
   async function handleFetch(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'userlist',
@@ -486,8 +486,8 @@ export default function MBPlayer(props){
 
   async function handleFetchMatchDetail(){
     if(matchid){
-      const resToken = token? token : await API.xhrGet('getcsrf')
-      await API.xhrPost(
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'detail',

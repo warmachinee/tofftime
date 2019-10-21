@@ -165,7 +165,7 @@ function ListComponent(props){
     <ListItem button>
       { window.innerWidth >= 600 &&
         <ListItemText className={classes.tableDate} classes={{ primary: classes.tableDateText }}
-          primary={data.date} />
+          primary={API._dateToString(data.date)} />
       }
       <ListItemText primary={data.views} className={classes.tableView} />
       <ListItemText inset className={classes.tableTitle}
@@ -183,7 +183,7 @@ function ListComponent(props){
                 variant="caption"
                 color="textPrimary"
               >
-                {data.date}
+                {API._dateToString(data.date)}
               </Typography>
               <br></br>
               {data.location}
@@ -255,7 +255,7 @@ export default function MatchBody(props){
   }
 
   async function handleFetchRemove(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'delete',
       matchid: removeData.matchid,
@@ -267,7 +267,7 @@ export default function MatchBody(props){
       Object.assign(sendObj, { password: '1234' });
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsystem' : 'mmatchsystem', {
         ...sendObj
@@ -287,8 +287,8 @@ export default function MatchBody(props){
   }
 
   async function handleSetDisplay(d){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'displaymatchsystem' : 'mdisplaymatchsystem', {
         action: 'match',
@@ -309,8 +309,8 @@ export default function MatchBody(props){
 
   async function handleFetch(){
     var arrData = []
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadmatch' : 'loadusersystem', {
         ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'creator' }
@@ -335,8 +335,8 @@ export default function MatchBody(props){
 
   async function handleFetchAdminMatch(){
     var arrData = []
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadmatch' : 'loadusersystem', {
         ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'adminmatch' }
@@ -474,7 +474,7 @@ export default function MatchBody(props){
                       variant="caption"
                       color="textPrimary"
                     >
-                      {d.date}
+                      {API._dateToString(d.date)}
                     </Typography>
                   } />
               </ListItem>

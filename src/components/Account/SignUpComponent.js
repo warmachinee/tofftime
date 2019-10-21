@@ -157,7 +157,7 @@ export default function SignUpComponent(props){
         fullname: fullname,
         lastname: lastname,
         gender: gender,
-        birthdate: API.handleDateToString(selectedDate)
+        birthdate: API._dateSendToAPI(selectedDate)
       })
     }
   }
@@ -274,7 +274,7 @@ export default function SignUpComponent(props){
             fullname: fullname,
             lastname: lastname,
             gender: gender,
-            birthdate: API.handleDateToString(selectedDate)
+            birthdate: API._dateSendToAPI(selectedDate)
           })}>
           Confirm
         </SignUpButton>

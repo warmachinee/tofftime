@@ -129,8 +129,8 @@ export default function MatchList(props){
   };
 
   async function handleRemove(d){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'matchmain', {
         action: 'remove',
@@ -152,8 +152,8 @@ export default function MatchList(props){
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadmainpage', {
         action: 'match',

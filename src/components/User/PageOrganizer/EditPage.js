@@ -159,8 +159,8 @@ export default function EditPage(props) {
   }
 
   async function handleEditPage(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'ppagesystem', {
         action: 'edit',
@@ -182,8 +182,8 @@ export default function EditPage(props) {
     }
     if(selectedFile){
       formData.append('pageimage', selectedFile)
-      const response = await API.fetchPostFile('ppagesystem',`?_csrf=${csrf}`, sendObj, formData)
-      const res = await API.xhrGet('getcsrf')
+      const response = await API._fetchPostFile('ppagesystem',`?_csrf=${csrf}`, sendObj, formData)
+      const res = await API._xhrGet('getcsrf')
       setCSRFToken( res.token )
       handleSnackBar({
         state: true,
@@ -211,7 +211,7 @@ export default function EditPage(props) {
   React.useEffect(()=>{
     setPageName(pageData.pagename)
     if(pageData.logo){
-      setTempFile(API.getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ))
+      setTempFile(API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ))
     }
   }, [ ])
 

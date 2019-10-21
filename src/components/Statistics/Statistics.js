@@ -181,12 +181,12 @@ export default function Statistics(props) {
   }
 
   async function handleTickStat(value){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'editprofile',
       historystat: value
     }
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'uusersystem', {
         ...sendObj
@@ -198,20 +198,20 @@ export default function Statistics(props) {
   }
 
   async function handleFetchInfo(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
-    await API.xhrPost(
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d[0])
-      setChecked(d[0].historystat)
+      handleAccountData(d)
+      setChecked(d.historystat)
     })
   }
 
   async function handleFetch(){
-    const resToken = token? token : await API.xhrGet('getcsrf')
+    const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: 'statavg'
     }
@@ -220,7 +220,7 @@ export default function Statistics(props) {
       Object.assign(sendObj, { targetuser: userid });
     }
 
-    await API.xhrPost(
+    await API._xhrPost(
       token? token : resToken.token,
       'loadusersystem', {
         ...sendObj

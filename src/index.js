@@ -3,12 +3,11 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from "react-router-dom";
 import './index.css';
 import App from './App';
-import RichTextEditor from './components/RichTextEditor'
 import * as serviceWorker from './serviceWorker';
 
 const RenderApp = (
   <Router>
-    <RichTextEditor />
+    <App />
   </Router>
 );
 ReactDOM.render(RenderApp, document.getElementById('root'));
