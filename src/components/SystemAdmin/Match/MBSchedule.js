@@ -60,7 +60,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box'
   },
@@ -69,7 +68,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     width: '100%',
     backgroundColor: grey[50],
-    cursor: 'pointer',
     marginTop: 24,
     overflow: 'auto',
     boxSizing: 'border-box'
@@ -715,7 +713,7 @@ export default function MBSchedule(props){
             <ListItemText inset={edittingTeam} style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
                 :
                 ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
               } />

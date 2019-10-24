@@ -15,11 +15,6 @@ const OverviewProfile = Loadable({
   loading: () => null
 });
 
-const Statistics = Loadable({
-  loader: () => import(/* webpackChunkName: "Statistics" */ './../components/Statistics/Statistics'),
-  loading: () => null
-});
-
 const PageOrganizerOverview = Loadable({
   loader: () => import(/* webpackChunkName: "PageOrganizerOverview" */ './../components/User/PageOrganizer/PageOrganizerOverview'),
   loading: () => null
@@ -27,6 +22,11 @@ const PageOrganizerOverview = Loadable({
 
 const Upcoming = Loadable({
   loader: () => import(/* webpackChunkName: "Upcoming" */ './../components/User/Upcoming'),
+  loading: () => null
+});
+
+const UpcomingList = Loadable({
+  loader: () => import(/* webpackChunkName: "UpcomingList" */ './../components/User/UpcomingList'),
   loading: () => null
 });
 
@@ -52,16 +52,6 @@ const SideMenu = Loadable({
 
 const NotificationsDialog = Loadable({
   loader: () => import(/* webpackChunkName: "NotificationsDialog" */ './../components/User/NotificationsDialog'),
-  loading: () => null
-});
-
-const HistoryDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "HistoryDialog" */ './../components/User/HistoryDialog'),
-  loading: () => null
-});
-
-const UpcomingDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "UpcomingDialog" */ './../components/User/UpcomingDialog'),
   loading: () => null
 });
 
@@ -192,8 +182,6 @@ export default function UserPage(props) {
   const [ notiState, setNotiState ] = React.useState(false);
   const [ createPageState, setCreatePageState ] = React.useState(false);
   const [ createMatchState, setCreateMatchState ] = React.useState(false);
-  const [ historyState, setHistoryState ] = React.useState(false);
-  const [ upcomingState, setUpcomingState ] = React.useState(false);
   const [ setAdminState, setSetAdminState ] = React.useState(false);
   const [ createPostState, setCreatePostState ] = React.useState(false);
   const [ notiData, setNotiData ] = React.useState(null);
@@ -234,10 +222,6 @@ export default function UserPage(props) {
     createMatchState: createMatchState,
     toggleCreateMatch: toggleCreateMatch,
     handleCreateMatchClose: handleCreateMatchClose,
-    historyState: historyState,
-    toggleHistory: toggleHistory,
-    upcomingState: upcomingState,
-    toggleUpcoming: toggleUpcoming,
     setAdminState: setAdminState,
     toggleSetAdmin: toggleSetAdmin,
     createPostState: createPostState,
@@ -271,14 +255,6 @@ export default function UserPage(props) {
 
   function toggleCreatePage(){
     setCreatePageState(!createPageState)
-  }
-
-  function toggleHistory(){
-    setHistoryState(!historyState)
-  }
-
-  function toggleUpcoming(){
-    setUpcomingState(!upcomingState)
   }
 
   function toggleCreateMatch(){
@@ -324,6 +300,11 @@ export default function UserPage(props) {
     })
   }
 
+  function LoadTempData(){
+    var json = '{"userid":812454,"nickname":"P.R.E.M.io","fullname":"Sippakorn","lastname":"Suppapinyo","photopath":"/general/812454.webp","privacy":"private","historystat":["indy","unofficial","official"],"email":"warmachineza01@gmail.com","tel":"0806760057","gender":"male","birthdate":"1995-10-25T17:00:00.000Z","favgolf":"-"}'
+    handleAccountData(JSON.parse(json))
+  }
+
   React.useEffect(()=>{
     if(sess && sess.status === 1 && sess.typeid !== 'admin'){
       handleFetchInfo()
@@ -335,6 +316,9 @@ export default function UserPage(props) {
       window.location.pathname = '/admin'
     }
     window.scrollTo(0, 0)
+    if(/localhost/.test(window.location.href)){
+      LoadTempData()
+    }
   },[ sess, props.location ])
 
   return (
@@ -354,6 +338,10 @@ export default function UserPage(props) {
         }
         <RouteManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}
           {...passingProps} {...dialogProps} location={props.location} />
+        <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}
+          render={()=> <History {...props} {...dialogProps} />} />
+        <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}
+          render={()=> <UpcomingList {...props} {...dialogProps} />} />
       </main>
 
       <NotificationsDialog
@@ -361,14 +349,6 @@ export default function UserPage(props) {
         {...dialogProps}
         notiData={notiData}
         setNotiData={setNotiData} />
-
-      <HistoryDialog
-        {...props}
-        {...dialogProps} />
-
-      <UpcomingDialog
-        {...props}
-        {...dialogProps} />
 
       <CreatePage
         {...props}
@@ -414,13 +394,14 @@ function UserDashboard(props){
           <div style={{ height: 4, backgroundColor: COLOR.grey[600], margin: '48px 12px', borderRadius: 4 }} />
         </React.Fragment>
       }
-      { !pageOrganizer &&
+      {/* !pageOrganizer &&
         <Statistics {...props} />
+        */
       }
       { pageList &&
         <React.Fragment>
           <Upcoming {...props} />
-          <History {...props} open={open} />
+          <History {...props} />
         </React.Fragment>
       }
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&

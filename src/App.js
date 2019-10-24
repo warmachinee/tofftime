@@ -227,11 +227,6 @@ const RouteScoreDisplay = Loadable.Map({
   loading: () => null
 });
 
-const RichTextEditor = Loadable({
-  loader: () => import(/* webpackChunkName: "RichTextEditor" */'./components/RichTextEditor'),
-  loading: () => null
-});
-
 const Header = Loadable({
   loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
   loading: () => null
@@ -267,8 +262,10 @@ const Footer = Loadable({
   loading: () => null
 });
 
+//import MatchEditor from './components/SystemAdmin/Match/MatchEditor'
+
 export default function App() {
-  const [ passwordAccess, setPasswordAccess ] = React.useState(true ? null : 'cat15000')
+  const [ passwordAccess, setPasswordAccess ] = React.useState(!/localhost/.test(window.location.href) ? null : 'cat15000')
   const [ token, setCSRFToken ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ drawerState, setDrawerState ] = React.useState(false);
@@ -374,7 +371,41 @@ export default function App() {
               handleOpen={toggleDialog} />
           }
 
-          { true ?
+          <Switch>
+            <RouteMain exact path="/"
+              {...passingProps} />
+            <RouteOrganizer path="/page/:pageid"
+              {...passingProps} />
+
+            <RouteUserPage path="/user"
+              {...passingProps} />
+            <RoutePageOrganizer path="/organizer/:pageid"
+              {...passingProps} />
+            <RouteSystemAdmin path="/admin"
+              {...passingProps} />
+
+            <RouteAnnounceDetail path="/announce/:detailparam"
+              {...passingProps} />
+            <RouteNewsDetail path="/news/:detailparam"
+              {...passingProps} />
+            <RouteMatchDetail path="/match/:matchid"
+              {...passingProps}
+              handleSnackBarL={handleSnackBarL} />
+            <RouteOrganizerPostDetail path="/post/:pageid/:postid"
+              {...passingProps} />
+
+            <RouteSchedule path="/schedule/:matchid"
+              {...passingProps} />
+            <RouteMatchFormResult path="/matchform/:matchid"
+              {...passingProps} />
+            <RouteSignIn path="/login"
+              {...passingProps} />
+            <RouteScoreDisplay path="/display/:matchid/:userid"
+              {...passingProps} />
+            <Route component={NoMatch} />
+          </Switch>
+
+          {/* !/localhost/.test(window.location.href) ?
             <Switch>
               <RouteMain exact path="/"
                 {...passingProps} />
@@ -409,7 +440,9 @@ export default function App() {
               <Route component={NoMatch} />
             </Switch>
             :
-            <RichTextEditor  />
+            <div style={{ maxWidth: 1200, margin: 'auto' }}>
+              <MatchEditor {...passingProps} />
+            </div>*/
           }
 
           { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&

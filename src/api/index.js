@@ -227,7 +227,7 @@ function sortReverseArrByDate(data, primary, secondary){
  * Date handler function
  */
 
-function handleGetPostTime(time){
+function _getPostTime(time){
   const today = new Date()
   const cdate = new Date(time)
   var diff = (today - cdate)/(1000) //millisecond
@@ -236,45 +236,49 @@ function handleGetPostTime(time){
     str = 'just now'
     return str
   }else{
-    if(diff >= 60 && diff < 60*60){
-      diff = diff / 60
-      if(Math.floor(diff) > 1){
-        str = ' mins'
-      }else{
-        str = ' min'
-      }
-    }
-    if(diff>=60*60 && diff < 60*60*24){
-      diff = diff / ( 60*60 )
-      if(Math.floor(diff) > 1){
-        str = ' hrs'
-      }else{
-        str = ' hr'
-      }
-    }
-    if(diff>=60*60*24 && diff < 60*60*24*30){
-      diff = diff / ( 60*60*24 )
-      if(Math.floor(diff) > 1){
-        str = ' days'
-      }else{
-        str = ' day'
-      }
-    }
-    if(diff>=60*60*24*30 && diff < 60*60*24*30*12){
-      diff = diff / ( 60*60*24*30 )
-      if(Math.floor(diff) > 1){
-        str = ' months'
-      }else{
-        str = ' month'
-      }
-    }
-    if(diff>=60*60*24*30*12){
-      diff = diff / ( 60*60*24*30*12 )
-      if(Math.floor(diff) > 1){
-        str = ' years'
-      }else{
-        str = ' year'
-      }
+    switch (true) {
+      case diff >= 60 && diff < 60*60:
+        diff = diff / 60
+        if(Math.floor(diff) > 1){
+          str = ' mins'
+        }else{
+          str = ' min'
+        }
+        break;
+      case diff>=60*60 && diff < 60*60*24:
+        diff = diff / ( 60*60 )
+        if(Math.floor(diff) > 1){
+          str = ' hrs'
+        }else{
+          str = ' hr'
+        }
+        break;
+      case diff>=60*60*24 && diff < 60*60*24*30:
+        diff = diff / ( 60*60*24 )
+        if(Math.floor(diff) > 1){
+          str = ' days'
+        }else{
+          str = ' day'
+        }
+        break;
+      case diff>=60*60*24*30 && diff < 60*60*24*30*12:
+        diff = diff / ( 60*60*24*30 )
+        if(Math.floor(diff) > 1){
+          str = ' months'
+        }else{
+          str = ' month'
+        }
+        break;
+      case diff>=60*60*24*30*12:
+        diff = diff / ( 60*60*24*30*12 )
+        if(Math.floor(diff) > 1){
+          str = ' years'
+        }else{
+          str = ' year'
+        }
+        break;
+      default:
+        return _dateToString(time)
     }
     return Math.floor(diff) + str
   }
@@ -375,18 +379,78 @@ function _getTodayTime(){
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * Other handler function
+ * Other number handler function
  */
 
-function _handleHoleSum(array, type){
-  let temp = 0
-  let start = (type === 'out')? 0 : 9
-  let end = (type === 'out')? 9 : 18
-  for(var i = start;i < end;i++){
-    temp += array[i]
+  function _handleHoleSum(array, type){
+    let temp = 0
+    let start = (type === 'out')? 0 : 9
+    let end = (type === 'out')? 9 : 18
+    for(var i = start;i < end;i++){
+     temp += array[i]
+    }
+    return temp
   }
-  return temp
-}
+
+  function _prefixNumber(num){
+    switch (true) {
+     case num > 0:
+       return `+ ${num}`
+       break;
+     case num < 0:
+       return `- ${Math.abs(num)}`
+       break;
+     default:
+       return num
+    }
+  }
+
+  function _shotnessNumber(number){
+    var num = parseInt(number)
+    var str = ''
+    var strNum = 0;
+    var postfix = ''
+    switch (true) {
+      case num >= 1000 * 1000 * 1000:
+        strNum = parseFloat(( num / (1000 * 1000 * 1000) ).toPrecision(3))
+        postfix = 'B'
+        break;
+      case num >= 1000 * 1000:
+        strNum = parseFloat(( num / (1000 * 1000) ).toPrecision(3))
+        postfix = 'M'
+        break;
+      case num >= 1000:
+        strNum = parseFloat(( num / 1000 ).toPrecision(3))
+        postfix = 'K'
+        break;
+      default:
+        return num
+    }
+    if(!Number.isInteger(strNum)){
+      var indexOfDecimal = strNum.toString().indexOf(".");
+      var integerPart = parseFloat(strNum.toString().substring(0, indexOfDecimal))
+      var decimalPart = parseFloat(strNum.toString().substring(indexOfDecimal))
+      if(integerPart > 10){
+        strNum = parseInt(strNum)
+      }else{
+        if(decimalPart * 10 < 1){
+          strNum = parseInt(strNum)
+        }else{
+          var addDecimalPart = (decimalPart * 10).toString().substring(0, 1)
+          strNum = parseInt(strNum) + '.' + addDecimalPart
+        }
+      }
+    }
+    str = strNum + postfix
+    return str
+  }
+
+
+/*
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * Other handler function
+ */
 
 function _handleScrolllTo(element){
   var elmnt = document.getElementById("el_" + element);
@@ -400,19 +464,6 @@ function _handleAmateurClass(classno){
   if(!isNaN(asciiNumber)){
     var res = String.fromCharCode(asciiNumber + 64)
     return res
-  }
-}
-
-function _prefixNumber(num){
-  switch (true) {
-    case num > 0:
-      return `+ ${num}`
-      break;
-    case num < 0:
-      return `- ${Math.abs(num)}`
-      break;
-    default:
-      return num
   }
 }
 
@@ -449,16 +500,18 @@ export {
   sortArrByDateStr,
   sortReverseArrByDate,
 
-  handleGetPostTime,
+  _getPostTime,
   _dateSendToAPI,
   _dateToString,
   _stringToDate,
   _getTodayTime,
 
   _handleHoleSum,
+  _prefixNumber,
+  _shotnessNumber,
+
   _handleScrolllTo,
   _handleAmateurClass,
-  _prefixNumber,
 
   objectException,
 

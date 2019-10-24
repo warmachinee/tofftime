@@ -32,7 +32,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    cursor: 'auto',
     marginTop: 24,
     maxHeight: '100%',
     boxSizing: 'border-box'
@@ -113,6 +112,23 @@ const useStyles = makeStyles(theme => ({
       width: 'auto'
     },
   },
+  scorcardLabel: {
+    borderLeft: `6px solid ${primary[600]}`,
+    paddingLeft: 16,
+    paddingTop: 8,
+    paddingBottom: 8
+  },
+  scorcardPlayer: {
+    marginTop: 16,
+    marginLeft: 24
+  },
+  saveButton: {
+    marginTop: 'auto',
+    marginLeft: 12
+  },
+  predictScoreChildGrid: {
+    display: 'flex', width: 250
+  },
 
 }))
 
@@ -143,10 +159,9 @@ const theme = createMuiTheme({
 
 function MBScoreEditorContainer(props){
   const classes = useStyles();
-  const { sess, matchid, data, matchDetail, selected, handleSelectPlayer } = props
+  const { sess, matchid, data, matchDetail, selected, handleSelectPlayer, expanded, setExpanded } = props
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
-  const [ expanded, setExpanded ] = React.useState(true)
 
   function expandHandler(){
     setExpanded(!expanded)
@@ -235,9 +250,7 @@ function MBScoreEditorContainer(props){
           <ExpandMoreIcon
             className={classes.expandIcon}
             style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }} />
-          { selected? selected.firstname + " " + selected.lastname : (
-            ( sess && sess.language === 'TH' ) ? "เลือกผู้เล่น" : 'Select Player'
-          )}
+          { ( sess && sess.language === 'TH' ) ? "เลือกผู้เล่น" : 'Select Player' }
         </GreenTextButton>
         { selected &&
           <a href={`/display/${matchid}/${selected.userid}`}
@@ -279,17 +292,20 @@ function MBScoreEditorContainer(props){
             />
           </ThemeProvider>
         </div>
-        <Typography component="div">
+        <Typography component="div" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <Box className={classes.notice} m={1}>
             { ( sess && sess.language === 'TH' ) ? "เลือกผู้เล่นในลิสต์" : 'Please select player in the list.' }
           </Box>
+          { data &&
+            <Typography variant="caption" align="right" style={{ marginTop: 'auto', marginBottom: 8 }}>{`${data.length} player${data.length > 1? 's' : ''}`}</Typography>
+          }
         </Typography>
         <List>
           <ListItem style={{ backgroundColor:  grey[900] }}>
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={
                 window.innerWidth < 450?
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
                 :
                 ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
               } />
@@ -443,7 +459,7 @@ function MBScoreEditorContainer(props){
 
 export default function MBScoreEditor(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar } = props
   const tempArr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState([])
@@ -451,6 +467,50 @@ export default function MBScoreEditor(props){
   const [ oldSelected, setOldSelected ] = React.useState(null)
   const [ arrScore, setArrScore ] = React.useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
   const [ gridWidth, setGridWidth ] = React.useState(0)
+  const [ expanded, setExpanded ] = React.useState(true)
+  const [ predictScore, setPredictScore ] = React.useState(0)
+
+  function handleSetPredictScore(score){
+    if(parseInt(score) < 0){
+      handleSnackBar({
+        state: true,
+        message: 'Score must more than 0',
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+      setPredictScore(0)
+    }else{
+      setPredictScore(parseInt(score))
+    }
+  }
+
+  function handleKeyPressSetPredictScore(e){
+    if(e.key === 'Enter'){
+      handleFetchSetPredict()
+    }
+  }
+
+  async function handleFetchSetPredict(){
+    if(selected){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        'mmatchsection', {
+          action: 'setpredictscore',
+          matchid: matchid,
+          userid: selected.userid,
+          value: predictScore
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ?'success':'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+      })
+    }
+  }
 
   async function handleSelectPlayer(newVal){
     if(selected && oldSelected){
@@ -463,7 +523,17 @@ export default function MBScoreEditor(props){
   }
 
   async function handleChange(value, index){
-    await setScore(value, index)
+    if(value < 0){
+      handleSnackBar({
+        state: true,
+        message: 'Score must more than 0',
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+      await setScore(0, index)
+    }else{
+      await setScore(value, index)
+    }
   }
 
   function handleFocus(e){
@@ -523,6 +593,30 @@ export default function MBScoreEditor(props){
   function handleReset(){
     setArrScore([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
     setSelected(null)
+  }
+
+  function responseUpdateScore(){
+    const socket = socketIOClient( API._getWebURL() )
+    socket.on(`admin-match-status-${matchid}-server-message`, (messageNew) => {
+      const d = messageNew.status
+      if(!/fail/.test(d)){
+        setSelected(null)
+        setExpanded(true)
+        handleSnackBar({
+          state: true,
+          message: `Update ${d.fullname} ${d.lastname} complete. OUT = ${d.sout}, IN = ${d.sin}, Total = ${d.gross}`,
+          variant: 'success',
+          autoHideDuration: 200
+        })
+      }else{
+        handleSnackBar({
+          state: true,
+          message: 'Update score fail',
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
+    })
   }
 
   async function handleFetch(){
@@ -586,6 +680,10 @@ export default function MBScoreEditor(props){
   }
 
   React.useEffect(()=>{
+    responseUpdateScore()
+  },[ ])
+
+  React.useEffect(()=>{
     handleFetch()
     if(selected){
       setArrScore(selected.score)
@@ -605,11 +703,16 @@ export default function MBScoreEditor(props){
   return(
     <div className={classes.root}>
       <MBScoreEditorContainer {...props} data={data} matchDetail={matchDetail}
-        selected={selected} handleSelectPlayer={handleSelectPlayer} />
+        selected={selected} handleSelectPlayer={handleSelectPlayer} expanded={expanded} setExpanded={setExpanded} />
       <ThemeProvider theme={theme}>
+        <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          <Typography variant="h5" className={classes.scorcardLabel}>Score card</Typography>
+          <Typography variant="body1" className={classes.scorcardPlayer}>{selected && ( selected.firstname + " " + selected.lastname )} </Typography>
+        </div>
         <div style={{
             overflow: 'auto', marginTop: 24, marginBottom: 24,
-            width: gridWidth
+            width: gridWidth,
           }}>
           <div className={classes.textfieldGrid}>
             {tempArr.slice(0, 9).map( d =>
@@ -624,7 +727,6 @@ export default function MBScoreEditor(props){
                 onKeyPress={e =>handleKeyPress(e)}
                 variant="outlined"
                 type="number"
-                min={0}
               />
             )}
           </div>
@@ -641,7 +743,6 @@ export default function MBScoreEditor(props){
                 onKeyPress={e =>handleKeyPress(e)}
                 variant="outlined"
                 type="number"
-                min={0}
               />
             )}
           </div>
@@ -659,6 +760,19 @@ export default function MBScoreEditor(props){
           Total = {API._handleHoleSum(arrScore, 'out') + API._handleHoleSum(arrScore, 'in')}
         </Box>
       </Typography>
+      <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
+      <ThemeProvider theme={theme}>
+        <div className={classes.predictScoreChildGrid}>
+          <TextField label="Predict Score"
+            type="number"
+            value={predictScore}
+            onChange={e =>handleSetPredictScore(e.target.value)}
+            onKeyPress={e =>handleKeyPressSetPredictScore(e)}
+            onFocus={e => e.target.select()} />
+          <BTN.Primary className={classes.saveButton}
+            onClick={handleFetchSetPredict}>Save</BTN.Primary>
+        </div>
+      </ThemeProvider>
       <div className={classes.controls}>
         <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
           { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }

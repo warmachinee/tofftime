@@ -212,7 +212,7 @@ export default function MatchFormResult(props) {
                 <div className={classes.avatarImage} />
               </ListItemIcon>
               <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
                 primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Lastname' } />
               <ListItemText className={classes.listStatus} style={{ color: 'white' }}

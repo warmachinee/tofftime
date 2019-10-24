@@ -48,6 +48,7 @@ const TemplateDialog = Loadable({
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
+    boxSizing: 'border-box'
   },
   linkElement: {
     textDecoration: 'none',
@@ -67,8 +68,8 @@ const useStyles = makeStyles(theme => ({
     width: 120,
   },
   tableView: {
-    width: 60,
-    textAlign: 'center'
+    width: 100,
+    textAlign: 'right'
   },
   tableDateText: {
     fontStyle: 'oblique',
@@ -161,19 +162,33 @@ function ListComponent(props){
     setRemoveData(d)
   }
 
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
+
+
   return (
     <ListItem button>
-      { window.innerWidth >= 600 &&
+      { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&
         <ListItemText className={classes.tableDate} classes={{ primary: classes.tableDateText }}
           primary={API._dateToString(data.date)} />
       }
-      <ListItemText primary={data.views} className={classes.tableView} />
+      <ListItemText primary={API._shotnessNumber(data.views)} className={classes.tableView} />
       <ListItemText inset className={classes.tableTitle}
         primary={data.title}
         secondary={
-          ( window.innerWidth < 800 || editting ) &&
+          ( ( props.open ? window.innerWidth < 1040 : window.innerWidth < 800 ) || editting ) &&
           (
-            window.innerWidth >= 600?
+            ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 )?
             data.location
             :
             <React.Fragment>
@@ -190,7 +205,7 @@ function ListComponent(props){
             </React.Fragment>
           )
         } />
-      { ( window.innerWidth >= 800 && !editting ) &&
+      { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editting &&
         <ListItemText inset primary={data.location} className={classes.tableLocation} />
       }
       { editting &&
@@ -367,6 +382,19 @@ export default function MatchBody(props){
     }
   },[ matchOwnerStatus ])
 
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
+
   return(
     <div className={classes.root}>
       <GoBack />
@@ -377,7 +405,7 @@ export default function MatchBody(props){
       </Typography>
       <CreateMatch setData={setData} setDataClassed={setDataClassed} {...props} />
       { sess && sess.typeid !== 'admin' &&
-        <div style={{ marginTop: 24 }}>
+        <div style={{ marginTop: 24, boxSizing: 'border-box' }}>
           <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">Type</FormLabel>
             <RadioGroup value={matchOwnerStatus} onChange={handleChange}>
@@ -387,7 +415,7 @@ export default function MatchBody(props){
           </FormControl>
         </div>
       }
-      <div style={{ display: 'flex', marginTop: 24, justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', marginTop: 24, justifyContent: 'space-between', boxSizing: 'border-box' }}>
         <GreenTextButton color="primary" onClick={toggleEdittingDisplay}>
           { edittingDisplay?
             ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
@@ -403,7 +431,7 @@ export default function MatchBody(props){
           }
         </GreenTextButton>
       </div>
-      <List style={{ overflow: 'auto' }}>
+      <List style={{ overflow: 'auto', boxSizing: 'border-box' }}>
         { edittingDisplay?
           <ListItem key="Table Head" className={classes.tableHead}>
             <ListItemIcon>
@@ -413,12 +441,12 @@ export default function MatchBody(props){
           </ListItem>
           :
           <ListItem key="Table Head" className={classes.tableHead}>
-            { window.innerWidth >= 600 &&
+            { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&
               <StyledText primary={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' } className={classes.tableDate} />
             }
             <StyledText primary="Views" className={classes.tableView} />
             <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } className={classes.tableTitle} />
-            { ( window.innerWidth >= 800 && !editting ) &&
+            { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editting &&
               <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location' } className={classes.tableLocation} />
             }
             { editting &&
@@ -442,10 +470,10 @@ export default function MatchBody(props){
                     `/admin/match/${d.matchid}` :
                     `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${d.matchid}`
                   }>
-                  <ListComponent data={d} />
+                  <ListComponent data={d} open={props.open} />
                 </Link>
                 :
-                <ListComponent data={d} editting={editting} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
+                <ListComponent data={d} open={props.open} editting={editting} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
               }
               <Divider />
             </React.Fragment>

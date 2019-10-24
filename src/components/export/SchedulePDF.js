@@ -59,7 +59,7 @@ function PDFFile(data, matchDetail, sess){
       {text: ( ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' ), fillColor: '#e0e0e0'},
       {text: ( ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' ), fillColor: '#e0e0e0'},
       {
-        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Name' ),
+        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Full Name' ),
         fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
       },
       {text: ( ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},

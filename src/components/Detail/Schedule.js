@@ -165,7 +165,7 @@ export default function Schedule(props) {
               <ListItemText className={classes.listTime} style={{ color: 'white' }}
                 primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
               <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' } />
+                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
                 primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Lastname' } />
               { window.innerWidth >= 600 &&

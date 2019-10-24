@@ -56,7 +56,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box'
   },
@@ -65,7 +64,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     width: '100%',
     backgroundColor: grey[50],
-    cursor: 'pointer',
     marginTop: 24,
     overflow: 'auto',
     boxSizing: 'border-box'
@@ -748,6 +746,11 @@ export default function MBPlayer(props){
             />
           </ThemeProvider>
         </ListItem>
+        { data &&
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Typography variant="caption" align="right" style={{ marginBottom: 8 }}>{`${data.length} player${data.length > 1? 's' : ''}`}</Typography>
+          </div>
+        }
         <div style={{ overflow: 'auto', position: 'relative' }}>
           {/* ( editting || edittingClass || edittingDisplay ) &&
             <Typography component="div">
@@ -764,7 +767,7 @@ export default function MBPlayer(props){
             }}>
             <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={ window.innerWidth < 600? (
-                ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name'
+                ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name'
               ) : (
                 ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name'
               ) } />

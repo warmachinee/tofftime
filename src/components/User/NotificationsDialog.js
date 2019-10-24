@@ -250,7 +250,7 @@ function ListNotiItem(props) {
                 {getNotiLabel(data.action, data.type)}
               </Typography>
               <Typography variant="caption" color="textSecondary">
-                {API.handleGetPostTime(data.createdate)}
+                {API._getPostTime(data.createdate)}
               </Typography>
             </React.Fragment>
           }

@@ -147,9 +147,8 @@ function ScoreRow(props){
                 <div className={classes.tableCell} style={tableCell}>{row.in}</div>
               </React.Fragment>
             }
-            { data.scorematch === 1 ?
-              <div className={classes.tableCell} style={tableCell}>{row.out + row.in}</div>
-              :
+            <div className={classes.tableCell} style={tableCell}>{row.out + row.in}</div>
+            { data.scorematch !== 1 &&
               <div className={classes.tableCell} style={tableCell}>{row.hc}</div>
             }
           </React.Fragment>
@@ -342,7 +341,7 @@ export default function ScoreTable(props) {
                   { ( sess && sess.language === 'TH' ) ? "อันดับ" : 'Rank' }
                 </StyledTableRank>
                 <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Name' }
+                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Player' }
                 </StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>
@@ -352,9 +351,8 @@ export default function ScoreTable(props) {
                         <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
                       </React.Fragment>
                     }
-                    { data.scorematch === 1 ?
-                      <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
-                      :
+                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
+                    { data.scorematch !== 1 &&
                       <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
                     }
                   </React.Fragment>
@@ -391,13 +389,16 @@ export default function ScoreTable(props) {
                   { ( sess && sess.language === 'TH' ) ? "อันดับ" : 'Rank' }
                 </StyledTableRank>
                 <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Name' }
+                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Player' }
                 </StyledTableHead>
-
                 { (wd >= 450) &&
                   <React.Fragment>
-                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
-                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
+                    { (wd >= 750) &&
+                      <React.Fragment>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
+                      </React.Fragment>
+                    }
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
                     { data.scorematch !== 1 &&
                       <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>

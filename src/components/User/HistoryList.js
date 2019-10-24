@@ -115,7 +115,7 @@ export default function HistoryList(props) {
                   secondary={
                     <React.Fragment>
                       <Typography variant="caption" color="textSecondary">
-                        {data.views + ' views'}
+                        {API._shotnessNumber(data.views)}{` view${data.views > 1? 's' : ''}`}
                       </Typography>
                     </React.Fragment>
                   } />
@@ -137,7 +137,7 @@ export default function HistoryList(props) {
                   <React.Fragment>
                     { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
                       <Typography variant="caption" color="textSecondary">
-                        {`${API._dateToString(data.matchdate)} • ${data.views + ' views'}`}
+                        {`${API._dateToString(data.matchdate)} • ${API._shotnessNumber(data.views)} view${data.views > 1? 's' : ''}`}
                       </Typography>
                     }
                     <Typography variant="body2" color="textPrimary" className={classes.listTitle}>

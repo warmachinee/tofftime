@@ -215,6 +215,9 @@ export default function MatchTeam(props) {
 
   React.useEffect(()=>{
     handleFetchMatchDetail()
+    if(matchDetail && matchDetail.team.length !== 0){
+      //
+    }
   },[ ])
 
   return (
@@ -286,7 +289,7 @@ export default function MatchTeam(props) {
                   </ListItem>
                   { matchDetail &&
                     matchDetail.team.map( t =>
-                      <ListItem>
+                      <ListItem key={t.teamno}>
                         <ListItemText style={{ width: '100%' }} primary={t.teamname} />
                         <ListItemText style={{ width: '100%' }} primary={
                           <React.Fragment>

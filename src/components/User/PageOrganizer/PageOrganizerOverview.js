@@ -176,7 +176,7 @@ export default function PageOrganizerOverview(props) {
                 ) + ( pageData.subscriber > 1 ? ( ( sess && sess.language === 'TH' ) ? '' : 's' ) : '')}
               </Typography>
               <Typography gutterBottom variant="body2" className={classes.followers}>
-                {pageData.view} { 'view' + ( pageData.view > 1 ? 's' : '')}
+                {API._shotnessNumber(pageData.view)} {` view${pageData.view > 1 ? 's' : ''}`}
               </Typography>
             </div>
           </div>

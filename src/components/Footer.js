@@ -13,7 +13,15 @@ const useStyles = makeStyles(theme => ({
     height: 'auto',
     width: '100%',
     padding: '16px 20%',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    backgroundColor: COLOR.primary[800]
+  },
+  grid: {
+    display: 'flex',
+    flexDirection: 'column',
+    [theme.breakpoints.up(600)]: {
+      flexDirection: 'row',
+    },
   },
 
 }));
@@ -22,9 +30,8 @@ export default function Footer(props) {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}
-      style={{ backgroundColor: COLOR.primary[800] }}>
-      <div style={{ display: 'flex', flexDirection: window.innerWidth >600 ? 'row' : 'column' }}>
+    <div className={classes.root}>
+      <div className={classes.grid}>
         <div>
           <div style={{ marginTop: 24, color: 'white', fontSize: 18, fontWeight: 600 }}>Contact</div>
           <div style={{ marginTop: 24, color: 'white', fontWeight: 600 }}>

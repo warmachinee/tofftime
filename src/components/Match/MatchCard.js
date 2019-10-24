@@ -14,6 +14,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
+    marginLeft: 'auto',
     marginRight: 'auto',
     marginBottom: 24,
     [theme.breakpoints.up(600)]: {
@@ -69,8 +70,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchCard(props) {
   const classes = useStyles();
-  const { API, BTN, sess, data, isSupportWebp } = props
-  const [ joinStatus, setJoinStatus ] = React.useState(false)
+  const { API, BTN, sess, token, setCSRFToken, data, setData, isSupportWebp } = props
 
   function handleJoinMatch(){
     if(sess && sess.status === 1){
@@ -81,8 +81,8 @@ export default function MatchCard(props) {
         userid: sess.userid,
       })
       setTimeout(()=>{
-        setJoinStatus(true)
-      }, 1000)
+        handleFetch()
+      }, 500)
     }else{
       window.location.pathname = '/login'
     }
@@ -90,31 +90,42 @@ export default function MatchCard(props) {
 
   function handleGetButton(){
     if(BTN && data && data.matchstatus === 0){
-      switch (true) {
-        case data.permission === 'host' || data.permission === 'admin':
-          return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
-              <BTN.NoStyleLink to={`/user/management/match/${data.matchid}`}>
-                <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
-              </BTN.NoStyleLink>
-            </div>
-          )
-          break;
-        case data.permission === 'none':
-          return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              { joinStatus?
-                <Button disabled>Join</Button>
-                :
-                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
-              }
-            </div>
-          )
-          break;
-        default:
-          return null
-      }
+      return (
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+          {function() {
+            switch (true) {
+              case data.permission === 'host' || data.permission === 'admin':
+                return (
+                  <BTN.NoStyleLink to={`/user/management/match/${data.matchid}`}>
+                    <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+                  </BTN.NoStyleLink>
+                )
+                break;
+              case data.permission === 'pending':
+                return <Button disabled>Pending</Button>
+                break;
+              case data.permission === 'none':
+                return <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+                break;
+              default:
+                return null
+            }
+          }()}
+        </div>
+      )
     }
+  }
+
+  async function handleFetch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'loadmatchsystem' , {
+        action: 'matchlist'
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+      setData(d)
+    })
   }
 
   return(
@@ -136,9 +147,18 @@ export default function MatchCard(props) {
               color: data.typescore === 1 ? primary[700] : 'inherit',
               fontWeight: data.typescore === 1 ? 900 : 400
             }}>
-            {
-              data.typescore === 1 ? 'Professional' : 'Amateur'
-            }
+            {function(){
+              switch (data.typescore) {
+                case 0:
+                  return 'Amateur'
+                  break;
+                case 1:
+                  return 'Professional'
+                  break;
+                default:
+                  return 'Charity'
+              }
+            }()}
           </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography gutterBottom variant="h6" className={classes.title}>
@@ -152,7 +172,7 @@ export default function MatchCard(props) {
               {data.location}
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              {`${data.views + ' views'}`}
+              {`${API._shotnessNumber(data.views)} view${data.views > 1 ? 's' : ''}`}
             </Typography>
           </BTN.NoStyleLink>
         </Box>

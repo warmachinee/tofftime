@@ -23,8 +23,8 @@ import brown from '@material-ui/core/colors/brown';
 import grey from '@material-ui/core/colors/grey';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 
-const primary = blue
-const secondary = lightBlue
+const primary = teal
+const secondary = green
 
 export {
   primary,

@@ -75,7 +75,7 @@ function PDFFile(classname, reward, data, sortBy, sess){
     data.scorematch === 1 ?
     [
       {
-        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Name' ),
+        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Full Name' ),
         fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
       },
       {text: 'PAR', fillColor: '#e0e0e0'},
@@ -85,7 +85,7 @@ function PDFFile(classname, reward, data, sortBy, sess){
     :
     [
       {
-        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Name' ),
+        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Full Name' ),
         fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
       },
       {text: 'HC', fillColor: '#e0e0e0'},

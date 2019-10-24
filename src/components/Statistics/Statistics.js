@@ -31,9 +31,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'flex-end',
     width: '100%',
-    maxWidth: 740,
+    /*
     marginLeft: 'auto',
-    marginRight: 'auto',
+    marginRight: 'auto',*/
     marginTop: 36,
     padding: '0 12px',
     boxSizing: 'border-box',
@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(3, 4),
     display: 'flex',
     borderRadius: 0,
-    maxWidth: 350
+    maxWidth: 250
   },
   statLabel: {
     display: 'flex',
@@ -91,6 +91,7 @@ const useStyles = makeStyles(theme => ({
   },
   value: {
     alignSelf: 'center',
+    fontWeight: 300
   },
   controlPaperUp: {
     padding: '0 12px',
@@ -147,9 +148,8 @@ const matchTypeNames = [
 
 export default function Statistics(props) {
   const classes = useStyles();
-  const { API, isSupportWebp, sess, token, setCSRFToken, handleAccountData, open, accountData, userid, userData } = props
+  const { API, COLOR, isSupportWebp, sess, token, setCSRFToken, handleAccountData, open, accountData, userid, userData, checked, setChecked } = props
   const [ data, setData ] = React.useState(null)
-  const [ checked, setChecked ] = React.useState([]);
 
   function getSortName(name){
     if(sess && sess.language === 'TH'){
@@ -166,48 +166,6 @@ export default function Statistics(props) {
     }else{
       return name
     }
-  }
-
-  function handleChange(event) {
-    var value = event.target.value
-    if(event.target.value.length > 0){
-      setChecked(event.target.value);
-      value = event.target.value
-    }else{
-      setChecked(['indy']);
-      value = ['indy']
-    }
-    handleTickStat(value)
-  }
-
-  async function handleTickStat(value){
-    const resToken = token? token : await API._xhrGet('getcsrf')
-    const sendObj = {
-      action: 'editprofile',
-      historystat: value
-    }
-    await API._xhrPost(
-      token? token : resToken.token,
-      'uusersystem', {
-        ...sendObj
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-    })
-    await handleFetchInfo()
-    await handleFetch()
-  }
-
-  async function handleFetchInfo(){
-    const resToken = token? token : await API._xhrGet('getcsrf')
-    await API._xhrPost(
-      token? token : resToken.token,
-      'loadusersystem', {
-        action: 'info'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      handleAccountData(d)
-      setChecked(d.historystat)
-    })
   }
 
   async function handleFetch(){
@@ -230,11 +188,17 @@ export default function Statistics(props) {
     })
   }
 
+  function LoadTempData(){
+    var json = '{"matchnum":4,"hc":15}'
+    setData(JSON.parse(json))
+  }
+
   React.useEffect(()=>{
     if(!(userData && userData.privacy === 'private')){
-      handleFetch()
-      if(accountData){
-        setChecked(accountData.historystat)
+      if(/localhost/.test(window.location.href)){
+        LoadTempData()
+      }else{
+        handleFetch()
       }
     }
   },[ userid ])
@@ -243,7 +207,7 @@ export default function Statistics(props) {
     if(accountData){
       setChecked(accountData.historystat)
     }
-  },[ accountData ])
+  },[ accountData, checked ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -261,75 +225,25 @@ export default function Statistics(props) {
   return (
     <React.Fragment>
       <div
-        className={clsx(classes.grid,{
-          [classes.gridFlexDirectionDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-          [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-        })}>
-        <Paper
-          style={{ boxSizing: 'border-box' }}
-          className={clsx(
-            {
-              [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-              [classes.controlPaperUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-            },
-            {
-              [classes.settingStatDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-              [classes.settingStatUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-            }
-          )}>
-          <FormControl className={clsx({
-            [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-            [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-          })}>
-            <InputLabel>{ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' }</InputLabel>
-            <Select
-              multiple
-              disabled={Boolean(userid)}
-              value={checked}
-              onChange={handleChange}
-              input={<Input id="select-multiple-checkbox" />}
-              renderValue={selected => (
-                <div className={classes.chips}>
-                  { selected.map(value => (
-                    <Chip key={value} label={getSortName(value)} className={classes.chip} />
-                  ))}
-                </div>
-              )}
-              MenuProps={MenuProps}
-            >
-              { matchTypeNames.map(name => (
-                <MenuItem key={name} value={name}>
-                  <Checkbox checked={checked.indexOf(name) > -1} />
-                  <ListItemText style={{ textTransform: 'capitalize' }} primary={getSortName(name)} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Paper>
-      </div>
-      <div
         className={clsx({
-          [classes.rootDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-          [classes.rootUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-        })}
-        style={{
-          ...( open ? window.innerWidth >= 1090 : window.innerWidth >= 850 )?
-          {justifyContent: 'center' } : {justifyContent: 'space-between' } }}>
+          [classes.rootDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
+          [classes.rootUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+        })}>
         <Paper className={classes.paper}
           style={{
-            ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+            ...!( open ? window.innerWidth >= 990 : window.innerWidth >= 750 )?
             { marginLeft: 'auto', marginRight: 'auto' } : null,
             marginTop: 'auto'
           }}>
           <div className={classes.statLabel}>
-            <GolfCourse className={classes.icon} />
-            <Typography variant="body1" className={classes.typo}>
+            <GolfCourse className={classes.icon} style={{ color: primary[700] }} />
+            <Typography variant="body1" className={classes.typo} style={{ color: primary[300] }}>
               { ( sess && sess.language === 'TH' ) ? "จำนวนการแข่งขัน" : `Matche${ (data && data.matchnum > 1) ? 's': '' }` }
             </Typography>
           </div>
           <div className={classes.valueGrid}>
             { data &&
-              <Typography variant="h3" classes={{ root: classes.value }}>
+              <Typography variant="h3" classes={{ root: classes.value }} style={{ color: primary[700] }}>
                 {data.matchnum}
               </Typography>
             }
@@ -337,20 +251,20 @@ export default function Statistics(props) {
         </Paper>
         <Paper className={classes.paper}
           style={{
-            ...( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+            ...( open ? window.innerWidth >= 990 : window.innerWidth >= 750 )?
             { marginLeft: 24 } : { marginTop: 16 },
-            ...!( open ? window.innerWidth >= 790 : window.innerWidth >= 550 )?
+            ...!( open ? window.innerWidth >= 990 : window.innerWidth >= 750 )?
             { marginLeft: 'auto', marginRight: 'auto' } : null,
           }}>
           <div className={classes.statLabel}>
-            <AssignmentInd className={classes.icon} />
-            <Typography variant="body1" className={classes.typo}>
+            <AssignmentInd className={classes.icon} style={{ color: COLOR.primary[700] }} />
+            <Typography variant="body1" className={classes.typo} style={{ color: COLOR.primary[300] }}>
               { ( sess && sess.language === 'TH' ) ? "แฮนดิแคป" : 'Handicap' }
             </Typography>
           </div>
           <div className={classes.valueGrid}>
             { data &&
-              <Typography variant="h3" classes={{ root: classes.value }}>
+              <Typography variant="h3" classes={{ root: classes.value }} style={{ color: COLOR.primary[700] }}>
                 { data.hc ? data.hc : '-' }
               </Typography>
             }

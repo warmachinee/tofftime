@@ -140,10 +140,12 @@ const useStyles = makeStyles(theme => ({
 
 function MatchDetailBody(props) {
   const classes = useStyles();
-  const { BTN, sess, data, userscore, matchid, token, setCSRFToken, isSupportWebp } = props
+  const {
+    BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, matchid,
+    data, setData, userscore, setUserscore, setRawUserscore
+  } = props
   const [ expanded, setExpanded ] = React.useState(true)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
-  const [ joinStatus, setJoinStatus ] = React.useState(false)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
   const handleClick = event => {
@@ -163,8 +165,8 @@ function MatchDetailBody(props) {
         userid: sess.userid,
       })
       setTimeout(()=>{
-        setJoinStatus(true)
-      }, 1000)
+        handleFetch()
+      }, 500)
     }else{
       window.location.pathname = '/login'
     }
@@ -182,14 +184,17 @@ function MatchDetailBody(props) {
             </div>
           )
           break;
+        case data.permission === 'pending':
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+              <Button disabled>Pending</Button>
+            </div>
+          )
+          break;
         case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              { joinStatus?
-                <Button disabled>Join</Button>
-                :
-                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
-              }
+              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
             </div>
           )
           break;
@@ -201,6 +206,30 @@ function MatchDetailBody(props) {
 
   function expandHandler(){
     setExpanded(!expanded)
+  }
+
+  async function handleFetch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'loadmatchsystem', {
+        action: 'userscore',
+        matchid: matchid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(d.status === 'wrong params'){
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }else{
+        setData(d)
+        setUserscore(d.userscore)
+        setRawUserscore(d)
+      }
+    })
   }
 
   return (
@@ -219,13 +248,13 @@ function MatchDetailBody(props) {
               function(){
                 switch (data.scorematch) {
                   case 0:
-                    return 'Charity'
+                    return 'Amateur'
                     break;
                   case 1:
                     return 'Professional'
                     break;
                   default:
-                    return 'Amateur'
+                    return 'Charity'
                 }
               }()
             }
@@ -248,7 +277,7 @@ function MatchDetailBody(props) {
           </div>
           <Typography component="div">
             <Box className={classes.date} fontFamily="Monospace">
-              {data?data.date:'date'}
+              {data?API._dateToString(data.date):'date'}
             </Box>
           </Typography>
           <Typography gutterBottom component="div" style={{ display: 'flex' }}>

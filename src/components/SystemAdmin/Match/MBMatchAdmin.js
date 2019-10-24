@@ -34,12 +34,10 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box'
   },
   listLabel: {
-    cursor: 'auto',
     backgroundColor: grey[900],
     borderRadius: 4
   },
@@ -216,7 +214,7 @@ export default function MBMatchAdmin(props){
         </Button>
         <div style={{ flex: 1 }} />
       </ListItem>
-      <List style={{ cursor: 'auto' }}>
+      <List>
         <ListItem className={classes.listLabel}>
           <StyledText className={classes.listText}
             primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' } />

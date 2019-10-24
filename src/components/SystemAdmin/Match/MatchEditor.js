@@ -1,21 +1,36 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import { Link } from "react-router-dom";
 import { matchPath } from 'react-router'
 import { makeStyles, fade, useTheme } from '@material-ui/core/styles';
 import * as API from './../../../api'
 import { primary, grey } from './../../../api/palette'
 
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import MobileStepper from '@material-ui/core/MobileStepper';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import {
+  Paper,
+  Typography,
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  MobileStepper,
+  Stepper,
+  Step,
+  Collapse,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
 
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+} from '@material-ui/core';
+
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  ArrowDropDown,
+  ExpandMore,
+
+} from '@material-ui/icons';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -88,31 +103,44 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     backgroundColor: theme.palette.background.default,
   },
+  expandButton: {
+    maxWidth: 900,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    width: '100%',
+    boxSizing: 'border-box',
+    backgroundColor: theme.palette.background.default,
+  },
+  expandIcon: {
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
 
 }))
 
-export default function MatchEditor(props){
+function SetUpMatchComponent(props){
   const classes = useStyles();
   const theme = useTheme();
-  const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData } = props
-  const [ param, setParam ] = React.useState(null)
-  const [ data, setData ] = React.useState(null)
-  const [ activeStep, setActiveStep ] = React.useState(0);
-  const labelSteps = [
-    ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
-    ( ( sess && sess.language === 'TH' ) ? "การเชิญ และ ตารางเวลา" : 'Invitation & Schedule' ),
-    ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
-    ( ( sess && sess.language === 'TH' ) ? "การคำนวนคะแนน" : 'Score calculation' ),
-    ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
-    ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
-    ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
-  ]
-  const maxSteps = labelSteps.length;
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
+  const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData, param, setData, data } = props
   const passingProps = {
     ...props,
     matchid: param
+  }
+  const labelSetUpSteps = [
+    ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
+    ( ( sess && sess.language === 'TH' ) ? "Class" : 'ประเภท' ),
+    ( ( sess && sess.language === 'TH' ) ? "การเชิญ และ ตารางเวลา" : 'Invitation & Schedule' ),
+    ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
+  ]
+  const maxSetUpSteps = labelSetUpSteps.length;
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
+  const [ activeStep, setActiveStep ] = React.useState(getHashData());
+  const [ expanded, setExpanded ] = React.useState(getHashExpand());
+
+  function handleExpand(){
+    setExpanded(!expanded)
   }
 
   function handleClick(event) {
@@ -126,6 +154,40 @@ export default function MatchEditor(props){
   function handleMenu(index){
     handleClose()
     setActiveStep(index);
+  }
+
+  function getHashExpand(){
+    if(window.location.hash){
+      const hashRaw = window.location.hash.split('#')
+      const hashType = hashRaw[hashRaw.length - 2]
+      return hashType === 'setup'
+    }else{
+      return true
+    }
+  }
+
+  function getHashData(){
+    if(window.location.hash){
+      const hashRaw = window.location.hash.split('#')
+      var returnedData = 0
+      const hashType = hashRaw[hashRaw.length - 2]
+      const hashData = parseInt(hashRaw[hashRaw.length - 1])
+      if(hashType === 'setup'){
+        switch (true) {
+          case hashData >= maxSetUpSteps - 1:
+            returnedData = maxSetUpSteps - 1
+            break;
+          case hashData <= 0:
+            returnedData = 0
+            break;
+          default:
+            return hashData
+        }
+      }
+      return parseInt(returnedData)
+    }else{
+      return 0
+    }
   }
 
   function getComponent(){
@@ -158,8 +220,278 @@ export default function MatchEditor(props){
   }
 
   function handleBack() {
-    setActiveStep(prevActiveStep => prevActiveStep - 1);
+      setActiveStep(prevActiveStep => prevActiveStep - 1);
+    }
+
+  return (
+    <React.Fragment>
+      <List className={classes.expandButton} disablePadding>
+        <ListItem button onClick={handleExpand}
+          style={{
+            marginTop: 16,
+            boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+          }}>
+          <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ตั้งค่าการแข่งขัน" : 'Set up Match' } />
+          <IconButton
+            disableRipple
+            className={classes.expandIcon}
+            style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
+            onClick={handleExpand}
+            aria-expanded={expanded}
+            aria-label="Show more"
+          >
+            <ExpandMore />
+          </IconButton>
+        </ListItem>
+      </List>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Paper className={classes.paper}>
+          <Button style={{ boxSizing: 'border-box', marginLeft: 36, marginTop: 16, textTransform: 'none' }} onClick={handleClick}>
+            <LabelText paddingTop={0} paddingLeft={0} text={labelSetUpSteps[activeStep]} />
+            <ArrowDropDown fontSize="large" style={{ marginLeft: 8, marginTop: 12 }} />
+          </Button>
+          <MobileStepper
+            style={{ backgroundColor: 'inherit', marginTop: 24 }}
+            steps={maxSetUpSteps}
+            position="static"
+            variant="text"
+            activeStep={activeStep}
+            nextButton={
+              <Link
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                to={`${window.location.pathname}#setup#${activeStep === maxSetUpSteps - 1 ? maxSetUpSteps - 1 : activeStep + 1}`}>
+                <BTN.PrimaryText size="small" onClick={handleNext} disabled={activeStep === maxSetUpSteps - 1}>
+                  { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
+                  {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                </BTN.PrimaryText>
+              </Link>
+            }
+            backButton={
+              <Link
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                to={`${window.location.pathname}#setup#${activeStep === 0 ? 0 : activeStep - 1}`}>
+                <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
+                  {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                  { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+                </BTN.PrimaryText>
+              </Link>
+            }
+          />
+        </Paper>
+        <Paper className={classes.paper} style={{ marginTop: 24 }}>
+          {getComponent()}
+        </Paper>
+
+      </Collapse>
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {
+          labelSetUpSteps.map( (d, i) =>
+          <Link
+            key={d}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+            to={`${window.location.pathname}#setup#${i}`}>
+            <MenuItem
+              onClick={()=>( activeStep === i ) ? console.log() : handleMenu(i)}
+              style={{ ...(activeStep === i  && { backgroundColor: grey[400] }) }}>
+              {d}
+            </MenuItem>
+          </Link>
+        )}
+      </Menu>
+    </React.Fragment>
+  );
+}
+
+function ManagementMatchComponent(props){
+  const classes = useStyles();
+  const theme = useTheme();
+  const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData, param, setData, data } = props
+  const passingProps = {
+    ...props,
+    matchid: param
   }
+
+  const labelManagementSteps = [
+    ( ( sess && sess.language === 'TH' ) ? "การคำนวนคะแนน" : 'Score calculation' ),
+    ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+    ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+    ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+  ]
+  const maxManagementSteps = labelManagementSteps.length;
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
+  const [ activeStep, setActiveStep ] = React.useState(getHashData());
+  const [ expanded, setExpanded ] = React.useState(getHashExpand());
+
+  function handleExpand(){
+    setExpanded(!expanded)
+  }
+
+  function handleClick(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
+
+  function handleMenu(index){
+    handleClose()
+    setActiveStep(index);
+  }
+
+  function getHashExpand(){
+    if(window.location.hash){
+      const hashRaw = window.location.hash.split('#')
+      const hashType = hashRaw[hashRaw.length - 2]
+      return hashType === 'management'
+    }else{
+      return false
+    }
+  }
+
+  function getHashData(){
+    if(window.location.hash){
+      const hashRaw = window.location.hash.split('#')
+      var returnedData = 0
+      const hashType = hashRaw[hashRaw.length - 2]
+      const hashData = parseInt(hashRaw[hashRaw.length - 1])
+      if(hashType === 'management'){
+        switch (true) {
+          case hashData >= maxManagementSteps - 1:
+            returnedData = maxManagementSteps - 1
+            break;
+          case hashData <= 0:
+            returnedData = 0
+            break;
+          default:
+            return hashData
+        }
+      }
+      return parseInt(returnedData)
+    }else{
+      return 0
+    }
+  }
+
+  function getComponent(){
+    switch (activeStep) {
+      case 0:
+        return <MBScoreEditor {...passingProps} />
+        break;
+      case 1:
+        return <MBPlayoff {...passingProps} />
+        break;
+      case 2:
+        return <MBReward {...passingProps} />
+        break;
+      default:
+        return <MBMatchAdmin {...passingProps} />
+    }
+  }
+
+  function handleNext() {
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
+  }
+
+  function handleBack() {
+      setActiveStep(prevActiveStep => prevActiveStep - 1);
+    }
+
+  return (
+    <React.Fragment>
+      <List className={classes.expandButton} disablePadding>
+        <ListItem button onClick={handleExpand}
+          style={{
+            marginTop: 16,
+            boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+          }}>
+          <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การจัดการแข่งขัน" : 'Match Management' } />
+          <IconButton
+            disableRipple
+            className={classes.expandIcon}
+            style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
+            onClick={handleExpand}
+            aria-expanded={expanded}
+            aria-label="Show more"
+          >
+            <ExpandMore />
+          </IconButton>
+        </ListItem>
+      </List>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Paper className={classes.paper}>
+          <Button style={{ boxSizing: 'border-box', marginLeft: 36, marginTop: 16, textTransform: 'none' }} onClick={handleClick}>
+            <LabelText paddingTop={0} paddingLeft={0} text={labelManagementSteps[activeStep]} />
+            <ArrowDropDown fontSize="large" style={{ marginLeft: 8, marginTop: 12 }} />
+          </Button>
+          <MobileStepper
+            style={{ backgroundColor: 'inherit', marginTop: 24 }}
+            steps={maxManagementSteps}
+            position="static"
+            variant="text"
+            activeStep={activeStep}
+            nextButton={
+              <Link
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                to={`${window.location.pathname}#management#${activeStep === maxManagementSteps - 1 ? maxManagementSteps - 1 : activeStep + 1}`}>
+                <BTN.PrimaryText size="small" onClick={handleNext} disabled={activeStep === maxManagementSteps - 1}>
+                  { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
+                  {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                </BTN.PrimaryText>
+              </Link>
+            }
+            backButton={
+              <Link
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                to={`${window.location.pathname}#management#${activeStep === 0 ? 0 : activeStep - 1}`}>
+                <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
+                  {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                  { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+                </BTN.PrimaryText>
+              </Link>
+            }
+          />
+        </Paper>
+        <Paper className={classes.paper} style={{ marginTop: 24 }}>
+          {getComponent()}
+        </Paper>
+
+      </Collapse>
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {
+          labelManagementSteps.map( (d, i) =>
+          <Link
+            key={d}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+            to={`${window.location.pathname}#management#${i}`}>
+            <MenuItem
+              onClick={()=>( activeStep === i ) ? console.log() : handleMenu(i)}
+              style={{ ...(activeStep === i  && { backgroundColor: grey[400] }) }}>
+              {d}
+            </MenuItem>
+          </Link>
+        )}
+      </Menu>
+    </React.Fragment>
+  );
+}
+
+export default function MatchEditor(props){
+  const classes = useStyles();
+  const theme = useTheme();
+  const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData } = props
+  const [ param, setParam ] = React.useState(null)
+  const [ data, setData ] = React.useState(null)
 
   async function handleFetch(matchid){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -245,49 +577,8 @@ export default function MatchEditor(props){
           </BTN.NoStyleLink>
         }
       </Typography>
-      <Paper className={classes.paper}>
-        <Button style={{ boxSizing: 'border-box', marginLeft: 36, marginTop: 16, textTransform: 'none' }} onClick={handleClick}>
-          <LabelText paddingTop={0} paddingLeft={0} text={labelSteps[activeStep]} />
-          <ArrowDropDownIcon fontSize="large" style={{ marginLeft: 8, marginTop: 12 }} />
-        </Button>
-        <MobileStepper
-          style={{ backgroundColor: 'inherit', marginTop: 24 }}
-          steps={maxSteps}
-          position="static"
-          variant="text"
-          activeStep={activeStep}
-          nextButton={
-            <BTN.PrimaryText size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
-              { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
-              {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-            </BTN.PrimaryText>
-          }
-          backButton={
-            <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
-              {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
-            </BTN.PrimaryText>
-          }
-        />
-      </Paper>
-      <Paper className={classes.paper} style={{ marginTop: 24 }}>
-        {getComponent()}
-      </Paper>
-
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        {
-          labelSteps.map( (d, i) =>
-          <MenuItem key={d}
-            onClick={()=>( activeStep === i ) ? console.log() : handleMenu(i)}
-            style={{ ...(activeStep === i  && { backgroundColor: grey[400] }) }}>{d}</MenuItem>
-        )}
-      </Menu>
-
+      <SetUpMatchComponent {...props} param={param} data={data} setData={setData} />
+      <ManagementMatchComponent {...props} param={param} data={data} setData={setData} />
     </div>
   );
 }

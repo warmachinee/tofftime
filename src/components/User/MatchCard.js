@@ -14,6 +14,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
+    marginLeft: 'auto',
     marginRight: 'auto',
     marginBottom: 24,
     [theme.breakpoints.up(600)]: {
@@ -69,8 +70,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchCard(props) {
   const classes = useStyles();
-  const { API, BTN, sess, data, isSupportWebp, chkUserid, pageOrganizer, pageData } = props
-  const [ joinStatus, setJoinStatus ] = React.useState(false)
+  const { API, BTN, sess, token, setCSRFToken, data, setData, userid, isSupportWebp, pageOrganizer, pageData } = props
 
   function handleJoinMatch(){
     if(sess){
@@ -81,8 +81,8 @@ export default function MatchCard(props) {
         userid: sess.userid,
       })
       setTimeout(()=>{
-        setJoinStatus(true)
-      }, 1000)
+        handleFetch()
+      }, 500)
     }
   }
 
@@ -99,14 +99,17 @@ export default function MatchCard(props) {
             </div>
           )
           break;
+        case data.permission === 'pending':
+          return (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+              <Button disabled>Pending</Button>
+            </div>
+          )
+          break;
         case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              { joinStatus?
-                <Button disabled>Join</Button>
-                :
-                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
-              }
+              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
             </div>
           )
           break;
@@ -114,6 +117,34 @@ export default function MatchCard(props) {
           return null
       }
     }
+  }
+
+  async function handleFetch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const sendObj = {
+      action: 'upcoming'
+    }
+
+    if(userid){
+      Object.assign(sendObj, { targetuser: userid });
+    }
+
+    await API._xhrPost(
+      token? token : resToken.token,
+      'loadusersystem' , {
+        ...sendObj
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+      if(!/wrong/.test(d.status)){
+        if(pageOrganizer){
+          setData(d.filter( item =>{
+            return item.pageid === pageData.pageid
+          }))
+        }else{
+          setData(d)
+        }
+      }
+    })
   }
 
   return(
@@ -135,9 +166,18 @@ export default function MatchCard(props) {
               color: data.typescore === 1 ? primary[700] : 'inherit',
               fontWeight: data.typescore === 1 ? 900 : 400
             }}>
-            {
-              data.typescore === 1 ? 'Professional' : 'Amateur'
-            }
+            {function(){
+              switch (data.typescore) {
+                case 0:
+                  return 'Amateur'
+                  break;
+                case 1:
+                  return 'Professional'
+                  break;
+                default:
+                  return 'Charity'
+              }
+            }()}
           </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>
             <Typography gutterBottom variant="body1" className={classes.title}>
@@ -151,7 +191,7 @@ export default function MatchCard(props) {
               {data.fieldname}
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              {`${data.views + ' views'}`}
+              {`${API._shotnessNumber(data.views)} view${data.views > 1? 's' : ''}`}
             </Typography>
           </BTN.NoStyleLink>
         </Box>

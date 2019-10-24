@@ -234,6 +234,17 @@ export default function LocationList(props){
     })
   }
 
+  function handleLoadDefaultField(){
+    if(sess){
+      const socket = socketIOClient( API._getWebURL() )
+      socket.emit('search-client-message', {
+        action: "field",
+        userid: sess.userid,
+        text: ' '
+      })
+    }
+  }
+
   async function handleDeleteField(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -258,9 +269,15 @@ export default function LocationList(props){
   }
 
   React.useEffect(()=>{
-    handleLoadField()
+    if(editting){
+      handleLoadField()
+    }
+  },[ editting ])
+
+  React.useEffect(()=>{
+    handleLoadDefaultField()
     responseField()
-  },[ open, editting ])
+  },[ ])
 
   return(
     <div>

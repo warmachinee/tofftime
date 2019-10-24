@@ -22,7 +22,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: 0,
     width: '100%',
-    cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box',
     [theme.breakpoints.up(500)]: {

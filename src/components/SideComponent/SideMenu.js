@@ -18,6 +18,7 @@ import {
   Typography,
   Box,
   Badge,
+  Collapse
 
 } from '@material-ui/core'
 
@@ -162,6 +163,7 @@ export default function SideMenu(props) {
   const [ pageList, setPageList ] = React.useState(null)
   const [ confirmLogout, setConfirmLogout ] = React.useState(false)
   const [ expanded, setExpanded ] = React.useState({
+    management: window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`),
     friend: false,
     follow: false
   });
@@ -409,26 +411,75 @@ export default function SideMenu(props) {
           }
           { sess &&
             <BTN.NoStyleLink to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}>
-              <ListItem button>
+              <ListItem button
+                style={{
+                  ...(window.location.pathname === `/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`) &&
+                  { backgroundColor: COLOR.grey[300] },
+                }}>
                 <ListItemIcon><Dashboard /></ListItemIcon>
                 <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' } />
               </ListItem>
             </BTN.NoStyleLink>
           }
-          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}>
-            <ListItem button>
-              <ListItemIcon><SettingsApplications /></ListItemIcon>
-              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } />
+          {/*
+            <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}>
+
+            </BTN.NoStyleLink>*/
+          }
+          <ListItem button onClick={()=>handleExpand('management')}>
+            <ListItemIcon><SettingsApplications /></ListItemIcon>
+            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } />
+          </ListItem>
+          <Collapse in={expanded.management} timeout="auto" style={{ minHeight: 'auto' }}>
+            <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`}>
+              <ListItem button
+                style={{
+                  ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`)) &&
+                  { backgroundColor: COLOR.grey[300] },
+                }}>
+                <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
+              </ListItem>
+            </BTN.NoStyleLink>
+            <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`}>
+              <ListItem button
+                style={{
+                  ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`)) &&
+                  { backgroundColor: COLOR.grey[300] },
+                }}>
+                <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
+              </ListItem>
+            </BTN.NoStyleLink>
+          </Collapse>
+          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}>
+            <ListItem button
+              style={{
+                ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`) &&
+                { backgroundColor: COLOR.grey[300] },
+              }}>
+              <ListItemIcon><History /></ListItemIcon>
+              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
             </ListItem>
           </BTN.NoStyleLink>
-          <ListItem button onClick={toggleHistory}>
-            <ListItemIcon><History /></ListItemIcon>
-            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
-          </ListItem>
-          <ListItem button onClick={toggleUpcoming}>
-            <ListItemIcon><Event /></ListItemIcon>
-            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
-          </ListItem>
+          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}>
+            <ListItem button
+              style={{
+                ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`) &&
+                { backgroundColor: COLOR.grey[300] },
+              }}>
+              <ListItemIcon><Event /></ListItemIcon>
+              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
+            </ListItem>
+          </BTN.NoStyleLink>
+          {/*
+            <ListItem button onClick={toggleHistory}>
+              <ListItemIcon><History /></ListItemIcon>
+              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
+            </ListItem>
+            <ListItem button onClick={toggleUpcoming}>
+              <ListItemIcon><Event /></ListItemIcon>
+              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
+            </ListItem>*/
+          }
         </List>
         <ListFriend expanded={expanded} handleExpand={handleExpand} state={expanded.friend} {...props} />
         <ListFollow expanded={expanded} handleExpand={handleExpand} state={expanded.follow} {...props} />

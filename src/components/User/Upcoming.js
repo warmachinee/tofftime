@@ -81,7 +81,7 @@ export default function Upcoming(props) {
       <div className={classes.grid}>
         { data ?
           ( data.length > 0 ?
-            API.sortReverseArrByDate(data, 'matchdate').slice(0, 10).map( d => <MatchCard key={d.matchid} data={d} {...props} />)
+            API.sortReverseArrByDate(data, 'matchdate').slice(0, 10).map( d => <MatchCard key={d.matchid} data={d} setData={setData} {...props} />)
             :
             <div style={{
                 width: '100%', padding: '36px 0', textAlign: 'center',
@@ -89,6 +89,9 @@ export default function Upcoming(props) {
           )
           :
           Array.from(new Array(2)).map((d, i) => <MatchCard key={i} />)
+        }
+        { data && ( data.length === 1 || data.length === 2 ) &&
+          Array.from(new Array( 3 - data.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
         }
       </div>
     </div>

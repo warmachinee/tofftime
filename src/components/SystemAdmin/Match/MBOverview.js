@@ -42,7 +42,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box',
     marginLeft: 'auto',

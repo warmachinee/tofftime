@@ -26,6 +26,11 @@ import {
 
 import Skeleton from '@material-ui/lab/Skeleton';
 
+const Statistics = Loadable({
+  loader: () => import(/* webpackChunkName: "Statistics" */ './../Statistics/Statistics'),
+  loading: () => null
+});
+
 const HistoryList = Loadable({
   loader: () => import(/* webpackChunkName: "HistoryList" */ './HistoryList'),
   loading: () => null
@@ -51,7 +56,7 @@ const useStyles = makeStyles(theme => ({
   },
   gridChild: {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     width: '100%',
     padding: '0 12px',
     boxSizing: 'border-box',
@@ -146,7 +151,7 @@ const matchTypeNames = [
 export default function History(props) {
   const classes = useStyles();
   const {
-    API, COLOR, sess, token, setCSRFToken, accountData, open, userid, userData,
+    API, COLOR, sess, token, setCSRFToken, accountData, handleAccountData, open, userid, userData,
     pageOrganizer, pageData, pageList, userPageList
   } = props
   const [ data, setData ] = React.useState(null)
@@ -179,6 +184,36 @@ export default function History(props) {
       setChecked(['indy']);
       value = ['indy']
     }
+    handleTickStat(value)
+  }
+
+  async function handleTickStat(value){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const sendObj = {
+      action: 'editprofile',
+      historystat: value
+    }
+    await API._xhrPost(
+      token? token : resToken.token,
+      'uusersystem', {
+        ...sendObj
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+    })
+    await handleFetchInfo()
+  }
+
+  async function handleFetchInfo(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'loadusersystem', {
+        action: 'info'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleAccountData(d)
+      setChecked(d.historystat)
+    })
   }
 
   async function handleFetch(){
@@ -241,68 +276,74 @@ export default function History(props) {
       <div className={classes.grid}>
         <div
           className={clsx(classes.gridChild,{
-            [classes.gridFlexDirectionDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-            [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+            [classes.gridFlexDirectionDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
+            [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
           })}>
+          { /*
+            <Paper
+              style={{ boxSizing: 'border-box' }}
+              className={clsx(
+                {
+                  [classes.controlPaperDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
+                  [classes.controlPaperUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+                },
+                {
+                  [classes.settingStatDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
+                  [classes.settingStatUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+                }
+              )}>
+              <FormControl className={clsx({
+                [classes.formControlDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
+                [classes.formControlUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+              })}>
+                <InputLabel>{ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' }</InputLabel>
+                <Select
+                  multiple
+                  disabled={Boolean(userid)}
+                  value={checked}
+                  onChange={handleChange}
+                  input={<Input id="select-multiple-checkbox" />}
+                  renderValue={selected => (
+                    <div className={classes.chips}>
+                      { selected.map(value => (
+                        <Chip key={value} label={getSortName(value)} className={classes.chip} />
+                      ))}
+                    </div>
+                  )}
+                  MenuProps={MenuProps}
+                >
+                  { matchTypeNames.map(name => (
+                    <MenuItem key={name} value={name}>
+                      <Checkbox checked={checked.indexOf(name) > -1} />
+                      <ListItemText style={{ textTransform: 'capitalize' }} primary={getSortName(name)} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Paper>*/
+          }
+          { !pageOrganizer &&
+            <Statistics {...props} checked={checked} setChecked={setChecked} />
+          }
           <Paper
-            style={{ boxSizing: 'border-box' }}
-            className={clsx(
-              {
-                [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-                [classes.controlPaperUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-              },
-              {
-                [classes.settingStatDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-                [classes.settingStatUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-              }
-            )}>
-            <FormControl className={clsx({
-              [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-              [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
-            })}>
-              <InputLabel>Match</InputLabel>
-              <Select
-                multiple
-                value={checked}
-                onChange={handleChange}
-                input={<Input id="select-multiple-checkbox" />}
-                renderValue={selected => (
-                  <div className={classes.chips}>
-                    { selected.map(value => (
-                      <Chip key={value} label={getSortName(value)} className={classes.chip} />
-                    ))}
-                  </div>
-                )}
-                MenuProps={MenuProps}
-              >
-                { matchTypeNames.map(name => (
-                  <MenuItem key={name} value={name}>
-                    <Checkbox checked={checked.indexOf(name) > -1} />
-                    <ListItemText style={{ textTransform: 'capitalize' }} primary={getSortName(name)} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Paper>
-          <Paper
-            style={{ boxSizing: 'border-box' }}
+            style={{ boxSizing: 'border-box', marginTop: 'auto', marginBottom: 12 }}
             className={clsx({
-              [classes.controlPaperDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-              [classes.controlPaperUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+              [classes.controlPaperDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
+              [classes.controlPaperUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
             })}>
             <form autoComplete="off">
               <FormControl className={clsx({
-                [classes.formControlDown]: open ? window.innerWidth < 790 : window.innerWidth < 550 ,
-                [classes.formControlUp]: !( open ? window.innerWidth < 790 : window.innerWidth < 550 )
+                [classes.formControlDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
+                [classes.formControlUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
               })}>
                 <InputLabel>{ (sess && sess.language === 'TH')? 'ประเภท' : 'Type' }</InputLabel>
                 <Select
                   value={statType}
-                  onChange={e => setStatType(e.target.value)}
-                >
+                  onChange={e => setStatType(e.target.value)}>
                   <MenuItem value={'total'}>{ (sess && sess.language === 'TH')? 'ทั้งหมด' : 'Total' }</MenuItem>
-                  <MenuItem value={'0'}>{ (sess && sess.language === 'TH')? 'มือสมัครเล่น' : 'Amateur' }</MenuItem>
                   <MenuItem value={'1'}>{ (sess && sess.language === 'TH')? 'มืออาชีพ' : 'Pro' }</MenuItem>
+                  <MenuItem value={'0'}>{ (sess && sess.language === 'TH')? 'มือสมัครเล่น' : 'Amateur' }</MenuItem>
+                  <MenuItem value={'2'}>{ (sess && sess.language === 'TH')? 'การกุศล' : 'Charity' }</MenuItem>
                 </Select>
               </FormControl>
             </form>

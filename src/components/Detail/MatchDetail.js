@@ -115,7 +115,10 @@ export default function MatchDetail(props){
         path={`/match/${props.computedMatch.params.matchid}`}
         {...props}
         data={data}
+        setData={setData}
         userscore={userscore}
+        setUserscore={setUserscore}
+        setRawUserscore={setRawUserscore}
         sortBy={sortBy}
         setSortBy={setSortBy}
         matchid={parseInt(props.computedMatch.params.matchid)} />

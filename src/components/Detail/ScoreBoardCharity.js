@@ -60,14 +60,21 @@ const useStyles = makeStyles(theme => ({
     boxSizing: 'border-box',
   },
   userlistChildGrid: {
-    border: '1px solid',
     width: '100%',
     marginLeft: 'auto',
     marginRight: 'auto',
   },
+  listRank: {
+    width: 64,
+    textAlign: 'right',
+    marginRight: 16
+  },
   listPlayerName: {
     width: '100%',
-    fontSize: 14
+  },
+  listScoreGross: {
+    width: 75,
+    textAlign: 'right'
   },
   listScore: {
     width: 50,
@@ -82,6 +89,14 @@ const useStyles = makeStyles(theme => ({
   },
   listText: {
     fontSize: 14
+  },
+  listTextClass: {
+    fontSize: 20,
+    fontWeight: 600
+  },
+  listTextTotal: {
+    fontSize: 24,
+    fontWeight: 600
   },
 
 }))
@@ -200,11 +215,12 @@ export default function ScoreBoardCharity(props){
   function playerLimitComponent(){
 
     return (
-      <div style={{ margin: '12px auto', display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ margin: '12px auto', display: 'flex', }}>
         <ThemeProvider theme={theme}>
           { editting ?
             <div className={classes.playerLimitChildGrid}>
               <TextField label="Player Limit"
+                autoFocus
                 value={!isNaN(playerLimit.current) ? playerLimit.current : ''}
                 type="number"
                 onChange={e =>handlePlayerLimit(e.target.value)}
@@ -217,7 +233,7 @@ export default function ScoreBoardCharity(props){
             </div>
           }
         </ThemeProvider>
-        <BTN.PrimaryText onClick={()=>setEditting(!editting)}>{ editting ? 'Done' : 'Edit' }</BTN.PrimaryText>
+        <BTN.PrimaryText style={{ marginLeft: 24 }} onClick={()=>setEditting(!editting)}>{ editting ? 'Done' : 'Edit' }</BTN.PrimaryText>
       </div>
     );
   }
@@ -228,7 +244,7 @@ export default function ScoreBoardCharity(props){
         { data.class &&
           data.class.map( d =>
             <div key={d.classno} className={classes.userlistChildGrid}>
-              {userListTable(d)}
+              {userListTable(d, d.classname)}
             </div>
           )
         }
@@ -236,54 +252,74 @@ export default function ScoreBoardCharity(props){
     );
   }
 
-  function userListTable(data){
+  function userListTable(data, classTitle){
 
     return (
-      <List disablePadding>
-        <ListItem style={{ backgroundColor: data.color !== ''? COLOR[data.color][900] : COLOR.grey[900] }}>
-          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
-            className={classes.listPlayerName} classes={{ primary: classes.listText }} primary="Player" />
-          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
-            className={classes.listScore} classes={{ primary: classes.listText }} primary="OUT" />
-          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
-            className={classes.listScore} classes={{ primary: classes.listText }} primary="IN" />
-          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
-            className={classes.listScore} classes={{ primary: classes.listText }} primary="HC" />
-          <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
-            className={classes.listScore} classes={{ primary: classes.listText }} primary="SF" />
-          {/*
-            <ListItemText style={{ color: 'white' }} className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />*/
-          }
-        </ListItem>
-        { userscore &&
-          userscore.filter( item =>{ return item.classno === data.classno }).slice(0, playerLimit.current).map( d =>
-          <React.Fragment key={d.userid}>
-            <ListItem className={classes.listPlayer}>
-              <ListItemText className={classes.listPlayerName} classes={{ primary: classes.listText }}
-                primary={d.firstname}
-                secondary={
-                  <Typography className={classes.listPlayerName} variant="subtitle1">{d.lastname}</Typography>
-                } />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.out} />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.in} />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.hc} />
-              <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.sf}/>
-              {/*
-                <ListItemText className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />*/
-              }
-            </ListItem>
-            <Divider />
-          </React.Fragment>
-        )}
-        { userscore &&
-          <ListItem>
-            <ListItemText classes={{ primary: classes.listText }} primary="Total" />
-            <ListItemText className={classes.listTotal} classes={{ primary: classes.listText }}
-              primary={userTotalScore(userscore.filter( item =>{ return item.classno === data.classno }).slice(0, playerLimit.current))} />
+      <React.Fragment>
+        <List disablePadding>
+          <ListItem style={{ border: `2px solid ${data.color !== ''? COLOR[data.color][900] : COLOR.grey[900]}` }}>
+            <ListItemText
+              classes={{ primary: classes.listTextClass }}
+              style={{ color: data.color !== ''? COLOR[data.color][900] : 'black', textAlign: 'center' }}
+              primary={classTitle} />
           </ListItem>
-        }
-
-      </List>
+          <ListItem style={{ backgroundColor: data.color !== ''? COLOR[data.color][900] : COLOR.grey[900] }}>
+            <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+              className={classes.listRank} classes={{ primary: classes.listText }} primary="Rank" />
+            <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+              className={classes.listPlayerName} classes={{ primary: classes.listText }} primary="Player" />
+            { /*
+              <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+                className={classes.listScore} classes={{ primary: classes.listText }} primary="OUT" />
+              <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+                className={classes.listScore} classes={{ primary: classes.listText }} primary="IN" />*/
+            }
+            <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+              className={classes.listScoreGross} classes={{ primary: classes.listText }} primary="TOT" />
+            <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+              className={classes.listScore} classes={{ primary: classes.listText }} primary="HC" />
+            <ListItemText style={{ color: data.color !== ''? stylesTheme.palette.getContrastText(COLOR[data.color][600]) : 'white' }}
+              className={classes.listScore} classes={{ primary: classes.listText }} primary="SF" />
+            {/*
+              <ListItemText style={{ color: 'white' }} className={classes.listPrice} classes={{ primary: classes.listText }} primary="Price" />*/
+            }
+          </ListItem>
+        </List>
+        <List disablePadding style={{ border: '1px solid rgba(0, 0, 0, 0.12)'}}>
+          { userscore &&
+            userscore.filter( item =>{ return item.classno === data.classno }).slice(0, playerLimit.current).map((d, index) =>
+            <React.Fragment key={d.userid}>
+              <ListItem className={classes.listPlayer}>
+                <ListItemText className={classes.listRank} classes={{ primary: classes.listText }} primary={index} />
+                <ListItemText className={classes.listPlayerName} style={{ display: 'flex', flexDirection: 'column' }} classes={{ primary: classes.listText }}
+                  primary={<Typography variant="subtitle1">{d.firstname}&nbsp;&nbsp;{d.lastname}</Typography>}
+                  secondary={<Typography variant="caption" color="textSecondary">{`OUT = ${d.out}, IN = ${d.in}`}</Typography>} />
+                {/*
+                  <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.out} />
+                  <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.in} />*/
+                }
+                <ListItemText className={classes.listScoreGross} classes={{ primary: classes.listText }} primary={d.out + d.in} />
+                <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.hc} />
+                <ListItemText className={classes.listScore} classes={{ primary: classes.listText }} primary={d.sf}/>
+              </ListItem>
+              <Divider />
+            </React.Fragment>
+          )}
+        </List>
+        <List disablePadding>
+          { userscore &&
+            <ListItem style={{ border: `2px solid ${data.color !== ''? COLOR[data.color][900] : COLOR.grey[900]}` }}>
+              <ListItemText
+                classes={{ primary: classes.listTextTotal }}
+                style={{ color: data.color !== ''? COLOR[data.color][900] : 'black', }}
+                primary="Total" />
+              <ListItemText className={classes.listTotal} classes={{ primary: classes.listTextTotal }}
+                style={{ color: data.color !== ''? COLOR[data.color][900] : 'black', }}
+                primary={userTotalScore(userscore.filter( item =>{ return item.classno === data.classno }).slice(0, playerLimit.current))} />
+            </ListItem>
+          }
+        </List>
+      </React.Fragment>
     );
   }
 

@@ -65,7 +65,6 @@ const RoutePostManagement = Loadable.Map({
 
 const useStyles = makeStyles(theme => ({
   root: {
-    minHeight: window.innerHeight * .8,
     maxWidth: 1200,
     marginLeft: 'auto',
     marginRight: 'auto',
@@ -86,7 +85,6 @@ const useStyles = makeStyles(theme => ({
       padding: theme.spacing(2, 0),
     },
   },
-
 
 }));
 
@@ -133,10 +131,6 @@ export default function Management(props) {
       toggleCreatePage: props.toggleCreatePage,
       createMatchState: props.createMatchState,
       toggleCreateMatch: props.toggleCreateMatch,
-      historyState: props.historyState,
-      toggleHistory: props.toggleHistory,
-      upcomingState: props.upcomingState,
-      toggleUpcoming: props.toggleUpcoming,
       setAdminState: props.setAdminState,
       toggleSetAdmin: props.toggleSetAdmin,
       createPostState: props.createPostState,

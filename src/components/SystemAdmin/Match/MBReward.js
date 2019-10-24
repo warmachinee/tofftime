@@ -24,7 +24,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box'
   },
@@ -583,12 +582,12 @@ export default function MBReward(props){
         </div>
         <List>
           <ListItem
-            style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4, cursor: 'auto' }}
+            style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4 }}
             >
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={
                 window.innerWidth < 700?
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Name' )
+                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
                 :
                 ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
               } />

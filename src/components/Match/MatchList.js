@@ -71,6 +71,7 @@ const StyledTab = withStyles(theme => ({
     fontSize: 20,
     fontWeight: 500,
     marginRight: theme.spacing(4),
+    padding: 16,
     '&:hover': {
       color: primary[600],
       opacity: 1,
@@ -83,7 +84,7 @@ const StyledTab = withStyles(theme => ({
     },
   },
   selected: {},
-}))(props => <Tab disableRipple {...props} />);
+}))(props => <Tab {...props} />);
 
 const MATCH_LABEL = [
   {
@@ -102,12 +103,15 @@ const MATCH_LABEL = [
 
 function TabContainer(props) {
   const classes = useStyles();
-  const { value, index, filteredData } = props;
+  const { filteredData } = props;
   return (
     <div>
       { filteredData.length > 0 &&
         <div className={classes.grid}>
           { filteredData.map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
+          { ( filteredData.length === 1 || filteredData.length === 2 ) &&
+            Array.from(new Array( 3 - filteredData.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
+          }
         </div>
       }
     </div>
@@ -136,23 +140,14 @@ export default function MatchList(props) {
     })
   }
 
-  function LoadTempData(){
-    var json = '[{"matchid":13321640,"fieldversion":1,"title":"SNT 2 -2019","request":"complete","date":"28/02/2019","picture":"/matchs/13321640/13321640","location":"Muang Ake Golf Club","detail":"","typescore":1,"createdate":"28/02/2019","views":15,"matchstatus":1,"permission":"none"},{"matchid":91433000,"fieldversion":1,"title":"SENIOR NATION TOUR 3-2018","request":"complete","date":"25/10/2018","picture":"/matchs/91433000/91433000","location":"Watermill GOLF&GARDENS","detail":"","typescore":1,"createdate":"25/10/2018","views":9,"matchstatus":1,"permission":"none"},{"matchid":76119605,"fieldversion":3,"title":"Charity Sayan match 2 - 2019","request":"complete","date":"30/01/2020","picture":"/matchs/76119605/76119605","location":"Sayan golf course","detail":null,"typescore":0,"createdate":"02/10/2019","views":218,"matchstatus":0,"permission":"admin"},{"matchid":75299796,"fieldversion":1,"title":"SST Amateur Group 4 - 2019","request":"complete","date":"29/02/2020","picture":"/matchs/75299796/75299796","location":"Riverdale Golf Club","detail":null,"typescore":2,"createdate":"09/10/2019","views":83,"matchstatus":0,"permission":"host"},{"matchid":47976698,"fieldversion":1,"title":"SST Amateur - 2 / 2019","request":"complete","date":"30/09/2019","picture":"/matchs/47976698/47976698","location":"สนามชลประทาน","detail":null,"typescore":0,"createdate":"06/09/2019","views":276,"matchstatus":1,"permission":"host"},{"matchid":47865838,"fieldversion":1,"title":"Pro golf Tournament 1 - 2019","request":"complete","date":"31/12/2019","picture":"/matchs/47865838/47865838","location":"Golf Course 1","detail":null,"typescore":1,"createdate":"25/09/2019","views":126,"matchstatus":0,"permission":"none"},{"matchid":45506254,"fieldversion":1,"title":"SENIOR NATION TOUR 1-2018","request":"complete","date":"24/08/2018","picture":"/matchs/45506254/45506254","location":"Northern Rangsit Golf Club","detail":"","typescore":1,"createdate":"27/08/2018","views":22,"matchstatus":1,"permission":"none"},{"matchid":42758771,"fieldversion":1,"title":"SENIOR NATION TOUR 2-2018","request":"complete","date":"28/09/2018","picture":"/matchs/42758771/42758771","location":"Uniland Golf and Country Club","detail":"","typescore":1,"createdate":"28/09/2018","views":17,"matchstatus":1,"permission":"none"},{"matchid":24759650,"fieldversion":1,"title":"Amateur SNT Club 1 - 2019","request":"complete","date":"12/12/2019","picture":"/matchs/24759650/24759650","location":"BANGKOK GOLF CLUB","detail":null,"typescore":0,"createdate":"05/09/2019","views":176,"matchstatus":0,"permission":"host"},{"matchid":24624947,"fieldversion":1,"title":"SENIOR NATION TOUR 4-2018","request":"complete","date":"03/12/2018","picture":"/matchs/24624947/24624947","location":"สนามกอล์ฟไพน์เฮิทร์ กอล์ฟ แอนด์ คันทรี่ คลับ","detail":"","typescore":1,"createdate":"03/12/2018","views":15,"matchstatus":1,"permission":"none"},{"matchid":16725831,"fieldversion":1,"title":"SNT 4-2019","request":"complete","date":"04/07/2019","picture":"/matchs/16725831/16725831","location":"Watermill GOLF&GARDENS","detail":"","typescore":1,"createdate":"04/07/2019","views":473,"matchstatus":1,"permission":"none"},{"matchid":92778945,"fieldversion":1,"title":"ALEX MCKAY SENIOR NATION TOUR THAI SPGA MEMBER","request":"complete","date":"19/03/2019","picture":"/matchs/92778945/92778945","location":"BANGKOK GOLF CLUB","detail":"","typescore":1,"createdate":"19/03/2019","views":83,"matchstatus":1,"permission":"none"}]'
-    setData(JSON.parse(json))
-  }
-
   React.useEffect(()=>{
-    if(/localhost/.test(window.location.href)){
-      LoadTempData()
-    }else{
-      handleFetch()
-    }
+    handleFetch()
   },[ ])
 
   return(
     <div id="el_match" className={classes.root}>
       <div className={classes.tabRoot}>
-        <Paper elevation={1} style={{ padding: '16px 0' }}>
+        <Paper elevation={3}>
           <StyledTabs
             value={value}
             onChange={handleChange}
@@ -164,27 +159,17 @@ export default function MatchList(props) {
             )}
           </StyledTabs>
         </Paper>
-        { data && MATCH_LABEL.map( type =>
-          value === type.typescore &&
+        { data && MATCH_LABEL.map((type, index) =>
+          value === index &&
           <TabContainer
             {...props}
             key={type.typescore}
             value={value}
             index={type.typescore}
+            setData={setData}
             filteredData={data.filter( item =>{ return item.typescore === type.typescore })} />
         )}
       </div>
     </div>
   );
 }
-
-/*
-{ data && data.filter( item =>{ return item.typescore !== 1 }).length > 0 && value === 1 &&
-  <React.Fragment>
-    <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแข่งขันมือสมัครเล่น" : 'Amateur match' } />
-    <div className={classes.grid}>
-      { data.filter( item =>{ return item.typescore !== 1 }).map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
-    </div>
-  </React.Fragment>
-}
-*/

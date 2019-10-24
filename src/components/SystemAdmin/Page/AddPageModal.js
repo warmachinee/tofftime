@@ -217,10 +217,10 @@ export default function AddPageModal(props){
                           variant="caption"
                           color="textPrimary"
                         >
-                          {value.view} {`view${value.view > 1? 's' : ''}`}
+                          {API._shotnessNumber(value.view)} {` view${value.view > 1? 's' : ''}`}
                         </Typography>
                         <br></br>
-                        {value.subscriber} {`follower${value.subscriber > 1? 's' : ''}`}
+                        {value.subscriber} {` follower${value.subscriber > 1? 's' : ''}`}
                       </React.Fragment>
                     } />
                   { window.innerWidth >= 650 &&
@@ -233,7 +233,7 @@ export default function AddPageModal(props){
                           variant="caption"
                           color="textPrimary"
                         >
-                          {value.view} {`view${value.view > 1? 's' : ''}`}
+                          {API._shotnessNumber(value.view)} {` view${value.view > 1? 's' : ''}`}
                         </Typography>
                       } />
                   }
