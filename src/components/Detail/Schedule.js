@@ -18,7 +18,7 @@ import {
 } from '@material-ui/icons';
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => null
 });
 
@@ -104,6 +104,7 @@ export default function Schedule(props) {
       setCSRFToken(csrf)
       if(d.team && d.team.length > 0){
         setMatchDetail(d)
+        document.title = `(Schedule) ${d.title} - T-off Time`
         handleFetchSchedule()
       }else{
         handleSnackBar({

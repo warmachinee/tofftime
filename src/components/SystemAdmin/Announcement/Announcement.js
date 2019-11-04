@@ -26,7 +26,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -36,7 +36,7 @@ const AnnouncementEditor = Loadable({
 });
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -195,7 +195,7 @@ export default function Announcement(props){
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ open ])
 
   return(
     <div className={classes.root}>
@@ -243,7 +243,7 @@ export default function Announcement(props){
                       <ImageIcon className={classes.bigAvatar} />
                   }
                 </ListItemAvatar>
-                <ListItemText className={classes.listDetail} primary={d.title} secondary={d.subtitle} />
+                <ListItemText className={classes.listDetail} primary={d.title} />
                 <ListItemIcon>
                   { editting?
                     <IconButton onClick={()=>handleDeleteItem(d)}>
@@ -263,8 +263,8 @@ export default function Announcement(props){
       <TemplateDialog open={open} handleClose={handleClose}>
         <AnnouncementEditor
           {...props}
+          handleClose={handleClose}
           clickAction={clickAction}
-          setData={setData}
           edittingData={edittingData} />
       </TemplateDialog>
       <TemplateDialog

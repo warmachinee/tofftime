@@ -4,15 +4,13 @@ import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import { primary } from './../../api/palette'
 
-import CKEditor from '@ckeditor/ckeditor5-react';
-
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => null
 });
 
@@ -57,6 +55,7 @@ export default function AnnounceDetail(props){
     )
     setCSRFToken(d.token)
     setData(d.response)
+    document.title = `${d.response.title} - T-off Time`
   }
 
   React.useEffect(()=>{
@@ -86,8 +85,10 @@ function DetailComponent(props){
   const { announcedetail } = props
 
   return(
-    <div className="ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline ck-read-only">
-      {ReactHtmlParser(announcedetail)}
+    <div className="ql-container ql-snow">
+      <div className="ql-editor">
+        {ReactHtmlParser(announcedetail)}
+      </div>
     </div>
   );
 }

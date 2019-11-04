@@ -198,7 +198,7 @@ export default function CreateMatchBody(props){
   const {
     API, sess, setData, setDataClassed, token, setCSRFToken, handleSnackBar, activeStep,
     matchName, matchClass, selectedField, selectedPrivacy, selectedMatchType, selectedDate, selectedFile, tempFile,
-    setMatchName, setMatchClass, setSelectedField, handlePrivacy, handleMatchType, handleDateChange, handlePicture,
+    setMatchName, setSelectedField, handlePrivacy, handleMatchType, handleDateChange, handlePicture,
 
   } = props
   const imgRef = React.useRef(null)
@@ -291,19 +291,6 @@ export default function CreateMatchBody(props){
                         />
                       </MuiPickersUtilsProvider>
                     </ThemeProvider>
-                    { selectedMatchType !== '0' &&
-                      <ThemeProvider theme={theme}>
-                        <TextField
-                          className={classes.textFieldClass}
-                          label={ ( sess && sess.language === 'TH' ) ? "จำนวนประเภทการแข่งขัน" : 'Class' }
-                          value={ !isNaN(matchClass) ? matchClass : '' }
-                          type="number"
-                          variant="outlined"
-                          onChange={e =>setMatchClass(parseInt(e.target.value))}
-                          onFocus={e => e.target.select()}
-                        />
-                      </ThemeProvider>
-                    }
                   </div>
                 </React.Fragment>
               );

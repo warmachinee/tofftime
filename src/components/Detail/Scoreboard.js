@@ -141,6 +141,7 @@ export default function Scoreboard(props) {
   }
 
   React.useEffect(()=>{
+    console.log(matchClass);
     handleFetch()
   },[ ])
 

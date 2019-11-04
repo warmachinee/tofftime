@@ -1,0 +1,163 @@
+import React from 'react';
+import Loadable from 'react-loadable';
+import socketIOClient from 'socket.io-client'
+import { Redirect, Link } from "react-router-dom";
+import { makeStyles } from '@material-ui/core/styles';
+
+import {
+  IconButton,
+  Avatar,
+  InputBase,
+  List,
+  ListItem,
+
+} from '@material-ui/core';
+
+import Autocomplete from '@material-ui/lab/Autocomplete';
+
+import SearchIcon from '@material-ui/icons/Search';
+import MoreIcon from '@material-ui/icons/MoreVert';
+import AccountIcon from '@material-ui/icons/AccountCircle';
+import CloseIcon from '@material-ui/icons/Close'
+
+const useStyles = makeStyles(theme => ({
+  avatarSearch: {
+    fontSize: 32,
+    [theme.breakpoints.up(600)]: {
+      fontSize: 48,
+    },
+  },
+  avatarImageSearch: {
+    width: 32,
+    height: 32,
+    [theme.breakpoints.up(600)]: {
+      width: 48,
+      height: 48,
+    },
+  },
+  searchLabel: {
+    flexGrow: 1,
+    marginLeft: 8,
+    [theme.breakpoints.up(600)]: {
+      marginLeft: 16,
+    },
+  },
+  paper: {
+    boxShadow: 'none',
+    margin: 0,
+    color: '#586069',
+    fontSize: 13,
+    [theme.breakpoints.up(600)]: {
+      fontSize: 16,
+    },
+  },
+  option: {
+    alignItems: 'flex-start',
+    '&[aria-selected="true"]': {
+      backgroundColor: 'transparent',
+    },
+    '&[data-focus="true"]': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    padding: 4,
+    [theme.breakpoints.up(600)]: {
+      padding: '6px 16px'
+    },
+  },
+  popup: {
+    zIndex: 1100
+  },
+
+}));
+
+export default function SearchMatchPage(props) {
+  const classes = useStyles();
+  const { API, sess, isSupportWebp, searchState, setSearchState } = props
+  const [ searchText, setSearchText ] = React.useState('')
+  const [ searchData, setSearchData ] = React.useState([])
+
+  function searchTextOnChange(e){
+    if(e){
+      setSearchText(e.target.value)
+      if(sess){
+        const socket = socketIOClient( API._getWebURL() )
+        socket.emit('search-client-message', {
+          action: "matchpage",
+          userid: sess.userid,
+          text: e.target.value
+        })
+      }
+    }else{
+      setSearchText('')
+    }
+  }
+
+  function responseSearch(){
+    if(sess){
+      const socket = socketIOClient( API._getWebURL() )
+      socket.on(`${sess.userid}-matchpage-search-server-message`, (messageNew) => {
+        setSearchData(messageNew.result.infolist)
+      })
+    }
+  }
+
+  React.useEffect(()=>{
+    responseSearch()
+  },[ ])
+
+  return (
+    <React.Fragment>
+      <IconButton disabled style={{ color: 'rgba(0, 0, 0, 0.54)' }}>
+        <SearchIcon />
+      </IconButton>
+      <Autocomplete
+        disableCloseOnSelect
+        disableOpenOnFocus
+        freeSolo={searchData.length !== 0}
+        classes={{
+          paper: classes.paper,
+          option: classes.option,
+          popup: classes.popup,
+        }}
+        options={searchData}
+        getOptionLabel={option => option.matchname}
+        noOptionsText="No results"
+        renderOption={option => (
+          <List disablePadding style={{ width: '100%' }}>
+            <Link to={`/${option.type}/${option.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <ListItem onClick={()=>setSearchState(false)}>
+                { option.photopath ?
+                  <Avatar className={classes.avatarImageSearch}
+                    src={API._getPictureUrl(option.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                  :
+                  <AccountIcon classes={{ root: classes.avatarSearch }} />
+                }
+                <div className={classes.searchLabel}>
+                  {option.matchname}
+                </div>
+                <IconButton>
+                  <MoreIcon />
+                </IconButton>
+              </ListItem>
+            </Link>
+          </List>
+        )}
+        style={{ width: '100%' }}
+        renderInput={params => (
+          <InputBase
+            fullWidth
+            ref={params.ref}
+            inputProps={params.inputProps}
+            onChange={e =>searchTextOnChange(e)}
+            autoFocus={searchState}
+            onBlur={()=>console.log()/*setSearchState(false)*/}
+            placeholder="Search Match or Page"
+            />
+        )} />
+      <div className={classes.grow} />
+      <IconButton onClick={()=>setSearchState(false)}>
+        <CloseIcon />
+      </IconButton>
+    </React.Fragment>
+  );
+}

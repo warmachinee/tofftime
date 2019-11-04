@@ -254,7 +254,7 @@ export default function AddMatchModal(props){
           <ListItem>
             <Typography component="div" style={{ width: '100%' }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                No Reult
+                No Result
               </Box>
             </Typography>
           </ListItem>

@@ -4,15 +4,13 @@ import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, withStyles } from '@material-ui/core/styles';
 import { primary } from './../../api/palette'
 
-import CKEditor from '@ckeditor/ckeditor5-react';
-
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => null
 });
 
@@ -106,7 +104,7 @@ function DetailComponent(props){
   const { messagedetail } = props
 
   return(
-    <div className="ck-blurred ck ck-content ck-editor__editable ck-rounded-corners ck-editor__editable_inline ck-read-only">
+    <div>
       {ReactHtmlParser(messagedetail)}
     </div>
   );

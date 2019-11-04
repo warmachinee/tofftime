@@ -8,6 +8,7 @@ import { primary, grey, red } from './../../../api/palette'
 import {
   Paper,
   Button,
+  ButtonGroup,
   IconButton,
   List,
   ListItem,
@@ -30,7 +31,7 @@ import DragHandleIcon from '@material-ui/icons/DragHandle';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -38,8 +39,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     marginTop: 16,
     width: '100%',
-    backgroundColor: theme.palette.background.paper,
-    justifyContent: 'flex-end'
   },
   confirmTitle: {
     textAlign: 'center', color: primary[900],
@@ -287,15 +286,15 @@ export default function MatchClass(props) {
             handleSnackBar({
               state: true,
               message: e.status,
-              variant: e.status === 'success' ? e.status : 'error',
-              autoHideDuration: e.status === 'success'? 2000 : 5000
+              variant: /success/.test(e.status) ? e.status : 'error',
+              autoHideDuration: /success/.test(e.status)? 2000 : 5000
             })
             statusRes.push(e.status)
           }else{
             statusRes.push(e.status)
           }
         })
-        if(statusRes.every(item => item === 'success')){
+        if(statusRes.every(item => /success/.test(item))){
           handleSnackBar({
             state: true,
             message: 'success',
@@ -472,21 +471,36 @@ export default function MatchClass(props) {
     );
   }
 
+  function ButtonVariant(props) {
+    const { variant, classAction } = props
+    const textInButton = {
+      add: ( ( sess && sess.language === 'TH' ) ? "เพิ่ม" : 'Add' ),
+      edit: ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' ),
+      delete: ( ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' )
+    }
+    return (
+      <React.Fragment>
+        { classAction === variant ?
+          <GreenButton className={classes.button} onClick={()=>setClassAction('')}>
+            {textInButton[variant]}
+          </GreenButton>
+          :
+          <GreenTextButton variant="outlined" className={classes.button} onClick={()=>setClassAction(variant)}>
+            {textInButton[variant]}
+          </GreenTextButton>
+        }
+      </React.Fragment>
+    );
+  }
+
   return (
     <div>
       <div className={classes.controls}>
-        <Button variant={ classAction === 'add'? 'contained':'outlined' } color="primary" className={classes.button}
-          onClick={()=>setClassAction( classAction === 'add'? '':'add' )}>
-          { ( sess && sess.language === 'TH' ) ? "เพิ่ม" : 'Add' }
-        </Button>
-        <Button variant={ classAction === 'edit'? 'contained':'outlined' } color="primary" className={classes.button}
-          onClick={()=>setClassAction( classAction === 'edit'? '':'edit')}>
-          { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
-        </Button>
-        <Button variant={ classAction === 'delete'? 'contained':'outlined' } color="primary" className={classes.button}
-          onClick={()=>setClassAction( classAction === 'delete'? '':'delete')}>
-          { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
-        </Button>
+        <ButtonGroup fullWidth>
+          <ButtonVariant variant="add" classAction={classAction} />
+          <ButtonVariant variant="edit" classAction={classAction} />
+          <ButtonVariant variant="delete" classAction={classAction} />
+        </ButtonGroup>
       </div>
       <List className={classes.root}>
         { lists && lists.length === 0 && data &&
@@ -517,17 +531,6 @@ export default function MatchClass(props) {
                 { data.scorematch !== 0 &&
                   <ListItemIcon>
                     <ListColorSelector index={i} />
-                    {/* ( arrEditColor[i] !=='' && arrEditColor[i] !=='none' ) ?
-                      <div style={{
-                          width: 16, height: 16,
-                          backgroundColor: COLOR[arrEditColor[i]][600],
-                          borderRadius: '50%',
-                          boxSizing: 'border-box',
-                          marginLeft: 'auto', marginRight: 'auto',
-                        }} />
-                      :
-                      <div style={{ marginLeft: 'auto', marginRight: 'auto' }}>No color</div>*/
-                    }
                   </ListItemIcon>
                 }
               </ListItem>

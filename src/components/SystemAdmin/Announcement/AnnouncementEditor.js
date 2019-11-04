@@ -1,12 +1,9 @@
 import React from 'react';
+import Loadable from 'react-loadable';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
-
-import CKEditor from '@ckeditor/ckeditor5-react';
-
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
@@ -16,6 +13,13 @@ import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+
+import { LDCircular } from './../../loading/LDCircular'
+
+const RichTextEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "RichTextEditor" */'./../../Utils/RichTextEditor'),
+  loading: () => <LDCircular />
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -124,16 +128,14 @@ const theme = createMuiTheme({
 
 export default function AnnouncementEditor(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData, isSupportWebp, setData } = props
+  const { sess, token, setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData, isSupportWebp, } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
   const [ dataDetail, setDataDetail ] = React.useState(null)
-  const [ borderOnFocus, setBorderOnFocus ] = React.useState(`1px solid ${grey[400]}`)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
-  const ckeditorEl = React.useRef(null)
   const matchPicture = edittingData? edittingData.picture : null
 
   function handleKeyPress(e){
@@ -175,16 +177,8 @@ export default function AnnouncementEditor(props) {
     handleClose()
   }
 
-  function handleCKEditorOnChange(data){
+  function handleEditorOnChange(data){
     setDetail(data)
-  }
-
-  function handleCKEditorOnFocus(){
-    setBorderOnFocus(`1px solid ${primary[600]}`)
-    const root = document.getElementById('template-dialog')
-    if(ckeditorEl && root){
-      root.scrollTo(0, ckeditorEl.current.offsetTop)
-    }
   }
 
   async function handleEdit(){
@@ -193,10 +187,6 @@ export default function AnnouncementEditor(props) {
       announceid: edittingData.announceid,
       display: true
     };
-
-    if(selectedFile){
-      handleEditPicture()
-    }
 
     if(title){
       Object.assign(sendObj, { announcename:  title});
@@ -213,16 +203,25 @@ export default function AnnouncementEditor(props) {
         ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
       if(/success/.test(d.status)){
-        handleFetch()
+        if(selectedFile){
+          handleEditPicture()
+        }else{
+          handleClose()
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
       }else{
-        handleClose()
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
       }
     })
   }
@@ -241,11 +240,13 @@ export default function AnnouncementEditor(props) {
     setCSRFToken(resToken.token)
     handleSnackBar({
       state: true,
-      message: d.response.status,
-      variant: d.response.status === 'success' ? d.response.status : 'error',
-      autoHideDuration: d.response.status === 'success'? 2000 : 5000
+      message: d.status,
+      variant: /success/.test(d.status) ? d.status : 'error',
+      autoHideDuration: /success/.test(d.status)? 2000 : 5000
     })
-    handleFetch()
+    if(/success/.test(d.status)){
+      handleClose()
+    }
   }
 
   async function handleCreate(){
@@ -271,7 +272,24 @@ export default function AnnouncementEditor(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(/success/.test(d.status)){
-        handleCreatePicture(csrf, d)
+        if(selectedFile){
+          handleCreatePicture(csrf, d)
+        }else{
+          handleClose()
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
       }
     })
   }
@@ -283,33 +301,18 @@ export default function AnnouncementEditor(props) {
       announceid: d.announceid,
       photopath: true
     }
-    if(selectedFile){
-      formData.append('announceimage', selectedFile)
-      const response = await API._fetchPostFile('announcemain',`?_csrf=${csrf}`, sendObj, formData)
-      const res = await API._xhrGet('getcsrf')
-      setCSRFToken(res.token)
-      handleSnackBar({
-        state: true,
-        message: response.response.status,
-        variant: response.response.status === 'success' ? response.response.status : 'error',
-        autoHideDuration: response.response.status === 'success'? 2000 : 5000
-      })
-      await handleFetch()
-      if(response.status === 'success'){
-        handleClose()
-      }
-    }else{
-      setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
-      await handleFetch()
-      if(/success/.test(d.status)){
-        handleClose()
-      }
+    formData.append('announceimage', selectedFile)
+    const response = await API._fetchPostFile('announcemain',`?_csrf=${csrf}`, sendObj, formData)
+    const res = await API._xhrGet('getcsrf')
+    setCSRFToken(res.token)
+    handleSnackBar({
+      state: true,
+      message: response.status,
+      variant: /success/.test(response.status) ? response.status : 'error',
+      autoHideDuration: /success/.test(response.status)? 2000 : 5000
+    })
+    if(/success/.test(response.status)){
+      handleClose()
     }
   }
 
@@ -322,18 +325,6 @@ export default function AnnouncementEditor(props) {
     setTitle(d.response.title)
     setDetail(d.response.announcedetail)
     setDataDetail(d.response)
-  }
-
-  async function handleFetch(){
-    const resToken = token? token : await API._xhrGet('getcsrf')
-    await API._xhrPost(
-      token? token : resToken.token,
-      'loadmainpage', {
-        action: 'announce',
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setData(d)
-    })
   }
 
   React.useEffect(()=>{
@@ -412,31 +403,13 @@ export default function AnnouncementEditor(props) {
             onKeyPress={e =>handleKeyPress(e.key)}
             onFocus={e => e.target.select()} />
           <div>{ ( sess && sess.language === 'TH' ) ? "เนื้อหา" : 'Content' }</div>
-          <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2 }}>
+          <div>
             { clickAction === 'edit' ?
               ( dataDetail && dataDetail.announcedetail &&
-                <CKEditor
-                  editor={ ClassicEditor }
-                  data={detail}
-                  onChange={ ( event, editor ) => {
-                    const data = editor.getData();
-                    handleCKEditorOnChange(data)
-                  }}
-                  onFocus={handleCKEditorOnFocus}
-                  onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
-                />
+                <RichTextEditor HTMLData={dataDetail.announcedetail} handleGetHTML={e =>handleEditorOnChange(e)} />
               )
               :
-              <CKEditor
-                editor={ ClassicEditor }
-                data={detail}
-                onChange={ ( event, editor ) => {
-                  const data = editor.getData();
-                  handleCKEditorOnChange(data)
-                }}
-                onFocus={handleCKEditorOnFocus}
-                onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
-              />
+              <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
             }
           </div>
           <div style={{ display: 'flex', marginTop: 24 }}>

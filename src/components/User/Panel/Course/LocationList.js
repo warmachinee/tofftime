@@ -38,7 +38,7 @@ import {
 import { LDCircular } from './../../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 

@@ -9,7 +9,7 @@ import {
 
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../Utils/LabelText'),
   loading: () => null
 });
 

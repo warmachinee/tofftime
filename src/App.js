@@ -212,7 +212,7 @@ const RouteSignIn = Loadable.Map({
 
 const RouteScoreDisplay = Loadable.Map({
   loader: {
-    ScoreDisplay: () => import(/* webpackChunkName: "ScoreDisplay" */'./components/ScoreDisplay'),
+    ScoreDisplay: () => import(/* webpackChunkName: "ScoreDisplay" */'./components/Utils/ScoreDisplay'),
   },
   render(loaded, props) {
     let Component = loaded.ScoreDisplay.default;
@@ -228,22 +228,22 @@ const RouteScoreDisplay = Loadable.Map({
 });
 
 const Header = Loadable({
-  loader: () => import(/* webpackChunkName: "Header" */'./components/Header'),
+  loader: () => import(/* webpackChunkName: "Header" */'./components/Utils/Header'),
   loading: () => null
 });
 
 const NoMatch = Loadable({
-  loader: () => import(/* webpackChunkName: "NoMatch" */'./components/NoMatch'),
+  loader: () => import(/* webpackChunkName: "NoMatch" */'./components/Utils/NoMatch'),
   loading: () => null
 });
 
 const SnackBarAlert = Loadable({
-  loader: () => import(/* webpackChunkName: "SnackBarAlert" */'./components/SnackBarAlert'),
+  loader: () => import(/* webpackChunkName: "SnackBarAlert" */'./components/Utils/SnackBarAlert'),
   loading: () => null
 });
 
 const SnackBarLong = Loadable({
-  loader: () => import(/* webpackChunkName: "SnackBarLong" */'./components/SnackBarLong'),
+  loader: () => import(/* webpackChunkName: "SnackBarLong" */'./components/Utils/SnackBarLong'),
   loading: () => null
 });
 
@@ -258,11 +258,13 @@ const SideDrawer = Loadable({
 });
 
 const Footer = Loadable({
-  loader: () => import(/* webpackChunkName: "Footer" */'./components/Footer'),
+  loader: () => import(/* webpackChunkName: "Footer" */'./components/Utils/Footer'),
   loading: () => null
 });
 
-//import MatchEditor from './components/SystemAdmin/Match/MatchEditor'
+import MatchEditor from './components/SystemAdmin/Match/MatchEditor'
+import RichTextEditor from './components/Utils/RichTextEditor'
+import NewsEditor from './components/SystemAdmin/News/NewsEditor'
 
 export default function App() {
   const [ passwordAccess, setPasswordAccess ] = React.useState(!/localhost/.test(window.location.href) ? null : 'cat15000')
@@ -353,6 +355,10 @@ export default function App() {
     handleGetUserinfo()
   },[ ])
 
+  React.useEffect(()=>{
+    document.title = 'T-off Time'
+  },[ window.location.pathname ])
+
   const [ ,updateState ] = React.useState(null)
 
   React.useEffect(()=>{
@@ -371,41 +377,7 @@ export default function App() {
               handleOpen={toggleDialog} />
           }
 
-          <Switch>
-            <RouteMain exact path="/"
-              {...passingProps} />
-            <RouteOrganizer path="/page/:pageid"
-              {...passingProps} />
-
-            <RouteUserPage path="/user"
-              {...passingProps} />
-            <RoutePageOrganizer path="/organizer/:pageid"
-              {...passingProps} />
-            <RouteSystemAdmin path="/admin"
-              {...passingProps} />
-
-            <RouteAnnounceDetail path="/announce/:detailparam"
-              {...passingProps} />
-            <RouteNewsDetail path="/news/:detailparam"
-              {...passingProps} />
-            <RouteMatchDetail path="/match/:matchid"
-              {...passingProps}
-              handleSnackBarL={handleSnackBarL} />
-            <RouteOrganizerPostDetail path="/post/:pageid/:postid"
-              {...passingProps} />
-
-            <RouteSchedule path="/schedule/:matchid"
-              {...passingProps} />
-            <RouteMatchFormResult path="/matchform/:matchid"
-              {...passingProps} />
-            <RouteSignIn path="/login"
-              {...passingProps} />
-            <RouteScoreDisplay path="/display/:matchid/:userid"
-              {...passingProps} />
-            <Route component={NoMatch} />
-          </Switch>
-
-          {/* !/localhost/.test(window.location.href) ?
+          { !/localhost/.test(window.location.href) ?
             <Switch>
               <RouteMain exact path="/"
                 {...passingProps} />
@@ -441,8 +413,8 @@ export default function App() {
             </Switch>
             :
             <div style={{ maxWidth: 1200, margin: 'auto' }}>
-              <MatchEditor {...passingProps} />
-            </div>*/
+              <RichTextEditor {...passingProps} handleGetHTML={e =>console.log(e)} />
+            </div>
           }
 
           { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&

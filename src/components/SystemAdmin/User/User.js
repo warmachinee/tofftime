@@ -28,7 +28,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -517,7 +517,7 @@ export default function User(props){
           <ListItem>
             <Typography component="div" style={{ width: '100%' }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                No Reult
+                No Result
               </Box>
             </Typography>
           </ListItem>

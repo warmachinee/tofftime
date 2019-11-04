@@ -4,10 +4,7 @@ import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey } from './../../../api/palette'
-
-import CKEditor from '@ckeditor/ckeditor5-react';
-
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { LDCircular } from './../../loading/LDCircular'
 
 import {
   Button,
@@ -32,6 +29,11 @@ import {
 const SelectMatch = Loadable({
   loader: () => import(/* webpackChunkName: "SelectMatch" */ './SelectMatch'),
   loading: () => null
+});
+
+const RichTextEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "RichTextEditor" */'./../../Utils/RichTextEditor'),
+  loading: () => <LDCircular />
 });
 
 const useStyles = makeStyles(theme => ({
@@ -145,7 +147,6 @@ export default function PageOrganizerPostEditor(props) {
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
   const [ dataDetail, setDataDetail ] = React.useState(null)
-  const [ borderOnFocus, setBorderOnFocus ] = React.useState(`1px solid ${grey[400]}`)
   const [ selectedMatch, setSelectedMatch ] = React.useState(null);
   const [ selectMatchState, setSelectMatchState ] = React.useState(false)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
@@ -153,7 +154,6 @@ export default function PageOrganizerPostEditor(props) {
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
-  const ckeditorEl = React.useRef(null)
 
   function toggleSelectMatch(){
     setSelectMatchState(!selectMatchState)
@@ -192,20 +192,8 @@ export default function PageOrganizerPostEditor(props) {
     setSelectedTypePost(event.target.value);
   }
 
-  function handleCKEditorOnChange(data){
+  function handleEditorOnChange(data){
     setDetail(data)
-    const root = document.getElementById('create-post-dialog')
-    if(ckeditorEl && root){
-      root.scrollTo(0, ckeditorEl.current.offsetTop + ckeditorEl.current.clientHeight)
-    }
-  }
-
-  function handleCKEditorOnFocus(){
-    setBorderOnFocus(`1px solid ${primary[600]}`)
-    const root = document.getElementById('create-post-dialog')
-    if(ckeditorEl && root){
-      root.scrollTo(0, ckeditorEl.current.offsetTop)
-    }
   }
 
   function handleKeyPress(e){
@@ -253,14 +241,25 @@ export default function PageOrganizerPostEditor(props) {
         ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
       if(/success/.test(d.status)){
-        handleFetchPicture(csrf, d)
+        if(selectedFile){
+          handleFetchPicture(csrf, d)
+        }else{
+          setCreatePostState(false)
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
       }
     })
   }
@@ -273,35 +272,18 @@ export default function PageOrganizerPostEditor(props) {
       postid: d.postid,
       photopath: 'true'
     }
-    if(selectedFile){
-      formData.append('postimage', selectedFile)
-      const response = await API._fetchPostFile('ppagesection',`?_csrf=${csrf}`, sendObj, formData)
-      const res = await API._xhrGet('getcsrf')
-      setCSRFToken(res.token)
-      handleSnackBar({
-        state: true,
-        message: response.status,
-        variant: response.status === 'success' ? response.status : 'error',
-        autoHideDuration: response.status === 'success'? 2000 : 5000
-      })
-      if(response.status === 'success'){
-        setCreatePostState(false)
-      }
-    }else{
-      setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
-      if(/success/.test(d.status)){
-        if(handleCloseEditor){
-          handleCloseEditor()
-        }else{
-          setCreatePostState(false)
-        }
-      }
+    formData.append('postimage', selectedFile)
+    const response = await API._fetchPostFile('ppagesection',`?_csrf=${csrf}`, sendObj, formData)
+    const res = await API._xhrGet('getcsrf')
+    setCSRFToken(res.token)
+    handleSnackBar({
+      state: true,
+      message: response.status,
+      variant: /success/.test(response.status) ? response.status : 'error',
+      autoHideDuration: /success/.test(response.status)? 2000 : 5000
+    })
+    if(/success/.test(response.status)){
+      setCreatePostState(false)
     }
   }
 
@@ -314,8 +296,6 @@ export default function PageOrganizerPostEditor(props) {
       postid: edittingData.postid,
       type: selectedTypePost
     };
-
-    await handleEditPicture()
 
     if(selectedTypePost === 'match'){
       if(selectedMatch){
@@ -347,38 +327,50 @@ export default function PageOrganizerPostEditor(props) {
         ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
+      if(/success/.test(d.status)){
+        if(selectedFile){
+          handleEditPicture()
+        }else{
+          setCreatePostState(false)
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+      }
     })
   }
 
   async function handleEditPicture(){
-    if(selectedFile){
-      const sendObj = {
-        action: 'editpost',
-        pageid: pageData.pageid,
-        postid: edittingData.postid,
-        photopath: 'true'
-      }
-      var resToken = token? token : await API._xhrGet('getcsrf')
-      const formData = new FormData()
-      formData.append('postimage', selectedFile)
-      const response = await API._fetchPostFile('ppagesection',`?_csrf=${token? token : resToken.token}`, sendObj, formData)
-      const res = await API._xhrGet('getcsrf')
-      setCSRFToken(res.token)
-      handleSnackBar({
-        state: true,
-        message: response.status,
-        variant: response.status === 'success' ? response.status : 'error',
-        autoHideDuration: response.status === 'success'? 2000 : 5000
-      })
-      if(response.status === 'success'){
-        setCreatePostState(false)
-      }
+    const sendObj = {
+      action: 'editpost',
+      pageid: pageData.pageid,
+      postid: edittingData.postid,
+      photopath: 'true'
+    }
+    var resToken = token? token : await API._xhrGet('getcsrf')
+    const formData = new FormData()
+    formData.append('postimage', selectedFile)
+    const response = await API._fetchPostFile('ppagesection',`?_csrf=${token? token : resToken.token}`, sendObj, formData)
+    const res = await API._xhrGet('getcsrf')
+    setCSRFToken(res.token)
+    handleSnackBar({
+      state: true,
+      message: response.status,
+      variant: /success/.test(response.status) ? response.status : 'error',
+      autoHideDuration: /success/.test(response.status)? 2000 : 5000
+    })
+    if(/success/.test(response.status)){
+      setCreatePostState(false)
     }
   }
 
@@ -527,42 +519,15 @@ export default function PageOrganizerPostEditor(props) {
               <div style={{ marginTop: 24 }}>
                 { ( sess && sess.language === 'TH' ) ? "เนื้อหา" : 'Content' }
               </div>
-              <div ref={ckeditorEl} style={{ border: borderOnFocus, borderRadius: 2, }}>
+              <div>
                 { clickAction === 'edit' ?
                   ( (dataDetail && dataDetail.messagedetail) ?
-                    <CKEditor
-                      editor={ ClassicEditor }
-                      data={detail}
-                      onChange={ ( event, editor ) => {
-                        const data = editor.getData();
-                        handleCKEditorOnChange(data)
-                      }}
-                      onFocus={handleCKEditorOnFocus}
-                      onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
-                    />
+                    <RichTextEditor HTMLData={dataDetail.messagedetail} handleGetHTML={e =>handleEditorOnChange(e)} />
                     :
-                    <CKEditor
-                      editor={ ClassicEditor }
-                      data={detail}
-                      onChange={ ( event, editor ) => {
-                        const data = editor.getData();
-                        handleCKEditorOnChange(data)
-                      }}
-                      onFocus={handleCKEditorOnFocus}
-                      onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
-                    />
+                    <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
                   )
                   :
-                  <CKEditor
-                    editor={ ClassicEditor }
-                    data={detail}
-                    onChange={ ( event, editor ) => {
-                      const data = editor.getData();
-                      handleCKEditorOnChange(data)
-                    }}
-                    onFocus={handleCKEditorOnFocus}
-                    onBlur={()=>setBorderOnFocus(`1px solid ${grey[400]}`)}
-                  />
+                  <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
                 }
               </div>
             </React.Fragment>

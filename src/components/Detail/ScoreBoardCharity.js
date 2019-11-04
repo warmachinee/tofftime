@@ -29,7 +29,7 @@ import {
 import { LDCircular } from './../loading/LDCircular'
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -187,7 +187,7 @@ export default function ScoreBoardCharity(props){
     const matchid = parseInt(props.computedMatch.params.matchid)
     const socket = socketIOClient( API._getWebURL() )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
-      if(messageNew && messageNew.status === 'success'){
+      if(messageNew && /success/.test(messageNew.status)){
         const d = messageNew.result
         const dh = messageNew.hostdetail
         if(dh){

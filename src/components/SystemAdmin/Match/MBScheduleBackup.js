@@ -40,8 +40,18 @@ const TemplateDialog = Loadable({
   loading: () => <LDCircular />
 });
 
+const AddPlayerModal = Loadable({
+  loader: () => import(/* webpackChunkName: "AddPlayerModal" */'./AddPlayerModal'),
+  loading: () => <LDCircular />
+});
+
 const MatchTeam = Loadable({
   loader: () => import(/* webpackChunkName: "MatchTeam" */'./MatchTeam'),
+  loading: () => <LDCircular />
+});
+
+const MatchFormAction = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchFormAction" */'./MatchFormAction'),
   loading: () => <LDCircular />
 });
 
@@ -214,7 +224,9 @@ export default function MBSchedule(props){
   const classes = useStyles();
   const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ edittingTeam, setEdittingTeam ] = React.useState(false);
+  const [ addState, setAddState ] = React.useState(false);
   const [ teamState, setTeamState ] = React.useState(false);
+  const [ formState, setFormState ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ checked, setChecked ] = React.useState([]);
@@ -223,6 +235,54 @@ export default function MBSchedule(props){
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ selectedTeam, setSelectedTeam ] = React.useState(0)
   const [ selectedUser, setSelectedUser ] = React.useState(null)
+
+  function getStatus(status){
+    switch (true) {
+      case status === 0:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
+              { ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete',
+          color: COLOR.red[500]
+        });
+        break;
+      case status === 1:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
+              { ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending',
+          color: COLOR.amber[500]
+        });
+        break;
+      case status === 2:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
+              { ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete',
+          color: COLOR.green[500]
+        });
+        break;
+      default:
+        return ({
+          component: (
+            <Typography variant="subtitle2" style={{ color: COLOR.grey[800] }}>
+              { ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None' }
+            </Typography>
+          ),
+          text: ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None',
+          color: COLOR.grey[500]
+        });
+    }
+  }
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -268,12 +328,30 @@ export default function MBSchedule(props){
     }
   }
 
+  function handleAddOpen(){
+    setAddState(true);
+  };
+
+  function handleAddClose(){
+    setAddState(false);
+  };
+
   function handleTeamOpen(){
     setTeamState(true);
   };
 
   function handleTeamClose(){
     setTeamState(false);
+  };
+
+  function handleFormOpen(d){
+    setFormState(true);
+    setSelectedUser(d)
+  };
+
+  function handleFormClose(){
+    setFormState(false);
+    setSelectedUser(null)
   };
 
   function handleToggle(value){
@@ -329,6 +407,13 @@ export default function MBSchedule(props){
       var result = fuse.search(searchUser)
       return result
     }
+  }
+
+  function handleResponseForm(){
+    const socket = socketIOClient( API._getWebURL() )
+    socket.on(`${matchid}-form-server-message`, (messageNew) => {
+      setData(API.sortArrByDate(messageNew, 'createdate', 'fullname'))
+    })
   }
 
   async function handleFetchSwitchHostForm(){
@@ -434,9 +519,30 @@ export default function MBSchedule(props){
     }
   }
 
+  async function handleFetchForm(){
+    if(matchid){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+          action: 'form',
+          matchid: matchid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        setData(API.sortArrByDate(d.resultform, 'createdate', 'fullname'))
+      })
+      await handleFetchMatchDetail()
+    }
+  }
+
   React.useEffect(()=>{
-    handleFetchSchedule()
-  },[ edittingTeam, teamState ])
+    if(edittingTeam){
+      handleFetchSchedule()
+    }else{
+      handleFetchForm()
+      handleResponseForm()
+    }
+  },[ edittingTeam, teamState, formState ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -453,20 +559,37 @@ export default function MBSchedule(props){
 
   return(
     <div className={classes.root}>
-      <List className={classes.listRoot}>
-        { matchDetail && matchDetail.team && matchDetail.team.length > 0 &&
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <a href={`/schedule/${matchid}`}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        { BTN &&
+          <React.Fragment>
+            <a href={`/matchform/${matchid}`}
               target='_blank'
               style={{ textDecoration: 'none', color: 'inherit' }}>
               <GreenTextButton className={classes.controlsEditButton}>
-                <ClassIcon className={classes.controlsEditButtonIcon} />
-                { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+                { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }
               </GreenTextButton>
             </a>
-          </div>
+            { matchDetail && matchDetail.team && matchDetail.team.length > 0 &&
+              <a href={`/schedule/${matchid}`}
+                target='_blank'
+                style={{ textDecoration: 'none', color: 'inherit' }}>
+                <GreenTextButton className={classes.controlsEditButton}>
+                  <ClassIcon className={classes.controlsEditButtonIcon} />
+                  { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+                </GreenTextButton>
+              </a>
+            }
+          </React.Fragment>
         }
+      </div>
+      <List className={classes.listRoot}>
         <ListItem className={classes.controls}>
+          <RedButton className={classes.iconButton} variant="contained"
+            style={{ margin: '2px 0'}}
+            onClick={handleAddOpen}>
+            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
+            { ( sess && sess.language === 'TH' ) ? "ชวนผู้เล่น" : 'Invite' }
+          </RedButton>
           <GreenTextButton
             className={classes.button}
             style={{ marginLeft: window.innerWidth > 700? 16 : 0, marginTop: window.innerWidth > 700? 0 : 16, }}
@@ -498,7 +621,7 @@ export default function MBSchedule(props){
               </React.Fragment>
               :
               <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
-                { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+                { ( sess && sess.language === 'TH' ) ? "ตางรางเวลาของผู้เล่น" : 'Player Schedule' }
               </GreenTextButton>
             }
           </div>
@@ -540,6 +663,9 @@ export default function MBSchedule(props){
               </GreenTextButton>
             </React.Fragment>
           }
+          { !edittingTeam &&
+            <div style={{ height: 42 }}></div>
+          }
         </ListItem>
         <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
           <ThemeProvider theme={theme}>
@@ -571,6 +697,15 @@ export default function MBSchedule(props){
           </ThemeProvider>
         </ListItem>
         <div style={{ overflow: 'auto', position: 'relative' }}>
+          {/* edittingTeam &&
+            <Typography component="div">
+              <Box className={classes.notice} m={1}>
+                { edittingTeam && (
+                  ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Select team and player to change player team.'
+                )}
+              </Box>
+            </Typography>*/
+          }
           <ListItem role={undefined}
             style={{
               display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
@@ -586,9 +721,18 @@ export default function MBSchedule(props){
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
                 primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
             }
-            { window.innerWidth > 600 &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20 }} className={classes.listTeam}
+            {/*
+              <ListItemIcon style={{ justifyContent: 'flex-start' }}>
+                <div style={{ height: 42, width: 42 }}></div>
+              </ListItemIcon>*/
+            }
+            { window.innerWidth > 600 && edittingTeam &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listTeam}
                 primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
+            }
+            { window.innerWidth > 450 && !edittingTeam &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}
+                primary={ ( sess && sess.language === 'TH' ) ? "สถานะ" : 'Status' } />
             }
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
@@ -600,7 +744,7 @@ export default function MBSchedule(props){
                   <React.Fragment key={value.userid}>
                     <ListItem role={undefined} button
                       onClick={
-                        ()=>edittingTeam? handleToggle(value): console.log()}>
+                        ()=>edittingTeam? handleToggle(value): handleFormOpen(value)}>
                       { edittingTeam &&
                         <ListItemIcon>
                           <GreenCheckbox
@@ -630,7 +774,23 @@ export default function MBSchedule(props){
                                 {value.lastname}
                               </Typography>
                             }
-                            { window.innerWidth < 600 &&
+                            { window.innerWidth < 400 && !edittingTeam &&
+                              <React.Fragment>
+                                <br></br>
+                                <Typography
+                                  component="span"
+                                  variant="caption"
+                                  style={{
+                                    color:
+                                    value.status === 0? red[500] :
+                                    value.status === 1? amber[800] : green[500]
+                                  }}
+                                >
+                                  {getStatus(value.status).text}
+                                </Typography>
+                              </React.Fragment>
+                            }
+                            { window.innerWidth < 600 && edittingTeam &&
                               ( matchDetail && matchDetail.team ?
                                 ( value.teamno === 0 ?
                                   <React.Fragment>
@@ -657,13 +817,18 @@ export default function MBSchedule(props){
                                 </React.Fragment>
                               )
                             }
+                            { window.innerWidth < 600 && !edittingTeam && value.createdate &&
+                              <Typography variant="caption" display="block">
+                                {API._dateToString(value.createdate)}
+                              </Typography>
+                            }
                           </React.Fragment>
                         } />
                       { window.innerWidth >= 600 &&
                         <ListItemText className={classes.listText}
                           primary={value.lastname} />
                       }
-                      { window.innerWidth > 600 &&
+                      { window.innerWidth > 600 && edittingTeam &&
                         (
                           matchDetail && matchDetail.team ?
                           ( value.teamno === 0 ?
@@ -681,6 +846,28 @@ export default function MBSchedule(props){
                           :
                           <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
                         )
+                      }
+                      { window.innerWidth > 400 && !edittingTeam &&
+                        <ListItemText className={classes.listClass}
+                          primary={
+                            <Typography
+                              component="span"
+                              variant="subtitle2"
+                              style={{
+                                color:
+                                value.status === 0? red[500] :
+                                value.status === 1? amber[800] : green[500]
+                              }}
+                            >
+                              {getStatus(value.status).text}
+                            </Typography>
+                          }
+                          secondary={
+                            window.innerWidth >= 600 && !edittingTeam && value.createdate &&
+                              <Typography variant="caption" display="block" style={{ color: grey[500] }}>
+                                {API._dateToString(value.createdate)}
+                              </Typography>
+                          } />
                       }
                     </ListItem>
                     <Divider />
@@ -730,10 +917,23 @@ export default function MBSchedule(props){
           </div>
         </div>
       </List>
+      <TemplateDialog open={addState} handleClose={handleAddClose}>
+        <AddPlayerModal
+          {...props}
+          playerAction="invite"
+          data={data} />
+      </TemplateDialog>
       <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth={500}>
         <MatchTeam
           handleTeamClose={handleTeamClose}
           {...props} />
+      </TemplateDialog>
+      <TemplateDialog open={formState} handleClose={handleFormClose} maxWidth={500}>
+        <MatchFormAction
+          {...props}
+          selectedUser={selectedUser}
+          handleClose={handleFormClose}
+          />
       </TemplateDialog>
       <Menu
         anchorEl={anchorEl}

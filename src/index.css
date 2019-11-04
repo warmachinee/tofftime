@@ -65,128 +65,55 @@ code {
     monospace;
 }
 
-.draftJsEditorContent:not(.ol-item) {
-  counter-reset: ol-counter;
+.ql-editor p {
+	font-size: 14px;
+}
+/* Set dropdown font-families */
+.ql-font span[data-value].ql-picker-label::before {
+	content: attr(data-value) !important;
+	text-transform: capitalize;
 }
 
-*.alignLeft {
-	text-align: left;
-}
-*.alignCenter {
-	text-align: center;
-}
-*.alignRight {
-	text-align: right;
+.ql-font .ql-picker-options span[data-value]::before {
+	content: attr(data-value) !important;
+	text-transform: capitalize;
 }
 
-#active-atomic {
-	border: 10px solid black
+.ql-snow .ql-editor h1 {
+  font-size: 6em;
 }
+.ql-snow .ql-editor h2 {
+  font-size: 3.75em;
+}
+.ql-snow .ql-editor h3 {
+  font-size: 3em;
+}
+.ql-snow .ql-editor h4 {
+  font-size: 2.125em;
+}
+.ql-snow .ql-editor h5 {
+  font-size: 2em;
+}
+.ql-snow .ql-editor h6 {
+  font-size: 1.6em;
+}
+/* Set content font-families */
 
-.atomic {
-	display: flex;
-	justify-content: space-around;
+.ql-font-inconsolata {
+  font-family: "inconsolata";
 }
-
-.atomic.alignLeft {
-	display: flex;
-	justify-content: flex-start;
+.ql-font-roboto {
+  font-family: "roboto";
 }
-.atomic.alignCenter {
-	display: flex;
-	justify-content: space-around;
+.ql-font-mirza {
+  font-family: "mirza";
 }
-.atomic.alignRight {
-	display: flex;
-	justify-content: flex-end;
+.ql-font-arial {
+  font-family: "arial";
 }
-
-.header-one {
-	font-size: 6rem;
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-weight: 300;
-	line-height: 1;
-	letter-spacing: -0.01562em;
+.ql-font-monospace {
+  font-family: "monospace";
 }
-.header-two {
-	font-size: 3.75rem;
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-weight: 300;
-	line-height: 1;
-	letter-spacing: -0.01562em;
-}
-.header-three {
-	font-size: 3rem;
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-weight: 400;
-	line-height: 1.04;
-	letter-spacing: 0em;
-}
-.header-four {
-	font-size: 2.125rem;
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-weight: 400;
-	line-height: 1.17;
-	letter-spacing: 0.00735em;
-}
-.header-five {
-	font-size: 1.5rem;
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-weight: 400;
-	line-height: 1.33;
-	letter-spacing: 0em;
-}
-.header-six {
-	font-size: 1.25rem;
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-weight: 500;
-	line-height: 1.6;
-	letter-spacing: 0.0075em;
-}
-.blockquote {
-	border-left: 5px solid #eee;
-	color: #666;
-	font-family: Hoefler Text,Georgia,serif;
-	font-style: italic;
-	margin: 16px 0;
-	padding: 10px 20px;
-}
-.ul-item {
-	display: list-item;
-	list-style-type: disc;
-	margin: 0 0 10px calc(25px + 1.5em);
-	padding: 0;
-}
-.ol-item {
-	display: flex;
-	list-style-type: none;
-	margin: 0 0 10px calc(25px + 1.5em);
-	padding: 0;
-}
-.ol-item::before {
-  /* Increment "ol-counter" by 1 */
-  counter-increment: ol-counter;
-  content: counter(ol-counter) ". ";
-}
-.code-block {
-	background-color: rgba(0,0,0,.05);
-	font-family: Inconsolata,Menlo,Consolas,monospace;
-	font-size: 16px;
-	padding: 20px;
-}
-.draftJsEditorContent a {
-	color: #1e88e5;
-	text-decoration: none;
-}
-
-figure img[class*="draftJsEmojiPlugin__image"] {
-	max-width: 100%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center;
-}
-
-
 /*
  *
  * Scroll Bar Css Style

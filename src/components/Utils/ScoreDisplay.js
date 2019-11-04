@@ -3,8 +3,8 @@ import { Link, Redirect } from "react-router-dom";
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import * as API from './../api'
-import { primary, grey } from './../api/palette'
+import * as API from './../../api'
+import { primary, grey } from './../../api/palette'
 
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -96,7 +96,7 @@ export default function ScoreDisplay(props){
     const socket = socketIOClient( API._getWebURL() )
     const userid = hostUserid? hostUserid : parseInt(props.computedMatch.params.userid)
     socket.on(`${matchid}-${userid}-show-server-message`, (messageNew) => {
-      if(messageNew.status === 'success'){
+      if(/success/.test(messageNew.status)){
         setHostUserid(messageNew.userid)
         setArrScore(messageNew.result[0])
         setHost(messageNew.hostdetail)

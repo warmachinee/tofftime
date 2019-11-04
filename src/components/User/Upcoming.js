@@ -15,7 +15,7 @@ const MatchCard = Loadable({
 });
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../Utils/LabelText'),
   loading: () => null
 });
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, userid, userData, createMatchState, pageOrganizer, pageData, pageList } = props
+  const { API, sess, token, setCSRFToken, userid, userData, createMatchState, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){

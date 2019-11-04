@@ -446,7 +446,7 @@ function MBScoreEditorContainer(props){
             <ListItem>
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Reult' }
+                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
                 </Box>
               </Typography>
             </ListItem>
@@ -761,18 +761,20 @@ export default function MBScoreEditor(props){
         </Box>
       </Typography>
       <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
-      <ThemeProvider theme={theme}>
-        <div className={classes.predictScoreChildGrid}>
-          <TextField label="Predict Score"
-            type="number"
-            value={predictScore}
-            onChange={e =>handleSetPredictScore(e.target.value)}
-            onKeyPress={e =>handleKeyPressSetPredictScore(e)}
-            onFocus={e => e.target.select()} />
-          <BTN.Primary className={classes.saveButton}
-            onClick={handleFetchSetPredict}>Save</BTN.Primary>
-        </div>
-      </ThemeProvider>
+      { matchDetail && matchDetail.scorematch === 2 &&
+        <ThemeProvider theme={theme}>
+          <div className={classes.predictScoreChildGrid}>
+            <TextField label="Predict Score"
+              type="number"
+              value={predictScore}
+              onChange={e =>handleSetPredictScore(e.target.value)}
+              onKeyPress={e =>handleKeyPressSetPredictScore(e)}
+              onFocus={e => e.target.select()} />
+            <BTN.Primary className={classes.saveButton}
+              onClick={handleFetchSetPredict}>Save</BTN.Primary>
+          </div>
+        </ThemeProvider>
+      }
       <div className={classes.controls}>
         <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
           { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }

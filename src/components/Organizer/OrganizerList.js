@@ -13,7 +13,7 @@ import {
 import AccountIcon from '@material-ui/icons/AccountCircle';
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../Utils/LabelText'),
   loading: () => null
 });
 

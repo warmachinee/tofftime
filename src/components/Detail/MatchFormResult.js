@@ -22,7 +22,7 @@ import {
 } from '@material-ui/icons';
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => null
 });
 
@@ -168,6 +168,7 @@ export default function MatchFormResult(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setMatchDetail(d)
+      document.title = `(Form) ${d.title} - T-off Time`
     })
     await handleFetchForm()
   }

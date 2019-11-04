@@ -23,7 +23,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -354,11 +354,11 @@ export default function MBOverview(props){
     handleSnackBar({
       state: true,
       message: status,
-      variant: status === 'success' ? status : 'error',
-      autoHideDuration: status === 'success'? 2000 : 5000
+      variant: /success/.test(status) ? status : 'error',
+      autoHideDuration: /success/.test(status)? 2000 : 5000
     })
     await handleFetch()
-    if(status === 'success'){
+    if(/success/.test(status)){
       handleEditting(false)
     }
   }
@@ -509,42 +509,44 @@ export default function MBOverview(props){
               ) }
               {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
             </GreenTextButton>
-            <GreenTextButton
-              disabled={!editting}
-              className={classes.button}
-              variant="outlined"
-              onClick={()=>handleOpen('class')}>
-              { data?
-                ( data.class && !data.class.status &&
-                  `${data.class.length}${function(){
-                    switch (data.scorematch) {
-                      case 0:
-                        return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ` Flight${( data.class.length > 1 ? 's' : '' )}`
-                        break;
-                      case 1:
-                        return ( sess && sess.language === 'TH' ) ? " ประเภท" : ` Class${( data.class.length > 1 ? 'es' : '' )}`
-                        break;
-                      default:
-                        return ( sess && sess.language === 'TH' ) ? " ทีม" : ` Team${( data.class.length > 1 ? 's' : '' )}`
-                    }
-                  }()}`
-                ):
-                (
-                  `${function(){
-                    switch (data.scorematch) {
-                      case 0:
-                        return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
-                        break;
-                      case 1:
-                        return ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
-                        break;
-                      default:
-                        return ( sess && sess.language === 'TH' ) ? " ทีม" : ' Team'
-                    }
-                  }()}`
-                )
-              }
-            </GreenTextButton>
+            {/*
+              <GreenTextButton
+                disabled={!editting}
+                className={classes.button}
+                variant="outlined"
+                onClick={()=>handleOpen('class')}>
+                { data?
+                  ( data.class && !data.class.status &&
+                    `${data.class.length}${function(){
+                      switch (data.scorematch) {
+                        case 0:
+                          return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ` Flight${( data.class.length > 1 ? 's' : '' )}`
+                          break;
+                        case 1:
+                          return ( sess && sess.language === 'TH' ) ? " ประเภท" : ` Class${( data.class.length > 1 ? 'es' : '' )}`
+                          break;
+                        default:
+                          return ( sess && sess.language === 'TH' ) ? " ทีม" : ` Team${( data.class.length > 1 ? 's' : '' )}`
+                      }
+                    }()}`
+                  ):
+                  (
+                    `${function(){
+                      switch (data.scorematch) {
+                        case 0:
+                          return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
+                          break;
+                        case 1:
+                          return ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
+                          break;
+                        default:
+                          return ( sess && sess.language === 'TH' ) ? " ทีม" : ' Team'
+                      }
+                    }()}`
+                  )
+                }
+              </GreenTextButton>*/
+            }
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}
               disabled={!editting}>

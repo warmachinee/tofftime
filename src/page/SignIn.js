@@ -27,7 +27,7 @@ const ForgotPassword = Loadable({
 });
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../components/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../components/Utils/TemplateDialog'),
   loading: () => null
 });
 

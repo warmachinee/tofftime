@@ -90,6 +90,7 @@ export default function OrganizerOverview(props) {
     }, function(csrf, d){
       setCSRFToken(csrf)
       setData(d[0])
+      document.title = `${d[0].pagename} - T-off Time Organizer`
       if(d[1].subscribe){
         setIsFollow(true)
       }else{

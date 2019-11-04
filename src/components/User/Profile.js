@@ -9,12 +9,12 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import * as COLOR from './../../api/palette'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../Utils/TemplateDialog'),
   loading: () => null
 });
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */'./../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../Utils/LabelText'),
   loading: () => null
 });
 
@@ -387,11 +387,11 @@ export default function Profile(props) {
     handleSnackBar({
       state: true,
       message: status,
-      variant: status === 'success' ? 'success' : 'error',
-      autoHideDuration: status === 'success'? 2000 : 5000
+      variant: /success/.test(status) ? 'success' : 'error',
+      autoHideDuration: /success/.test(status)? 2000 : 5000
     })
     await handleFetchInfo()
-    if(status === 'success'){
+    if(/success/.test(status)){
       setEditting(false)
     }
   }

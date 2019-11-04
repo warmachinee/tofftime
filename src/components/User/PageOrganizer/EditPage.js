@@ -21,7 +21,7 @@ import {
 } from '@material-ui/icons';
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../../Utils/LabelText'),
   loading: () => null
 });
 
@@ -188,10 +188,10 @@ export default function EditPage(props) {
       handleSnackBar({
         state: true,
         message: response.status,
-        variant: response.status === 'success' ? response.status : 'error',
-        autoHideDuration: response.status === 'success'? 2000 : 5000
+        variant: /success/.test(response.status) ? response.status : 'error',
+        autoHideDuration: /success/.test(response.status)? 2000 : 5000
       })
-      if(response.status === 'success'){
+      if(/success/.test(response.status)){
         setEditPageRefresh(new Date().toISOString())
       }
     }else{

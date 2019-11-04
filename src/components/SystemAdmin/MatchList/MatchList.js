@@ -21,7 +21,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -31,7 +31,7 @@ const AddMatchModal = Loadable({
 });
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
   loading: () => <LDCircular />
 });
 

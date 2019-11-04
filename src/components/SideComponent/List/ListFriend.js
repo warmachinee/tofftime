@@ -24,7 +24,7 @@ import {
 } from '@material-ui/icons';
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => null
 });
 
@@ -165,7 +165,7 @@ function ListFriendItem(props) {
     if(sessid && targetid){
       const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
-        if(messageNew && messageNew.status === 'success' && messageNew.result && messageNew.result.status === 'success'){
+        if(messageNew && /success/.test(messageNew.status) && messageNew.result && /success/.test(messageNew.result.status)){
           handleClose()
           setTimeout(()=>{
             handleFetch()

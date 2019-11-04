@@ -49,7 +49,6 @@ export default function MatchStepper(props) {
   const [ activeStep, setActiveStep ] = React.useState(0);
   const maxSteps = labelSteps.length;
   const [ matchName, setMatchName ] = React.useState('');
-  const [ matchClass, setMatchClass ] = React.useState(0);
   const [ selectedField, setSelectedField ] = React.useState('');
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
@@ -70,7 +69,6 @@ export default function MatchStepper(props) {
     selectedFile: selectedFile,
     tempFile: tempFile,
     setMatchName: setMatchName,
-    setMatchClass: setMatchClass,
     setSelectedField: setSelectedField,
     handlePrivacy: handlePrivacy,
     handleMatchType: handleMatchType,
@@ -120,7 +118,6 @@ export default function MatchStepper(props) {
 
   function handleReset(){
     setMatchName('')
-    setMatchClass(0)
     setSelectedField('')
     setSelectedDate(new Date())
     setSelectedFile('')
@@ -216,10 +213,10 @@ export default function MatchStepper(props) {
     handleSnackBar({
       state: true,
       message: status,
-      variant: status === 'success' ? status : 'error',
-      autoHideDuration: status === 'success'? 2000 : 5000
+      variant: /success/.test(status) ? status : 'error',
+      autoHideDuration: /success/.test(status)? 2000 : 5000
     })
-    if(status === 'success'){
+    if(/success/.test(status)){
       if(dialogStepper){
         handleCreateMatchClose()
       }else{

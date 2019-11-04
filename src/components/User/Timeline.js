@@ -14,11 +14,6 @@ const OverviewProfile = Loadable({
   loading: () => null
 });
 
-const Statistics = Loadable({
-  loader: () => import(/* webpackChunkName: "Statistics" */ './../Statistics/Statistics'),
-  loading: () => null
-});
-
 const Upcoming = Loadable({
   loader: () => import(/* webpackChunkName: "Upcoming" */ './Upcoming'),
   loading: () => null
@@ -48,7 +43,6 @@ export default function Timeline(props) {
       case data.privacy === 'public':
         return (
           <React.Fragment>
-            <Statistics userid={param} {...props} userData={data} />
             <Upcoming userid={param} {...props} userData={data} />
             <History userid={param} {...props} open={open} userData={data} />
           </React.Fragment>
@@ -57,7 +51,6 @@ export default function Timeline(props) {
       case data.privacy === 'friend':
         return friend.some( item =>{ return item.userid === data.userid }) && (
           <React.Fragment>
-            <Statistics userid={param} {...props} userData={data} />
             <Upcoming userid={param} {...props} userData={data} />
             <History userid={param} {...props} open={open} userData={data} />
           </React.Fragment>
@@ -66,7 +59,6 @@ export default function Timeline(props) {
       default:
       return(
         <React.Fragment>
-          <Statistics userid={param} {...props} userData={data} />
           <Upcoming userid={param} {...props} userData={data} />
           <History userid={param} {...props} open={open} userData={data} />
         </React.Fragment>

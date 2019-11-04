@@ -1,5 +1,5 @@
 import React from 'react'
-import { primary } from './../api/palette'
+import { primary } from './../../api/palette'
 
 import {
   Typography,

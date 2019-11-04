@@ -35,7 +35,7 @@ const UserOverview = Loadable({
 });
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../Utils/LabelText'),
   loading: () => null
 });
 
@@ -199,7 +199,7 @@ function ListPlayerItem(props) {
     if(sessid && targetid){
       const socket = socketIOClient( API._getWebURL() )
       socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
-        if(messageNew && messageNew.status === 'success' && messageNew.result && messageNew.result.status === 'success'){
+        if(messageNew && /success/.test(messageNew.status) && messageNew.result && /success/.test(messageNew.result.status)){
           handleClose()
           if(messageNew.result.notidetail){
             switch (messageNew.result.notidetail.action) {

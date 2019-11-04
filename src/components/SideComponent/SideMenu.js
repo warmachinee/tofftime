@@ -56,7 +56,7 @@ const ListFollow = Loadable({
 });
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../Utils/TemplateDialog'),
   loading: () => null
 });
 
@@ -195,7 +195,7 @@ export default function SideMenu(props) {
   async function handleLogout(){
     const data = await API._xhrGet('logout')
     setCSRFToken(data.token)
-    if( data && data.response.status === 'success' ){
+    if( data && /success/.test(data.response.status) ){
       handleGetUserinfo()
     }
   }
@@ -449,17 +449,18 @@ export default function SideMenu(props) {
                 <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
               </ListItem>
             </BTN.NoStyleLink>
+            { pageOrganizer &&
+              <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`}>
+                <ListItem button
+                  style={{
+                    ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`)) &&
+                    { backgroundColor: COLOR.grey[300] },
+                  }}>
+                  <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' } />
+                </ListItem>
+              </BTN.NoStyleLink>
+            }
           </Collapse>
-          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}>
-            <ListItem button
-              style={{
-                ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`) &&
-                { backgroundColor: COLOR.grey[300] },
-              }}>
-              <ListItemIcon><History /></ListItemIcon>
-              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
-            </ListItem>
-          </BTN.NoStyleLink>
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}>
             <ListItem button
               style={{
@@ -468,6 +469,16 @@ export default function SideMenu(props) {
               }}>
               <ListItemIcon><Event /></ListItemIcon>
               <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
+            </ListItem>
+          </BTN.NoStyleLink>
+          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}>
+            <ListItem button
+              style={{
+                ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`) &&
+                { backgroundColor: COLOR.grey[300] },
+              }}>
+              <ListItemIcon><History /></ListItemIcon>
+              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
             </ListItem>
           </BTN.NoStyleLink>
           {/*

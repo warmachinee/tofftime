@@ -27,7 +27,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -224,7 +224,6 @@ function CreateMatchBody(props){
   const [ fileHover, handleFileHover ] = React.useState(false);
 
   const [ matchName, setMatchName ] = React.useState('');
-  const [ matchClass, setMatchClass ] = React.useState(0);
   const [ selectedField, setSelectedField ] = React.useState('');
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
@@ -235,7 +234,6 @@ function CreateMatchBody(props){
 
   const passingFunction = {
     matchName: matchName,
-    matchClass: matchClass,
     selectedField: selectedField,
     selectedFieldVersion: selectedFieldVersion,
     selectedPrivacy: selectedPrivacy,
@@ -244,7 +242,6 @@ function CreateMatchBody(props){
     selectedFile: selectedFile,
     tempFile: tempFile,
     setMatchName: setMatchName,
-    setMatchClass: setMatchClass,
     setSelectedField: setSelectedField,
     handlePrivacy: handlePrivacy,
     handleMatchType: handleMatchType,
@@ -275,7 +272,6 @@ function CreateMatchBody(props){
 
   function handleReset(){
     setMatchName('')
-    setMatchClass(0)
     setSelectedField('')
     setSelectedDate(new Date())
     setSelectedFile('')
@@ -318,7 +314,6 @@ function CreateMatchBody(props){
       matchname: matchName,
       fieldid: selectedField.fieldid,
       scorematch: parseInt(selectedMatchType),
-      class: matchClass,
       privacy: selectedPrivacy,
       matchdate: API._dateSendToAPI(selectedDate),
     }
@@ -368,8 +363,8 @@ function CreateMatchBody(props){
     handleSnackBar({
       state: true,
       message: status,
-      variant: status === 'success' ? status : 'error',
-      autoHideDuration: status === 'success'? 2000 : 5000
+      variant: /success/.test(status) ? status : 'error',
+      autoHideDuration: /success/.test(status)? 2000 : 5000
     })
   }
 
@@ -427,19 +422,6 @@ function CreateMatchBody(props){
                 />
               </MuiPickersUtilsProvider>
             </ThemeProvider>
-            { selectedMatchType !== '0' &&
-              <ThemeProvider theme={theme}>
-                <TextField
-                  style={{ width: 280, marginTop: 'auto', marginLeft: 16 }}
-                  label={ ( sess && sess.language === 'TH' ) ? "จำนวนทีม" : 'Number of teams' }
-                  value={matchClass}
-                  type="number"
-                  variant="outlined"
-                  onChange={e =>setMatchClass(parseInt(e.target.value))}
-                  onFocus={e => e.target.select()}
-                />
-              </ThemeProvider>
-            }
           </div>
           { selectedFile && tempFile?
             <div style={{ position: 'relative', marginTop: 16 }}

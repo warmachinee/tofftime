@@ -126,7 +126,7 @@ function ScoreRow(props){
         key={row.userid}
         onClick={()=>setExpanded(!expanded)}>
         <div className={classes.tableRank} style={tableCell}>
-          { ( sortBy === 'sf' && data.scorematch !== 1 ) ?
+          { data.scorematch !== 1 ?
             index + 1
             :
             row.rank
@@ -419,9 +419,8 @@ export default function ScoreTable(props) {
       </Zoom>
       <Paper className={classes.root}>
         { userscore && userscore.filter( d =>{
-          return ( d && d.classno === matchClass.classno )
+          return ( d.classno === matchClass.classno )
         }).map( ( row, i ) => (
-          row &&
           <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i} />
         ))}
       </Paper>

@@ -432,15 +432,15 @@ export default function LocationEditor(props){
           handleSnackBar({
             state: true,
             message: d[e],
-            variant: d[e] === 'success' ? d[e] : 'error',
-            autoHideDuration: d[e] === 'success'? 2000 : 5000
+            variant: /success/.test(d[e]) ? d[e] : 'error',
+            autoHideDuration: /success/.test(d[e])? 2000 : 5000
           })
           statusRes.push(d[e])
         }else{
           statusRes.push(d[e])
         }
       })
-      if(statusRes.every(item => item === 'success')){
+      if(statusRes.every(item => /success/.test(item))){
         handleEdittingClose()
       }
       try {

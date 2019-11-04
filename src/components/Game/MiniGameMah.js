@@ -44,7 +44,7 @@ const ListPredictScore = Loadable({
 });
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => <LDCircular />
 });
 

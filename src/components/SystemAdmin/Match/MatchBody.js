@@ -36,12 +36,12 @@ const CreateMatch = Loadable({
 });
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
   loading: () => <LDCircular />
 });
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
   loading: () => <LDCircular />
 });
 

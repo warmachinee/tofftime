@@ -3,12 +3,12 @@ import Loadable from 'react-loadable';
 import { makeStyles, createMuiTheme, withStyles } from '@material-ui/core/styles';
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../Utils/TemplateDialog'),
   loading: () => null
 });
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../../Utils/LabelText'),
   loading: () => null
 });
 
@@ -32,7 +32,7 @@ export default function PageOrganizerCreatePost(props) {
     <TemplateDialog open={createPostState} handleClose={toggleCreatePost} elementId="create-post-dialog">
       <div className={classes.root}>
         <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างโพสต์" : 'Create post' } />
-        <PageOrganizerPostEditor {...props} />
+        <PageOrganizerPostEditor {...props} handleCloseEditor={toggleCreatePost} />
       </div>
     </TemplateDialog>
   );

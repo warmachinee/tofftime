@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */'./../../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../../Utils/LabelText'),
   loading: () => null
 });
 

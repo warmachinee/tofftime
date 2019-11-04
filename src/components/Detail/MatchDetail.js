@@ -71,6 +71,7 @@ export default function MatchDetail(props){
         if(d.scorematch !== 1){
           setSortBy(d.scorematch === 0? 'net' : 'sf')
         }
+        document.title = `${d.title} - T-off Time`
       }
     })
   }
@@ -79,20 +80,23 @@ export default function MatchDetail(props){
     const matchid = parseInt(props.computedMatch.params.matchid)
     const socket = socketIOClient( API._getWebURL() )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
-      if(messageNew && messageNew.status === 'success'){
-        if(messageNew.hostdetail){
+      if(messageNew && /success/.test(messageNew.status)){
+        const d = messageNew.result
+        const dh = messageNew.hostdetail
+        if(dh){
           handleSnackBarL({
             state: true,
-            sFULLNAME: messageNew.hostdetail.fullname,
-            sLASTNAME: messageNew.hostdetail.lastname,
-            sOUT: messageNew.hostdetail.sout,
-            sIN: messageNew.hostdetail.sin,
-            sTOTAL: messageNew.hostdetail.gross,
-            sPAR: messageNew.hostdetail.par
+            sFULLNAME: dh.fullname,
+            sLASTNAME: dh.lastname,
+            sOUT: dh.sout,
+            sIN: dh.sin,
+            sTOTAL: dh.gross,
+            sPAR: dh.par
           })
         }
-        setUserscore(messageNew.result.userscore)
-        setRawUserscore(messageNew.result)
+        setUserscore(d.userscore)
+        setRawUserscore(d)
+        document.title = `${d.title} - T-off Time`
       }
     })
   }

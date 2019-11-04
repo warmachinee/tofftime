@@ -37,7 +37,7 @@ const HistoryList = Loadable({
 });
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../Utils/LabelText'),
   loading: () => null
 });
 
@@ -152,7 +152,7 @@ export default function History(props) {
   const classes = useStyles();
   const {
     API, COLOR, sess, token, setCSRFToken, accountData, handleAccountData, open, userid, userData,
-    pageOrganizer, pageData, pageList, userPageList
+    pageOrganizer, pageData, userPageList
   } = props
   const [ data, setData ] = React.useState(null)
   const [ statType, setStatType ] = React.useState('total')

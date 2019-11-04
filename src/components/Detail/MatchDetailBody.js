@@ -33,7 +33,7 @@ const Scoreboard = Loadable({
 });
 
 const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../GoBack'),
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => <LDCircular />
 });
 
@@ -225,6 +225,7 @@ function MatchDetailBody(props) {
           autoHideDuration: 5000
         })
       }else{
+        document.title = `${document.title} - ${d.title}`
         setData(d)
         setUserscore(d.userscore)
         setRawUserscore(d)

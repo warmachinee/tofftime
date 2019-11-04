@@ -21,12 +21,12 @@ import {
 } from '@material-ui/icons';
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../Utils/TemplateDialog'),
   loading: () => null
 });
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../../Utils/LabelText'),
   loading: () => null
 });
 
@@ -182,11 +182,11 @@ export default function CreatePage(props) {
       setCSRFToken( res.token )
       handleSnackBar({
         state: true,
-        message: response.status,
-        variant: response.status === 'success' ? response.status : 'error',
-        autoHideDuration: response.status === 'success'? 2000 : 5000
+        message: /success/.test(response.status),
+        variant: /success/.test(response.status) ? response.status : 'error',
+        autoHideDuration: /success/.test(response.status)? 2000 : 5000
       })
-      if(response.status === 'success'){
+      if(/success/.test(response.status)){
         toggleCreatePage()
       }
     }else{

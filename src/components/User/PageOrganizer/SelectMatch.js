@@ -28,12 +28,12 @@ import {
 } from '@material-ui/icons';
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../Utils/TemplateDialog'),
   loading: () => null
 });
 
 const LabelText = Loadable({
-  loader: () => import(/* webpackChunkName: "LabelText" */ './../../LabelText'),
+  loader: () => import(/* webpackChunkName: "LabelText" */ './../../Utils/LabelText'),
   loading: () => null
 });
 

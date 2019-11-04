@@ -1,8 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { primary } from './../api/palette'
-import pdf_guide from './file/Guide.pdf'
-import * as COLOR from './../api/palette'
+import { primary } from './../../api/palette'
+import pdf_guide from './../file/Guide.pdf'
+import * as COLOR from './../../api/palette'
 
 const useStyles = makeStyles(theme => ({
   root: {

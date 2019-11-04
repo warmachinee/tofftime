@@ -156,7 +156,6 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     maxWidth: 1200,
-    width: '100%',
     margin: 'auto',
   },
   toolbar: {
@@ -325,7 +324,7 @@ export default function UserPage(props) {
     <div className={classes.root}>
       <UserHeader {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData} />
       <SideMenu {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData} />
-      <main className={classes.content}>
+      <main className={classes.content} style={{ width: `calc(100% - ${open ? 240 : 73}px)` }}>
         <div className={classes.toolbar} />
 
         <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
@@ -398,12 +397,8 @@ function UserDashboard(props){
         <Statistics {...props} />
         */
       }
-      { pageList &&
-        <React.Fragment>
-          <Upcoming {...props} />
-          <History {...props} />
-        </React.Fragment>
-      }
+      <Upcoming {...props} />
+      <History {...props} />
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&
         <Redirect to={`/admin`} />
       }

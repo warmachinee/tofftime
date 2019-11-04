@@ -138,7 +138,7 @@ export default function UserHeader(props) {
   async function handleLogout(){
     const data = await API._xhrGet('logout')
     setCSRFToken(data.token)
-    if( data && data.response.status === 'success' ){
+    if( data && /success/.test(data.response.status) ){
       handleGetUserinfo()
     }
   }

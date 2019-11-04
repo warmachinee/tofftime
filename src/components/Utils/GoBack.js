@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
-import { primary } from './../api/palette'
+import { primary } from './../../api/palette'
 
 import IconButton from '@material-ui/core/IconButton';
 

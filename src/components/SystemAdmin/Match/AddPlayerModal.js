@@ -20,6 +20,7 @@ import Divider from '@material-ui/core/Divider';
 import Avatar from '@material-ui/core/Avatar';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import AddIcon from '@material-ui/icons/Add';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -29,7 +30,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
     width: '100%',
-    backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 36,
     maxHeight: '100%'
@@ -62,8 +62,7 @@ const useStyles = makeStyles(theme => ({
   textFieldGrid: {
     padding: 16,
     marginBottom: 24,
-    borderRadius: 4,
-    border: `1.5px solid ${primary[600]}`,
+    border: `3px solid ${primary[800]}`,
   },
   buttonGrid: {
     display: 'flex',
@@ -139,7 +138,7 @@ const theme = createMuiTheme({
 
 export default function AddPlayerModal(props){
   const classes = useStyles();
-  const { playerAction, sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp } = props
+  const { BTN, playerAction, sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp } = props
 
   const [ data, setData ] = React.useState(null)
   const [ createState, setCreateState ] = React.useState(false)
@@ -174,6 +173,29 @@ export default function AddPlayerModal(props){
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
     })
+  }
+
+  async function handleCreateDummyPlayer(){
+    if(matchid){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        'mmatchmember', {
+          action: 'dummy',
+          matchid: matchid,
+          fullname: fullname,
+          lastname: lastname,
+          dmaction: 'add'
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? 'success' : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+      })
+    }
   }
 
   async function handleLoadUser(){
@@ -268,23 +290,22 @@ export default function AddPlayerModal(props){
 
   return(
     <div className={classes.root}>
-      { sess.typeid === 'admin' &&
-        <div className={classes.createGrid}>
-          <GreenTextButton
-            variant="outlined"
-            className={classes.createButton}
-            onClick={()=>setCreateState(!createState)}>
-            <ExpandMoreIcon
-              className={classes.expandIcon}
-              style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
-            { ( sess && sess.language === 'TH' ) ? "สร้างผู้ใช้งาน" : 'Create user' }
-          </GreenTextButton>
-        </div>
-      }
+      <div className={classes.createGrid}>
+        <GreenTextButton
+          variant="outlined"
+          className={classes.createButton}
+          onClick={()=>setCreateState(!createState)}>
+          <ExpandMoreIcon
+            className={classes.expandIcon}
+            style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
+          { ( sess && sess.language === 'TH' ) ? "สร้างผู้ใช้งาน" : 'Create user' }
+        </GreenTextButton>
+      </div>
       <Collapse in={createState} timeout="auto" unmountOnExit>
         <div className={classes.textFieldGrid}>
           <ThemeProvider theme={theme}>
             <TextField
+              autoFocus={createState}
               className={classes.textField}
               variant="outlined"
               label="Full name"
@@ -306,7 +327,11 @@ export default function AddPlayerModal(props){
               </Box>
             </Typography>
             <div style={{ flex: 1 }} />
-            <GreenButton className={classes.confirmButton} onClick={handleCreatePlayer}>Confirm</GreenButton>
+            <GreenButton
+              className={classes.confirmButton}
+              onClick={()=> sess.typeid === 'admin' ? handleCreatePlayer() : handleCreateDummyPlayer()}>
+              Confirm
+            </GreenButton>
           </div>
         </div>
       </Collapse>
@@ -368,16 +393,20 @@ export default function AddPlayerModal(props){
               );
           })
         }
-        { searchUser && data && data.length === 0 &&
-          <ListItem>
-            <Typography component="div" style={{ width: '100%' }}>
-              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                No Reult
-              </Box>
-            </Typography>
-          </ListItem>
-        }
       </List>
+      { searchUser && data && data.length === 0 &&
+        <Typography component="div" style={{ width: '100%' }}>
+          <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+            No Result? Create one.
+          </Box>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+            <BTN.PrimaryOutlined onClick={()=>setCreateState(!createState)}>
+              <AddIcon style={{ marginRight: 8 }} />
+              Create New User
+            </BTN.PrimaryOutlined>
+          </div>
+        </Typography>
+      }
     </div>
   );
 }

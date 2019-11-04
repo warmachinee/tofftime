@@ -204,8 +204,10 @@ export default function Statistics(props) {
   },[ userid ])
 
   React.useEffect(()=>{
-    if(accountData){
-      setChecked(accountData.historystat)
+    if(!(userid && userData)){
+      if(accountData){
+        setChecked(accountData.historystat)
+      }
     }
   },[ accountData, checked ])
 
