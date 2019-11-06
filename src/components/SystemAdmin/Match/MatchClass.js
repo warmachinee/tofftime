@@ -189,7 +189,7 @@ const colorsPicker = [
 
 export default function MatchClass(props) {
   const classes = useStyles();
-  const { COLOR, sess, token, setCSRFToken, data, matchid, setData, handleSnackBar } = props
+  const { COLOR, sess, token, setCSRFToken, data, matchid, setData, handleSnackBar, matchClass } = props
   const [ lists, setLists ] = React.useState([])
   const [ text, setText ] = React.useState('')
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
@@ -249,7 +249,8 @@ export default function MatchClass(props) {
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classadd',
         matchid: matchid,
-        classname: text
+        classname: text,
+        mainclass: matchClass.mainclass,
     }, (csrf, d) =>{
       handleSnackBar({
         state: true,
@@ -277,7 +278,8 @@ export default function MatchClass(props) {
         action: 'classedit',
         matchid: matchid,
         classname: arrEdit,
-        classno: arrEditClassno
+        classno: arrEditClassno,
+        mainclass: matchClass.mainclass,
     }, (csrf, d) =>{
       if(data.scorematch === 0){
         var statusRes = []
@@ -324,7 +326,8 @@ export default function MatchClass(props) {
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
         action: 'classremove',
         matchid: matchid,
-        classno: parseInt(d)
+        classno: parseInt(d),
+        mainclass: matchClass.mainclass,
     }, (csrf, d) =>{
       handleSnackBar({
         state: true,
@@ -371,21 +374,21 @@ export default function MatchClass(props) {
   }
 
   React.useEffect(()=>{
-    if(data){
-      if(data.class){
+    if(matchClass){
+      if(matchClass.values){
         let classname = [];
         let classno = [];
-        for(var i = 0;i < data.class.length;i++){
-          classname.push(data.class[i].classname)
-          classno.push(data.class[i].classno)
+        for(var i = 0;i < matchClass.values.length;i++){
+          classname.push(matchClass.values[i].classname)
+          classno.push(matchClass.values[i].classno)
         }
         setArrEdit(classname)
         setArrEditClassno(classno)
-        setLists(data.class)
+        setLists(matchClass.values)
         if(data.scorematch !== 0){
           let classColor = []
-          for(var j = 0;j < data.class.length;j++){
-            classColor.push(data.class[j].color)
+          for(var j = 0;j < matchClass.values.length;j++){
+            classColor.push(matchClass.values[j].color)
           }
           setArrEditColor(classColor)
         }
@@ -414,7 +417,8 @@ export default function MatchClass(props) {
           action: 'setcolor',
           matchid: matchid,
           classno: arrEditClassno[index],
-          color: color
+          color: color,
+          mainclass: matchClass.mainclass
       }, (csrf, d) =>{
         handleSnackBar({
           state: true,

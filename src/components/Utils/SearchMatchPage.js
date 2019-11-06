@@ -3,6 +3,8 @@ import Loadable from 'react-loadable';
 import socketIOClient from 'socket.io-client'
 import { Redirect, Link } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrophy } from '@fortawesome/free-solid-svg-icons'
 
 import {
   IconButton,
@@ -10,6 +12,9 @@ import {
   InputBase,
   List,
   ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
 
 } from '@material-ui/core';
 
@@ -19,6 +24,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import CloseIcon from '@material-ui/icons/Close'
+import PersonIcon from '@material-ui/icons/Person'
+import FlagIcon from '@material-ui/icons/Flag'
 
 const useStyles = makeStyles(theme => ({
   avatarSearch: {
@@ -124,20 +131,43 @@ export default function SearchMatchPage(props) {
         noOptionsText="No results"
         renderOption={option => (
           <List disablePadding style={{ width: '100%' }}>
-            <Link to={`/${option.type}/${option.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link to={`/${option.type}/${option.id}`} style={{ textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)' }}>
               <ListItem onClick={()=>setSearchState(false)}>
-                { option.photopath ?
-                  <Avatar className={classes.avatarImageSearch}
-                    src={API._getPictureUrl(option.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-                  :
-                  <AccountIcon classes={{ root: classes.avatarSearch }} />
+                <ListItemIcon>
+                  { option.photopath ?
+                    <Avatar className={classes.avatarImageSearch}
+                      src={API._getPictureUrl(option.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                    :
+                    <AccountIcon classes={{ root: classes.avatarSearch }} />
+                  }
+                </ListItemIcon>
+                <ListItemText
+                  className={classes.searchLabel}
+                  primary={<Typography variant="body1" style={{ marginBottom: 8 }}>{option.matchname}</Typography>}
+                  secondary={
+                    <React.Fragment>
+                      <span style={{ marginRight: 8 }}>
+                        {function(){
+                          switch (option.type) {
+                            case 'match':
+                              return <FontAwesomeIcon icon={faTrophy} style={{ fontSize: 12 }} />
+                              break;
+                            case 'page':
+                              return <FlagIcon style={{ fontSize: 16 }} />
+                              break;
+                            default:
+                              return <span style={{ width: 16 }} />
+                          }
+                        }()}
+                      </span>
+                      <Typography variant="caption" color="textSecondary" style={{ textTransform: 'capitalize' }}>{option.type}</Typography>
+                    </React.Fragment>
+                  } />
+                {/*
+                  <IconButton>
+                    <MoreIcon />
+                  </IconButton>*/
                 }
-                <div className={classes.searchLabel}>
-                  {option.matchname}
-                </div>
-                <IconButton>
-                  <MoreIcon />
-                </IconButton>
               </ListItem>
             </Link>
           </List>
@@ -150,7 +180,7 @@ export default function SearchMatchPage(props) {
             inputProps={params.inputProps}
             onChange={e =>searchTextOnChange(e)}
             autoFocus={searchState}
-            onBlur={()=>console.log()/*setSearchState(false)*/}
+            onBlur={()=>setSearchState(false)}
             placeholder="Search Match or Page"
             />
         )} />

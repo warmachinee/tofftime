@@ -264,13 +264,13 @@ export default function CreateMatchBody(props){
                         <FormControlLabel
                           value={'0'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity' }
+                          label={ ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur' }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'2'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur' }
+                          label={ ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity' }
                           labelPlacement="end"
                         />
                       </RadioGroup>

@@ -1,8 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import { Link, Route } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserCog, faTable, faSitemap, faTrophy } from '@fortawesome/free-solid-svg-icons'
-import { Link } from "react-router-dom";
 import { matchPath } from 'react-router'
 import { makeStyles, fade, useTheme, withStyles } from '@material-ui/core/styles';
 import * as API from './../../../api'
@@ -26,6 +26,9 @@ import {
   Tabs,
   Tab,
   Badge,
+  Divider,
+  Card,
+  CardActionArea,
 
 } from '@material-ui/core';
 
@@ -142,6 +145,33 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     width: '100%',
   },
+  card: {
+    width: 120,
+    height: 120,
+    margin: '24px auto'
+  },
+  cardActionArea: {
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    color: primary[800]
+  },
+  cardGrid: {
+    padding: '24px 0',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    boxSizing: 'border-box',
+  },
+  menuCardIconGrid: {
+    height: 56,
+    marginTop: 16
+  },
+  anchorOriginTopRightRectangle: {
+    top: 16,
+    right: -8,
+    color: red[600]
+  },
 
 }))
 
@@ -194,46 +224,6 @@ function TabContainer(props){
   );
 }
 
-const IconVariantTest = [
-  {
-    label: 'Detail',
-    icon: <Description style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Class',
-    icon: <People style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Invitation',
-    icon: <PersonAdd style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Schedule',
-    icon: <Schedule style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Player management',
-    icon: <FontAwesomeIcon icon={faUserCog} style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Scorecard',
-    icon: <FontAwesomeIcon icon={faTable} style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Playoff',
-    icon: <FontAwesomeIcon icon={faSitemap} style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Reward',
-    icon: <FontAwesomeIcon icon={faTrophy} style={{ fontSize: 48 }} />
-  },
-  {
-    label: 'Admin',
-    icon: <SupervisedUserCircle style={{ fontSize: 48 }} />
-  },
-
-]
-
 function MatchManagementTabs(props){
   const classes = useStyles();
   const { COLOR, BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData } = props
@@ -278,77 +268,38 @@ function MatchManagementTabs(props){
 
 function SetUpMatchComponent(props){
   const classes = useStyles();
-  const theme = useTheme();
-  const transitionDuration = {
-    enter: theme.transitions.duration.enteringScreen,
-    exit: theme.transitions.duration.leavingScreen,
-  };
-  const { COLOR, BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData, param, setData, data } = props
-  const passingProps = {
-    ...props,
-    matchid: param
-  }
+  const { warning } = props
   const SETUP_STEP = [
     {
-      label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
-      component: <MBOverview {...passingProps} setData={setData} data={data} />,
-      icon: <Description style={{ fontSize: 48 }} />,
+      variant: 'detail',
+      icon: <Description style={{ fontSize: 52 }} />,
     },
     {
-      label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' ),
-      component: <MBClass {...passingProps} />,
-      icon: <People style={{ fontSize: 48 }} />
+      variant: 'class',
+      icon: <People style={{ fontSize: 52 }} />
     },
     {
-      label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
-      component: <MBInvitation {...passingProps} />,
-      icon: <PersonAdd style={{ fontSize: 48 }} />
+      variant: 'invitation',
+      icon: <PersonAdd style={{ fontSize: 52 }} />
     },
     {
-      label: ( ( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule' ),
-      component: <MBSchedule {...passingProps} />,
-      icon: <Schedule style={{ fontSize: 48 }} />
+      variant: 'schedule',
+      icon: <Schedule style={{ fontSize: 52 }} />
     },
     {
-      label: ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
-      component: <MBPlayer {...passingProps} />,
-      icon: <FontAwesomeIcon icon={faUserCog} style={{ fontSize: 36 }} />
+      variant: 'player',
+      icon: <FontAwesomeIcon icon={faUserCog} style={{ fontSize: 40 }} />
     },
   ]
-  const [ value, setValue ] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  }
 
   return (
-    <div className={classes.tabRoot}>
-      <Paper elevation={1}>
-        <StyledTabs
-          value={value}
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="on"
-        >
-          {SETUP_STEP.map( d =>
-            <StyledTab
-              key={d.label}
-              label={d.label}
-              style={{ border: /aaaaaa/.test(d.label) ? `3px solid ${COLOR.red[600]}` : 'none' }}
-              icon={
-                <Badge badgeContent={/aaaaaa/.test(d.label) && <ErrorIcon style={{ color: COLOR.red[600] }} />}>
-                  {d.icon}
-                </Badge>
-              } />
-          )}
-        </StyledTabs>
-      </Paper>
-      {SETUP_STEP.map( (d, index) =>
-        value === index &&
-        <TabContainer
-          {...props}
-          key={d.label}
-          component={d.component} />
+    <div className={classes.cardGrid}>
+      {SETUP_STEP.map( d =>
+        <MenuCard
+          key={d.variant}
+          icon={d.icon}
+          variant={d.variant}
+          warning={warning ? warning[d.variant] : false} />
       )}
     </div>
   );
@@ -356,183 +307,60 @@ function SetUpMatchComponent(props){
 
 function ManagementMatchComponent(props){
   const classes = useStyles();
-  const theme = useTheme();
-  const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData, param, setData, data } = props
-  const passingProps = {
-    ...props,
-    matchid: param
-  }
+  const { warning } = props
 
-  const labelManagementSteps = [
-    ( ( sess && sess.language === 'TH' ) ? "การคำนวนคะแนน" : 'Score calculation' ),
-    ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
-    ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
-    ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+  const MANAGEMENT_STEP = [
+    {
+      variant: 'scorecard',
+      icon: <FontAwesomeIcon icon={faTable} style={{ fontSize: 40 }} />,
+    },
+    {
+      variant: 'playoff',
+      icon: <FontAwesomeIcon icon={faSitemap} style={{ fontSize: 40 }} />,
+    },
+    {
+      variant: 'reward',
+      icon: <FontAwesomeIcon icon={faTrophy} style={{ fontSize: 40 }} />,
+    },
+    {
+      variant: 'admin',
+      icon: <SupervisedUserCircle style={{ fontSize: 52 }} />,
+    },
   ]
-  const maxManagementSteps = labelManagementSteps.length;
-  const [ anchorEl, setAnchorEl ] = React.useState(null);
-  const [ activeStep, setActiveStep ] = React.useState(getHashData());
-  const [ expanded, setExpanded ] = React.useState(getHashExpand());
-
-  function handleExpand(){
-    setExpanded(!expanded)
-  }
-
-  function handleClick(event) {
-    setAnchorEl(event.currentTarget);
-  }
-
-  function handleClose() {
-    setAnchorEl(null);
-  }
-
-  function handleMenu(index){
-    handleClose()
-    setActiveStep(index);
-  }
-
-  function getHashExpand(){
-    if(window.location.hash){
-      const hashRaw = window.location.hash.split('#')
-      const hashType = hashRaw[hashRaw.length - 2]
-      return hashType === 'management'
-    }else{
-      return false
-    }
-  }
-
-  function getHashData(){
-    if(window.location.hash){
-      const hashRaw = window.location.hash.split('#')
-      var returnedData = 0
-      const hashType = hashRaw[hashRaw.length - 2]
-      const hashData = parseInt(hashRaw[hashRaw.length - 1])
-      if(hashType === 'management'){
-        switch (true) {
-          case hashData >= maxManagementSteps - 1:
-            returnedData = maxManagementSteps - 1
-            break;
-          case hashData <= 0:
-            returnedData = 0
-            break;
-          default:
-            return hashData
-        }
-      }
-      return parseInt(returnedData)
-    }else{
-      return 0
-    }
-  }
-
-  function getComponent(){
-    switch (activeStep) {
-      case 0:
-        return <MBScoreEditor {...passingProps} />
-        break;
-      case 1:
-        return <MBPlayoff {...passingProps} />
-        break;
-      case 2:
-        return <MBReward {...passingProps} />
-        break;
-      default:
-        return <MBMatchAdmin {...passingProps} />
-    }
-  }
-
-  function handleNext() {
-    setActiveStep(prevActiveStep => prevActiveStep + 1);
-  }
-
-  function handleBack() {
-      setActiveStep(prevActiveStep => prevActiveStep - 1);
-    }
 
   return (
-    <React.Fragment>
-      <List className={classes.expandButton} disablePadding>
-        <ListItem button onClick={handleExpand}
-          style={{
-            marginTop: 16,
-            boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)',
-            backgroundColor: primary[100],
-          }}>
-          <ListItemText primary={
-              <Typography variant="h6">{ ( sess && sess.language === 'TH' ) ? "การจัดการแข่งขัน" : 'Match Management' }</Typography>
-              } />
-          <IconButton
-            disableRipple
-            className={classes.expandIcon}
-            style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
-            onClick={handleExpand}
-            aria-expanded={expanded}
-            aria-label="Show more"
-          >
-            <ExpandMore />
-          </IconButton>
-        </ListItem>
-      </List>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Paper className={classes.paper}>
-          <Button style={{ boxSizing: 'border-box', marginLeft: 36, marginTop: 16, textTransform: 'none' }} onClick={handleClick}>
-            <LabelText paddingTop={0} paddingLeft={0} text={labelManagementSteps[activeStep]} />
-            <ArrowDropDown fontSize="large" style={{ marginLeft: 8, marginTop: 12 }} />
-          </Button>
-          <MobileStepper
-            style={{ backgroundColor: 'inherit', marginTop: 24 }}
-            steps={maxManagementSteps}
-            position="static"
-            variant="text"
-            activeStep={activeStep}
-            nextButton={
-              <Link
-                style={{ textDecoration: 'none', color: 'inherit' }}
-                to={`${window.location.pathname}#management#${activeStep === maxManagementSteps - 1 ? maxManagementSteps - 1 : activeStep + 1}`}>
-                <BTN.PrimaryText size="small" onClick={handleNext} disabled={activeStep === maxManagementSteps - 1}>
-                  { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
-                  {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                </BTN.PrimaryText>
-              </Link>
-            }
-            backButton={
-              <Link
-                style={{ textDecoration: 'none', color: 'inherit' }}
-                to={`${window.location.pathname}#management#${activeStep === 0 ? 0 : activeStep - 1}`}>
-                <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
-                  {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                  { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
-                </BTN.PrimaryText>
-              </Link>
-            }
-          />
-        </Paper>
-        <Paper className={classes.paper} style={{ marginTop: 24 }}>
-          {getComponent()}
-        </Paper>
+    <div className={classes.cardGrid}>
+      {MANAGEMENT_STEP.map( d =>
+        <MenuCard
+          key={d.variant}
+          icon={d.icon}
+          variant={d.variant}
+          warning={warning ? warning[d.variant] : false} />
+      )}
+      <div style={{ width: 120, margin: '24px auto' }} />
+    </div>
+  );
+}
 
-      </Collapse>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        {
-          labelManagementSteps.map( (d, i) =>
-          <Link
-            key={d}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-            to={`${window.location.pathname}#management#${i}`}>
-            <MenuItem
-              onClick={()=>( activeStep === i ) ? console.log() : handleMenu(i)}
-              style={{ ...(activeStep === i  && { backgroundColor: grey[400] }) }}>
-              {d}
-            </MenuItem>
-          </Link>
-        )}
-      </Menu>
-    </React.Fragment>
+function MenuCard(props){
+  const classes = useStyles();
+  const { variant, icon, warning } = props
+
+  return (
+    <Card className={classes.card} elevation={3}>
+      <Link to={`${window.location.pathname}#${variant}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <CardActionArea className={classes.cardActionArea} style={{ ...(warning) && { border: `3px solid ${red[600]}` } }}>
+          <Badge
+            invisible={!warning}
+            badgeContent={<ErrorIcon />}
+            classes={{ anchorOriginTopRightRectangle: classes.anchorOriginTopRightRectangle }}>
+            <div className={classes.menuCardIconGrid}>{icon}</div>
+          </Badge>
+          <Typography style={{ textTransform: 'capitalize', marginBottom: 16 }}>{variant}</Typography>
+        </CardActionArea>
+      </Link>
+    </Card>
+
   );
 }
 
@@ -540,7 +368,13 @@ export default function MatchEditor(props){
   const classes = useStyles();
   const { BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData } = props
   const [ param, setParam ] = React.useState(null)
+  const [ hashParam, setHashParam ] = React.useState(window.location.hash.substring(1, window.location.hash.length))
   const [ data, setData ] = React.useState(null)
+  const [ warningObj, setWarningObj ] = React.useState(null)
+  const passingProps = {
+    ...props,
+    matchid: param,
+  }
 
   async function handleFetchStep(matchid){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -551,7 +385,17 @@ export default function MatchEditor(props){
         matchid: matchid,
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      console.log(d);
+      setWarningObj({
+        detail: false,
+        class: Boolean(d.classgroup),
+        invitation: Boolean(d.formlist),
+        schedule: Boolean(d.schedule),
+        player: false,
+        scorecard: Boolean(d.userscore),
+        playoff: false,
+        reward: Boolean(d.reward),
+        admin: Boolean(d.admin),
+      })
     })
   }
 
@@ -612,6 +456,73 @@ export default function MatchEditor(props){
     })
   }
 
+  function getComponent(){
+    switch (hashParam) {
+      case 'class':
+        return {
+          id: 1,
+          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' ),
+          component: <MBClass {...passingProps} data={data} setData={setData} />
+        }
+        break;
+      case 'invitation':
+        return {
+          id: 2,
+          label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
+          component: <MBInvitation {...passingProps} />
+        }
+        break;
+      case 'schedule':
+        return {
+          id: 3,
+          label: ( ( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule' ),
+          component: <MBSchedule {...passingProps} />
+        }
+        break;
+      case 'player':
+        return {
+          id: 4,
+          label: ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
+          component: <MBPlayer {...passingProps} />
+        }
+        break;
+      case 'scorecard':
+        return {
+          id: 5,
+          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Scorecard' ),
+          component: <MBScoreEditor {...passingProps} />
+        }
+        break;
+      case 'playoff':
+        return {
+          id: 6,
+          label: ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+          component: <MBPlayoff {...passingProps} />
+        }
+        break;
+      case 'reward':
+        return {
+          id: 7,
+          label: ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+          component: <MBReward {...passingProps} />
+        }
+        break;
+      case 'admin':
+        return {
+          id: 8,
+          label: ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+          component: <MBMatchAdmin {...passingProps} />
+        }
+        break;
+      default:
+        return {
+          id: 0,
+          label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
+          component: <MBOverview {...passingProps} setData={setData} data={data} />
+        }
+    }
+  }
+
   React.useEffect(()=>{
     if(props.location){
       const match = matchPath( props.location.pathname, {
@@ -627,7 +538,11 @@ export default function MatchEditor(props){
     }
   },[ props.location ])
 
-  return /*param &&*/ (
+  React.useEffect(()=>{
+    setHashParam(window.location.hash.substring(1, window.location.hash.length))
+  },[ window.location.hash ])
+
+  return ( !/localhost/.test(window.location.href) ? param : true) && (
     <div className={classes.root}>
       <GoBack />
       <Typography component="div">
@@ -639,11 +554,19 @@ export default function MatchEditor(props){
           </BTN.NoStyleLink>
         }
       </Typography>
-
-      {/*
-        <SetUpMatchComponent {...props} param={param} data={data} setData={setData} />
-        <MatchManagementTabs {...props} />
-        <ManagementMatchComponent {...props} param={param} data={data} setData={setData} />*/
+      { hashParam === ''?
+        <React.Fragment>
+          <LabelText text="Match Set up" />
+          <SetUpMatchComponent warning={warningObj} />
+          <Divider style={{ marginTop: 16, marginBottom: 16, width: '80%' }} />
+          <LabelText text="Match Management" />
+          <ManagementMatchComponent warning={warningObj} />
+        </React.Fragment>
+        :
+        <div>
+          <LabelText text={`${getComponent().label}#${getComponent().id}`} />
+          {getComponent().component}
+        </div>
       }
     </div>
   );

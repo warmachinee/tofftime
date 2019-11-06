@@ -396,228 +396,232 @@ export default function MBOverview(props){
     handleFetch()
   },[ ])
 
-  return data && data.status !== 'wrong params' && (
+  return (
     <div className={classes.root}>
-      { !editting &&
-        <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>
-          { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
-        </GreenTextButton>
-      }
-      <div className={classes.grid}>
-        <div className={classes.gridChild1}>
-          <ThemeProvider theme={theme}>
-            {editting?
-              <TextField
-                className={classes.textMatchname}
-                label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
-                value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                  ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
-                ) }
-                onChange={e =>setSelectedMatchName(e.target.value)}
-              />
-              :
-              <Typography component="div" className={classes.textMatchname}>
-                <Box className={classes.normal}>
-                  { data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                    ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
-                  ) }
-                </Box>
-              </Typography>
-            }
-          </ThemeProvider>
-          <div style={{ display: 'flex', marginTop: 16 }}>
-            <ThemeProvider theme={datePickers}>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                  clearable
-                  disabled={!editting}
-                  className={classes.margin}
-                  label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }
-                  inputVariant="outlined"
-                  format="dd/MM/yyyy"
-                  value={ data?( selectedDate ? selectedDate : new Date(data.date) ):new Date() }
-                  onChange={date => handleDateChange(date)}
-                />
-              </MuiPickersUtilsProvider>
-            </ThemeProvider>
-          </div>
-          { ( selectedFile || (data && data.picture) )?
-            <div style={{ position: 'relative', marginTop: 16 }}
-              onMouseEnter={()=>editting?handleFileHover(true):console.log()}
-              onMouseLeave={()=>editting?handleFileHover(false):console.log()}>
-              <img ref={imgRef}
-                style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
-                className={classes.matchImg}
-                src={
-                  selectedFile && tempFile ?
-                  tempFile
+      { data && data.status !== 'wrong params' &&
+        <React.Fragment>
+          { !editting &&
+            <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>
+              { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+            </GreenTextButton>
+          }
+          <div className={classes.grid}>
+            <div className={classes.gridChild1}>
+              <ThemeProvider theme={theme}>
+                {editting?
+                  <TextField
+                    className={classes.textMatchname}
+                    label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
+                    value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
+                      ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
+                    ) }
+                    onChange={e =>setSelectedMatchName(e.target.value)}
+                  />
                   :
-                  API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
-                } />
-              { editting && imgRef.current &&
-                <div
-                  style={{
-                    display: 'flex',
-                    position: 'absolute',
-                    height: imgRef.current.offsetHeight,
-                    width: imgRef.current.offsetWidth,
-                    top: 0, left: 0,
-                  }}>
-                  <div style={{ flex: 1 }} />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <Typography component="div" className={classes.textMatchname}>
+                    <Box className={classes.normal}>
+                      { data && ( selectedMatchName ? selectedMatchName : data.title ) || (
+                        ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
+                      ) }
+                    </Box>
+                  </Typography>
+                }
+              </ThemeProvider>
+              <div style={{ display: 'flex', marginTop: 16 }}>
+                <ThemeProvider theme={datePickers}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      clearable
+                      disabled={!editting}
+                      className={classes.margin}
+                      label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }
+                      inputVariant="outlined"
+                      format="dd/MM/yyyy"
+                      value={ data?( selectedDate ? selectedDate : new Date(data.date) ):new Date() }
+                      onChange={date => handleDateChange(date)}
+                    />
+                  </MuiPickersUtilsProvider>
+                </ThemeProvider>
+              </div>
+              { ( selectedFile || (data && data.picture) )?
+                <div style={{ position: 'relative', marginTop: 16 }}
+                  onMouseEnter={()=>editting?handleFileHover(true):console.log()}
+                  onMouseLeave={()=>editting?handleFileHover(false):console.log()}>
+                  <img ref={imgRef}
+                    style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
+                    className={classes.matchImg}
+                    src={
+                      selectedFile && tempFile ?
+                      tempFile
+                      :
+                      API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+                    } />
+                  { editting && imgRef.current &&
+                    <div
+                      style={{
+                        display: 'flex',
+                        position: 'absolute',
+                        height: imgRef.current.offsetHeight,
+                        width: imgRef.current.offsetWidth,
+                        top: 0, left: 0,
+                      }}>
+                      <div style={{ flex: 1 }} />
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ flex: 1 }} />
+                        <StyledIconButton className={classes.matchFile}>
+                          <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                          <CloudUploadIcon fontSize="large" style={{ color: primary[400] }} />
+                        </StyledIconButton>
+                        <div style={{ flex: 1 }} />
+                      </div>
+                      <div style={{ flex: 1 }} />
+                    </div>
+                  }
+                </div>
+                :
+                <div style={{ position: 'relative', marginTop: 16 }}>
+                  <div className={classes.matchImgTemp}
+                    style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
                     <div style={{ flex: 1 }} />
-                    <StyledIconButton className={classes.matchFile}>
-                      <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUploadIcon fontSize="large" style={{ color: primary[400] }} />
-                    </StyledIconButton>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ flex: 1 }} />
+                      { editting &&
+                        <StyledIconButton className={classes.matchFile}>
+                          <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                          <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
+                        </StyledIconButton>
+                      }
+                      <div style={{ flex: 1 }} />
+                    </div>
                     <div style={{ flex: 1 }} />
                   </div>
-                  <div style={{ flex: 1 }} />
                 </div>
               }
             </div>
-            :
-            <div style={{ position: 'relative', marginTop: 16 }}>
-              <div className={classes.matchImgTemp}
-                style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
-                <div style={{ flex: 1 }} />
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ flex: 1 }} />
-                  { editting &&
-                    <StyledIconButton className={classes.matchFile}>
-                      <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
-                    </StyledIconButton>
-                  }
-                  <div style={{ flex: 1 }} />
-                </div>
-                <div style={{ flex: 1 }} />
-              </div>
+            <div className={classes.gridChild2}>
+              <ThemeProvider theme={theme}>
+                <GreenTextButton
+                  disabled={!editting}
+                  variant="outlined"
+                  className={classes.button}
+                  style={{ textTransform: 'none' }}
+                  onClick={()=>handleOpen('location')}>
+                  { data?( selectedField? selectedField.fieldname : data.location ) : (
+                    ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location'
+                  ) }
+                  {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
+                </GreenTextButton>
+                {/*
+                  <GreenTextButton
+                    disabled={!editting}
+                    className={classes.button}
+                    variant="outlined"
+                    onClick={()=>handleOpen('class')}>
+                    { data?
+                      ( data.class && !data.class.status &&
+                        `${data.class.length}${function(){
+                          switch (data.scorematch) {
+                            case 0:
+                              return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ` Flight${( data.class.length > 1 ? 's' : '' )}`
+                              break;
+                            case 1:
+                              return ( sess && sess.language === 'TH' ) ? " ประเภท" : ` Class${( data.class.length > 1 ? 'es' : '' )}`
+                              break;
+                            default:
+                              return ( sess && sess.language === 'TH' ) ? " ทีม" : ` Team${( data.class.length > 1 ? 's' : '' )}`
+                          }
+                        }()}`
+                      ):
+                      (
+                        `${function(){
+                          switch (data.scorematch) {
+                            case 0:
+                              return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
+                              break;
+                            case 1:
+                              return ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
+                              break;
+                            default:
+                              return ( sess && sess.language === 'TH' ) ? " ทีม" : ' Team'
+                          }
+                        }()}`
+                      )
+                    }
+                  </GreenTextButton>*/
+                }
+                <FormControl component="fieldset" className={classes.margin}
+                  style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}
+                  disabled={!editting}>
+                  <FormLabel component="legend" style={{ marginLeft: 16 }}>{ ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }</FormLabel>
+                  <RadioGroup
+                    value={
+                      data?( selectedPrivacy? selectedPrivacy : data.privacy ):'public'
+                    }
+                    onChange={handlePrivacy} row>
+                    <FormControlLabel
+                      value={'public'}
+                      control={<GreenRadio />}
+                      label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
+                      labelPlacement="end"
+                    />
+                    <FormControlLabel
+                      value={'friend'}
+                      control={<GreenRadio />}
+                      label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
+                      labelPlacement="end"
+                    />
+                    <FormControlLabel
+                      value={'private'}
+                      control={<GreenRadio />}
+                      label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
+                      labelPlacement="end"
+                    />
+                  </RadioGroup>
+                </FormControl>
+                { /*
+                  <FormControl component="fieldset" className={classes.margin}
+                    style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
+                    disabled={!editting}>
+                    <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
+                    <RadioGroup
+                      value={
+                        data?( selectedMatchType? selectedMatchType : data.scorematch.toString() ):'1'
+                      }
+                      onChange={handleMatchType} row>
+                      <FormControlLabel
+                        value={'1'}
+                        control={<GreenRadio />}
+                        label="Pro"
+                        labelPlacement="end"
+                      />
+                      <FormControlLabel
+                        value={'0'}
+                        control={<GreenRadio />}
+                        label="Amateur"
+                        labelPlacement="end"
+                      />
+                    </RadioGroup>
+                  </FormControl>*/
+                }
+              </ThemeProvider>
             </div>
+          </div>
+          { editting?
+            <div className={classes.buttonControl}>
+              <div style={{ flex: 2 }}></div>
+              <GreenTextButton className={classes.button}
+                onClick={()=>handleEditting(false)}>
+                { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+              </GreenTextButton>
+              <GreenButton className={classes.button}
+                onClick={handleEditMatch}>
+                { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+              </GreenButton>
+            </div>
+            :
+            <div style={{ height: 88 }}></div>
           }
-        </div>
-        <div className={classes.gridChild2}>
-          <ThemeProvider theme={theme}>
-            <GreenTextButton
-              disabled={!editting}
-              variant="outlined"
-              className={classes.button}
-              style={{ textTransform: 'none' }}
-              onClick={()=>handleOpen('location')}>
-              { data?( selectedField? selectedField.fieldname : data.location ) : (
-                ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location'
-              ) }
-              {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
-            </GreenTextButton>
-            {/*
-              <GreenTextButton
-                disabled={!editting}
-                className={classes.button}
-                variant="outlined"
-                onClick={()=>handleOpen('class')}>
-                { data?
-                  ( data.class && !data.class.status &&
-                    `${data.class.length}${function(){
-                      switch (data.scorematch) {
-                        case 0:
-                          return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ` Flight${( data.class.length > 1 ? 's' : '' )}`
-                          break;
-                        case 1:
-                          return ( sess && sess.language === 'TH' ) ? " ประเภท" : ` Class${( data.class.length > 1 ? 'es' : '' )}`
-                          break;
-                        default:
-                          return ( sess && sess.language === 'TH' ) ? " ทีม" : ` Team${( data.class.length > 1 ? 's' : '' )}`
-                      }
-                    }()}`
-                  ):
-                  (
-                    `${function(){
-                      switch (data.scorematch) {
-                        case 0:
-                          return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
-                          break;
-                        case 1:
-                          return ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
-                          break;
-                        default:
-                          return ( sess && sess.language === 'TH' ) ? " ทีม" : ' Team'
-                      }
-                    }()}`
-                  )
-                }
-              </GreenTextButton>*/
-            }
-            <FormControl component="fieldset" className={classes.margin}
-              style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}
-              disabled={!editting}>
-              <FormLabel component="legend" style={{ marginLeft: 16 }}>{ ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }</FormLabel>
-              <RadioGroup
-                value={
-                  data?( selectedPrivacy? selectedPrivacy : data.privacy ):'public'
-                }
-                onChange={handlePrivacy} row>
-                <FormControlLabel
-                  value={'public'}
-                  control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
-                  labelPlacement="end"
-                />
-                <FormControlLabel
-                  value={'friend'}
-                  control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
-                  labelPlacement="end"
-                />
-                <FormControlLabel
-                  value={'private'}
-                  control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
-                  labelPlacement="end"
-                />
-              </RadioGroup>
-            </FormControl>
-            { /*
-              <FormControl component="fieldset" className={classes.margin}
-                style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
-                disabled={!editting}>
-                <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
-                <RadioGroup
-                  value={
-                    data?( selectedMatchType? selectedMatchType : data.scorematch.toString() ):'1'
-                  }
-                  onChange={handleMatchType} row>
-                  <FormControlLabel
-                    value={'1'}
-                    control={<GreenRadio />}
-                    label="Pro"
-                    labelPlacement="end"
-                  />
-                  <FormControlLabel
-                    value={'0'}
-                    control={<GreenRadio />}
-                    label="Amateur"
-                    labelPlacement="end"
-                  />
-                </RadioGroup>
-              </FormControl>*/
-            }
-          </ThemeProvider>
-        </div>
-      </div>
-      { editting?
-        <div className={classes.buttonControl}>
-          <div style={{ flex: 2 }}></div>
-          <GreenTextButton className={classes.button}
-            onClick={()=>handleEditting(false)}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
-          </GreenTextButton>
-          <GreenButton className={classes.button}
-            onClick={handleEditMatch}>
-            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
-          </GreenButton>
-        </div>
-        :
-        <div style={{ height: 88 }}></div>
+        </React.Fragment>
       }
       { modalType && modalType === 'location' &&
         <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>

@@ -161,7 +161,7 @@ function ListMenu(props) {
       await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
-          action: 'userlist',
+          action: 'defaultmember',
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
@@ -171,7 +171,7 @@ function ListMenu(props) {
           d.status !== 'wrong params'
         ){
           handleClose()
-          setData(d.userscore)
+          setData(d)
         }else{
           handleSnackBar({
             state: true,
@@ -321,7 +321,7 @@ export default function AddAdmin(props){
       await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
-          action: 'userlist',
+          action: 'defaultmember',
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
@@ -330,7 +330,7 @@ export default function AddAdmin(props){
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
         ){
-          setData(d.userscore)
+          setData(d)
         }else{
           handleSnackBar({
             state: true,
@@ -435,7 +435,7 @@ export default function AddAdmin(props){
               );
           })
         }
-        { searchUser && handleSearch().length === 0 &&
+        { data && searchUser && handleSearch().length === 0 &&
           <ListItem>
             <Typography component="div" style={{ width: '100%' }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>

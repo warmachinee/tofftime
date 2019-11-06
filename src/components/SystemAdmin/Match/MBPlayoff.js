@@ -4,16 +4,24 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import * as API from './../../../api'
 import { primary, grey } from './../../../api/palette'
 
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import {
+  Tabs,
+  Tab,
+  Paper,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+
+} from '@material-ui/core';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
@@ -60,6 +68,10 @@ const useStyles = makeStyles(theme => ({
   },
   checkCircle: {
     color: primary[600]
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
   },
 
 }))
@@ -108,7 +120,7 @@ const StyledTab = withStyles(theme => ({
 
 function PlayoffContainer(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, data, setData, setMatchDetail } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, data, setData, setMatchDetail, mainClassSelected } = props
 
   function handleUpdatePlayoff(selected){
     const socket = socketIOClient( API._getWebURL() )
@@ -116,6 +128,7 @@ function PlayoffContainer(props){
       action: "updateplayoff",
       matchid: matchid,
       userid: selected.userid,
+      mainclass: parseInt(mainClassSelected)
     })
   }
 
@@ -128,7 +141,8 @@ function PlayoffContainer(props){
           action: 'setplayoff',
           matchid: matchid,
           userid: selected.userid,
-          classno: selected.classno
+          classno: selected.classno,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -152,7 +166,8 @@ function PlayoffContainer(props){
         resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'playoff',
-          matchid: matchid
+          matchid: matchid,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         if(
@@ -227,9 +242,10 @@ export default function MBPlayoff(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
   const [ data, setData ] = React.useState(null)
-  const [ matchDetail, setMatchDetail ] = React.useState([])
+  const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
   const [ checkPlayoff, setCheckPlayoff ] = React.useState(null);
+  const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -242,7 +258,8 @@ export default function MBPlayoff(props){
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'playoff',
-          matchid: matchid
+          matchid: matchid,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         if(
@@ -303,7 +320,8 @@ export default function MBPlayoff(props){
         sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'clearplayoff',
           matchid: matchid,
-          classno: d.classno
+          classno: d.classno,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -321,14 +339,29 @@ export default function MBPlayoff(props){
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ mainClassSelected ])
 
   return(
     <div className={classes.root}>
-      <Typography component="div">
+      <Typography component="div" style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box className={classes.notice} m={1}>
           { ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select class' }
         </Box>
+        { matchDetail && matchDetail.scorematch !== 0 &&
+          <FormControl className={classes.formControl}>
+            <InputLabel>Main Class</InputLabel>
+            <Select
+              value={mainClassSelected}
+              onChange={e => setMainClassSelected(e.target.value)}>
+              { matchDetail &&
+                matchDetail.mainclass.map( d =>
+                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                    {d.mainclass}
+                  </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+        }
       </Typography>
       <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
         <StyledTabs
@@ -337,8 +370,8 @@ export default function MBPlayoff(props){
           variant="scrollable"
           scrollButtons="on"
         >
-          { matchDetail && matchDetail.class &&
-            matchDetail.class.map( d =>
+          { matchDetail && matchDetail.mainclass &&
+            matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d =>
               d && <StyledTab key={d.classname}
               label={ matchDetail.scorematch !== 0 ? d.classname : API._handleAmateurClass(d.classno) } />
           )}
@@ -347,8 +380,8 @@ export default function MBPlayoff(props){
       <div className={classes.list}>
         <List>
           { data && !data.status &&
-            matchDetail && matchDetail.class &&
-            matchDetail.class.map( (c, i) =>{
+            matchDetail && matchDetail.mainclass &&
+            matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>{
               const filtered = c && data.filter( item =>{
                 return ( item && item.classno === c.classno )
               })
@@ -378,7 +411,9 @@ export default function MBPlayoff(props){
                             key={d.userid}
                             {...props}
                             data={d}
-                            setData={setData} setMatchDetail={setMatchDetail} />
+                            setData={setData}
+                            setMatchDetail={setMatchDetail}
+                            mainClassSelected={mainClassSelected} />
                         )
                       }
                       { filtered.length <= 1 &&

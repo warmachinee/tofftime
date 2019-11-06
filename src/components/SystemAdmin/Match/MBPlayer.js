@@ -7,24 +7,30 @@ import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
 
-import Paper from '@material-ui/core/Paper';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Slide from '@material-ui/core/Slide';
-import Divider from '@material-ui/core/Divider';
+import {
+  Paper,
+  Collapse,
+  IconButton,
+  Typography,
+  Button,
+  Box,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  Checkbox,
+  TextField,
+  InputAdornment,
+  Slide,
+  Divider,
+  Menu,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+
+} from '@material-ui/core';
 
 import DeleteIcon from '@material-ui/icons/Delete';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -172,6 +178,10 @@ const useStyles = makeStyles(theme => ({
     color: grey[600],
     fontWeight: 600,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 
 }))
 
@@ -225,6 +235,7 @@ export default function MBPlayer(props){
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ selectedClass, setSelectedClass ] = React.useState(0)
   const [ selectedPlayer, setSelectedPlayer ] = React.useState(null);
+  const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -370,7 +381,8 @@ export default function MBPlayer(props){
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'flight',
           flightaction: flightaction,
-          matchid: matchid
+          matchid: matchid,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -379,8 +391,8 @@ export default function MBPlayer(props){
           variant: /success/.test(d.status) ? 'success' : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
+        setTimeout(()=>{ handleFetchDefault() }, 500)
       })
-      await handleFetch()
     }
   }
 
@@ -393,7 +405,8 @@ export default function MBPlayer(props){
           action: 'setclass',
           matchid: matchid,
           userid: userid,
-          classno: classno
+          classno: classno,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -404,7 +417,7 @@ export default function MBPlayer(props){
         })
         setChecked([])
         try {
-          handleFetch()
+          setTimeout(()=>{ handleFetchDefault() }, 500)
         }catch(err) { console.log(err.message) }
       })
     }
@@ -437,7 +450,7 @@ export default function MBPlayer(props){
         })
         setChecked([])
         try {
-          handleFetch()
+          setTimeout(()=>{ handleFetchDefault() }, 500)
         }catch(err) { console.log(err.message) }
       })
     }else{
@@ -448,17 +461,22 @@ export default function MBPlayer(props){
         userid: [ sess.userid, userid],
         confirmaction: 'reject',
       })
+      setChecked([])
+      try {
+        setTimeout(()=>{ handleFetchDefault() }, 500)
+      }catch(err) { console.log(err.message) }
     }
   }
 
-  async function handleFetch(){
+  async function handleFetch(mainclass, defaultPlayer){
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'userlist',
-          matchid: matchid
+          matchid: matchid,
+          mainclass: mainclass
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         if(
@@ -466,10 +484,22 @@ export default function MBPlayer(props){
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
         ){
-          setData(d.userscore)
-          try {
-            handleFetchMatchDetail()
-          }catch(err) { console.log(err.message) }
+          var normalData
+          if(!/no/.test(d.userscore.status)){
+            normalData = d.userscore
+          }else{
+            normalData = []
+          }
+          var remainUser = []
+          defaultPlayer.forEach( e =>{
+            const filtered = normalData.filter( de =>{
+              return de.userid === e.userid
+            })
+            if(filtered.length === 0){
+              remainUser.push(e)
+            }
+          })
+          setData(remainUser.concat(normalData))
         }else{
           handleSnackBar({
             state: true,
@@ -482,7 +512,7 @@ export default function MBPlayer(props){
     }
   }
 
-  async function handleFetchMatchDetail(){
+  async function handleFetchMatchDetail(defaultPlayer){
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -499,6 +529,12 @@ export default function MBPlayer(props){
           d.status !== 'wrong params'
         ){
           setMatchDetail(d)
+          try {
+            handleFetch(
+              mainClassSelected !== '1' ? parseInt(mainClassSelected) : ( d.mainclass.length > 0 ? d.mainclass[0].mainclass : 1 )
+              , defaultPlayer
+            )
+          }catch(err) { console.log(err.message) }
         }else{
           handleSnackBar({
             state: true,
@@ -511,9 +547,28 @@ export default function MBPlayer(props){
     }
   }
 
+  async function handleFetchDefault(){
+    if(matchid){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+          action: 'defaultmember',
+          matchid: matchid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleFetchMatchDetail(d)
+      })
+    }
+  }
+
   React.useEffect(()=>{
-    handleFetch()
-  },[ open, displayModal ])
+    handleFetchDefault()
+  },[ open, displayModal, mainClassSelected ])
+
+  React.useEffect(()=>{
+    setSelectedClass(0)
+  },[ edittingClass ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -528,453 +583,490 @@ export default function MBPlayer(props){
     }
   },[ window.innerWidth ])
 
-  return matchDetail && (
+  return (
     <div className={classes.root}>
-      <List className={classes.listRoot}>
-        <ListItem className={classes.controls}>
-          { sess && sess.typeid === 'admin' &&
-            <Button className={classes.addPlayerButton} variant="contained"
-              onClick={handleOpen}>
-              <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-              Add player
-            </Button>
-          }
-          <div style={{ flex: 1 }} />
-          <div
-            className={classes.controlsEdit}
-            style={{
-              border: edittingClass && '0 solid',
-              justifyContent: (editting || edittingClass || edittingDisplay)? 'flex-end' : 'space-around',
-            }}>
-            { !editting && !edittingClass &&
-              (
-                edittingDisplay?
-                <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>
-                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
-                </GreenTextButton>
-                :
-                <GreenTextButton className={classes.controlsEditButton} onClick={handleEdittingDisplay}>
-                  <DesktopMacIcon
-                    style={{ left:
-                      window.innerWidth > 500? 0 :
-                      window.innerWidth > 450? '20%':'10%'
-                    }}
-                    className={classes.controlsEditButtonIcon} />
-                  { ( sess && sess.language === 'TH' ) ? "การแสดงผล" : 'Showing' }
-                </GreenTextButton>
-              )
-            }
-            { !editting && !edittingDisplay && matchDetail &&/*style={{ padding: '8px 36px', margin: '2px 0' }}*/
-              (
-                edittingClass?
-                <React.Fragment>
-                  {
-                    matchDetail.scorematch !== 0?
+      { matchDetail &&
+        <React.Fragment>
+          <List className={classes.listRoot}>
+            <ListItem className={classes.controls}>
+              { sess && sess.typeid === 'admin' &&
+                <Button className={classes.addPlayerButton} variant="contained"
+                  onClick={handleOpen}>
+                  <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
+                  Add player
+                </Button>
+              }
+              <div style={{ flex: 1 }} />
+              <div
+                className={classes.controlsEdit}
+                style={{
+                  border: edittingClass && '0 solid',
+                  justifyContent: (editting || edittingClass || edittingDisplay)? 'flex-end' : 'space-around',
+                }}>
+                { !editting && !edittingClass &&
+                  (
+                    edittingDisplay?
+                    <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>
+                      { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                    </GreenTextButton>
+                    :
+                    <GreenTextButton className={classes.controlsEditButton} onClick={handleEdittingDisplay}>
+                      <DesktopMacIcon
+                        style={{ left:
+                          window.innerWidth > 500? 0 :
+                          window.innerWidth > 450? '20%':'10%'
+                        }}
+                        className={classes.controlsEditButtonIcon} />
+                      { ( sess && sess.language === 'TH' ) ? "การแสดงผล" : 'Showing' }
+                    </GreenTextButton>
+                  )
+                }
+                { !editting && !edittingDisplay && matchDetail &&/*style={{ padding: '8px 36px', margin: '2px 0' }}*/
+                  (
+                    edittingClass?
                     <React.Fragment>
-                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
-                        { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
-                      </GreenTextButton>
-                      <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
-                        { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
-                      </GreenButton>
+                      {
+                        matchDetail.scorematch !== 0?
+                        <React.Fragment>
+                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
+                            { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                          </GreenTextButton>
+                          <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
+                            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+                          </GreenButton>
+                        </React.Fragment>
+                        :
+                        <React.Fragment>
+                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
+                            { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                          </GreenTextButton>
+                        </React.Fragment>
+                      }
                     </React.Fragment>
                     :
-                    <React.Fragment>
-                      <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
-                        { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
-                      </GreenTextButton>
-                    </React.Fragment>
+                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingClass(!edittingClass)}>
+                      <ClassIcon
+                        style={{ left:
+                          window.innerWidth > 500? 0 :
+                          window.innerWidth > 450? '20%':'10%'
+                        }}
+                        className={classes.controlsEditButtonIcon} />
+                      {function(){
+                        switch (matchDetail.scorematch) {
+                          case 0:
+                            return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
+                            break;
+                          case 1:
+                            return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
+                            break;
+                          default:
+                            return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
+                        }
+                      }()}
+                    </GreenTextButton>
+                  )
+                }
+                { !edittingClass && !edittingDisplay &&
+                  (
+                    editting?
+                    <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
+                      onClick={handleDoneEditting}>
+                      { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                    </GreenTextButton>
+                    :
+                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
+                      <DeleteIcon
+                        style={{ left:
+                          window.innerWidth > 500? 0 :
+                          window.innerWidth > 450? '20%':'10%'
+                        }}
+                        className={classes.controlsEditButtonIcon} />
+                      { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
+                    </GreenTextButton>
+                  )
+                }
+              </div>
+            </ListItem>
+            <ListItem className={classes.controlsSecondary}>
+              { edittingClass && matchDetail &&
+                function(){
+                  switch (matchDetail.scorematch) {
+                    case 0:
+                      return (
+                        <React.Fragment>
+                          <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
+                            onClick={()=>handleUpdateFlight('clear')}>
+                            { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
+                          </GreenTextButton>
+                          <GreenButton className={classes.controlsEditButton2}
+                            onClick={()=>handleUpdateFlight('update')}>
+                            { ( sess && sess.language === 'TH' ) ? "อัพเดท" : 'Update' }
+                          </GreenButton>
+                        </React.Fragment>
+                      );
+                      break;
+                    case 1:
+                      return (
+                        <React.Fragment>
+                          <div style={{ display: 'flex' }}>
+                            <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
+                            <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
+                              { selectedClass !== 0 ? (
+                                ( sess && sess.language === 'TH' ) ? "ประเภทที่เลือก  :  " : 'Selected Class  :  '
+                              ) : (
+                                ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select Class'
+                              ) }
+                            </div>
+                          </div>
+                          <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
+                            { selectedClass !== 0?
+                              matchDetail && matchDetail.mainclass &&
+                              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( item =>{
+                                return item.classno === selectedClass
+                              }).map( d =>
+                                d &&
+                                <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
+                              )
+                              : <React.Fragment>-</React.Fragment>
+                            }
+                          </GreenTextButton>
+                        </React.Fragment>
+                      );
+                      break;
+                    default:
+                      return (
+                        <React.Fragment>
+                          <div style={{ display: 'flex' }}>
+                            <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
+                            <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
+                              { selectedClass !== 0 ? (
+                                ( sess && sess.language === 'TH' ) ? "ทีมที่เลือก  :  " : 'Selected Team  :  '
+                              ) : (
+                                ( sess && sess.language === 'TH' ) ? "เลือกทีม" : 'Select Team'
+                              ) }
+                            </div>
+                          </div>
+                          <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
+                            { selectedClass !== 0?
+                              matchDetail && matchDetail.mainclass &&
+                              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( item =>{
+                                return item.classno === selectedClass
+                              }).map( d =>
+                                d &&
+                                <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
+                              )
+                              : <React.Fragment>-</React.Fragment>
+                            }
+                          </GreenTextButton>
+                        </React.Fragment>
+                      );
                   }
-                </React.Fragment>
-                :
-                <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingClass(!edittingClass)}>
-                  <ClassIcon
-                    style={{ left:
-                      window.innerWidth > 500? 0 :
-                      window.innerWidth > 450? '20%':'10%'
-                    }}
-                    className={classes.controlsEditButtonIcon} />
-                  {function(){
-                    switch (matchDetail.scorematch) {
-                      case 0:
-                        return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
-                        break;
-                      case 1:
-                        return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
-                        break;
-                      default:
-                        return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
-                    }
-                  }()}
-                </GreenTextButton>
-              )
-            }
-            { !edittingClass && !edittingDisplay &&
-              (
-                editting?
-                <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
-                  onClick={handleDoneEditting}>
-                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
-                </GreenTextButton>
-                :
-                <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
-                  <DeleteIcon
-                    style={{ left:
-                      window.innerWidth > 500? 0 :
-                      window.innerWidth > 450? '20%':'10%'
-                    }}
-                    className={classes.controlsEditButtonIcon} />
+                }()
+              }
+              { editting && checked.length > 0 &&
+                <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
+                  <DeleteIcon />
                   { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
                 </GreenTextButton>
-              )
-            }
-          </div>
-        </ListItem>
-        <ListItem className={classes.controlsSecondary}>
-          { edittingClass && matchDetail &&
-            function(){
-              switch (matchDetail.scorematch) {
-                case 0:
-                  return (
-                    <React.Fragment>
-                      <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
-                        onClick={()=>handleUpdateFlight('clear')}>
-                        { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
-                      </GreenTextButton>
-                      <GreenButton className={classes.controlsEditButton2}
-                        onClick={()=>handleUpdateFlight('update')}>
-                        { ( sess && sess.language === 'TH' ) ? "อัพเดท" : 'Update' }
-                      </GreenButton>
-                    </React.Fragment>
-                  );
-                  break;
-                case 1:
-                  return (
-                    <React.Fragment>
-                      <div style={{ display: 'flex' }}>
-                        <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
-                        <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
-                          { selectedClass !== 0 ? (
-                            ( sess && sess.language === 'TH' ) ? "ประเภทที่เลือก  :  " : 'Selected Class  :  '
-                          ) : (
-                            ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select Class'
-                          ) }
-                        </div>
-                      </div>
-                      <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
-                        { selectedClass !== 0?
-                          matchDetail && matchDetail.class &&
-                          matchDetail.class.filter( item =>{
-                            return item.classno === selectedClass
-                          }).map( d =>
-                            d &&
-                            <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
-                          )
-                          : <React.Fragment>-</React.Fragment>
-                        }
-                      </GreenTextButton>
-                    </React.Fragment>
-                  );
-                  break;
-                default:
-                  return (
-                    <React.Fragment>
-                      <div style={{ display: 'flex' }}>
-                        <ClassIcon style={{ color: primary[600], marginRight: 4 }} />
-                        <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
-                          { selectedClass !== 0 ? (
-                            ( sess && sess.language === 'TH' ) ? "ทีมที่เลือก  :  " : 'Selected Team  :  '
-                          ) : (
-                            ( sess && sess.language === 'TH' ) ? "เลือกทีม" : 'Select Team'
-                          ) }
-                        </div>
-                      </div>
-                      <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
-                        { selectedClass !== 0?
-                          matchDetail && matchDetail.class &&
-                          matchDetail.class.filter( item =>{
-                            return item.classno === selectedClass
-                          }).map( d =>
-                            d &&
-                            <React.Fragment key={d.classname}>{d.classname}</React.Fragment>
-                          )
-                          : <React.Fragment>-</React.Fragment>
-                        }
-                      </GreenTextButton>
-                    </React.Fragment>
-                  );
               }
-            }()
-          }
-          { editting && checked.length > 0 &&
-            <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
-              <DeleteIcon />
-              { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
-            </GreenTextButton>
-          }
-          { !( editting || edittingClass) &&
-            <div style={{ height: 42 }}></div>
-          }
-        </ListItem>
-        <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
-          <ThemeProvider theme={theme}>
-            <TextField
-              disabled={data === null}
-              className={classes.searchBox}
-              variant="outlined"
-              placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
-              value={searchUser}
-              onChange={e =>setSearchUser(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="primary"/>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    { searchUser?
-                      <IconButton onClick={()=>setSearchUser('')}>
-                        <ClearIcon color="inherit" fontSize="small"/>
-                      </IconButton>
-                      :
-                      <div style={{ width: 44 }}></div>
-                    }
-                  </InputAdornment>
-                )
-              }}
-            />
-          </ThemeProvider>
-        </ListItem>
-        { data &&
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Typography variant="caption" align="right" style={{ marginBottom: 8 }}>{`${data.length} player${data.length > 1? 's' : ''}`}</Typography>
-          </div>
-        }
-        <div style={{ overflow: 'auto', position: 'relative' }}>
-          {/* ( editting || edittingClass || edittingDisplay ) &&
-            <Typography component="div">
-              <Box className={classes.notice} m={1}>
-                { edittingDisplay && 'Click the list to toggle the player display.'}
-                { edittingClass && 'Select class and player to change player class.'}
-                { editting && 'Select the list to delete multiple or Hit the icon on the right to delete single.'}
-              </Box>
-            </Typography>*/
-          }
-          <ListItem role={undefined}
-            style={{
-              display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
-            }}>
-            <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-              primary={ window.innerWidth < 600? (
-                ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name'
-              ) : (
-                ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name'
-              ) } />
-            { window.innerWidth >= 600 &&
-              <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
-            }
-            { window.innerWidth > 600 &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }}
-                primary={
-                  function(){
-                    switch (matchDetail.scorematch) {
-                      case 0:
-                        return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
-                        break;
-                      case 1:
-                        return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
-                        break;
-                      default:
-                        return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
-                    }
-                  }()} />
-            }
-            <ListItemIcon style={{ justifyContent: 'flex-start' }}>
-              <div style={{ height: 42, width: 42 }}></div>
-            </ListItemIcon>
-          </ListItem>
-          <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
-            { data && !data.status && matchDetail && matchDetail.class &&
-              [
-                ...searchUser? handleSearch() : data
-              ].slice(0, dataSliced).map(value => {
-
-                return value && (
-                  <React.Fragment key={value.userid}>
-                    <ListItem role={undefined} button
-                      onClick={()=>
-                        ( editting || edittingClass )?
-                        handleToggle(value):
-                        ( edittingDisplay?
-                          handleSelectedPlayer(value)
-                          :
-                          console.log()
-                        )
-                      }>
-                      <ListItemIcon>
-                        { ( editting || edittingClass )?
-                          <GreenCheckbox
-                            edge="start"
-                            checked={checked.indexOf(value) !== -1}
-                            tabIndex={-1}
-                            disableRipple />
-                          :
-                          (edittingDisplay ?
-                            <GreenCheckbox
-                              edge="start"
-                              checked={value.display === 1}
-                              tabIndex={-1}
-                              disableRipple />
-                          :
-                            <div style={{ height: 42, width: 42 }} />)
-                        }
-                      </ListItemIcon>
-                      <ListItemText className={classes.listText}
-                        primary={
-                          ( window.innerWidth >= 450 && window.innerWidth < 600 )?
-                          <div style={{ display: 'flex' }}>
-                            { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
-                          </div>
-                          : value.firstname}
-                        secondary={
-                          <React.Fragment>
-                            { window.innerWidth < 450 &&
-                              <Typography
-                                component="span"
-                                variant="body1"
-                                color="textPrimary"
-                              >
-                                {value.lastname}
-                              </Typography>
-                            }
-                            { window.innerWidth < 600 &&
-                              ( matchDetail.class.length > 0?
-                                ( value.classno === 0 ?
-                                  <React.Fragment>
-                                    <br></br>
-                                    {"-"}
-                                  </React.Fragment>
-                                  :
-                                  matchDetail.class.filter( d =>{
-                                    return d.classno === value.classno
-                                  }).map((d, i) =>
-                                    d &&
-                                    <React.Fragment key={i}>
-                                      <br></br>
-                                      {
-                                        matchDetail.scorematch !== 0 ?
-                                        d.classname
-                                        :
-                                        String.fromCharCode(65 + value.classno - 1)
-                                      }
-
-                                    </React.Fragment>
-                                  )
-                                )
-                                :
-                                <React.Fragment>
-                                  <br></br>
-                                  {"No class"}
-                                </React.Fragment>
-                              )
-                            }
-                            { value.note &&
-                              <Typography variant="caption" display="block">
-                                {value.note}
-                              </Typography>
-                            }
-                          </React.Fragment>
-                        } />
-                      { window.innerWidth >= 600 &&
-                        <ListItemText className={classes.listText}
-                          primary={value.lastname} />
-                      }
-
-                      { window.innerWidth > 600 &&
-                        ( matchDetail.class.length > 0 ?
-                          ( value.classno === 0 ?
-                            <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                              primary={"-"} />
-                            :
-                            matchDetail.class.filter( d =>{
-                              return d.classno === value.classno
-                            }).map( d =>
-                              d &&
-                              <ListItemText key={d.classname + `(${value.userid})`}
-                                style={{ justifyContent: 'center' }}
-                                className={classes.listClass}
-                                primary={
-                                  matchDetail.scorematch !== 0 ?
-                                  d.classname
-                                  :
-                                  String.fromCharCode(65 + d.classno - 1)
-                                } />
-                            )
-                          )
-                          :
-                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                            primary={"No class"} />
-                        )
-                      }
-                      <ListItemIcon style={{ justifyContent: 'flex-end' }}>
-                        { editting?
-                          <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                            <DeleteIcon classes={{ root: classes.deleteIcon}} />
-                          </IconButton>
-                          :
-                          <div style={{ height: 42, width: 42 }}></div>
-                        }
-                      </ListItemIcon>
-                    </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                );
-              })
-            }
-            <ListItem role={undefined} dense style={{ display: 'flex' }}>
-              { data && data.length > 10 && !searchUser &&
-                <React.Fragment>
-                  <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= data.length ? (
-                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                    ):(
-                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                    ) }
-                  </Button>
-                  { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                  }
-                </React.Fragment>
-              }
-              { data && handleSearch().length > 10 && searchUser &&
-                <React.Fragment>
-                  <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= handleSearch().length ? (
-                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                    ):(
-                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                    ) }
-                  </Button>
-                  { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                  }
-                </React.Fragment>
+              { !( editting || edittingClass) &&
+                <div style={{ height: 42 }}></div>
               }
             </ListItem>
-            { searchUser && handleSearch().length === 0 &&
-              <ListItem>
-                <Typography component="div" style={{ width: '100%' }}>
-                  <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                    { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
-                  </Box>
+            <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
+              <ThemeProvider theme={theme}>
+                <TextField
+                  disabled={data === null}
+                  className={classes.searchBox}
+                  variant="outlined"
+                  placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
+                  value={searchUser}
+                  onChange={e =>setSearchUser(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon color="primary"/>
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        { searchUser?
+                          <IconButton onClick={()=>setSearchUser('')}>
+                            <ClearIcon color="inherit" fontSize="small"/>
+                          </IconButton>
+                          :
+                          <div style={{ width: 44 }}></div>
+                        }
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </ThemeProvider>
+            </ListItem>
+            { data &&
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Typography variant="caption" align="right"
+                  style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
+                  {`${data.length} player${data.length > 1? 's' : ''}`}
                 </Typography>
-              </ListItem>
+                { matchDetail && matchDetail.scorematch !== 0 &&
+                  <FormControl className={classes.formControl}>
+                    <InputLabel>Main Class</InputLabel>
+                    <Select
+                      value={mainClassSelected}
+                      onChange={e => setMainClassSelected(e.target.value)}>
+                      { matchDetail &&
+                        matchDetail.mainclass.map( d =>
+                          <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                            {d.mainclass}
+                          </MenuItem>
+                      )}
+                    </Select>
+                  </FormControl>
+                }
+              </div>
             }
-          </div>
-        </div>
-      </List>
+            <div style={{ overflow: 'auto', position: 'relative' }}>
+              {/* ( editting || edittingClass || edittingDisplay ) &&
+                <Typography component="div">
+                  <Box className={classes.notice} m={1}>
+                    { edittingDisplay && 'Click the list to toggle the player display.'}
+                    { edittingClass && 'Select class and player to change player class.'}
+                    { editting && 'Select the list to delete multiple or Hit the icon on the right to delete single.'}
+                  </Box>
+                </Typography>*/
+              }
+              <ListItem role={undefined}
+                style={{
+                  display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
+                }}>
+                <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
+                  primary={ window.innerWidth < 600? (
+                    ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name'
+                  ) : (
+                    ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name'
+                  ) } />
+                { window.innerWidth >= 600 &&
+                  <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
+                    primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
+                }
+                { window.innerWidth > 600 &&
+                  <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }}
+                    primary={
+                      function(){
+                        switch (matchDetail.scorematch) {
+                          case 0:
+                            return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
+                            break;
+                          case 1:
+                            return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
+                            break;
+                          default:
+                            return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
+                        }
+                      }()} />
+                }
+                <ListItemIcon style={{ justifyContent: 'flex-start' }}>
+                  <div style={{ height: 42, width: 42 }}></div>
+                </ListItemIcon>
+              </ListItem>
+              <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
+
+                { data && !data.status && matchDetail && matchDetail.mainclass &&
+                  [
+                    ...searchUser? handleSearch() : data
+                  ].slice(0, dataSliced).map(value => {
+
+                    return value && (
+                      <React.Fragment key={value.userid}>
+                        <ListItem role={undefined} button
+                          onClick={()=>
+                            ( editting || edittingClass )?
+                            handleToggle(value):
+                            ( edittingDisplay && value.classno !== 0?
+                              handleSelectedPlayer(value)
+                              :
+                              console.log()
+                            )
+                          }>
+                          <ListItemIcon>
+                            { ( editting || edittingClass )?
+                              <GreenCheckbox
+                                edge="start"
+                                checked={checked.indexOf(value) !== -1}
+                                tabIndex={-1}
+                                disableRipple />
+                              :
+                              (edittingDisplay && value.classno !== 0 ?
+                                <GreenCheckbox
+                                  edge="start"
+                                  checked={value.display === 1}
+                                  tabIndex={-1}
+                                  disableRipple />
+                              :
+                                <div style={{ height: 42, width: 42 }} />)
+                            }
+                          </ListItemIcon>
+                          <ListItemText className={classes.listText}
+                            primary={
+                              ( window.innerWidth >= 450 && window.innerWidth < 600 )?
+                              <div style={{ display: 'flex' }}>
+                                { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
+                              </div>
+                              : value.firstname}
+                            secondary={
+                              <React.Fragment>
+                                { window.innerWidth < 450 &&
+                                  <Typography
+                                    component="span"
+                                    variant="body1"
+                                    color="textPrimary"
+                                  >
+                                    {value.lastname}
+                                  </Typography>
+                                }
+                                { window.innerWidth < 600 &&
+                                  ( matchDetail.mainclass && matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0?
+                                    ( value.classno === 0 ?
+                                      <React.Fragment>
+                                        <br></br>
+                                        {"-"}
+                                      </React.Fragment>
+                                      :
+                                      matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                                        return d.classno === value.classno
+                                      }).map((d, i) =>
+                                        d &&
+                                        <React.Fragment key={i}>
+                                          <br></br>
+                                          {
+                                            matchDetail.scorematch !== 0 ?
+                                            d.classname
+                                            :
+                                            String.fromCharCode(65 + value.classno - 1)
+                                          }
+
+                                        </React.Fragment>
+                                      )
+                                    )
+                                    :
+                                    <React.Fragment>
+                                      <br></br>
+                                      {"No class"}
+                                    </React.Fragment>
+                                  )
+                                }
+                                { value.note &&
+                                  <Typography variant="caption" display="block">
+                                    {value.note}
+                                  </Typography>
+                                }
+                              </React.Fragment>
+                            } />
+                          { window.innerWidth >= 600 &&
+                            <ListItemText className={classes.listText}
+                              primary={value.lastname} />
+                          }
+
+                          { window.innerWidth > 600 &&
+                            ( matchDetail.mainclass && matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
+                              ( value.classno === 0 ?
+                                <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                                  primary={"-"} />
+                                :
+                                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                                  return d.classno === value.classno
+                                }).map( d =>
+                                  d &&
+                                  <ListItemText key={d.classname + `(${value.userid})`}
+                                    style={{ justifyContent: 'center' }}
+                                    className={classes.listClass}
+                                    primary={
+                                      matchDetail.scorematch !== 0 ?
+                                      d.classname
+                                      :
+                                      String.fromCharCode(65 + d.classno - 1)
+                                    } />
+                                )
+                              )
+                              :
+                              <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                                primary={"No class"} />
+                            )
+                          }
+                          <ListItemIcon style={{ justifyContent: 'flex-end' }}>
+                            { editting?
+                              <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
+                                <DeleteIcon classes={{ root: classes.deleteIcon}} />
+                              </IconButton>
+                              :
+                              <div style={{ height: 42, width: 42 }}></div>
+                            }
+                          </ListItemIcon>
+                        </ListItem>
+                        <Divider />
+                      </React.Fragment>
+                    );
+                  })
+                }
+                <ListItem role={undefined} dense style={{ display: 'flex' }}>
+                  { data && data.length > 10 && !searchUser &&
+                    <React.Fragment>
+                      <Button fullWidth onClick={handleMore}>
+                        { dataSliced >= data.length ? (
+                          ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                        ):(
+                          ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                        ) }
+                      </Button>
+                      { data && dataSliced < data.length &&
+                        <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                      }
+                    </React.Fragment>
+                  }
+                  { data && handleSearch().length > 10 && searchUser &&
+                    <React.Fragment>
+                      <Button fullWidth onClick={handleMore}>
+                        { dataSliced >= handleSearch().length ? (
+                          ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                        ):(
+                          ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                        ) }
+                      </Button>
+                      { data && dataSliced < handleSearch().length &&
+                        <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                      }
+                    </React.Fragment>
+                  }
+                </ListItem>
+                { searchUser && handleSearch().length === 0 &&
+                  <ListItem>
+                    <Typography component="div" style={{ width: '100%' }}>
+                      <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                        { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
+                      </Box>
+                    </Typography>
+                  </ListItem>
+                }
+              </div>
+            </div>
+          </List>
+          <Menu
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={()=>handleSelectedClass(0)}>{"-"}</MenuItem>
+            { matchDetail && matchDetail.mainclass &&
+              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (d, i) =>
+                d &&
+                <MenuItem key={"i : " + i + " data: " + d} onClick={()=>handleSelectedClass(d)}>{d.classname}</MenuItem>
+              )
+            }
+          </Menu>
+        </React.Fragment>
+      }
       <TemplateDialog open={open} handleClose={handleClose}>
         <AddPlayerModal
           {...props}
@@ -990,20 +1082,6 @@ export default function MBPlayer(props){
             />
         }
       </TemplateDialog>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={()=>handleSelectedClass(0)}>{"-"}</MenuItem>
-        { matchDetail && matchDetail.class &&
-          matchDetail.class.map( (d, i) =>
-            d &&
-            <MenuItem key={"i : " + i + " data: " + d} onClick={()=>handleSelectedClass(d)}>{d.classname}</MenuItem>
-          )
-        }
-      </Menu>
     </div>
   );
 }

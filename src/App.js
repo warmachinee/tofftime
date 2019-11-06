@@ -351,8 +351,18 @@ export default function App() {
     await detectWebp()
   }
 
+  function TestFetch(){
+    var json = '[{"userid":166164,"firstname":"Giovanni","lastname":"Palazzoli","photopath":null,"classno":1,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":169226,"firstname":"Batman2","lastname":"Banmat","photopath":null,"classno":1,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":812454,"firstname":"Sippakorn","lastname":"Suppapinyo","photopath":"/general/812454.webp","classno":2,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":335794,"firstname":"CHO","lastname":"HAN JIN","photopath":null,"classno":2,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":166164,"firstname":"Giovanni","lastname":"Palazzoli","photopath":null,"classno":2,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":169226,"firstname":"Batman2","lastname":"Banmat","photopath":null,"classno":2,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":812454,"firstname":"Sippakorn","lastname":"Suppapinyo","photopath":"/general/812454.webp","classno":2,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":335794,"firstname":"CHO","lastname":"HAN JIN","photopath":null,"classno":2,"teamno":0,"out":0,"in":0,"par":0,"sf":0,"net":0,"hc":0,"display":1,"note":null,"score":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},{"userid":290259,"firstname":"Lucy","lastname":"Moreland","photopath":"/general/290259.webp","classno":2,"teamno":0,"out":40,"in":41,"par":5,"sf":41,"net":71,"hc":10,"display":1,"note":null,"score":[4,5,4,5,4,5,4,5,4,5,4,5,4,5,4,5,4,5]}]'
+    var json2 = '[{"userid":812454,"firstname":"Sippakorn","lastname":"Suppapinyo","photopath":"/general/812454.webp","classno":0},{"userid":290259,"firstname":"Lucy","lastname":"Moreland","photopath":"/general/290259.webp","classno":0},{"userid":640321,"firstname":"Jack","lastname":"Thawatchai","photopath":"/general/640321.webp","classno":0},{"userid":335794,"firstname":"CHO","lastname":"HAN JIN","photopath":null,"classno":0},{"userid":169226,"firstname":"Batman2","lastname":"Banmat","photopath":null,"classno":0},{"userid":166164,"firstname":"Giovanni","lastname":"Palazzoli","photopath":null,"classno":0},{"userid":784669,"firstname":"Alexander","lastname":"Vincent Mckay","photopath":null,"classno":0},{"userid":511165,"firstname":"Jack","lastname":"Dawson","photopath":null,"classno":0},{"userid":317029,"firstname":"CHO HAN","lastname":"JIN","photopath":null,"classno":0},{"userid":123456,"firstname":"thanapat","lastname":"taweerat","photopath":null,"classno":0},{"userid":317246,"firstname":"Akira","lastname":"Osaka","photopath":null,"classno":0}]'
+    const data = JSON.parse(json)
+    const defaultMem = JSON.parse(json2)
+    console.log(data);
+    console.log(defaultMem);
+  }
+
   React.useEffect(()=>{
     handleGetUserinfo()
+    //TestFetch()
   },[ ])
 
   React.useEffect(()=>{
@@ -413,7 +423,7 @@ export default function App() {
             </Switch>
             :
             <div style={{ maxWidth: 1200, margin: 'auto' }}>
-              <RichTextEditor {...passingProps} handleGetHTML={e =>console.log(e)} />
+              <MatchEditor {...passingProps} />
             </div>
           }
 

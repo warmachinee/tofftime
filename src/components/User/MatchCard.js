@@ -163,11 +163,11 @@ export default function MatchCard(props) {
         <Box className={classes.box}>
           <Typography gutterBottom variant="body2"
             style={{
-              color: data.typescore === 1 ? primary[700] : 'inherit',
-              fontWeight: data.typescore === 1 ? 900 : 400
+              color: data.scorematch === 1 ? primary[700] : 'inherit',
+              fontWeight: data.scorematch === 1 ? 900 : 400
             }}>
             {function(){
-              switch (data.typescore) {
+              switch (data.scorematch) {
                 case 0:
                   return 'Amateur'
                   break;

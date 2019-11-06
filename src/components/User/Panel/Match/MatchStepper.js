@@ -43,7 +43,7 @@ export default function MatchStepper(props) {
   const classes = useStyles();
   const theme = useTheme();
   const {
-    API, BTN, sess, token, setCSRFToken, handleSnackBar,
+    API, BTN, sess, token, setCSRFToken, handleSnackBar, setData, setDataClassed, setMatchOwnerStatus,
     dialogStepper, handleCreateMatchClose, setExpanded, pageOrganizer, pageData
   } = props
   const [ activeStep, setActiveStep ] = React.useState(0);
@@ -60,7 +60,6 @@ export default function MatchStepper(props) {
 
   const passingFunction = {
     matchName: matchName,
-    matchClass: matchClass,
     selectedField: selectedField,
     selectedFieldVersion: selectedFieldVersion,
     selectedPrivacy: selectedPrivacy,
@@ -160,7 +159,6 @@ export default function MatchStepper(props) {
       matchname: matchName,
       fieldid: selectedField.fieldid,
       scorematch: parseInt(selectedMatchType),
-      class: matchClass,
       privacy: selectedPrivacy,
       matchdate: API._dateSendToAPI(selectedDate),
     }
@@ -180,14 +178,38 @@ export default function MatchStepper(props) {
         ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
       if(/success/.test(d.status)){
-        handleCreatePicture(csrf, d)
+        if(selectedFile){
+          handleCreatePicture(csrf, d)
+        }else{
+          if(dialogStepper){
+            handleCreateMatchClose()
+          }else{
+            setExpanded(false)
+            setMatchOwnerStatus('mine')
+          }
+          handleFetch()
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
+      }else{
+        if(dialogStepper){
+          handleCreateMatchClose()
+        }else{
+          setExpanded(false)
+          setMatchOwnerStatus('mine')
+        }
+        handleFetch()
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
       }
     })
   }
@@ -195,21 +217,17 @@ export default function MatchStepper(props) {
   async function handleCreatePicture(csrf, d){
     var status = d.status
     const formData = new FormData()
-    if(selectedFile){
-      formData.append('matchimage', selectedFile)
-      const response = await API._fetchPostFile(
-        'mmatchsystem',
-        `?_csrf=${csrf}`, {
-        action: 'edit',
-        matchid: d.matchid,
-        photopath: true,
-      }, formData)
-      const resToken = await API._xhrGet('getcsrf')
-      setCSRFToken(resToken.token)
-      status = response.status
-    }else{
-      setCSRFToken(csrf)
-    }
+    formData.append('matchimage', selectedFile)
+    const response = await API._fetchPostFile(
+      'mmatchsystem',
+      `?_csrf=${csrf}`, {
+      action: 'edit',
+      matchid: d.matchid,
+      photopath: true,
+    }, formData)
+    const resToken = await API._xhrGet('getcsrf')
+    setCSRFToken(resToken.token)
+    status = response.status
     handleSnackBar({
       state: true,
       message: status,
@@ -221,8 +239,36 @@ export default function MatchStepper(props) {
         handleCreateMatchClose()
       }else{
         setExpanded(false)
+        setMatchOwnerStatus('mine')
       }
     }
+    handleFetch()
+  }
+
+  async function handleFetch(){
+    var arrData = []
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadmatch' : 'loadusersystem', {
+        ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'creator' }
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(!d.status){
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === 1
+          })
+        )
+        arrData.push(
+          ...d.filter( d =>{
+            return d.display === -1
+          })
+        )
+        setDataClassed(arrData)
+      }
+      setData(d)
+    })
   }
 
   return (

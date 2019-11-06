@@ -403,7 +403,7 @@ export default function MatchBody(props){
           { ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
         </Box>
       </Typography>
-      <CreateMatch setData={setData} setDataClassed={setDataClassed} {...props} />
+      <CreateMatch setData={setData} setDataClassed={setDataClassed} setMatchOwnerStatus={setMatchOwnerStatus} {...props} />
       { sess && sess.typeid !== 'admin' &&
         <div style={{ marginTop: 24, boxSizing: 'border-box' }}>
           <FormControl component="fieldset" className={classes.formControl}>

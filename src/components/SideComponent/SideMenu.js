@@ -186,7 +186,7 @@ export default function SideMenu(props) {
       setCSRFToken(csrf)
       if(/success/.test(d.status)){
         setTimeout(()=>{
-          window.location.pathname = window.location.pathname
+          window.location.reload()
         }, 1000)
       }
     })

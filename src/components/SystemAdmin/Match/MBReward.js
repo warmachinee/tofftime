@@ -5,17 +5,25 @@ import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
 
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Typography from '@material-ui/core/Typography';
+import {
+  Tabs,
+  Tab,
+  Paper,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Button,
+  TextField,
+  InputAdornment,
+  Typography,
+  Menu,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+
+} from '@material-ui/core';
 
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
@@ -54,6 +62,10 @@ const useStyles = makeStyles(theme => ({
   },
   buttonMargin: {
     marginTop: 'auto'
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
   },
 
 }))
@@ -130,7 +142,7 @@ function RewardContainer(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken,
     matchid, handleSnackBar,
-    data, setData, setMatchDetail, editting
+    data, setData, setMatchDetail, editting, mainClassSelected
   } = props
   const [ edittingData, setEdittingData ] = React.useState(data.prize)
 
@@ -161,7 +173,8 @@ function RewardContainer(props){
           action: 'prize',
           matchid: matchid,
           userid: userid,
-          prize: prize
+          prize: prize,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -184,7 +197,8 @@ function RewardContainer(props){
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'reward',
-          matchid: matchid
+          matchid: matchid,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         if(
@@ -319,10 +333,11 @@ export default function MBReward(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
   const [ data, setData ] = React.useState(null)
-  const [ matchDetail, setMatchDetail ] = React.useState([])
+  const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
   const [ editting, setEditting ] = React.useState(false);
   const [ rewardEdit, setRewardEdit ] = React.useState([]);
+  const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
   function getRewardStatus(status){
     switch (true) {
@@ -359,7 +374,8 @@ export default function MBReward(props){
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'create',
-          matchid: matchid
+          matchid: matchid,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -379,7 +395,7 @@ export default function MBReward(props){
     let classno = []
     let customsequence = []
 
-    classno.push(matchDetail.class[value].classno)
+    classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
     customsequence.push(parseInt(rewardEdit))
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
@@ -389,7 +405,8 @@ export default function MBReward(props){
           action: 'edit',
           matchid: matchid,
           classno: classno,
-          customsequence: customsequence
+          customsequence: customsequence,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -407,7 +424,7 @@ export default function MBReward(props){
 
   async function handleReset(){
     let classno = []
-    classno.push(matchDetail.class[value].classno)
+    classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -415,7 +432,8 @@ export default function MBReward(props){
         sess.typeid === 'admin' ? 'rewardsystem' : 'mrewardsystem', {
           action: 'clear',
           matchid: matchid,
-          classno: classno
+          classno: classno,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({
@@ -438,7 +456,8 @@ export default function MBReward(props){
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'reward',
-          matchid: matchid
+          matchid: matchid,
+          mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         if(
@@ -495,7 +514,7 @@ export default function MBReward(props){
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ mainClassSelected ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -512,6 +531,23 @@ export default function MBReward(props){
 
   return(
     <div className={classes.root}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        { matchDetail && matchDetail.scorematch !== 0 &&
+          <FormControl className={classes.formControl}>
+            <InputLabel>Main Class</InputLabel>
+            <Select
+              value={mainClassSelected}
+              onChange={e => setMainClassSelected(e.target.value)}>
+              { matchDetail &&
+                matchDetail.mainclass.map( d =>
+                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                    {d.mainclass}
+                  </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+        }
+      </div>
       <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
         <StyledTabs
           value={value}
@@ -519,8 +555,8 @@ export default function MBReward(props){
           variant="scrollable"
           scrollButtons="on"
         >
-          { matchDetail && matchDetail.class &&
-            matchDetail.class.map( d=>
+          { matchDetail && matchDetail.mainclass &&
+            matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d=>
               d &&
               <StyledTab key={d.classname} label={ matchDetail.scorematch !== 0? d.classname : API._handleAmateurClass(d.classno) } />
             )
@@ -553,9 +589,11 @@ export default function MBReward(props){
             </GreenButton>
             </React.Fragment>
           }
-          <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
-            { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
-          </GreenTextButton>
+          { data && /not create/.test(data.status) &&
+            <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
+              { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
+            </GreenTextButton>
+          }
           <div style={{ flex: 1 }} />
           { window.innerWidth >= 500 && editting &&
             <GreenTextButton
@@ -602,22 +640,35 @@ export default function MBReward(props){
           </ListItem>
         </List>
         <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .5 }}>
-          { matchDetail && matchDetail.class &&
-            matchDetail.class.map( (c, i) =>
-              value === i && c &&
-              data && !data.status &&
-              data.filter( item =>{
-                return item.classno === c.classno
-              }).map( (d, i) =>{
-                return d && (
-                  <RewardContainer key={d.userid}
-                    {...props}
-                    data={d}
-                    setData={setData}
-                    setMatchDetail={setMatchDetail}
-                    editting={editting} />
-                );
-              })
+          { data && !data.status && matchDetail && matchDetail.mainclass &&
+            (
+              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>
+                value === i &&
+                data.filter( item =>{
+                  return item.classno === c.classno
+                })
+              )[value].length !== 0 ?
+              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>
+                value === i &&
+                data.filter( item =>{
+                  return item.classno === c.classno
+                }).map( (d, i) =>{
+                  return d && (
+                    <RewardContainer key={d.userid}
+                      {...props}
+                      data={d}
+                      setData={setData}
+                      setMatchDetail={setMatchDetail}
+                      editting={editting}
+                      mainClassSelected={mainClassSelected} />
+                  );
+                })
+              )
+              :
+              <ListItem>
+                <ListItemText className={classes.listText} style={{ textTransform: 'capitalize' }}
+                  primary="No Reward" />
+              </ListItem>
             )
           }
           { data && data.status &&

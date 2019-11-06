@@ -329,14 +329,26 @@ function CreateMatchBody(props){
         ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
       if(/success/.test(d.status)){
-        handleCreatePicture(csrf, d)
+        if(selectedFile){
+          handleCreatePicture(csrf, d)
+        }else{
+          handleFetch()
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
+      }else{
+        handleFetch()
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
       }
     })
   }
@@ -344,28 +356,24 @@ function CreateMatchBody(props){
   async function handleCreatePicture(csrf, d){
     var status = d.status
     const formData = new FormData()
-    if(selectedFile){
-      formData.append('matchimage', selectedFile)
-      const response = await API._fetchPostFile(
-        'matchsystem',
-        `?_csrf=${csrf}`, {
-        action: 'edit',
-        matchid: d.matchid,
-        photopath: true,
-      }, formData)
-      const resToken = await API._xhrGet('getcsrf')
-      setCSRFToken(resToken.token)
-      status = response.status
-    }else{
-      setCSRFToken(csrf)
-    }
-    handleFetch()
+    formData.append('matchimage', selectedFile)
+    const response = await API._fetchPostFile(
+      'matchsystem',
+      `?_csrf=${csrf}`, {
+      action: 'edit',
+      matchid: d.matchid,
+      photopath: true,
+    }, formData)
+    const resToken = await API._xhrGet('getcsrf')
+    setCSRFToken(resToken.token)
+    status = response.status
     handleSnackBar({
       state: true,
       message: status,
       variant: /success/.test(status) ? status : 'error',
       autoHideDuration: /success/.test(status)? 2000 : 5000
     })
+    handleFetch()
   }
 
   async function handleFetch(){
@@ -517,13 +525,13 @@ function CreateMatchBody(props){
                 <FormControlLabel
                   value={'0'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity' }
+                  label={ ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur' }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'2'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur' }
+                  label={ ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity' }
                   labelPlacement="end"
                 />
               </RadioGroup>
@@ -552,7 +560,7 @@ function CreateMatchBody(props){
 
 export default function CreateMatch(props){
   const classes = useStyles();
-  const { sess, setData, token, setCSRFToken, handleSnackBar } = props
+  const { sess, token, setCSRFToken, handleSnackBar } = props
   const [ expanded, setExpanded ] = React.useState(false)
 
   function expandHandler(){
