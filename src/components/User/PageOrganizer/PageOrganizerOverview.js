@@ -12,13 +12,15 @@ import {
   Box,
   Divider,
   TextField,
+  Tooltip,
+  IconButton,
 
 } from '@material-ui/core';
 
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
 import {
   AddCircle,
+  AccountCircle as AccountCircleIcon,
+  Help as HelpIcon,
 
 } from '@material-ui/icons';
 
@@ -79,6 +81,16 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+const StyledTooltip = withStyles(theme => ({
+  tooltip: {
+    backgroundColor: primary[50],
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 250,
+    fontSize: theme.typography.pxToRem(12),
+    border: `1px solid ${primary[200]}`,
+  },
+}))(Tooltip);
+
 const theme = createMuiTheme({
   palette: {
     primary: primary,
@@ -92,6 +104,11 @@ export default function PageOrganizerOverview(props) {
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
   const [ confirmPasswordState, handleConfirmPasswordState ] = React.useState(false)
   const [ confirmPassword, setConfirmPassword ] = React.useState(null)
+  const [ helpState, setHelpState ] = React.useState(false)
+
+  function handleClickHelpState(){
+    setHelpState(!helpState)
+  }
 
   function handleConfirmPasswordCancel(){
     handleConfirmPasswordState(false)
@@ -114,6 +131,25 @@ export default function PageOrganizerOverview(props) {
     if(e.key === 'Enter'){
       handleFetchRemove()
     }
+  }
+
+  async function handleRequestMain(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'ppagesection', {
+        action: 'mainpagerequest',
+        pageid: pageData.pageid,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      console.log(d);
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ? 'success' : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+    })
   }
 
   async function handleFetchRemove(){
@@ -152,34 +188,65 @@ export default function PageOrganizerOverview(props) {
   return (
     <div className={classes.root}>
       { pageData &&
-        <Paper className={classes.paper}>
-          <div className={classes.imageGrid}>
-            <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
-              { pageData.logo ?
-                <Avatar className={classes.avatarImage}
-                  src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
-                :
-                <AccountCircleIcon classes={{ root: classes.avatar }} />
-              }
-            </BTN.NoStyleLink>
-          </div>
-          <div className={classes.pageDetailGrid}>
-            <div className={classes.pageDetail}>
+        <Paper>
+          <div className={classes.paper}>
+            <div className={classes.imageGrid}>
               <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
-                <Typography gutterBottom variant="h5" className={classes.pageTitle}>
-                  {pageData.pagename}
-                </Typography>
+                { pageData.logo ?
+                  <Avatar className={classes.avatarImage}
+                    src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                  :
+                  <AccountCircleIcon classes={{ root: classes.avatar }} />
+                }
               </BTN.NoStyleLink>
-              <Typography gutterBottom variant="body1" className={classes.followers}>
-                {pageData.subscriber} { (
-                  ( sess && sess.language === 'TH' ) ? "ผู้ติดตาม" : 'follower'
-                ) + ( pageData.subscriber > 1 ? ( ( sess && sess.language === 'TH' ) ? '' : 's' ) : '')}
-              </Typography>
-              <Typography gutterBottom variant="body2" className={classes.followers}>
-                {API._shotnessNumber(pageData.view)} {` view${pageData.view > 1 ? 's' : ''}`}
-              </Typography>
+            </div>
+            <div className={classes.pageDetailGrid}>
+              <div className={classes.pageDetail}>
+                <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
+                  <Typography gutterBottom variant="h5" className={classes.pageTitle}>
+                    {pageData.pagename}
+                  </Typography>
+                </BTN.NoStyleLink>
+                <Typography gutterBottom variant="body1" className={classes.followers}>
+                  {pageData.subscriber} { (
+                    ( sess && sess.language === 'TH' ) ? "ผู้ติดตาม" : 'follower'
+                  ) + ( pageData.subscriber > 1 ? ( ( sess && sess.language === 'TH' ) ? '' : 's' ) : '')}
+                </Typography>
+                <Typography gutterBottom variant="body2" className={classes.followers}>
+                  {API._shotnessNumber(pageData.view)} {` view${pageData.view > 1 ? 's' : ''}`}
+                </Typography>
+              </div>
             </div>
           </div>
+          { pageData.pageid &&
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24, padding: '0 12px 12px 0' }}>
+              <BTN.Primary style={{ textTransform: 'none' }} onClick={handleRequestMain}>
+                Toff-time Page
+              </BTN.Primary>
+              <StyledTooltip
+                PopperProps={{
+                  disablePortal: true,
+                }}
+                onClose={()=>setHelpState(false)}
+                open={helpState}
+                disableFocusListener
+                disableHoverListener
+                disableTouchListener
+                title={
+                  <Typography>
+                    { ( sess && sess.language === 'TH' ) ?
+                      "ส่งคำขอเพื่อแสดงเพจนี้ในหน้า Toff-time"
+                      :
+                      'Send a request to show this Page on the Toff-time page.'
+                    }
+                  </Typography>
+                }>
+                <IconButton onClick={handleClickHelpState}>
+                  <HelpIcon fontSize="small" style={{ color: primary[600] }} />
+                </IconButton>
+              </StyledTooltip>
+            </div>
+          }
         </Paper>
       }
       <Paper className={classes.paper}>

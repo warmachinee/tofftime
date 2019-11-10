@@ -27,6 +27,16 @@ const TemplateDialog = Loadable({
   loading: () => <LDCircular />
 });
 
+const RichTextEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "RichTextEditor" */'./../../Utils/RichTextEditor'),
+  loading: () => <LDCircular />
+});
+
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../../Utils/LabelText'),
+  loading: () => <LDCircular />
+});
+
 const Location = Loadable({
   loader: () => import(/* webpackChunkName: "Location" */'./Location'),
   loading: () => <LDCircular />
@@ -220,8 +230,8 @@ const datePickers = createMuiTheme({
 export default function MBOverview(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
-  const [ editting, handleEditting ] = React.useState(false)
   const [ open, setOpen ] = React.useState(false);
+  const [ rulesState, setRulesState ] = React.useState(false);
   const [ modalType, setModalType ] = React.useState('');
   const imgRef = React.useRef(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -233,6 +243,7 @@ export default function MBOverview(props){
   const [ selectedMatchType, setSelectedMatchType ] = React.useState(null);
   const [ selectedDate, setSelectedDate ] = React.useState(null);
   const [ selectedFile, setSelectedFile ] = React.useState(null);
+  const [ rulesData, setRulesData ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
 
   const handleOpen = (d) => {
@@ -243,6 +254,58 @@ export default function MBOverview(props){
   const handleClose = () => {
     setOpen(false);
   };
+
+  function isEditDetail(){
+    let oldMatchName, oldPrivacy, oldDate, oldFile;
+    if(data){
+      oldMatchName = data.title ? data.title : ''
+      oldPrivacy = data.privacy ? data.privacy : 'public'
+      oldDate = new Date(data.date) ? new Date(data.date) : null
+      oldFile = selectedFile && tempFile
+    }
+    const newPrivacy = selectedPrivacy ? selectedPrivacy : oldPrivacy
+    const newDate = selectedDate ? selectedDate : oldDate
+    //console.log('selectedField ', selectedField);
+    switch (true) {
+      case Boolean(selectedMatchName):
+        if(oldMatchName !== selectedMatchName){
+          return true
+        }
+      case Boolean(newPrivacy):
+        if(oldPrivacy !== newPrivacy){
+          return true
+        }
+      case Boolean(selectedField):
+        if(selectedField){
+          return true
+        }
+      case Boolean(selectedDate):
+        if(oldDate !== selectedDate){
+          return true
+        }
+      case Boolean(selectedFile):
+        //console.log('selectedFile ', oldFile);
+        if(oldFile){
+          return true
+        }
+      default:
+        //console.log('default ', false);
+        return false
+    }
+  }
+
+  function handleRulesOpen(){
+    setRulesState(true)
+  }
+
+  function handleRulesClose(){
+    setRulesState(false)
+  }
+
+  function handleRulesCancel(){
+    setRulesData(null)
+    handleRulesClose()
+  }
 
   function handlePrivacy(event) {
     setSelectedPrivacy(event.target.value);
@@ -285,6 +348,38 @@ export default function MBOverview(props){
     }
   }
 
+  function handleEditorOnChange(data){
+    setRulesData(data)
+  }
+
+  async function handleRulesSave(){
+    let res = await API._xhrGet('getcsrf')
+    const sendObj = {
+      action: 'edit',
+      matchid: parseInt(matchid)
+    };
+
+    if(rulesData){
+      Object.assign(sendObj, { message: rulesData });
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin'? 'matchsystem' : 'mmatchsystem', sendObj,
+        (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        if(/success/.test(d.status)){
+          handleRulesClose()
+          handleFetch()
+        }
+      })
+    }
+  }
+
   async function handleEditMatch(){
     let res = await API._xhrGet('getcsrf')
     const sendObj = {
@@ -306,6 +401,10 @@ export default function MBOverview(props){
 
     if(selectedMatchName.length){
       Object.assign(sendObj, { matchname: selectedMatchName });
+    }
+
+    if(rulesData){
+      Object.assign(sendObj, { message: rulesData });
     }
 
     if(selectedPrivacy){
@@ -359,7 +458,7 @@ export default function MBOverview(props){
     })
     await handleFetch()
     if(/success/.test(status)){
-      handleEditting(false)
+
     }
   }
 
@@ -400,39 +499,23 @@ export default function MBOverview(props){
     <div className={classes.root}>
       { data && data.status !== 'wrong params' &&
         <React.Fragment>
-          { !editting &&
-            <GreenTextButton className={classes.editButton} onClick={()=>handleEditting(!editting)}>
-              { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
-            </GreenTextButton>
-          }
           <div className={classes.grid}>
             <div className={classes.gridChild1}>
               <ThemeProvider theme={theme}>
-                {editting?
-                  <TextField
-                    className={classes.textMatchname}
-                    label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
-                    value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                      ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
-                    ) }
-                    onChange={e =>setSelectedMatchName(e.target.value)}
-                  />
-                  :
-                  <Typography component="div" className={classes.textMatchname}>
-                    <Box className={classes.normal}>
-                      { data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                        ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
-                      ) }
-                    </Box>
-                  </Typography>
-                }
+                <TextField
+                  className={classes.textMatchname}
+                  label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
+                  value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
+                    ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
+                  ) }
+                  onChange={e =>setSelectedMatchName(e.target.value)}
+                />
               </ThemeProvider>
               <div style={{ display: 'flex', marginTop: 16 }}>
                 <ThemeProvider theme={datePickers}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       clearable
-                      disabled={!editting}
                       className={classes.margin}
                       label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }
                       inputVariant="outlined"
@@ -445,8 +528,8 @@ export default function MBOverview(props){
               </div>
               { ( selectedFile || (data && data.picture) )?
                 <div style={{ position: 'relative', marginTop: 16 }}
-                  onMouseEnter={()=>editting?handleFileHover(true):console.log()}
-                  onMouseLeave={()=>editting?handleFileHover(false):console.log()}>
+                  onMouseEnter={()=>handleFileHover(true)}
+                  onMouseLeave={()=>handleFileHover(false)}>
                   <img ref={imgRef}
                     style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
                     className={classes.matchImg}
@@ -456,7 +539,7 @@ export default function MBOverview(props){
                       :
                       API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
                     } />
-                  { editting && imgRef.current &&
+                  { imgRef.current &&
                     <div
                       style={{
                         display: 'flex',
@@ -485,12 +568,10 @@ export default function MBOverview(props){
                     <div style={{ flex: 1 }} />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <div style={{ flex: 1 }} />
-                      { editting &&
-                        <StyledIconButton className={classes.matchFile}>
-                          <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                          <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
-                        </StyledIconButton>
-                      }
+                      <StyledIconButton className={classes.matchFile}>
+                        <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                        <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
+                      </StyledIconButton>
                       <div style={{ flex: 1 }} />
                     </div>
                     <div style={{ flex: 1 }} />
@@ -501,7 +582,6 @@ export default function MBOverview(props){
             <div className={classes.gridChild2}>
               <ThemeProvider theme={theme}>
                 <GreenTextButton
-                  disabled={!editting}
                   variant="outlined"
                   className={classes.button}
                   style={{ textTransform: 'none' }}
@@ -510,6 +590,16 @@ export default function MBOverview(props){
                     ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location'
                   ) }
                   {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
+                </GreenTextButton>
+                <GreenTextButton
+                  variant="outlined"
+                  className={classes.button}
+                  style={{ textTransform: 'none' }}
+                  onClick={handleRulesOpen}>
+                  { ( sess && sess.language === 'TH' ) ?
+                    "กฏ กติกา และ รายละเอียดการแข่งขัน" :
+                    'Match Rules, Regulations and Detail'
+                  }
                 </GreenTextButton>
                 {/*
                   <GreenTextButton
@@ -550,8 +640,11 @@ export default function MBOverview(props){
                   </GreenTextButton>*/
                 }
                 <FormControl component="fieldset" className={classes.margin}
-                  style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}
-                  disabled={!editting}>
+                  style={{
+                    width: '100%',
+                    border: '1px rgba(0, 0, 0, 0.23) solid',
+                     padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box'
+                  }}>
                   <FormLabel component="legend" style={{ marginLeft: 16 }}>{ ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }</FormLabel>
                   <RadioGroup
                     value={
@@ -606,23 +699,43 @@ export default function MBOverview(props){
               </ThemeProvider>
             </div>
           </div>
-          { editting?
+          { isEditDetail() &&
             <div className={classes.buttonControl}>
               <div style={{ flex: 2 }}></div>
-              <GreenTextButton className={classes.button}
-                onClick={()=>handleEditting(false)}>
-                { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
-              </GreenTextButton>
               <GreenButton className={classes.button}
                 onClick={handleEditMatch}>
                 { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
               </GreenButton>
             </div>
-            :
-            <div style={{ height: 88 }}></div>
           }
         </React.Fragment>
       }
+      <TemplateDialog open={rulesState} handleClose={handleRulesClose} fullScreen>
+        <div>
+          <LabelText
+            style={{ marginBottom: 24 }}
+            text={ ( sess && sess.language === 'TH' ) ?
+              "กฏ กติกา และ รายละเอียดการแข่งขัน" :
+              'Match Rules, Regulations and Detail'
+            } />
+          { (data && data.message) ?
+            <RichTextEditor HTMLData={data.message} handleGetHTML={e =>handleEditorOnChange(e)} />
+            :
+            <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+          }
+          <div style={{ marginTop: 24, display: 'flex', }}>
+            <div style={{ flex: 3 }} />
+            <GreenTextButton className={classes.button}
+              onClick={handleRulesCancel}>
+              { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            </GreenTextButton>
+            <GreenButton className={classes.button}
+              onClick={handleRulesSave}>
+              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+            </GreenButton>
+          </div>
+        </div>
+      </TemplateDialog>
       { modalType && modalType === 'location' &&
         <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
           <Location

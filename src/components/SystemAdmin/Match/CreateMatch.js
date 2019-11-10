@@ -422,7 +422,7 @@ function CreateMatchBody(props){
                   clearable
                   style={{ marginTop: 24 }}
                   className={classes.margin}
-                  label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Number of teams' }
+                  label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Match Date' }
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
                   value={selectedDate}

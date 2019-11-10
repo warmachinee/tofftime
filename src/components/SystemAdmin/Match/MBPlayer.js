@@ -879,7 +879,7 @@ export default function MBPlayer(props){
 
                     return value && (
                       <React.Fragment key={value.userid}>
-                        <ListItem role={undefined} button
+                        <ListItem role={undefined} button={editting || edittingClass || edittingDisplay}
                           onClick={()=>
                             ( editting || edittingClass )?
                             handleToggle(value):

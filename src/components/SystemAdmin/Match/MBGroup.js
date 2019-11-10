@@ -121,7 +121,7 @@ function MainClassList(props){
   );
 }
 
-export default function MBClass(props){
+export default function MBGroup(props){
   const classes = useStyles();
   const { BTN, API, sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
 
@@ -185,7 +185,7 @@ export default function MBClass(props){
   return (
     <div className={classes.root}>
       {/* data && data.status !== 'wrong params' &&
-
+        
         */
       }
       <List className={classes.listRoot}>

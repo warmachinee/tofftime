@@ -47,6 +47,7 @@ export default function MatchDetail(props){
   const [ rawUserscore, setRawUserscore ] = React.useState(null)
   const [ userscore, setUserscore ] = React.useState(null)
   const [ sortBy, setSortBy ] = React.useState('net')
+  const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -54,7 +55,8 @@ export default function MatchDetail(props){
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',
-        matchid: parseInt(props.computedMatch.params.matchid)
+        matchid: parseInt(props.computedMatch.params.matchid),
+        mainclass: parseInt(mainClassSelected)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(d.status === 'wrong params'){
@@ -69,7 +71,7 @@ export default function MatchDetail(props){
         setUserscore(d.userscore)
         setRawUserscore(d)
         if(d.scorematch !== 1){
-          setSortBy(d.scorematch === 0? 'net' : 'sf')
+          setSortBy(d.scorematch === 2? 'sf' : 'net')
         }
         document.title = `${d.title} - T-off Time`
       }
@@ -103,12 +105,19 @@ export default function MatchDetail(props){
 
   React.useEffect(()=>{
     response()
-    handleFetch()
   },[ ])
 
   React.useEffect(()=>{
+    handleFetch()
+  },[ mainClassSelected ])
+
+  React.useEffect(()=>{
     if(rawUserscore){
-      setUserscore( sortBy === 'net' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)
+      if(rawUserscore.scorematch === 2){
+        setUserscore( sortBy === 'sf' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)
+      }else{
+        setUserscore( sortBy === 'net' ? rawUserscore.userscoreSortBySF : rawUserscore.userscore)
+      }
     }
   },[ sortBy ])
 
@@ -125,6 +134,8 @@ export default function MatchDetail(props){
         setRawUserscore={setRawUserscore}
         sortBy={sortBy}
         setSortBy={setSortBy}
+        mainClassSelected={mainClassSelected}
+        setMainClassSelected={setMainClassSelected}
         matchid={parseInt(props.computedMatch.params.matchid)} />
       <RouteMiniGameMah
         path={`/match/${props.computedMatch.params.matchid}/minigame/:gametype`}

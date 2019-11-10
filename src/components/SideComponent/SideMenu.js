@@ -1,6 +1,8 @@
 import React from 'react';
 import Loadable from 'react-loadable';
 import clsx from 'clsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrophy } from '@fortawesome/free-solid-svg-icons'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import * as COLOR from './../../api/palette'
 import ic_logo from './../img/logoX2.png'
@@ -18,7 +20,8 @@ import {
   Typography,
   Box,
   Badge,
-  Collapse
+  Collapse,
+  Tooltip,
 
 } from '@material-ui/core'
 
@@ -37,6 +40,8 @@ import {
   SettingsApplications,
   AddCircleOutline,
   Translate,
+  GolfCourse,
+  Note as NoteIcon,
 
 } from '@material-ui/icons';
 
@@ -345,25 +350,29 @@ export default function SideMenu(props) {
         <Divider />
         <List>
           <ListItem button onClick={toggleNoti} className={classes.iconHidden}>
-            <ListItemIcon>
-              { notiData && notiData.length > 0?
-                <Badge badgeContent={
-                    notiData.filter( item =>{
-                      return item.read === 'unread'
-                    }).length
-                  } color="secondary">
+            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } placement="right">
+              <ListItemIcon>
+                { notiData && notiData.length > 0?
+                  <Badge badgeContent={
+                      notiData.filter( item =>{
+                        return item.read === 'unread'
+                      }).length
+                    } color="secondary">
+                    <Notifications />
+                  </Badge>
+                  :
                   <Notifications />
-                </Badge>
-                :
-                <Notifications />
-              }
-            </ListItemIcon>
+                }
+              </ListItemIcon>
+            </Tooltip>
             <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } />
           </ListItem>
           <ListItem button onClick={toggleCreateMatch}>
-            <ListItemIcon>
-              <AddCircleOutline />
-            </ListItemIcon>
+            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } placement="right">
+              <ListItemIcon>
+                <AddCircleOutline />
+              </ListItemIcon>
+            </Tooltip>
             <ListItemText className={classes.listTitle}
               primary={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } />
           </ListItem>
@@ -389,9 +398,11 @@ export default function SideMenu(props) {
         }
         <List>
           <ListItem button onClick={toggleCreatePage}>
-            <ListItemIcon>
-              <Flag />
-            </ListItemIcon>
+            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } placement="right">
+              <ListItemIcon>
+                <Flag />
+              </ListItemIcon>
+            </Tooltip>
             <ListItemText className={classes.listTitle}
               primary={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
           </ListItem>
@@ -416,7 +427,9 @@ export default function SideMenu(props) {
                   ...(window.location.pathname === `/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`) &&
                   { backgroundColor: COLOR.grey[300] },
                 }}>
-                <ListItemIcon><Dashboard /></ListItemIcon>
+                <Tooltip title={ ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' } placement="right">
+                  <ListItemIcon><Dashboard /></ListItemIcon>
+                </Tooltip>
                 <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' } />
               </ListItem>
             </BTN.NoStyleLink>
@@ -427,7 +440,9 @@ export default function SideMenu(props) {
             </BTN.NoStyleLink>*/
           }
           <ListItem button onClick={()=>handleExpand('management')}>
-            <ListItemIcon><SettingsApplications /></ListItemIcon>
+            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } placement="right">
+              <ListItemIcon><SettingsApplications /></ListItemIcon>
+            </Tooltip>
             <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } />
           </ListItem>
           <Collapse in={expanded.management} timeout="auto" style={{ minHeight: 'auto' }}>
@@ -437,7 +452,14 @@ export default function SideMenu(props) {
                   ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`)) &&
                   { backgroundColor: COLOR.grey[300] },
                 }}>
-                <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
+                {!open &&
+                  <Tooltip
+                    title={ ( sess && sess.language === 'TH' ) ? "การจัดการการแข่งขัน" : 'Match Management' }
+                    placement="right">
+                    <ListItemIcon><FontAwesomeIcon icon={faTrophy} style={{ fontSize: 20 }} /></ListItemIcon>
+                  </Tooltip>
+                }
+                <ListItemText inset={open} primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
               </ListItem>
             </BTN.NoStyleLink>
             <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`}>
@@ -446,7 +468,14 @@ export default function SideMenu(props) {
                   ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`)) &&
                   { backgroundColor: COLOR.grey[300] },
                 }}>
-                <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
+                {!open &&
+                  <Tooltip
+                    title={ ( sess && sess.language === 'TH' ) ? "การจัดการสนาม" : 'Course Management' }
+                    placement="right">
+                    <ListItemIcon><GolfCourse /></ListItemIcon>
+                  </Tooltip>
+                }
+                <ListItemText inset={open} primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
               </ListItem>
             </BTN.NoStyleLink>
             { pageOrganizer &&
@@ -456,6 +485,13 @@ export default function SideMenu(props) {
                     ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`)) &&
                     { backgroundColor: COLOR.grey[300] },
                   }}>
+                  {!open &&
+                    <Tooltip
+                      title={ ( sess && sess.language === 'TH' ) ? "การจัดโพสต์" : 'Post Management' }
+                      placement="right">
+                      <ListItemIcon><NoteIcon /></ListItemIcon>
+                    </Tooltip>
+                  }
                   <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' } />
                 </ListItem>
               </BTN.NoStyleLink>
@@ -467,7 +503,9 @@ export default function SideMenu(props) {
                 ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`) &&
                 { backgroundColor: COLOR.grey[300] },
               }}>
-              <ListItemIcon><Event /></ListItemIcon>
+              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } placement="right">
+                <ListItemIcon><Event /></ListItemIcon>
+              </Tooltip>
               <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
             </ListItem>
           </BTN.NoStyleLink>
@@ -477,7 +515,9 @@ export default function SideMenu(props) {
                 ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`) &&
                 { backgroundColor: COLOR.grey[300] },
               }}>
-              <ListItemIcon><History /></ListItemIcon>
+              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } placement="right">
+                <ListItemIcon><History /></ListItemIcon>
+              </Tooltip>
               <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
             </ListItem>
           </BTN.NoStyleLink>

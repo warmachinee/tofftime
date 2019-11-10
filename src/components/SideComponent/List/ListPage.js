@@ -9,6 +9,7 @@ import {
   ListItemText,
   Avatar,
   Typography,
+  Tooltip,
 
 } from '@material-ui/core'
 
@@ -64,14 +65,16 @@ export default function ListPage(props) {
         }).map( d =>
           <BTN.NoStyleLink to={`/organizer/${d.pageid}`} key={d.pageid}>
             <ListItem button>
-              <ListItemIcon>
-                { d.logo ?
-                  <Avatar className={classes.avatarImage}
-                    src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-                  :
-                  <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }} />
-                }
-              </ListItemIcon>
+              <Tooltip title={d.pagename} placement="right">
+                <ListItemIcon>
+                  { d.logo ?
+                    <Avatar className={classes.avatarImage}
+                      src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                    :
+                    <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }} />
+                  }
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText className={classes.listTitle} primary={d.pagename} />
             </ListItem>
           </BTN.NoStyleLink>

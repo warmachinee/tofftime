@@ -5,19 +5,22 @@ import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey } from './../../../api/palette'
 
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
-import Collapse from '@material-ui/core/Collapse';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Avatar from '@material-ui/core/Avatar';
+import {
+  IconButton,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  InputAdornment,
+  TextField,
+  Collapse,
+  Typography,
+  Box,
+  Divider,
+  Avatar,
+
+} from '@material-ui/core';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import AddIcon from '@material-ui/icons/Add';
@@ -290,17 +293,19 @@ export default function AddPlayerModal(props){
 
   return(
     <div className={classes.root}>
-      <div className={classes.createGrid}>
-        <GreenTextButton
-          variant="outlined"
-          className={classes.createButton}
-          onClick={()=>setCreateState(!createState)}>
-          <ExpandMoreIcon
-            className={classes.expandIcon}
-            style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
-          { ( sess && sess.language === 'TH' ) ? "สร้างผู้ใช้งาน" : 'Create user' }
-        </GreenTextButton>
-      </div>
+      { sess && sess.typeid === 'admin' &&
+        <div className={classes.createGrid}>
+          <GreenTextButton
+            variant="outlined"
+            className={classes.createButton}
+            onClick={()=>setCreateState(!createState)}>
+            <ExpandMoreIcon
+              className={classes.expandIcon}
+              style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
+            { ( sess && sess.language === 'TH' ) ? "สร้างผู้ใช้งาน" : 'Create user' }
+          </GreenTextButton>
+        </div>
+      }
       <Collapse in={createState} timeout="auto" unmountOnExit>
         <div className={classes.textFieldGrid}>
           <ThemeProvider theme={theme}>

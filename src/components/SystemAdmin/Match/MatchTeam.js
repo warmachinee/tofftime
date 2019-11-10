@@ -63,6 +63,9 @@ const useStyles = makeStyles(theme => ({
     marginTop: 'auto',
     marginLeft: 12
   },
+  formControl: {
+    margin: theme.spacing(3, 0),
+  },
 
 }));
 
@@ -94,12 +97,15 @@ const theme = createMuiTheme({
 export default function MatchTeam(props) {
   const classes = useStyles();
   const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, handleTeamClose } = props
-  const [ currentTime, setCurrentTime ] = React.useState(API._getTodayTime())
+  const [ currentTime, setCurrentTime ] = React.useState(
+    (matchDetail && matchDetail.team.length !== 0) ? matchDetail.team[0].teamname : API._getTodayTime()
+  )
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ period, setPeriod ] = React.useState(0)
   const [ person, setPerson] = React.useState(0)
   const [ autoGen, setAutoGen ] = React.useState(false)
   const [ editting, setEditting ] = React.useState(false)
+  const [ scheduleNumberType, setScheduleNumberType ] = React.useState('person')
 
   function EditNoteComponent(props){
     const { data } = props
@@ -155,6 +161,22 @@ export default function MatchTeam(props) {
     }
   }
 
+  function handlePeriodChange(value){
+    if(value < 0){
+      setPeriod(0)
+    }else{
+      setPeriod(value)
+    }
+  }
+
+  function handlePersonChange(value){
+    if(value < 0){
+      setPerson(0)
+    }else{
+      setPerson(value)
+    }
+  }
+
   async function handleSchedule(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
@@ -162,7 +184,8 @@ export default function MatchTeam(props) {
       matchid: parseInt(matchid),
       period: period,
       starttime: currentTime,
-      person: person
+      person: person,
+      type: scheduleNumberType
     }
 
     if(autoGen){
@@ -204,6 +227,9 @@ export default function MatchTeam(props) {
           d.status !== 'wrong params'
         ){
           setMatchDetail(d)
+          if(d.team.length !== 0){
+            setCurrentTime(d.team[0].teamname)
+          }
         }else{
           handleSnackBar({
             state: true,
@@ -226,6 +252,13 @@ export default function MatchTeam(props) {
   return (
     <div className={classes.root}>
       <React.Fragment>
+        { matchDetail &&
+          <div style={{ marginBottom: 24 }}>
+            <Typography variant="h5">{matchDetail.title}</Typography>
+            <Typography variant="body1">{matchDetail.location}</Typography>
+            <Typography variant="body2">{API._dateToString(matchDetail.date)}</Typography>
+          </div>
+        }
         <Typography component="div">
           <Box className={classes.title} fontWeight={600}>
             { matchDetail && matchDetail.team.length === 0 ? (
@@ -244,33 +277,47 @@ export default function MatchTeam(props) {
               type="time"
               onKeyPress={e =>handleKeyPress(e.key)}
               onChange={e => setCurrentTime(e.target.value)}
-              defaultValue={currentTime} />
-            <div>
-
+              value={currentTime} />
+            <TextField
+              className={classes.textField}
+              variant="outlined"
+              label={ ( sess && sess.language === 'TH' ) ? "ระยะห่างเวลาต่อทีม" : 'Period' }
+              error={period <= 0}
+              helperText={`0 - 59 ${ ( sess && sess.language === 'TH' ) ? "นาที" : 'minute' }`}
+              value={ !isNaN(period) ? period : '' }
+              onKeyPress={e =>handleKeyPress(e.key)}
+              onChange={e => handlePeriodChange(parseInt(e.target.value))}
+              onFocus={e => e.target.select()}
+              type="number"/>
+            <div style={{ marginTop: 16 }}>
+              <FormControl component="fieldset" className={classes.formControl}>
+                <FormLabel component="legend">Number Type</FormLabel>
+                <RadioGroup style={{ flexDirection: 'row' }} value={scheduleNumberType} onChange={e => setScheduleNumberType(event.target.value)}>
+                  <FormControlLabel value="person" control={<Radio />} label="Person" />
+                  <FormControlLabel value="team" control={<Radio />} label="Team" />
+                </RadioGroup>
+              </FormControl>
             </div>
-            <div className={classes.fieldGrid}>
-              <TextField
-                className={classes.textField}
-                variant="outlined"
-                label={ ( sess && sess.language === 'TH' ) ? "ระยะห่างเวลาต่อทีม" : 'Period' }
-                helperText={`0 - 59 ${ ( sess && sess.language === 'TH' ) ? "นาที" : 'minute' }`}
-                value={ !isNaN(period) ? period : '' }
-                onKeyPress={e =>handleKeyPress(e.key)}
-                onChange={e => setPeriod(parseInt(e.target.value))}
-                onFocus={e => e.target.select()}
-                type="number"/>
-              <div style={{ width: 16 }} />
-              <TextField
-                className={classes.textField}
-                variant="outlined"
-                label={ ( sess && sess.language === 'TH' ) ? "จำนวนคน" : 'Person' }
-                helperText={ ( sess && sess.language === 'TH' ) ? "จำนวนคนต่อทีม" : 'Number of person in the team' }
-                value={ !isNaN(person) ? person : '' }
-                onKeyPress={e =>handleKeyPress(e.key)}
-                onChange={e => setPerson(parseInt(e.target.value))}
-                onFocus={e => e.target.select()}
-                type="number"/>
-            </div>
+            <TextField
+              className={classes.textField}
+              variant="outlined"
+              label={
+                ( sess && sess.language === 'TH' ) ?
+                (scheduleNumberType === 'person' ? 'จำนวนคน' : 'จำนวนทีม' ) :
+                (scheduleNumberType === 'person' ? 'Person' : 'Team' )
+              }
+              error={person <= 0}
+              helperText={
+                ( sess && sess.language === 'TH' ) ?
+                (scheduleNumberType === 'person' ? 'จำนวนคนต่อทีม' : 'Number of person in the team' )
+                :
+                (scheduleNumberType === 'person' ? 'จำนวนทีม' : 'Number of team' )
+              }
+              value={ !isNaN(person) ? person : '' }
+              onKeyPress={e =>handleKeyPress(e.key)}
+              onChange={e => handlePersonChange(parseInt(e.target.value))}
+              onFocus={e => e.target.select()}
+              type="number"/>
             { matchDetail && matchDetail.team.length !== 0 &&
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <FormControl component="fieldset">
@@ -300,9 +347,7 @@ export default function MatchTeam(props) {
                         <ListItemText style={{ width: '100%' }} primary={
                           <React.Fragment>
                             { editting ?
-                              <div style={{ marginTop: 16 }}>
-                                <EditNoteComponent data={t} />
-                              </div>
+                              <EditNoteComponent data={t} />
                               :
                               ( t.note === '' ? '-' : t.note )
                             }
@@ -314,16 +359,30 @@ export default function MatchTeam(props) {
                 </List>
               </div>
             }
-            <GreenButton
-              fullWidth
-              className={classes.createButton}
-              onClick={handleSchedule}>
-              { matchDetail && matchDetail.team.length === 0 ? (
-                ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
-              ) : (
-                ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
-              ) }
-            </GreenButton>
+            { ( period <= 0 || person <= 0 ) ?
+              <Button
+                disabled
+                fullWidth
+                variant="contained"
+                className={classes.createButton}>
+                { matchDetail && matchDetail.team.length === 0 ? (
+                  ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
+                ) : (
+                  ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
+                ) }
+              </Button>
+              :
+              <GreenButton
+                fullWidth
+                className={classes.createButton}
+                onClick={handleSchedule}>
+                { matchDetail && matchDetail.team.length === 0 ? (
+                  ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
+                ) : (
+                  ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
+                ) }
+              </GreenButton>
+            }
           </ThemeProvider>
         </div>
       </React.Fragment>

@@ -538,7 +538,7 @@ export default function MatchBody(props){
         open={confirmPasswordState} handleClose={handleConfirmPasswordCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ใส่รหัสผ่าน" : 'Fill password' }
+            { ( sess && sess.language === 'TH' ) ? "ใส่รหัสผ่านของคุณ" : 'Fill your password' }
           </Box>
         </Typography>
         <ThemeProvider theme={theme}>

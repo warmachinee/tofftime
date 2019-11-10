@@ -1,15 +1,19 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { grey } from './../../api/palette'
+import { primary, grey } from './../../api/palette'
 
 import {
   Paper,
   Avatar,
   Typography,
-  Button
+  Button,
+
 } from '@material-ui/core';
 
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import {
+  AccountCircle as AccountCircleIcon,
+
+} from '@material-ui/icons';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,7 +67,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, pageid } = props
+  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, pageid, handleSnackBar } = props
   const [ isFollow, setIsFollow ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
 

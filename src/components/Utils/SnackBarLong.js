@@ -62,6 +62,7 @@ export default function SnackBarLong(props) {
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       open={open}
       autoHideDuration={autoHideDuration}
+      onClose={onClose}
       >
       <SnackbarContent
         className={classes.snackbarContent}

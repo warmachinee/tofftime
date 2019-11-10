@@ -51,6 +51,7 @@ export default function SnackBarAlert(props) {
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       open={open}
       autoHideDuration={autoHideDuration}
+      onClose={onClose}
       >
       <SnackbarContent
         className={classes[variant]}

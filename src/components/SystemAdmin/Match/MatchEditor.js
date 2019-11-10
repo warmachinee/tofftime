@@ -29,6 +29,7 @@ import {
   Divider,
   Card,
   CardActionArea,
+  Tooltip,
 
 } from '@material-ui/core';
 
@@ -43,6 +44,9 @@ import {
   Schedule,
   SupervisedUserCircle,
   Error as ErrorIcon,
+  Help as HelpIcon,
+  ArrowForwardIos,
+  ArrowBackIos,
 
 } from '@material-ui/icons';
 
@@ -53,8 +57,8 @@ const MBOverview = Loadable({
   loading: () => <LDCircular />
 });
 
-const MBClass = Loadable({
-  loader: () => import(/* webpackChunkName: "MBClass" */'./MBClass'),
+const MBGroup = Loadable({
+  loader: () => import(/* webpackChunkName: "MBGroup" */'./MBGroup'),
   loading: () => <LDCircular />
 });
 
@@ -214,6 +218,16 @@ const StyledTab = withStyles(theme => ({
   selected: {},
 }))(props => <Tab {...props} />);
 
+const StyledTooltip = withStyles(theme => ({
+  tooltip: {
+    backgroundColor: primary[50],
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 250,
+    fontSize: theme.typography.pxToRem(12),
+    border: `1px solid ${primary[200]}`,
+  },
+}))(Tooltip);
+
 function TabContainer(props){
   const classes = useStyles();
   const { value, component } = props
@@ -275,12 +289,12 @@ function SetUpMatchComponent(props){
       icon: <Description style={{ fontSize: 52 }} />,
     },
     {
-      variant: 'class',
-      icon: <People style={{ fontSize: 52 }} />
-    },
-    {
       variant: 'invitation',
       icon: <PersonAdd style={{ fontSize: 52 }} />
+    },
+    {
+      variant: 'group',
+      icon: <People style={{ fontSize: 52 }} />
     },
     {
       variant: 'schedule',
@@ -335,7 +349,8 @@ function ManagementMatchComponent(props){
           key={d.variant}
           icon={d.icon}
           variant={d.variant}
-          warning={warning ? warning[d.variant] : false} />
+          warning={warning ? warning[d.variant] : false}
+          greyScale={warning ? warning[d.variant] : false} />
       )}
       <div style={{ width: 120, margin: '24px auto' }} />
     </div>
@@ -344,14 +359,20 @@ function ManagementMatchComponent(props){
 
 function MenuCard(props){
   const classes = useStyles();
-  const { variant, icon, warning } = props
+  const { variant, icon, warning, greyScale } = props
+  const warningStyle = (warning) && (
+    greyScale ?
+    { color: grey[600], opacity: .8 }
+    :
+    { border: `3px solid ${red[600]}` }
+  )
 
   return (
     <Card className={classes.card} elevation={3}>
       <Link to={`${window.location.pathname}#${variant}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <CardActionArea className={classes.cardActionArea} style={{ ...(warning) && { border: `3px solid ${red[600]}` } }}>
+        <CardActionArea className={classes.cardActionArea} style={{ ...warningStyle  }}>
           <Badge
-            invisible={!warning}
+            invisible={!(warning ? (greyScale ? false : true) : (false))}
             badgeContent={<ErrorIcon />}
             classes={{ anchorOriginTopRightRectangle: classes.anchorOriginTopRightRectangle }}>
             <div className={classes.menuCardIconGrid}>{icon}</div>
@@ -371,9 +392,33 @@ export default function MatchEditor(props){
   const [ hashParam, setHashParam ] = React.useState(window.location.hash.substring(1, window.location.hash.length))
   const [ data, setData ] = React.useState(null)
   const [ warningObj, setWarningObj ] = React.useState(null)
+  const [ helpState, setHelpState ] = React.useState(false)
+
   const passingProps = {
     ...props,
     matchid: param,
+  }
+
+  function handleClickHelpState(){
+    setHelpState(!helpState)
+  }
+
+  async function handleRequestMain(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'mmatchsection', {
+        action: 'mainpagerequest',
+        matchid: parseInt(param),
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ? 'success' : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+    })
   }
 
   async function handleFetchStep(matchid){
@@ -387,8 +432,8 @@ export default function MatchEditor(props){
       setCSRFToken(csrf)
       setWarningObj({
         detail: false,
-        class: Boolean(d.classgroup),
         invitation: Boolean(d.formlist),
+        class: Boolean(d.classgroup),
         schedule: Boolean(d.schedule),
         player: false,
         scorecard: Boolean(d.userscore),
@@ -458,18 +503,18 @@ export default function MatchEditor(props){
 
   function getComponent(){
     switch (hashParam) {
-      case 'class':
-        return {
-          id: 1,
-          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' ),
-          component: <MBClass {...passingProps} data={data} setData={setData} />
-        }
-        break;
       case 'invitation':
         return {
-          id: 2,
+          id: 1,
           label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
           component: <MBInvitation {...passingProps} />
+        }
+        break;
+      case 'group':
+        return {
+          id: 2,
+          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Group' ),
+          component: <MBGroup {...passingProps} data={data} setData={setData} />
         }
         break;
       case 'schedule':
@@ -489,8 +534,18 @@ export default function MatchEditor(props){
       case 'scorecard':
         return {
           id: 5,
-          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Scorecard' ),
-          component: <MBScoreEditor {...passingProps} />
+          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Player Scorecard' ),
+          component: (
+            <MBScoreEditor {...passingProps} setupState={
+                warningObj && (
+                  warningObj.detail &&
+                  warningObj.invitation &&
+                  warningObj.class &&
+                  warningObj.schedule &&
+                  warningObj.player
+                )
+              } />
+          )
         }
         break;
       case 'playoff':
@@ -519,6 +574,64 @@ export default function MatchEditor(props){
           id: 0,
           label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
           component: <MBOverview {...passingProps} setData={setData} data={data} />
+        }
+    }
+  }
+
+  function getComponentByIndex(index){
+    switch (index) {
+      case 1:
+        return {
+          hash: 'invitation',
+          label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
+        }
+        break;
+      case 2:
+        return {
+          hash: 'group',
+          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Group' ),
+        }
+        break;
+      case 3:
+        return {
+          hash: 'schedule',
+          label: ( ( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule' ),
+        }
+        break;
+      case 4:
+        return {
+          hash: 'player',
+          label: ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
+        }
+        break;
+      case 5:
+        return {
+          hash: 'scorecard',
+          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Scorecard' ),
+        }
+        break;
+      case 6:
+        return {
+          hash: 'playoff',
+          label: ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+        }
+        break;
+      case 7:
+        return {
+          hash: 'reward',
+          label: ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+        }
+        break;
+      case 8:
+        return {
+          hash: 'admin',
+          label: ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+        }
+        break;
+      default:
+        return {
+          hash: 'detail',
+          label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
         }
     }
   }
@@ -554,18 +667,69 @@ export default function MatchEditor(props){
           </BTN.NoStyleLink>
         }
       </Typography>
+      { param &&
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+          <BTN.Primary style={{ textTransform: 'none' }} onClick={handleRequestMain}>
+            Toff-time Page
+          </BTN.Primary>
+          <StyledTooltip
+            PopperProps={{
+              disablePortal: true,
+            }}
+            onClose={()=>setHelpState(false)}
+            open={helpState}
+            disableFocusListener
+            disableHoverListener
+            disableTouchListener
+            title={
+              <Typography>
+                { ( sess && sess.language === 'TH' ) ?
+                  "ส่งคำขอเพื่อแสดงการแข่งขันนี้ในหน้า Toff-time"
+                  :
+                  'Send a request to show this Match on the Toff-time page.'
+                }
+              </Typography>
+            }>
+            <IconButton onClick={handleClickHelpState}>
+              <HelpIcon fontSize="small" style={{ color: primary[600] }} />
+            </IconButton>
+          </StyledTooltip>
+        </div>
+      }
       { hashParam === ''?
         <React.Fragment>
-          <LabelText text="Match Set up" />
+          <LabelText text="Match Setup" />
           <SetUpMatchComponent warning={warningObj} />
-          <Divider style={{ marginTop: 16, marginBottom: 16, width: '80%' }} />
+          <Divider style={{ margin: '16px auto', width: '80%' }} />
           <LabelText text="Match Management" />
           <ManagementMatchComponent warning={warningObj} />
         </React.Fragment>
         :
         <div>
-          <LabelText text={`${getComponent().label}#${getComponent().id}`} />
+          <LabelText text={`${getComponent().label}`} />
           {getComponent().component}
+          <Divider style={{ margin: '36px auto', width: '80%' }} />
+          <div style={{ display: 'flex' }}>
+            { getComponent().id !== 0 &&
+              <Link to={`${window.location.pathname}#${getComponentByIndex(getComponent().id - 1).hash}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}>
+                <BTN.PrimaryText style={{ textTransform: 'none' }}>
+                  <ArrowBackIos />
+                  {getComponentByIndex(getComponent().id - 1).label}
+                </BTN.PrimaryText>
+              </Link>
+            }
+            <div style={{ flex: 1 }} />
+            { getComponent().id !== 8 &&
+              <Link to={`${window.location.pathname}#${getComponentByIndex(getComponent().id + 1).hash}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}>
+                <BTN.PrimaryText style={{ textTransform: 'none' }}>
+                  {getComponentByIndex(getComponent().id + 1).label}
+                  <ArrowForwardIos />
+                </BTN.PrimaryText>
+              </Link>
+            }
+          </div>
         </div>
       }
     </div>

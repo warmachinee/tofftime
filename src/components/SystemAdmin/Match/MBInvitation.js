@@ -45,6 +45,11 @@ const AddPlayerModal = Loadable({
   loading: () => <LDCircular />
 });
 
+const DummyPlayer = Loadable({
+  loader: () => import(/* webpackChunkName: "DummyPlayer" */'./DummyPlayer'),
+  loading: () => <LDCircular />
+});
+
 const MatchFormAction = Loadable({
   loader: () => import(/* webpackChunkName: "MatchFormAction" */'./MatchFormAction'),
   loading: () => <LDCircular />
@@ -210,6 +215,7 @@ export default function MBInvitation(props){
   const classes = useStyles();
   const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ addState, setAddState ] = React.useState(false);
+  const [ dummyState, setDummyState ] = React.useState(false);
   const [ formState, setFormState ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -309,6 +315,14 @@ export default function MBInvitation(props){
     setAddState(false);
   };
 
+  function handleDummyOpen(){
+    setDummyState(true);
+  };
+
+  function handleDummyClose(){
+    setDummyState(false);
+  };
+
   function handleFormOpen(d){
     setFormState(true);
     setSelectedUser(d)
@@ -391,9 +405,12 @@ export default function MBInvitation(props){
   }
 
   React.useEffect(()=>{
-    handleFetchForm()
     handleResponseForm()
-  },[ formState ])
+  },[ ])
+
+  React.useEffect(()=>{
+    handleFetchForm()
+  },[ formState, dummyState ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -427,6 +444,12 @@ export default function MBInvitation(props){
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
             { ( sess && sess.language === 'TH' ) ? "ชวนผู้เล่น" : 'Invite' }
           </RedButton>
+        </ListItem>
+        <ListItem className={classes.controls}>
+          <GreenTextButton
+            onClick={handleDummyOpen}>
+            { ( sess && sess.language === 'TH' ) ? "ดีมมี่" : 'Dummy' }
+          </GreenTextButton>
         </ListItem>
         <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
           <ThemeProvider theme={theme}>
@@ -607,6 +630,12 @@ export default function MBInvitation(props){
           {...props}
           playerAction="invite"
           data={data} />
+      </TemplateDialog>
+      <TemplateDialog open={dummyState} handleClose={handleDummyClose} maxWidth={800}>
+        <DummyPlayer
+          {...props}
+          handleClose={handleDummyClose}
+          />
       </TemplateDialog>
       <TemplateDialog open={formState} handleClose={handleFormClose} maxWidth={500}>
         <MatchFormAction

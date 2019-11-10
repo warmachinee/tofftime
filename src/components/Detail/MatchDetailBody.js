@@ -1,6 +1,7 @@
 import React from 'react';
 import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
+import ReactHtmlParser from 'react-html-parser';
 import { Link } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import * as API from './../../api'
@@ -22,8 +23,11 @@ import {
 
 } from '@material-ui/core';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
+import {
+  ExpandMore as ExpandMoreIcon,
+  LocationOn,
+
+} from '@material-ui/icons';
 
 import { LDCircular } from './../loading/LDCircular'
 
@@ -53,30 +57,6 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.up(700)]: {
       margin: '0 72px',
-    },
-  },
-  title: {
-    color: primary[900],
-    fontWeight: 600,
-    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-  },
-  date: {
-    fontStyle: 'oblique',
-    paddingBottom: 8
-  },
-  location: {
-    marginLeft: 4,
-    marginTop: 4,
-    fontWeight: 600,
-    color: primary[800],
-    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-  },
-  locationIcon: {
-    fontSize: 24,
-    marginLeft: -8,
-    color: primary[600],
-    '&:hover': {
-      color: primary[800],
     },
   },
   imageGrid: {
@@ -138,11 +118,23 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-function MatchDetailBody(props) {
+function DetailComponent(props){
+  const { detail } = props
+
+  return(
+    <div className="ql-container ql-snow">
+      <div className="ql-editor">
+        {ReactHtmlParser(detail)}
+      </div>
+    </div>
+  );
+}
+
+export default function MatchDetailBody(props) {
   const classes = useStyles();
   const {
     BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, matchid,
-    data, setData, userscore, setUserscore, setRawUserscore
+    data, setData, userscore, setUserscore, setRawUserscore, mainClassSelected
   } = props
   const [ expanded, setExpanded ] = React.useState(true)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -177,26 +169,16 @@ function MatchDetailBody(props) {
       switch (true) {
         case data.permission === 'host' || data.permission === 'admin':
           return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
-              <BTN.NoStyleLink to={`/user/management/match/${matchid}`}>
-                <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
-              </BTN.NoStyleLink>
-            </div>
+            <BTN.NoStyleLink to={`/user/management/match/${matchid}`}>
+              <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+            </BTN.NoStyleLink>
           )
           break;
         case data.permission === 'pending':
-          return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <Button disabled>Pending</Button>
-            </div>
-          )
+          return (<Button disabled>Pending</Button>)
           break;
         case data.permission === 'none':
-          return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
-            </div>
-          )
+          return (<BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>)
           break;
         default:
           return null
@@ -214,7 +196,8 @@ function MatchDetailBody(props) {
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',
-        matchid: matchid
+        matchid: matchid,
+        mainclass: parseInt(mainClassSelected)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(d.status === 'wrong params'){
@@ -236,67 +219,83 @@ function MatchDetailBody(props) {
   return (
     <Paper className={classes.root}>
       <GoBack />
-      <div className={classes.content}>
-        <React.Fragment>
-          <Tooltip gutterBottom title={data?data.title:'Match Title'} placement="top-start">
-            <Typography classes={{ root: classes.title }} variant="h5">
+      { data &&
+        <div className={classes.content}>
+          <Tooltip title={data?data.title:'Match Title'} placement="top-start">
+            <Typography variant="h4">
               {data?data.title:'Match Title'}
             </Typography>
           </Tooltip>
-          {handleGetButton()}
-          <Typography gutterBottom variant="h6" color="textSecondary">
-            { data &&
-              function(){
-                switch (data.scorematch) {
-                  case 0:
-                    return 'Amateur'
-                    break;
-                  case 1:
-                    return 'Professional'
-                    break;
-                  default:
-                    return 'Charity'
-                }
-              }()
-            }
-          </Typography>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.35em' }}>
+            <Typography gutterBottom variant="body2"
+              style={{
+                color: data.scorematch === 1 ? primary[700] : 'inherit',
+                fontWeight: data.scorematch === 1 ? 900 : 600
+              }}>
+              { function(){
+                  switch (data.scorematch) {
+                    case 0:
+                      return 'Amateur'
+                      break;
+                    case 1:
+                      return 'Professional'
+                      break;
+                    default:
+                      return 'Charity'
+                  }
+                }()
+              }
+            </Typography>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+              {handleGetButton()}
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
+            <Typography variant="h6">
+              {data?API._dateToString(data.date):'date'}
+            </Typography>
+            <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+            <LocationOn style={{ color: primary[600], marginRight: 4 }} />
+            <Typography variant="h6">
+              {data?data.location:'Location'} {data? '(' + data.locationversion + ')':''}
+            </Typography>
+          </div>
           <div style={{ display: 'flex' }}>
-            { matchid && BTN &&
+            { matchid &&
               <BTN.NoStyleLink to={`/matchform/${matchid}`}>
-                <BTN.PrimaryText>{ ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }</BTN.PrimaryText>
+                <BTN.PrimaryOutlined>{ ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }</BTN.PrimaryOutlined>
               </BTN.NoStyleLink>
             }
-            { BTN && data && data.team && data.team.length > 0 &&
-              <BTN.NoStyleLink to={`/schedule/${matchid}`}>
-                <BTN.PrimaryText>{ ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }</BTN.PrimaryText>
-              </BTN.NoStyleLink>
+            { data.team &&
+              ( data.team.length === 0 ?
+                <BTN.PrimaryText disabled>
+                  { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+                </BTN.PrimaryText>
+                :
+                <BTN.NoStyleLink to={`/schedule/${matchid}`}>
+                  <BTN.PrimaryOutlined>
+                    { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+                  </BTN.PrimaryOutlined>
+                </BTN.NoStyleLink>
+              )
             }
             <div style={{ flex: 1 }} />
-            { BTN &&
-              <BTN.PrimaryText onClick={handleClick}>{ ( sess && sess.language === 'TH' ) ? "มินิเกม" : 'Mini Game' }</BTN.PrimaryText>
+            { BTN && data.scorematch === 2 &&
+              <BTN.PrimaryOutlined onClick={handleClick}>
+                { ( sess && sess.language === 'TH' ) ? "มินิเกม" : 'Mini Game' }
+              </BTN.PrimaryOutlined>
             }
           </div>
-          <Typography component="div">
-            <Box className={classes.date} fontFamily="Monospace">
-              {data?API._dateToString(data.date):'date'}
-            </Box>
-          </Typography>
-          <Typography gutterBottom component="div" style={{ display: 'flex' }}>
-            <LocationOnIcon className={classes.locationIcon} />
-            <Box className={classes.location} >
-              {data?data.location:'Location'} {data? '(' + data.locationversion + ')':''}
-            </Box>
-          </Typography>
           <div className={classes.imageGrid}>
-            { data && data.picture &&
+            { data.picture &&
               <img align="left" className={classes.image}
                 src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
           </div>
           <div style={{ marginTop: 16 }}>
-            { data && data.scorematch === 0 && data.class &&
-              data.class.map( (d, i) =>{
-                if(i === data.class.length - 1 ){
+            { data.scorematch === 0 && data.mainclass && data.mainclass.length > 0 &&
+              data.mainclass[parseInt(mainClassSelected) - 1].values.map( (d, i) =>{
+                if(i === data.mainclass[parseInt(mainClassSelected) - 1].values.length - 1 ){
                   return(
                     <div style={{ display: 'flex' }} key={d.classno}>
                       <Typography style={{ fontWeight: 600, marginRight: 12 }} variant="body1">
@@ -314,7 +313,7 @@ function MatchDetailBody(props) {
                         Flight {API._handleAmateurClass(d.classno)}
                       </Typography>
                       <Typography>
-                        handicap {d.classname} - {parseInt(data.class[i + 1].classname) - 1}
+                        handicap {d.classname} - {parseInt(data.mainclass[parseInt(mainClassSelected) - 1].values[i + 1].classname) - 1}
                       </Typography>
                     </div>
                   )
@@ -322,8 +321,7 @@ function MatchDetailBody(props) {
               })
             }
           </div>
-        </React.Fragment>
-        <React.Fragment>
+          <DetailComponent detail={data.message} />
           <ListItem button onClick={expandHandler}
             style={{
               marginTop: 16,
@@ -342,12 +340,12 @@ function MatchDetailBody(props) {
             </IconButton>
           </ListItem>
           <Collapse in={expanded} timeout="auto" unmountOnExit>
-            { data && userscore &&
-              <Scoreboard {...props} matchClass={data && data.class} />
+            { data.mainclass && data.mainclass.length > 0 && userscore &&
+              <Scoreboard {...props} matchClass={data.mainclass[parseInt(mainClassSelected) - 1].values} />
             }
           </Collapse>
-        </React.Fragment>
-      </div>
+        </div>
+      }
       <Menu
         anchorEl={anchorEl}
         keepMounted
@@ -373,4 +371,3 @@ function MatchDetailBody(props) {
     </Paper >
   );
 }
-export default MatchDetailBody;

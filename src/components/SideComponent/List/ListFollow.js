@@ -10,6 +10,7 @@ import {
   Avatar,
   Typography,
   Collapse,
+  Tooltip,
 
 } from '@material-ui/core'
 
@@ -78,14 +79,16 @@ export default function ListFollow(props) {
             data.map( d =>
               <BTN.NoStyleLink to={`/page/${d.pageid}`} key={d.pageid}>
                 <ListItem button>
-                  <ListItemIcon>
-                    { d.logo ?
-                      <Avatar className={classes.avatarImage}
-                        src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-                      :
-                      <AccountCircle classes={{ root: classes.avatar }} />
-                    }
-                  </ListItemIcon>
+                  <Tooltip title={d.pagename} placement="right">
+                    <ListItemIcon>
+                      { d.logo ?
+                        <Avatar className={classes.avatarImage}
+                          src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                        :
+                        <AccountCircle classes={{ root: classes.avatar }} />
+                      }
+                    </ListItemIcon>
+                  </Tooltip>
                   <ListItemText
                     primary={
                       <React.Fragment>

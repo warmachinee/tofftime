@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
-import { primary, grey } from './../../../api/palette'
+import { primary, grey, red } from './../../../api/palette'
 
 import {
   Button,
@@ -172,7 +172,7 @@ const theme = createMuiTheme({
 
 function MBScoreEditorContainer(props){
   const classes = useStyles();
-  const { sess, matchid, data, matchDetail, selected, handleSelectPlayer, expanded, setExpanded, mainClassSelected, setMainClassSelected } = props
+  const { sess, matchid, data, matchDetail, selected, handleSelectPlayer, expanded, setExpanded, mainClassSelected, setMainClassSelected, setupState } = props
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
 
@@ -257,6 +257,7 @@ function MBScoreEditorContainer(props){
     <div id="mb-scoreeditor-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto', marginBottom: 16 }}>
         <GreenTextButton
+          disabled={!setupState}
           className={classes.selectPlayerButton}
           variant="outlined"
           onClick={expandHandler}>
@@ -493,7 +494,7 @@ function MBScoreEditorContainer(props){
 
 export default function MBScoreEditor(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, setupState, pageOrganizer, pageData } = props
   const tempArr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -501,7 +502,7 @@ export default function MBScoreEditor(props){
   const [ oldSelected, setOldSelected ] = React.useState(null)
   const [ arrScore, setArrScore ] = React.useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
   const [ gridWidth, setGridWidth ] = React.useState(0)
-  const [ expanded, setExpanded ] = React.useState(true)
+  const [ expanded, setExpanded ] = React.useState(setupState)
   const [ predictScore, setPredictScore ] = React.useState(0)
   const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
@@ -739,6 +740,22 @@ export default function MBScoreEditor(props){
 
   return(
     <div className={classes.root}>
+      { !setupState &&
+        <div style={{ display: 'flex', marginBottom: 24 }}>
+          <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
+            { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+          </Typography>
+          <Link to={
+            sess.typeid === 'admin' ?
+            `/admin/match/${matchid}` :
+            `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
+            }>
+            <BTN.RedOutlined style={{ color: red[600], fontWeight: 600 }}>
+              { ( sess && sess.language === 'TH' ) ? "กลับไปขั้นตอนการตั้งค่า์" : 'Go back to Setup step.' }
+            </BTN.RedOutlined>
+          </Link>
+        </div>
+      }
       <MBScoreEditorContainer
         {...props}
         data={data}

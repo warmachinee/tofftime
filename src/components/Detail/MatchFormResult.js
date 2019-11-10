@@ -165,6 +165,7 @@ export default function MatchFormResult(props) {
       'loadmatchsystem', {
         action: 'userscore',
         matchid: parseInt(props.computedMatch.params.matchid),
+        mainclass: 1
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setMatchDetail(d)

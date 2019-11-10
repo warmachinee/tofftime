@@ -100,6 +100,7 @@ export default function Schedule(props) {
       'loadmatchsystem', {
         action: 'userscore',
         matchid: parseInt(props.computedMatch.params.matchid),
+        mainclass: 1
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(d.team && d.team.length > 0){
@@ -113,7 +114,6 @@ export default function Schedule(props) {
           variant: 'error',
           autoHideDuration: 2000
         })
-        consol
         setTimeout(()=>{
           window.location.href = `/match/${props.computedMatch.params.matchid}`
         }, 2000)

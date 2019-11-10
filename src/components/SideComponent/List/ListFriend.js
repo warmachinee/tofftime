@@ -12,6 +12,7 @@ import {
   Avatar,
   Typography,
   Collapse,
+  Tooltip,
 
 } from '@material-ui/core'
 
@@ -91,15 +92,18 @@ export default function ListFriend(props) {
       <List>
         <ListItem button
           onClick={()=>( data && data.length > 0 ) ? handleExpand('friend') : toggleAddFriend()}>
-          <ListItemIcon>
-            { ( data && data.length > 0 ) ?
-              (
-                expanded.friend ? <ExpandLess /> : <ExpandMore />
-              )
-              :
-              <Search />
-            }
-          </ListItemIcon>
+          { ( data && data.length > 0 ) ?
+            <ListItemIcon>
+              { expanded.friend ? <ExpandLess /> : <ExpandMore /> }
+            </ListItemIcon>
+            :
+            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ค้นหาเพื่อน" : 'Search Friend' } placement="right">
+              <ListItemIcon>
+                <Search />
+              </ListItemIcon>
+            </Tooltip>
+
+          }
           <ListItemText
             primary={
               ( data && data.length > 0 ) ?
@@ -114,9 +118,11 @@ export default function ListFriend(props) {
           { data && data.length > 0 &&
             <ListItem button
               onClick={()=>toggleAddFriend()}>
-              <ListItemIcon>
-                <Search />
-              </ListItemIcon>
+              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ค้นหาเพื่อน" : 'Search Friend' } placement="right">
+                <ListItemIcon>
+                  <Search />
+                </ListItemIcon>
+              </Tooltip>
               <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add friend' } />
             </ListItem>
           }
@@ -192,14 +198,18 @@ function ListFriendItem(props) {
     <React.Fragment>
       <ListItem button
         onClick={handleMenuClick}>
-        <ListItemIcon>
-          { data.photopath ?
-            <Avatar className={classes.avatarImage}
-              src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-            :
-            <AccountCircle classes={{ root: classes.avatar }} />
-          }
-        </ListItemIcon>
+        <Tooltip
+          title={`${data.fullname} ${data.lastname}${data.nickname !== '-'? ` (${data.nickname})` : ''}`}
+          placement="right">
+          <ListItemIcon>
+            { data.photopath ?
+              <Avatar className={classes.avatarImage}
+                src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+              :
+              <AccountCircle classes={{ root: classes.avatar }} />
+            }
+          </ListItemIcon>
+        </Tooltip>
         <ListItemText
           primary={
             <React.Fragment>

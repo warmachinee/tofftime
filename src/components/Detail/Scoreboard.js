@@ -4,14 +4,17 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import * as API from './../../api'
 import { primary } from './../../api/palette'
 
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import {
+  Tabs,
+  Tab,
+  Paper,
+  Menu,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
+
+} from '@material-ui/core';
 
 import ScoreTable from './ScoreTable'
 import PrintPDF from './../export/PrintPDF'
@@ -105,7 +108,7 @@ const StyledTab = withStyles(theme => ({
 
 export default function Scoreboard(props) {
   const classes = useStyles();
-  const { sess, data, userscore, matchClass, matchid, token, setCSRFToken } = props
+  const { sess, data, userscore, matchClass, matchid, token, setCSRFToken, mainClassSelected, setMainClassSelected } = props
   const [ value, setValue ] = React.useState(0);
   const [ reward, setReward ] = React.useState(null)
 
@@ -118,7 +121,8 @@ export default function Scoreboard(props) {
       props.token,
       'loadmatchsystem', {
         action: 'reward',
-        matchid: matchid
+        matchid: matchid,
+        mainclass: parseInt(mainClassSelected)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(
@@ -141,12 +145,28 @@ export default function Scoreboard(props) {
   }
 
   React.useEffect(()=>{
-    console.log(matchClass);
     handleFetch()
   },[ ])
 
   return (
     <div className={classes.root}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        { data && data.scorematch !== 0 &&
+          <FormControl className={classes.formControl}>
+            <InputLabel>Main Class</InputLabel>
+            <Select
+              value={mainClassSelected}
+              onChange={e => setMainClassSelected(e.target.value)}>
+              { data &&
+                data.mainclass.map( d =>
+                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                    {d.mainclass}
+                  </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+        }
+      </div>
       <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
         <StyledTabs
           value={value}

@@ -19,6 +19,10 @@ import {
   TextField,
   Button,
   Typography,
+  Menu,
+  MenuItem,
+  InputLabel,
+  Select,
 
 } from '@material-ui/core';
 
@@ -98,6 +102,10 @@ const useStyles = makeStyles(theme => ({
     fontSize: 24,
     fontWeight: 600
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
 
 }))
 
@@ -119,12 +127,13 @@ export default function ScoreBoardCharity(props){
   const [ editting, setEditting ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
   const [ userscore, setUserscore ] = React.useState(null)
+  const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
   function handlePlayerLimitCal(data){
     const arrLength = []
     const userscore = data.userscore
-    if(data.class){
-      data.class.forEach( e =>{
+    if(data.mainclass[parseInt(mainClassSelected) - 1].values){
+      data.mainclass[parseInt(mainClassSelected) - 1].values.forEach( e =>{
         var userscoreFiltered = userscore.filter( item =>{ return item.classno === e.classno } )
         //console.log(userscoreFiltered)
         arrLength.push(userscoreFiltered.length)
@@ -165,7 +174,8 @@ export default function ScoreBoardCharity(props){
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',
-        matchid: parseInt(props.computedMatch.params.matchid)
+        matchid: parseInt(props.computedMatch.params.matchid),
+        mainclass: parseInt(mainClassSelected)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(d.status === 'wrong params'){
@@ -209,8 +219,11 @@ export default function ScoreBoardCharity(props){
 
   React.useEffect(()=>{
     response()
-    handleFetch()
   },[ ])
+
+  React.useEffect(()=>{
+    handleFetch()
+  },[ mainClassSelected ])
 
   function playerLimitComponent(){
 
@@ -241,8 +254,8 @@ export default function ScoreBoardCharity(props){
   function userListComponent(){
     return (
       <div className={classes.userlistGrid}>
-        { data.class &&
-          data.class.map( d =>
+        { data.mainclass[parseInt(mainClassSelected) - 1].values &&
+          data.mainclass[parseInt(mainClassSelected) - 1].values.map( d =>
             <div key={d.classno} className={classes.userlistChildGrid}>
               {userListTable(d, d.classname)}
             </div>
@@ -340,6 +353,23 @@ export default function ScoreBoardCharity(props){
     <Paper className={classes.root}>
       <GoBack />
       { data && userscore && playerLimitComponent() }
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        { data && data.scorematch !== 0 &&
+          <FormControl className={classes.formControl}>
+            <InputLabel>Main Class</InputLabel>
+            <Select
+              value={mainClassSelected}
+              onChange={e => setMainClassSelected(e.target.value)}>
+              { data &&
+                data.mainclass.map( d =>
+                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                    {d.mainclass}
+                  </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+        }
+      </div>
       { data && userListComponent() }
     </Paper>
   );

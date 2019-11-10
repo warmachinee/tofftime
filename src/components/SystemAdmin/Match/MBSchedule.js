@@ -455,12 +455,12 @@ export default function MBSchedule(props){
     <div className={classes.root}>
       <List className={classes.listRoot}>
         { matchDetail && matchDetail.team && matchDetail.team.length > 0 &&
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
             <a href={`/schedule/${matchid}`}
               target='_blank'
               style={{ textDecoration: 'none', color: 'inherit' }}>
               <GreenTextButton className={classes.controlsEditButton}>
-                <ClassIcon className={classes.controlsEditButtonIcon} />
+                {/*<ClassIcon className={classes.controlsEditButtonIcon} />*/}
                 { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
               </GreenTextButton>
             </a>
