@@ -23,7 +23,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { LDCircular } from './../../../loading/LDCircular'
 
 const Location = Loadable({
-  loader: () => import(/* webpackChunkName: "Location" */'./../Course/Location'),
+  loader: () => import(/* webpackChunkName: "Location" */'./../../../SystemAdmin/Course/Location'),
   loading: () => <LDCircular />
 });
 

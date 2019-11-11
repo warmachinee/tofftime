@@ -112,7 +112,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     flexGrow: 1,
     minHeight: 300,
-    marginTop: 24,
     marginBottom: 24,
   },
   title: {
@@ -282,7 +281,7 @@ function MatchManagementTabs(props){
 
 function SetUpMatchComponent(props){
   const classes = useStyles();
-  const { warning } = props
+  const { sess, warning } = props
   const SETUP_STEP = [
     {
       variant: 'detail',
@@ -313,7 +312,8 @@ function SetUpMatchComponent(props){
           key={d.variant}
           icon={d.icon}
           variant={d.variant}
-          warning={warning ? warning[d.variant] : false} />
+          warning={warning ? warning[d.variant] : false}
+          sess={sess} />
       )}
     </div>
   );
@@ -321,7 +321,7 @@ function SetUpMatchComponent(props){
 
 function ManagementMatchComponent(props){
   const classes = useStyles();
-  const { warning } = props
+  const { sess, warning, isSetup } = props
 
   const MANAGEMENT_STEP = [
     {
@@ -350,7 +350,8 @@ function ManagementMatchComponent(props){
           icon={d.icon}
           variant={d.variant}
           warning={warning ? warning[d.variant] : false}
-          greyScale={warning ? warning[d.variant] : false} />
+          greyScale={warning ? (isSetup ? false : warning[d.variant]) : false}
+          sess={sess} />
       )}
       <div style={{ width: 120, margin: '24px auto' }} />
     </div>
@@ -359,29 +360,94 @@ function ManagementMatchComponent(props){
 
 function MenuCard(props){
   const classes = useStyles();
-  const { variant, icon, warning, greyScale } = props
+  const { sess, variant, icon, warning, greyScale, } = props
   const warningStyle = (warning) && (
     greyScale ?
-    { color: grey[600], opacity: .8 }
+    { color: grey[600], opacity: .7, background: grey[200] }
     :
     { border: `3px solid ${red[600]}` }
   )
 
+  function getVariant(){
+    switch (variant) {
+      case 'invitation':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
+        }
+        break;
+      case 'group':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Group' ),
+        }
+        break;
+      case 'schedule':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule' ),
+        }
+        break;
+      case 'player':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "จัดการผู้เล่น" : 'Manage Player' ),
+        }
+        break;
+      case 'scorecard':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Scorecard' ),
+        }
+        break;
+      case 'playoff':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+        }
+        break;
+      case 'reward':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+        }
+        break;
+      case 'admin':
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+        }
+        break;
+      default:
+        return {
+          label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
+        }
+    }
+  }
+
   return (
     <Card className={classes.card} elevation={3}>
-      <Link to={`${window.location.pathname}#${variant}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-        <CardActionArea className={classes.cardActionArea} style={{ ...warningStyle  }}>
+      { (warning && greyScale) ?
+        <div className={classes.cardActionArea} style={{ alignItems: 'center', ...warningStyle  }}>
           <Badge
             invisible={!(warning ? (greyScale ? false : true) : (false))}
             badgeContent={<ErrorIcon />}
             classes={{ anchorOriginTopRightRectangle: classes.anchorOriginTopRightRectangle }}>
             <div className={classes.menuCardIconGrid}>{icon}</div>
           </Badge>
-          <Typography style={{ textTransform: 'capitalize', marginBottom: 16 }}>{variant}</Typography>
-        </CardActionArea>
-      </Link>
+          <Typography style={{ textAlign: 'center', textTransform: 'capitalize', marginBottom: 16 }}>
+            {getVariant().label}
+          </Typography>
+        </div>
+        :
+        <Link to={`${window.location.pathname}#${variant}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <CardActionArea
+            className={classes.cardActionArea} style={{ ...warningStyle  }}>
+            <Badge
+              invisible={!warning}
+              badgeContent={<ErrorIcon />}
+              classes={{ anchorOriginTopRightRectangle: classes.anchorOriginTopRightRectangle }}>
+              <div className={classes.menuCardIconGrid}>{icon}</div>
+            </Badge>
+            <Typography style={{ textAlign: 'center', textTransform: 'capitalize', marginBottom: 16 }}>
+              {getVariant().label}
+            </Typography>
+          </CardActionArea>
+        </Link>
+      }
     </Card>
-
   );
 }
 
@@ -393,10 +459,20 @@ export default function MatchEditor(props){
   const [ data, setData ] = React.useState(null)
   const [ warningObj, setWarningObj ] = React.useState(null)
   const [ helpState, setHelpState ] = React.useState(false)
+  const [ mainRequest, setMainRequest ] = React.useState(false)
+  const isSetup = warningObj && !(
+    warningObj.detail ||
+    warningObj.invitation ||
+    warningObj.group ||
+    /*warningObj.schedule ||*/
+    warningObj.player
+  )
 
   const passingProps = {
     ...props,
     matchid: param,
+    isSetup: isSetup,
+    warningObj: warningObj
   }
 
   function handleClickHelpState(){
@@ -404,6 +480,7 @@ export default function MatchEditor(props){
   }
 
   async function handleRequestMain(){
+    setMainRequest('pending')
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
       token? token : resToken.token,
@@ -433,13 +510,13 @@ export default function MatchEditor(props){
       setWarningObj({
         detail: false,
         invitation: Boolean(d.formlist),
-        class: Boolean(d.classgroup),
+        group: Boolean(d.classgroup),
         schedule: Boolean(d.schedule),
-        player: false,
+        player: Boolean(d.classgroup) && Boolean(d.formlist),
         scorecard: Boolean(d.userscore),
-        playoff: false,
+        playoff: Boolean(d.userscore),
         reward: Boolean(d.reward),
-        admin: Boolean(d.admin),
+        admin: false /*/admin/.test(d.admin)*/,
       })
     })
   }
@@ -478,6 +555,21 @@ export default function MatchEditor(props){
             d.status !== 'wrong params'
           ){
             setData(d)
+            setMainRequest(function(){
+              switch (true) {
+                case d.mainstatus === 0 && d.mainrequest === 'complete':
+                  return 'complete'
+                  break;
+                case d.mainstatus === 1 || d.mainrequest === 'complete':
+                  return 'reject'
+                  break;
+                case d.mainstatus === 0 && d.mainrequest === 'pending':
+                  return 'pending'
+                  break;
+                default:
+                  return 'none'
+              }
+            }())
           }else{
             handleSnackBar({
               state: true,
@@ -536,15 +628,8 @@ export default function MatchEditor(props){
           id: 5,
           label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Player Scorecard' ),
           component: (
-            <MBScoreEditor {...passingProps} setupState={
-                warningObj && (
-                  warningObj.detail &&
-                  warningObj.invitation &&
-                  warningObj.class &&
-                  warningObj.schedule &&
-                  warningObj.player
-                )
-              } />
+            <MBScoreEditor {...passingProps}
+              warningObj={warningObj} />
           )
         }
         break;
@@ -636,6 +721,43 @@ export default function MatchEditor(props){
     }
   }
 
+  function requestMainPageComponent(){
+    return (
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+        { (mainRequest === 'pending') ?
+          <Button disabled>Pending</Button>
+          :
+          <BTN.Primary
+            style={{ textTransform: 'none' }} onClick={handleRequestMain}>
+            Toff-time Page
+          </BTN.Primary>
+        }
+        <StyledTooltip
+          PopperProps={{
+            disablePortal: true,
+          }}
+          onClose={()=>setHelpState(false)}
+          open={helpState}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          title={
+            <Typography>
+              { ( sess && sess.language === 'TH' ) ?
+                "ส่งคำขอเพื่อแสดงการแข่งขันนี้ในหน้า Toff-time"
+                :
+                'Send a request to show this Match on the Toff-time page.'
+              }
+            </Typography>
+          }>
+          <IconButton onClick={handleClickHelpState}>
+            <HelpIcon fontSize="small" style={{ color: mainRequest === 'pending' ? 'inherit' : primary[600] }} />
+          </IconButton>
+        </StyledTooltip>
+      </div>
+    );
+  }
+
   React.useEffect(()=>{
     if(props.location){
       const match = matchPath( props.location.pathname, {
@@ -657,59 +779,71 @@ export default function MatchEditor(props){
 
   return ( !/localhost/.test(window.location.href) ? param : true) && (
     <div className={classes.root}>
-      <GoBack />
+      <div style={{ position: 'relative' }}>
+        <GoBack />
+        { hashParam !== '' &&
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute', top: 14 }}>
+            <Link to={
+                sess.typeid === 'admin' ?
+                `/admin/match/${matchid}` :
+                `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${param}`
+              }
+              style={{ textDecoration: 'none', color: 'inherit' }}>
+              <BTN.PrimaryOutlined style={{ textTransform: 'none' }}>
+                { ( sess && sess.language === 'TH' ) ? "เมนูหลัก" : 'Main menu' }
+              </BTN.PrimaryOutlined>
+            </Link>
+          </div>
+        }
+      </div>
       <Typography component="div">
         { BTN && param &&
           <BTN.NoStyleLink to={`/match/${param}`}>
-            <Box className={classes.title} fontWeight={600} m={1} style={{ cursor: 'pointer' }}>
+            <Box className={classes.title} fontWeight={600} style={{ cursor: 'pointer' }}>
               {data && data.title}
             </Box>
           </BTN.NoStyleLink>
         }
       </Typography>
-      { param &&
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
-          <BTN.Primary style={{ textTransform: 'none' }} onClick={handleRequestMain}>
-            Toff-time Page
-          </BTN.Primary>
-          <StyledTooltip
-            PopperProps={{
-              disablePortal: true,
-            }}
-            onClose={()=>setHelpState(false)}
-            open={helpState}
-            disableFocusListener
-            disableHoverListener
-            disableTouchListener
-            title={
-              <Typography>
-                { ( sess && sess.language === 'TH' ) ?
-                  "ส่งคำขอเพื่อแสดงการแข่งขันนี้ในหน้า Toff-time"
-                  :
-                  'Send a request to show this Match on the Toff-time page.'
-                }
-              </Typography>
-            }>
-            <IconButton onClick={handleClickHelpState}>
-              <HelpIcon fontSize="small" style={{ color: primary[600] }} />
-            </IconButton>
-          </StyledTooltip>
-        </div>
-      }
       { hashParam === ''?
         <React.Fragment>
+          { param && data &&
+            function(){
+              switch (mainRequest) {
+                case 'complete':
+                  return false
+                  break;
+                case 'pending':
+                  return true
+                  break;
+                case 'reject':
+                  return false
+                  break;
+                default:
+                  return true
+              }
+            }() &&
+            requestMainPageComponent()
+          }
           <LabelText text="Match Setup" />
-          <SetUpMatchComponent warning={warningObj} />
+          <SetUpMatchComponent warning={warningObj} sess={sess} />
           <Divider style={{ margin: '16px auto', width: '80%' }} />
           <LabelText text="Match Management" />
-          <ManagementMatchComponent warning={warningObj} />
+          {/* !isSetup &&
+            <div style={{ display: 'flex', marginTop: 24 }}>
+              <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
+                { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+              </Typography>
+            </div>*/
+          }
+          <ManagementMatchComponent warning={warningObj} isSetup={isSetup} sess={sess} />
         </React.Fragment>
         :
-        <div>
-          <LabelText text={`${getComponent().label}`} />
-          {getComponent().component}
-          <Divider style={{ margin: '36px auto', width: '80%' }} />
-          <div style={{ display: 'flex' }}>
+        <div style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute' }}>
+            {getComponent().id <= 4 && <Typography>{`${getComponent().id + 1}/5`}</Typography>}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             { getComponent().id !== 0 &&
               <Link to={`${window.location.pathname}#${getComponentByIndex(getComponent().id - 1).hash}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -730,6 +864,9 @@ export default function MatchEditor(props){
               </Link>
             }
           </div>
+          <Divider style={{ margin: '12px auto', width: '80%' }} />
+          <LabelText text={`${getComponent().label}`} style={{ paddingTop: 0 }} />
+          {getComponent().component}
         </div>
       }
     </div>

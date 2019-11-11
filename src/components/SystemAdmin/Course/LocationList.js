@@ -23,6 +23,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import Skeleton from '@material-ui/lab/Skeleton';
 
+import AddIcon from '@material-ui/icons/Add';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import CreateIcon from '@material-ui/icons/Create';
@@ -166,14 +167,13 @@ const theme = createMuiTheme({
 export default function LocationList(props){
   const classes = useStyles();
   const {
-    sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, pageOrganizer,
-    setPageState, setEdittingField, setSelectedFieldVersion
+    BTN, sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, pageOrganizer,
+    setSelectedFieldVersion, setPageState
   } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ searchField, setSearchField ] = React.useState('')
   const [ selectedDeleteItem, handleSelectedDeleteItem ] = React.useState(false)
-  const [ editting, setEditting ] = React.useState(false)
 
   function handleDelete(){
     handleDeleteField()
@@ -187,11 +187,6 @@ export default function LocationList(props){
   function handleClose(){
     setOpen(false)
     handleSelectedDeleteItem(null)
-  }
-
-  function handleEdit(d){
-    setPageState('edit')
-    setEdittingField(d)
   }
 
   function handleChangeField(e){
@@ -269,14 +264,9 @@ export default function LocationList(props){
   }
 
   React.useEffect(()=>{
-    if(editting){
-      handleLoadField()
-    }
-  },[ editting ])
-
-  React.useEffect(()=>{
-    handleLoadDefaultField()
     responseField()
+    handleLoadDefaultField()
+    //handleLoadField()
   },[ ])
 
   return(
@@ -310,22 +300,11 @@ export default function LocationList(props){
             }}
           />
         </ThemeProvider>
-        <div className={classes.editButtonGrid}>
-          <GreenTextButton className={classes.editButton}
-            variant={ editting? 'text' : 'outlined' }
-            onClick={()=>setEditting(!editting)}>
-            {
-              editting?
-              ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
-              :
-              ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' )
-            }
-          </GreenTextButton>
-        </div>
       </div>
       <List className={classes.list}>
         <Divider />
         { data &&
+          data.length > 0 ?
           data.map( d =>{
             return d && (
               <ListField
@@ -334,12 +313,22 @@ export default function LocationList(props){
                 data={d}
                 selectedField={selectedField}
                 setSelectedField={setSelectedField}
-                handleEdit={handleEdit}
                 handleOpen={handleOpen}
-                editting={editting}
                 />
             );
           })
+          :
+          <Typography component="div" style={{ width: '100%' }}>
+            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              { ( sess && sess.language === 'TH' ) ? "ไม่มีสนาม" : 'No course.' }
+            </Box>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+              <BTN.PrimaryOutlined onClick={()=>setPageState('create')}>
+                <AddIcon style={{ marginRight: 8 }} />
+                { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create course.' }
+              </BTN.PrimaryOutlined>
+            </div>
+          </Typography>
         }
       </List>
       <TemplateDialog
@@ -372,7 +361,7 @@ function ListField(props){
   const {
     API, sess, token, setCSRFToken, isSupportWebp,
     selectedField, setSelectedField, setSelectedFieldVersion,
-    data, handleEdit, handleOpen, editting
+    data, handleOpen
   } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ fieldVersion, setFieldVersion ] = React.useState(null)
@@ -434,16 +423,6 @@ function ListField(props){
         </ListItemIcon>
         <ListItemText primary={data.fieldname}
           {...(sess && sess.typeid !== 'admin' && data.fieldversion > 1)? { secondary: data.fieldversion + ' version' } : null } />
-        { editting &&
-          <ListItemSecondaryAction>
-            <IconButton onClick={()=>handleEdit(data)}>
-              <CreateIcon classes={{ root: classes.createIcon }} />
-            </IconButton>
-            <IconButton onClick={()=>handleOpen(data)}>
-              <DeleteIcon classes={{ root: classes.deleteIcon }} />
-            </IconButton>
-          </ListItemSecondaryAction>
-        }
       </ListItem>
       <Divider />
       { data && data.fieldversion > 1 &&

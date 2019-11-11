@@ -128,7 +128,7 @@ function _xhrPost(token, url, obj, func){
         //console.log(req.status);
       }
       if (req.status === 403){
-        window.location.href = '/'
+        window.location.replace('/');
       }
       /*
       if (req.status === 504){

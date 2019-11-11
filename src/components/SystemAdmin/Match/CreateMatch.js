@@ -37,7 +37,7 @@ const MatchStepper = Loadable({
 });
 
 const Location = Loadable({
-  loader: () => import(/* webpackChunkName: "Location" */'./Location'),
+  loader: () => import(/* webpackChunkName: "Location" */'./../Course/Location'),
   loading: () => <LDCircular />
 });
 
@@ -48,7 +48,6 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: 'auto',
     backgroundColor: grey[50],
-    cursor: 'pointer',
     boxSizing: 'border-box'
   },
   grid: {
@@ -333,13 +332,15 @@ function CreateMatchBody(props){
         if(selectedFile){
           handleCreatePicture(csrf, d)
         }else{
+          window.location.replace(`/user/management/match/${d.matchid}#detail`);
+          /*
           handleFetch()
           handleSnackBar({
             state: true,
             message: d.status,
             variant: /success/.test(d.status) ? d.status : 'error',
             autoHideDuration: /success/.test(d.status)? 2000 : 5000
-          })
+          })*/
         }
       }else{
         handleFetch()
@@ -373,6 +374,9 @@ function CreateMatchBody(props){
       variant: /success/.test(status) ? status : 'error',
       autoHideDuration: /success/.test(status)? 2000 : 5000
     })
+    if(/success/.test(status)){
+      window.location.replace(`/user/management/match/${d.matchid}#detail`);
+    }
     handleFetch()
   }
 

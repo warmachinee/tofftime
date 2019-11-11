@@ -17,6 +17,7 @@ import {
   TextField,
   InputAdornment,
   Typography,
+  Box,
   Menu,
   MenuItem,
   FormControl,
@@ -25,6 +26,7 @@ import {
 
 } from '@material-ui/core';
 
+import AddIcon from '@material-ui/icons/Add'
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 const useStyles = makeStyles(theme => ({
@@ -32,7 +34,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    marginTop: 24,
     boxSizing: 'border-box'
   },
   indicator: {
@@ -42,9 +43,6 @@ const useStyles = makeStyles(theme => ({
   scrollButtons: {
     color: primary[900],
     width: 50,
-  },
-  list: {
-    marginTop: 36
   },
   listText:{
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
@@ -331,7 +329,7 @@ function RewardContainer(props){
 
 export default function MBReward(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isSetup, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
@@ -394,8 +392,9 @@ export default function MBReward(props){
   async function handleEdit(){
     let classno = []
     let customsequence = []
-
-    classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
+    if(matchDetail.mainclass.values.length > 0){
+      classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
+    }
     customsequence.push(parseInt(rewardEdit))
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
@@ -424,7 +423,9 @@ export default function MBReward(props){
 
   async function handleReset(){
     let classno = []
-    classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
+    if(matchDetail.mainclass.values.length > 0){
+      classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
+    }
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -530,155 +531,189 @@ export default function MBReward(props){
   },[ window.innerWidth ])
 
   return(
-    <div className={classes.root}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        { matchDetail && matchDetail.scorematch !== 0 &&
-          <FormControl className={classes.formControl}>
-            <InputLabel>Main Class</InputLabel>
-            <Select
-              value={mainClassSelected}
-              onChange={e => setMainClassSelected(e.target.value)}>
-              { matchDetail &&
-                matchDetail.mainclass.map( d =>
-                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                    {d.mainclass}
-                  </MenuItem>
-              )}
-            </Select>
-          </FormControl>
-        }
-      </div>
-      <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
-        <StyledTabs
-          value={value}
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="on"
-        >
-          { matchDetail && matchDetail.mainclass &&
-            matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d=>
-              d &&
-              <StyledTab key={d.classname} label={ matchDetail.scorematch !== 0? d.classname : API._handleAmateurClass(d.classno) } />
-            )
-          }
-        </StyledTabs>
-      </Paper>
-      <div className={classes.list}>
-        <div style={{ display: 'flex', height: 56, marginBottom: 16 }}>
-          { data && data.status &&
-            <RedButton className={classes.buttonMargin}
-              style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
-              onClick={handleCreate}>
-              { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
-            </RedButton>
-          }
-          { editting &&
-            <React.Fragment>
-              <ThemeProvider theme={theme}>
-                <TextField
-                  onChange={e =>handleRewardChange(e.target.value)}
-                  onFocus={e => e.target.select()}
-                  onKeyPress={e =>handleRewardKeyPress(e)}
-                  label={ ( sess && sess.language === 'TH' ) ? "ตัวเลข" : 'Number' }
-                  helperText={ ( sess && sess.language === 'TH' ) ? "จำนวนผู้เล่นที่จะได้รางวัล" : 'The number of the player who will get a reward.' }
-                  type="number"
-                />
-              </ThemeProvider>
-            <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
-              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
-            </GreenButton>
-            </React.Fragment>
-          }
-          { data && /not create/.test(data.status) &&
-            <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
-              { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
-            </GreenTextButton>
-          }
-          <div style={{ flex: 1 }} />
-          { window.innerWidth >= 500 && editting &&
-            <GreenTextButton
-              className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-              onClick={()=>setEditting(false)}>
-              { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
-            </GreenTextButton>
-          }
-          { !editting &&
-            <GreenButton
-              className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>
-              { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
-            </GreenButton>
-          }
+    <React.Fragment>
+      { !isSetup ?
+        <div style={{ display: 'flex', marginTop: 24 }}>
+          <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
+            { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+          </Typography>
+          <BTN.NoStyleLink
+            to={
+              sess.typeid === 'admin' ?
+              `/admin/match/${matchid}` :
+              `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
+              }>
+            <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
+              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+            </BTN.RedOutlined>
+          </BTN.NoStyleLink>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          { window.innerWidth < 500 && editting &&
-            <GreenTextButton
-              className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-              onClick={()=>setEditting(false)}>
-              { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
-            </GreenTextButton>
-          }
-        </div>
-        <List>
-          <ListItem
-            style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4 }}
+        :
+        <div className={classes.root}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            { matchDetail && matchDetail.scorematch !== 0 &&
+              <FormControl className={classes.formControl}>
+                <InputLabel>Main Class</InputLabel>
+                <Select
+                  value={mainClassSelected}
+                  onChange={e => setMainClassSelected(e.target.value)}>
+                  { matchDetail &&
+                    matchDetail.mainclass.map( d =>
+                      <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                        {d.mainclass}
+                      </MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            }
+          </div>
+          <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
+            <StyledTabs
+              value={value}
+              onChange={handleChange}
+              variant="scrollable"
+              scrollButtons="on"
             >
-            <ListItemText style={{ color: 'white' }} className={classes.listText}
-              primary={
-                window.innerWidth < 700?
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
-                :
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
-              } />
-            { window.innerWidth >= 700 &&
-              <ListItemText style={{ color: 'white' }} className={classes.listText}
-                primary={ ( ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' )  } />
-            }
-            { !( editting && window.innerWidth < 550 ) &&
-              <ListItemText style={{ color: 'white' }} className={classes.listPrize}
-                primary={ ( sess && sess.language === 'TH' ) ? "เงินรางวัล" : 'Prize' } />
-            }
-          </ListItem>
-        </List>
-        <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .5 }}>
-          { data && !data.status && matchDetail && matchDetail.mainclass &&
-            (
-              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>
-                value === i &&
-                data.filter( item =>{
-                  return item.classno === c.classno
-                })
-              )[value].length !== 0 ?
-              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>
-                value === i &&
-                data.filter( item =>{
-                  return item.classno === c.classno
-                }).map( (d, i) =>{
-                  return d && (
-                    <RewardContainer key={d.userid}
-                      {...props}
-                      data={d}
-                      setData={setData}
-                      setMatchDetail={setMatchDetail}
-                      editting={editting}
-                      mainClassSelected={mainClassSelected} />
-                  );
-                })
-              )
-              :
-              <ListItem>
-                <ListItemText className={classes.listText} style={{ textTransform: 'capitalize' }}
-                  primary="No Reward" />
+              { matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d=>
+                  d &&
+                  <StyledTab key={d.classname} label={ matchDetail.scorematch !== 0? d.classname : API._handleAmateurClass(d.classno) } />
+                )
+              }
+            </StyledTabs>
+          </Paper>
+          <div className={classes.list}>
+            <div style={{ display: 'flex', height: 56, marginBottom: 16, marginTop: 16 }}>
+              { data && data.status &&
+                <RedButton className={classes.buttonMargin}
+                  style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
+                  onClick={handleCreate}>
+                  { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
+                </RedButton>
+              }
+              { editting &&
+                <React.Fragment>
+                  <ThemeProvider theme={theme}>
+                    <TextField
+                      onChange={e =>handleRewardChange(e.target.value)}
+                      onFocus={e => e.target.select()}
+                      onKeyPress={e =>handleRewardKeyPress(e)}
+                      label={ ( sess && sess.language === 'TH' ) ? "ตัวเลข" : 'Number' }
+                      helperText={ ( sess && sess.language === 'TH' ) ? "จำนวนผู้เล่นที่จะได้รางวัล" : 'The number of the player who will get a reward.' }
+                      type="number"
+                    />
+                  </ThemeProvider>
+                <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
+                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+                </GreenButton>
+                </React.Fragment>
+              }
+              { data && /not create/.test(data.status) &&
+                <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
+                  { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
+                </GreenTextButton>
+              }
+              <div style={{ flex: 1 }} />
+              { window.innerWidth >= 500 && editting &&
+                <GreenTextButton
+                  className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
+                  onClick={()=>setEditting(false)}>
+                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                </GreenTextButton>
+              }
+              { !editting &&
+                <GreenButton
+                  className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>
+                  { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+                </GreenButton>
+              }
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              { window.innerWidth < 500 && editting &&
+                <GreenTextButton
+                  className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
+                  onClick={()=>setEditting(false)}>
+                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                </GreenTextButton>
+              }
+            </div>
+            <List>
+              <ListItem
+                style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4 }}
+                >
+                <ListItemText style={{ color: 'white' }} className={classes.listText}
+                  primary={
+                    window.innerWidth < 700?
+                    ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
+                    :
+                    ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
+                  } />
+                { window.innerWidth >= 700 &&
+                  <ListItemText style={{ color: 'white' }} className={classes.listText}
+                    primary={ ( ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' )  } />
+                }
+                { !( editting && window.innerWidth < 550 ) &&
+                  <ListItemText style={{ color: 'white' }} className={classes.listPrize}
+                    primary={ ( sess && sess.language === 'TH' ) ? "เงินรางวัล" : 'Prize' } />
+                }
               </ListItem>
-            )
-          }
-          { data && data.status &&
-            <ListItem>
-              <ListItemText className={classes.listText} style={{ textTransform: 'capitalize'}}
-                primary={getRewardStatus(data.status)} />
-            </ListItem>
-          }
-        </List>
-      </div>
-    </div>
+            </List>
+            <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .5 }}>
+              { data && !data.status && matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                (
+                  matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>
+                    value === i &&
+                    data.filter( item =>{
+                      return item.classno === c.classno
+                    })
+                  )[value].length !== 0 ?
+                  matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>
+                    value === i &&
+                    data.filter( item =>{
+                      return item.classno === c.classno
+                    }).map( (d, i) =>{
+                      return d && (
+                        <RewardContainer key={d.userid}
+                          {...props}
+                          data={d}
+                          setData={setData}
+                          setMatchDetail={setMatchDetail}
+                          editting={editting}
+                          mainClassSelected={mainClassSelected} />
+                      );
+                    })
+                  )
+                  :
+                  <ListItem>
+                    <Typography component="div" style={{ width: '100%' }}>
+                      <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                        { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่นได้รับรางวัล" : 'No players get the reward.' }
+                      </Box>
+                    </Typography>
+                  </ListItem>
+                )
+              }
+              { data && data.status &&
+                <ListItem>
+                  <Typography component="div" style={{ width: '100%' }}>
+                    <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                      {getRewardStatus(data.status)}
+                    </Box>
+                    { data.status === 'reward not create' &&
+                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                        <BTN.PrimaryOutlined onClick={handleCreate}>
+                          <AddIcon style={{ marginRight: 8 }} />
+                          { ( sess && sess.language === 'TH' ) ? "สร้างเงินรางวัล" : 'Create reward.' }
+                        </BTN.PrimaryOutlined>
+                      </div>
+                    }
+                  </Typography>
+                </ListItem>
+              }
+            </List>
+          </div>
+        </div>
+      }
+    </React.Fragment>
   );
 }

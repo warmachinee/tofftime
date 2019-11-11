@@ -141,7 +141,7 @@ const theme = createMuiTheme({
 
 export default function AddPlayerModal(props){
   const classes = useStyles();
-  const { BTN, playerAction, sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp } = props
+  const { BTN, playerAction, sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp, handleDummyOpen } = props
 
   const [ data, setData ] = React.useState(null)
   const [ createState, setCreateState ] = React.useState(false)
@@ -278,6 +278,17 @@ export default function AddPlayerModal(props){
     }
   }
 
+  function handleLoadPersonDefault(){
+    if(sess){
+      const socket = socketIOClient( API._getWebURL() )
+      socket.emit('search-client-message', {
+        action: "person",
+        userid: sess.userid,
+        text: ''
+      })
+    }
+  }
+
   function responsePlayer(){
     if(sess){
       const socket = socketIOClient( API._getWebURL() )
@@ -289,6 +300,7 @@ export default function AddPlayerModal(props){
 
   React.useEffect(()=>{
     responsePlayer()
+    handleLoadPersonDefault()
   },[ ])
 
   return(
@@ -367,6 +379,11 @@ export default function AddPlayerModal(props){
             )
           }}
         />
+        <GreenTextButton
+          style={{ marginLeft: 16 }}
+          onClick={handleDummyOpen}>
+          { ( sess && sess.language === 'TH' ) ? "ดีมมี่" : 'Dummy' }
+        </GreenTextButton>
       </ThemeProvider>
       <List className={classes.root}>
         { data && !data.status &&
@@ -399,18 +416,26 @@ export default function AddPlayerModal(props){
           })
         }
       </List>
-      { searchUser && data && data.length === 0 &&
-        <Typography component="div" style={{ width: '100%' }}>
-          <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-            No Result? Create one.
-          </Box>
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-            <BTN.PrimaryOutlined onClick={()=>setCreateState(!createState)}>
-              <AddIcon style={{ marginRight: 8 }} />
-              Create New User
-            </BTN.PrimaryOutlined>
-          </div>
-        </Typography>
+      { data && data.length === 0 &&
+        ( searchUser ?
+          <Typography component="div" style={{ width: '100%' }}>
+            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์ ? สร้างผู้เล่นใหม่" : 'No Result? Create one.' }
+            </Box>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+              <BTN.PrimaryOutlined onClick={handleDummyOpen/*()=>setCreateState(!createState)*/}>
+                <AddIcon style={{ marginRight: 8 }} />
+                { ( sess && sess.language === 'TH' ) ? "สร้างผู้เล่นใหม่" : 'Create New User.' }
+              </BTN.PrimaryOutlined>
+            </div>
+          </Typography>
+          :
+          <Typography component="div" style={{ width: '100%' }}>
+            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              { ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่นที่คุณต้องการเชิญ" : 'Search player that you want to invite' }
+            </Box>
+          </Typography>
+        )
       }
     </div>
   );

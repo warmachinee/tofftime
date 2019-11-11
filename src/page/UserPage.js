@@ -179,8 +179,6 @@ export default function UserPage(props) {
   const [ pageList, setPageList ] = React.useState(null)
   const [ addFriendState, setAddFriendState ] = React.useState(false);
   const [ notiState, setNotiState ] = React.useState(false);
-  const [ createPageState, setCreatePageState ] = React.useState(false);
-  const [ createMatchState, setCreateMatchState ] = React.useState(false);
   const [ setAdminState, setSetAdminState ] = React.useState(false);
   const [ createPostState, setCreatePostState ] = React.useState(false);
   const [ notiData, setNotiData ] = React.useState(null);
@@ -216,11 +214,6 @@ export default function UserPage(props) {
     handleAddFriendClose: handleAddFriendClose,
     notiState: notiState,
     toggleNoti: toggleNoti,
-    createPageState: createPageState,
-    toggleCreatePage: toggleCreatePage,
-    createMatchState: createMatchState,
-    toggleCreateMatch: toggleCreateMatch,
-    handleCreateMatchClose: handleCreateMatchClose,
     setAdminState: setAdminState,
     toggleSetAdmin: toggleSetAdmin,
     createPostState: createPostState,
@@ -250,18 +243,6 @@ export default function UserPage(props) {
     if(notiState){
       handleReadNoti()
     }
-  }
-
-  function toggleCreatePage(){
-    setCreatePageState(!createPageState)
-  }
-
-  function toggleCreateMatch(){
-    setCreateMatchState(!createMatchState)
-  }
-
-  function handleCreateMatchClose(){
-    setCreateMatchState(false)
   }
 
   function handleDrawerClick(){
@@ -337,6 +318,11 @@ export default function UserPage(props) {
         }
         <RouteManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}
           {...passingProps} {...dialogProps} location={props.location} />
+
+        <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`}
+          render={()=> <CreateMatchDialog {...props} {...dialogProps} />} />
+        <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_page`}
+          render={()=> <CreatePage {...props} {...dialogProps} />} />
         <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}
           render={()=> <History {...props} {...dialogProps} />} />
         <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}
@@ -348,14 +334,6 @@ export default function UserPage(props) {
         {...dialogProps}
         notiData={notiData}
         setNotiData={setNotiData} />
-
-      <CreatePage
-        {...props}
-        {...dialogProps}  />
-
-      <CreateMatchDialog
-        {...props}
-        {...dialogProps} />
 
       <PageOrganizerSetAdmin
         {...props}

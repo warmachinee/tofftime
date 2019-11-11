@@ -251,7 +251,7 @@ function HCPPanel(props){
 
 export default function CourseEditor(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, edittingField, setEdittingField, handleEdittingClose, pageOrganizer, pageData } = props
+  const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, edittingField, setEdittingField, pageOrganizer, pageData, afterSuccess } = props
   const [ location, setLocation ] = React.useState(null)
   const [ holeScore, setHoleScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
   const [ hcpScore, setHCPScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
@@ -315,7 +315,7 @@ export default function CourseEditor(props){
     if(edittingField){
       setEdittingField(null)
     }
-    handleEdittingClose()
+    afterSuccess()
   }
 
   async function handleCreate(){
@@ -366,9 +366,13 @@ export default function CourseEditor(props){
           variant: /success/.test(d.status) ? d.status : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
-        try {
-          handleEditPicture(d.fieldid)
-        }catch(err) { console.log(err.message) }
+        if(/success/.test(d.status)){
+          if(selectedFile){
+            handleEditPicture(d.fieldid)
+          }else{
+            afterSuccess()
+          }
+        }
       })
     }else{
       handleSnackBar({
@@ -386,28 +390,24 @@ export default function CourseEditor(props){
       action: 'edit',
     };
 
-    if(selectedFile){
-      formData.append('fieldimage', selectedFile)
-      Object.assign(sendObj, {
-        fieldid: fieldid,
-        photopath: true,
-      });
-      const resToken = token? token : await API._xhrGet('getcsrf')
-      const d = await API._fetchPostFile(
-        sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem',
-        `?_csrf=${token? token : resToken.token}`, sendObj, formData)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
-      })
-      const res = await API._xhrGet('getcsrf')
-      setCSRFToken(res.token)
-      try {
-        handleEdittingClose()
-      }catch(err) { console.log(err.message) }
-    }
+    formData.append('fieldimage', selectedFile)
+    Object.assign(sendObj, {
+      fieldid: fieldid,
+      photopath: true,
+    });
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const d = await API._fetchPostFile(
+      sess.typeid === 'admin' ? 'fieldsystem' : 'ffieldsystem',
+      `?_csrf=${token? token : resToken.token}`, sendObj, formData)
+    handleSnackBar({
+      state: true,
+      message: d.status,
+      variant: /success/.test(d.status) ? d.status : 'error',
+      autoHideDuration: /success/.test(d.status)? 2000 : 5000
+    })
+    const res = await API._xhrGet('getcsrf')
+    setCSRFToken(res.token)
+    afterSuccess()
   }
 
   async function handleEdit(){
@@ -464,11 +464,18 @@ export default function CourseEditor(props){
         }
       })
       if(statusRes.every(item => /success/.test(item))){
-        handleEdittingClose()
+        if(selectedFile){
+          handleEditPicture(edittingField.fieldid)
+        }else{
+          afterSuccess()
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
       }
-      try {
-        handleEditPicture(edittingField.fieldid)
-      }catch(err) { console.log(err.message) }
     })
   }
 

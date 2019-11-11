@@ -2,7 +2,7 @@ import React from 'react';
 import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import * as API from './../../../api'
-import { primary, grey } from './../../../api/palette'
+import { primary, grey, red } from './../../../api/palette'
 
 import {
   Tabs,
@@ -30,7 +30,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: 0,
     width: '100%',
-    marginTop: 24,
     boxSizing: 'border-box',
     [theme.breakpoints.up(500)]: {
       padding: theme.spacing(1, 2),
@@ -240,7 +239,7 @@ function PlayoffContainer(props){
 
 export default function MBPlayoff(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isSetup, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
@@ -342,97 +341,117 @@ export default function MBPlayoff(props){
   },[ mainClassSelected ])
 
   return(
-    <div className={classes.root}>
-      <Typography component="div" style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box className={classes.notice} m={1}>
-          { ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select class' }
-        </Box>
-        { matchDetail && matchDetail.scorematch !== 0 &&
-          <FormControl className={classes.formControl}>
-            <InputLabel>Main Class</InputLabel>
-            <Select
-              value={mainClassSelected}
-              onChange={e => setMainClassSelected(e.target.value)}>
-              { matchDetail &&
-                matchDetail.mainclass.map( d =>
-                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                    {d.mainclass}
-                  </MenuItem>
+    <React.Fragment>
+      { !isSetup ?
+        <div style={{ display: 'flex', marginTop: 24 }}>
+          <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
+            { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+          </Typography>
+          <BTN.NoStyleLink
+            to={
+              sess.typeid === 'admin' ?
+              `/admin/match/${matchid}` :
+              `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
+              }>
+            <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
+              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+            </BTN.RedOutlined>
+          </BTN.NoStyleLink>
+        </div>
+        :
+        <div className={classes.root}>
+          <Typography component="div" style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box className={classes.notice} m={1}>
+              { ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select class' }
+            </Box>
+            { matchDetail && matchDetail.scorematch !== 0 &&
+              <FormControl className={classes.formControl}>
+                <InputLabel>Main Class</InputLabel>
+                <Select
+                  value={mainClassSelected}
+                  onChange={e => setMainClassSelected(e.target.value)}>
+                  { matchDetail &&
+                    matchDetail.mainclass.map( d =>
+                      <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                        {d.mainclass}
+                      </MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+            }
+          </Typography>
+          <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
+            <StyledTabs
+              value={value}
+              onChange={handleChange}
+              variant="scrollable"
+              scrollButtons="on"
+            >
+              { matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d =>
+                  d && <StyledTab key={d.classname}
+                  label={ matchDetail.scorematch !== 0 ? d.classname : API._handleAmateurClass(d.classno) } />
               )}
-            </Select>
-          </FormControl>
-        }
-      </Typography>
-      <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
-        <StyledTabs
-          value={value}
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="on"
-        >
-          { matchDetail && matchDetail.mainclass &&
-            matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d =>
-              d && <StyledTab key={d.classname}
-              label={ matchDetail.scorematch !== 0 ? d.classname : API._handleAmateurClass(d.classno) } />
-          )}
-        </StyledTabs>
-      </Paper>
-      <div className={classes.list}>
-        <List>
-          { data && !data.status &&
-            matchDetail && matchDetail.mainclass &&
-            matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>{
-              const filtered = c && data.filter( item =>{
-                return ( item && item.classno === c.classno )
-              })
-              return (
-                <React.Fragment key={i}>
-                  { value === i && filtered &&
-                    <React.Fragment>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-                        <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
-                          { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
-                        </GreenTextButton>
-                      </div>
-                      <ListItem className={classes.listItem}>
-                        <ListItemText style={{ color: 'white' }} className={classes.listText}
-                          primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' } />
-                        <ListItemText style={{ color: 'white' }} className={classes.listText}
-                          primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
-                        <ListItemIcon className={classes.listStatus}>
-                          <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>
-                            { ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' }
+            </StyledTabs>
+          </Paper>
+          <div className={classes.list}>
+            <List>
+              { data && !data.status &&
+                matchDetail && matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>{
+                  const filtered = c && data.filter( item =>{
+                    return ( item && item.classno === c.classno )
+                  })
+                  return (
+                    <React.Fragment key={i}>
+                      { value === i && filtered &&
+                        <React.Fragment>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                            <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
+                              { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
+                            </GreenTextButton>
                           </div>
-                        </ListItemIcon>
-                      </ListItem>
-                      { filtered.length > 1 &&
-                        filtered.map( d =>
-                          <PlayoffContainer
-                            key={d.userid}
-                            {...props}
-                            data={d}
-                            setData={setData}
-                            setMatchDetail={setMatchDetail}
-                            mainClassSelected={mainClassSelected} />
-                        )
-                      }
-                      { filtered.length <= 1 &&
-                        <ListItem>
-                          <Typography component="div" style={{ width: '100%' }}>
-                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                              { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่นเพลย์ออฟ" : 'No playoff player' }
-                            </Box>
-                          </Typography>
-                        </ListItem>
+                          <ListItem className={classes.listItem}>
+                            <ListItemText style={{ color: 'white' }} className={classes.listText}
+                              primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' } />
+                            <ListItemText style={{ color: 'white' }} className={classes.listText}
+                              primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
+                            <ListItemIcon className={classes.listStatus}>
+                              <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>
+                                { ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' }
+                              </div>
+                            </ListItemIcon>
+                          </ListItem>
+                          { filtered.length > 1 &&
+                            filtered.map( d =>
+                              <PlayoffContainer
+                                key={d.userid}
+                                {...props}
+                                data={d}
+                                setData={setData}
+                                setMatchDetail={setMatchDetail}
+                                mainClassSelected={mainClassSelected} />
+                            )
+                          }
+                          { filtered.length <= 1 &&
+                            <ListItem>
+                              <Typography component="div" style={{ width: '100%' }}>
+                                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่นเพลย์ออฟ" : 'No playoff player' }
+                                </Box>
+                              </Typography>
+                            </ListItem>
+                          }
+                        </React.Fragment>
                       }
                     </React.Fragment>
-                  }
-                </React.Fragment>
-              );
-            })
-          }
-        </List>
-      </div>
-    </div>
+                  );
+                })
+              }
+            </List>
+          </div>
+        </div>
+      }
+    </React.Fragment>
   );
 }

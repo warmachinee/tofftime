@@ -35,8 +35,8 @@ const CreateMatch = Loadable({
   loading: () => <LDCircular />
 });
 
-const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../../Utils/LabelText'),
   loading: () => <LDCircular />
 });
 
@@ -65,10 +65,10 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: grey[900],
   },
   tableDate: {
-    width: 120,
+    width: 150,
   },
   tableView: {
-    width: 100,
+    width: 75,
     textAlign: 'right'
   },
   tableDateText: {
@@ -397,13 +397,10 @@ export default function MatchBody(props){
 
   return(
     <div className={classes.root}>
-      <GoBack />
-      <Typography component="div">
-        <Box className={classes.title} fontWeight={600} m={1}>
-          { ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
-        </Box>
-      </Typography>
-      <CreateMatch setData={setData} setDataClassed={setDataClassed} setMatchOwnerStatus={setMatchOwnerStatus} {...props} />
+      <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
+      <div style={{ marginTop: 24 }}>
+        <CreateMatch setData={setData} setDataClassed={setDataClassed} setMatchOwnerStatus={setMatchOwnerStatus} {...props} />
+      </div>
       { sess && sess.typeid !== 'admin' &&
         <div style={{ marginTop: 24, boxSizing: 'border-box' }}>
           <FormControl component="fieldset" className={classes.formControl}>
@@ -497,7 +494,7 @@ export default function MatchBody(props){
                   style={{ textAlign: 'right' }}
                   primary={
                     <Typography
-                      style={{ fontStyle: 'oblique' }}
+                      style={{ fontStyle: 'oblique', fontSize: 14 }}
                       component="span"
                       variant="caption"
                       color="textPrimary"

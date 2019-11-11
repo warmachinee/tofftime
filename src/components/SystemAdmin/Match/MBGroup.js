@@ -2,7 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { primary, grey } from './../../../api/palette'
+import { primary, grey, red } from './../../../api/palette'
 
 import {
   Collapse,
@@ -12,12 +12,17 @@ import {
   ListItemIcon,
   IconButton,
   Paper,
+  Tab,
+  Tabs,
+  Typography,
+  Box,
 
 } from '@material-ui/core';
 
 import {
   ExpandMore,
   AddCircle,
+  Add as AddIcon,
 
 } from '@material-ui/icons';
 
@@ -33,11 +38,29 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    marginTop: 24,
     boxSizing: 'border-box',
     marginLeft: 'auto',
     marginRight: 'auto',
     maxWidth: 900
+  },
+  tabRoot: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+    display: 'flex',
+  },
+  tabs: {
+    borderRight: `1px solid ${theme.palette.divider}`,
+  },
+  indicator: {
+    backgroundColor: primary[600],
+    width: 4,
+  },
+  textColorInherit: {
+    opacity: .7
+  },
+  tabPanel: {
+    width: '80%',
+    padding: 12
   },
   listRoot: {
     marginTop: 16,
@@ -77,53 +100,33 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-function MainClassList(props){
+function TabPanel(props) {
   const classes = useStyles();
-  const { sess, matchClass } = props
-  const [ expand, setExpand ] = React.useState(false)
-  const [ lists, setLists ] = React.useState([])
-  const [ arrEdit, setArrEdit ] = React.useState([])
-  const [ arrEditColor, setArrEditColor ] = React.useState([])
-  const [ arrEditClassno, setArrEditClassno ] = React.useState([])
+  const { children, value, index, ...other } = props;
 
   return (
-    <React.Fragment>
-      { props.data && props.data.scorematch !== 0 ?
-        <React.Fragment>
-          <ListItem button onClick={()=>setExpand(!expand)}
-            style={{
-              marginTop: 16,
-              backgroundColor: primary[50],
-              boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
-            }}>
-            <ListItemText primary={matchClass ? 'Main Class ' + matchClass.mainclass : 'Main Class' } />
-            <IconButton
-              disableRipple
-              className={classes.expandIcon}
-              style={{ transform: expand?'rotate(180deg)':'rotate(0deg)' }}
-              onClick={()=>setExpand(!expand)}
-              aria-expanded={expand}
-              aria-label="Show more"
-            >
-              <ExpandMore />
-            </IconButton>
-          </ListItem>
-          <Collapse in={expand} timeout="auto" unmountOnExit>
-            <Paper className={classes.paper}>
-              <MatchClass {...props} />
-            </Paper>
-          </Collapse>
-        </React.Fragment>
-        :
-        <MatchClass {...props} />
-      }
-    </React.Fragment>
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`vertical-tabpanel-${index}`}
+      aria-labelledby={`vertical-tab-${index}`}
+      className={classes.tabPanel}
+      {...other}
+    >
+      {children}
+    </Typography>
   );
 }
 
 export default function MBGroup(props){
   const classes = useStyles();
   const { BTN, API, sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   async function handleFetchCreate(){
     if(data && data.mainclass){
@@ -133,7 +136,7 @@ export default function MBGroup(props){
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
           action: 'classadd',
           matchid: matchid,
-          classname: data.scorematch == 0 ? 1 : 'Class Number 1',
+          classname: data.scorematch == 0 ? 1 : 'Subgroup Number 1',
           mainclass: data.mainclass.length + 1
       }, (csrf, d) =>{
         handleSnackBar({
@@ -158,7 +161,6 @@ export default function MBGroup(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        console.log(d.mainclass);
         if(
           d.status !== 'class database error' ||
           d.status !== 'wrong matchid' ||
@@ -184,12 +186,8 @@ export default function MBGroup(props){
 
   return (
     <div className={classes.root}>
-      {/* data && data.status !== 'wrong params' &&
-        
-        */
-      }
       <List className={classes.listRoot}>
-        { data && data.mainclass && data.mainclass.length === 0 &&
+        {/* data && data.mainclass && data.mainclass.length === 0 &&
           <React.Fragment>
             <ListItem>
               <ListItemText
@@ -207,14 +205,9 @@ export default function MBGroup(props){
                   }
                 }()} />
             </ListItem>
-          </React.Fragment>
+          </React.Fragment>*/
         }
-        { data && data.mainclass && data.mainclass.length > 0 &&
-          data.mainclass.map((d, index) =>
-            <MainClassList key={index} {...props} matchClass={d} data={data} setData={setData} />
-          )
-        }
-        { data && ( data.scorematch == 0 ? !( data.mainclass && data.mainclass.length > 0 ) : true ) &&
+        { data && ( data.scorematch === 0 ? !( data.mainclass && data.mainclass.length > 0 ) : true ) &&
           <ListItem className={classes.addClass}>
             <ListItemIcon className={classes.addClassButtonGrid}>
               <BTN.PrimaryOutlined className={classes.addClassButton} variant="outlined" onClick={handleFetchCreate}>
@@ -225,6 +218,49 @@ export default function MBGroup(props){
           </ListItem>
         }
       </List>
+      { (data && data.mainclass && data.mainclass.length > 0) ?
+        <div className={classes.tabRoot}>
+          <Tabs
+            orientation="vertical"
+            variant="scrollable"
+            value={value}
+            onChange={handleChange}
+            aria-label="Vertical tabs example"
+            className={classes.tabs}
+            classes={{ indicator: classes.indicator }}>
+            { data &&
+              data.mainclass.map(d =>
+              <Tab
+                key={d.mainclass}
+                classes={{ textColorInherit: classes.textColorInherit }}
+                label={
+                  data && data.scorematch === 0 ?
+                  'Amateur Flight'
+                  :
+                  `Main group ${d.mainclass}`
+                } />
+            )}
+          </Tabs>
+          { data &&
+            data.mainclass.map((d, index) =>
+            <TabPanel key={d.mainclass} value={value} index={index}>
+              <MatchClass {...props} matchClass={d} data={data} setData={setData} />
+            </TabPanel>
+          )}
+        </div>
+        :
+        <Typography component="div" style={{ width: '100%' }}>
+          <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+            { ( sess && sess.language === 'TH' ) ? "สร้างกลุ่มการแข่งขัน" : 'Create the match group.' }
+          </Box>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+            <BTN.PrimaryOutlined onClick={handleFetchCreate}>
+              <AddIcon style={{ marginRight: 8 }} />
+              { ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create group.' }
+            </BTN.PrimaryOutlined>
+          </div>
+        </Typography>
+      }
     </div>
   );
 }

@@ -39,8 +39,8 @@ const CourseEditor = Loadable({
   loading: () => <LDCircular />
 });
 
-const GoBack = Loadable({
-  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../../Utils/LabelText'),
   loading: () => <LDCircular />
 });
 
@@ -224,12 +224,7 @@ export default function CourseBody(props){
 
   return(
     <div className={classes.root}>
-      <GoBack />
-      <Typography component="div">
-        <Box className={classes.title} fontWeight={600} m={1}>
-          { ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' }
-        </Box>
-      </Typography>
+      <LabelText text={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
       <List>
         <ListItem style={{ marginTop: 24, cursor: 'auto' }}>
           <ThemeProvider theme={theme}>
@@ -335,7 +330,7 @@ export default function CourseBody(props){
       <TemplateDialog open={editting} handleClose={handleEdittingClose} maxWidth={700}>
         <CourseEditor
           {...props}
-          handleEdittingClose={handleEdittingClose}
+          afterSuccess={handleEdittingClose}
           edittingField={edittingField}
           setEdittingField={setEdittingField} />
       </TemplateDialog>

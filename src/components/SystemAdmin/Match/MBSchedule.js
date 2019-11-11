@@ -26,6 +26,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Slide from '@material-ui/core/Slide';
 import Divider from '@material-ui/core/Divider';
 
+import AddIcon from '@material-ui/icons/Add';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -213,7 +214,6 @@ const theme = createMuiTheme({
 export default function MBSchedule(props){
   const classes = useStyles();
   const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
-  const [ edittingTeam, setEdittingTeam ] = React.useState(false);
   const [ teamState, setTeamState ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -287,11 +287,6 @@ export default function MBSchedule(props){
     }
     setChecked(newChecked);
   };
-
-  function handleDoneEdittingTeam(){
-    setEdittingTeam(!edittingTeam)
-    setChecked([])
-  }
 
   function handleSave(){
     let userid = []
@@ -436,7 +431,7 @@ export default function MBSchedule(props){
 
   React.useEffect(()=>{
     handleFetchSchedule()
-  },[ edittingTeam, teamState ])
+  },[ teamState ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -466,116 +461,91 @@ export default function MBSchedule(props){
             </a>
           </div>
         }
-        <ListItem className={classes.controls}>
+        <ListItem disableGutters className={classes.controls}>
           <GreenTextButton
             className={classes.button}
-            style={{ marginLeft: window.innerWidth > 700? 16 : 0, marginTop: window.innerWidth > 700? 0 : 16, }}
+            style={{ marginBottom: window.innerWidth > 700? 0 : 16, }}
             onClick={handleTeamOpen}
             variant="outlined">
             { matchDetail && matchDetail.team && matchDetail.team.length > 0?
               (
-                ( ( sess && sess.language === 'TH' ) ? "แก้ไขตารางเวลา" : 'Edit Schedule' ) + '( ' + matchDetail.team.length + ' )'
+                ( ( sess && sess.language === 'TH' ) ? "จัดการตารางเวลา" : 'Manage Schedule' ) + '( ' + matchDetail.team.length + ' )'
               )
               :
               ( ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create Schedule' )
             }
           </GreenTextButton>
           <div style={{ flex: 1 }} />
-          <div
-            className={classes.controlsEdit}
-            style={{
-              border: edittingTeam && '0 solid',
-              justifyContent: edittingTeam? 'flex-end' : 'space-around',
-            }}>
-            { edittingTeam?
-              <React.Fragment>
-                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingTeam}>
-                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
-                </GreenTextButton>
-                <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
-                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
-                </GreenButton>
-              </React.Fragment>
-              :
-              <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
-                { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
-              </GreenTextButton>
+          <GreenTextButton variant="outlined" className={classes.button} onClick={handleMenuClick}>
+            <AccessTimeIcon fontSize="large" style={{ color: primary[600], marginRight: 4 }} />
+            { selectedTeam !== 0 ? (
+              ( sess && sess.language === 'TH' ) ? "เวลาที่เลือก  : " : 'Selected Time  : '
+            ): (
+              ( sess && sess.language === 'TH' ) ? "เลือกเวลา" : 'Select Time'
+            ) }
+            { selectedTeam !== 0?
+              matchDetail && matchDetail.team &&
+              matchDetail.team.filter( item =>{
+                return item.teamno === selectedTeam
+              }).map( d =>
+                d &&
+                <React.Fragment key={d.teamname}>{d.teamname}</React.Fragment>
+              )
+              : ''
             }
-          </div>
+          </GreenTextButton>
         </ListItem>
-        { edittingTeam &&
-          <ListItem style={{ justifyContent: 'flex-end' }}>
-            <GreenTextButton
-              className={classes.button}
-              onClick={handleFetchSwitchHostForm}
-              variant="outlined">
-              { ( sess && sess.language === 'TH' ) ? "สลับผู้จัด" : 'Switch Host' }
-            </GreenTextButton>
-          </ListItem>
-        }
-        <ListItem className={classes.controlsSecondary}>
-          { edittingTeam &&
-            <React.Fragment>
-              <div style={{ display: 'flex' }}>
-                <AccessTimeIcon style={{ color: primary[600], marginRight: 4 }} />
-                <div style={{ color: primary[700], marginTop: 'auto', marginRight: 12, fontWeight: 600, fontSize: 16, }}>
-                  { selectedTeam !== 0 ? (
-                    ( sess && sess.language === 'TH' ) ? "เวลาที่เลือก  : " : 'Selected Time  : '
-                  ): (
-                    ( sess && sess.language === 'TH' ) ? "เลือกเวลา  : " : 'Select Time  : '
-                  ) }
-                </div>
-              </div>
-              <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
-                { selectedTeam !== 0?
-                  matchDetail && matchDetail.team &&
-                  matchDetail.team.filter( item =>{
-                    return item.teamno === selectedTeam
-                  }).map( d =>
-                    d &&
-                    <React.Fragment key={d.teamname}>{d.teamname}</React.Fragment>
-                  )
-                  : <React.Fragment>-</React.Fragment>
-                }
-              </GreenTextButton>
-            </React.Fragment>
+        <ListItem disableGutters>
+          <GreenTextButton
+            className={classes.button}
+            onClick={handleFetchSwitchHostForm}
+            variant="outlined">
+            { ( sess && sess.language === 'TH' ) ? "สลับผู้จัด" : 'Switch Host' }
+          </GreenTextButton>
+          <div style={{ flex: 1 }} />
+          { checked.length > 0 &&
+            <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
+              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+            </GreenButton>
           }
         </ListItem>
-        <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
-          <ThemeProvider theme={theme}>
-            <TextField
-              className={classes.searchBox}
-              variant="outlined"
-              placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search player' ) : '' }
-              value={searchUser}
-              onChange={e =>setSearchUser(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="primary"/>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    { searchUser?
-                      <IconButton onClick={()=>setSearchUser('')}>
-                        <ClearIcon color="inherit" fontSize="small"/>
-                      </IconButton>
-                      :
-                      <div style={{ width: 44 }}></div>
-                    }
-                  </InputAdornment>
-                )
-              }}
-            />
-          </ThemeProvider>
-        </ListItem>
+        { /*
+          <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
+            <ThemeProvider theme={theme}>
+              <TextField
+                className={classes.searchBox}
+                variant="outlined"
+                placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search player' ) : '' }
+                value={searchUser}
+                onChange={e =>setSearchUser(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon color="primary"/>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      { searchUser?
+                        <IconButton onClick={()=>setSearchUser('')}>
+                          <ClearIcon color="inherit" fontSize="small"/>
+                        </IconButton>
+                        :
+                        <div style={{ width: 44 }}></div>
+                      }
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </ThemeProvider>
+          </ListItem>*/
+        }
         <div style={{ overflow: 'auto', position: 'relative' }}>
           <ListItem role={undefined}
             style={{
               display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
             }}>
-            <ListItemText inset={edittingTeam} style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
+            <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
                 ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
@@ -591,6 +561,21 @@ export default function MBSchedule(props){
                 primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
             }
           </ListItem>
+          { matchDetail && matchDetail.team && matchDetail.team.length === 0 &&
+            <ListItem>
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { ( sess && sess.language === 'TH' ) ? "ยังไม่มีตารางเวลา" : 'No schedule yet.' }
+                </Box>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                  <BTN.PrimaryOutlined onClick={handleTeamOpen}>
+                    <AddIcon style={{ marginRight: 8 }} />
+                    { ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create schedule.' }
+                  </BTN.PrimaryOutlined>
+                </div>
+              </Typography>
+            </ListItem>
+          }
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
             { data && !data.status &&
               [
@@ -599,18 +584,14 @@ export default function MBSchedule(props){
                 return value && (
                   <React.Fragment key={value.userid}>
                     <ListItem role={undefined} button
-                      onClick={
-                        ()=>edittingTeam? handleToggle(value): console.log()}>
-                      { edittingTeam &&
-                        <ListItemIcon>
-                          <GreenCheckbox
-                            edge="start"
-                            checked={checked.indexOf(value) !== -1}
-                            tabIndex={-1}
-                            disableRipple />
-                        </ListItemIcon>
-                        /*<div style={{ height: 42, width: 42 }}></div>*/
-                      }
+                      onClick={()=>handleToggle(value)}>
+                      <ListItemIcon>
+                        <GreenCheckbox
+                          edge="start"
+                          checked={checked.indexOf(value) !== -1}
+                          tabIndex={-1}
+                          disableRipple />
+                      </ListItemIcon>
 
                       <ListItemText className={classes.listText}
                         primary={

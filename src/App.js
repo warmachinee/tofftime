@@ -263,6 +263,7 @@ const Footer = Loadable({
 });
 
 import MatchEditor from './components/SystemAdmin/Match/MatchEditor'
+import MBGroup from './components/SystemAdmin/Match/MBGroup'
 import RichTextEditor from './components/Utils/RichTextEditor'
 import NewsEditor from './components/SystemAdmin/News/NewsEditor'
 import DummyPlayer from './components/SystemAdmin/Match/DummyPlayer'
@@ -414,7 +415,7 @@ export default function App() {
             </Switch>
             :
             <div style={{ maxWidth: 1200, margin: 'auto' }}>
-              <NewsEditor {...passingProps} />
+              <MBGroup {...passingProps} />
             </div>
           }
 

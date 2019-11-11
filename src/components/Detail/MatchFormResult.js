@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Paper,
   Typography,
+  Box,
   List,
   ListItem,
   ListItemIcon,
@@ -16,6 +17,7 @@ import {
 } from '@material-ui/core'
 
 import {
+  Add as AddIcon,
   AccountCircle,
   LocationOn,
 
@@ -169,7 +171,7 @@ export default function MatchFormResult(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setMatchDetail(d)
-      document.title = `(Form) ${d.title} - T-off Time`
+      document.title = `( Form ) ${d.title} - T-off Time`
     })
     await handleFetchForm()
   }
@@ -200,14 +202,19 @@ export default function MatchFormResult(props) {
       { matchDetail &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h4">
-            { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }
+            { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Player register list' }
           </Typography>
-          <Typography gutterBottom variant="h5">{matchDetail.title}</Typography>
-          <Typography gutterBottom variant="h6" component="div" style={{ display: 'flex' }}>
-            <LocationOn style={{ color: COLOR.primary[600] }} />
-            {matchDetail.location} ({matchDetail.locationversion})
-          </Typography>
-          <Typography gutterBottom variant="subtitle2" color="textSecondary">{matchDetail.date}</Typography>
+          <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
+          <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
+            <Typography variant="h6">
+              {API._dateToString(matchDetail.date)}
+            </Typography>
+            <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+            <LocationOn style={{ color: COLOR.primary[600], marginRight: 4 }} />
+            <Typography variant="h6">
+              {matchDetail.location} ({matchDetail.locationversion})
+            </Typography>
+          </div>
           <List disablePadding style={{ marginTop: 16 }}>
             <ListItem style={{ backgroundColor: COLOR.grey[900] }}>
               <ListItemIcon className={classes.listPicture}>
@@ -223,6 +230,7 @@ export default function MatchFormResult(props) {
           </List>
           <List disablePadding>
             { data &&
+              data.length > 0 ?
               data.map( (d, i) =>
                 <React.Fragment key={i}>
                   <ListItem style={{
@@ -283,6 +291,12 @@ export default function MatchFormResult(props) {
                   <Divider />
                 </React.Fragment>
               )
+              :
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+                </Box>
+              </Typography>
             }
           </List>
         </div>

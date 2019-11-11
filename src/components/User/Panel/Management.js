@@ -127,10 +127,6 @@ export default function Management(props) {
       handleDrawerClose: props.handleDrawerClose,
       notiState: props.notiState,
       toggleNoti: props.toggleNoti,
-      createPageState: props.createPageState,
-      toggleCreatePage: props.toggleCreatePage,
-      createMatchState: props.createMatchState,
-      toggleCreateMatch: props.toggleCreateMatch,
       setAdminState: props.setAdminState,
       toggleSetAdmin: props.toggleSetAdmin,
       createPostState: props.createPostState,
@@ -184,7 +180,7 @@ export default function Management(props) {
   }
 
   return (
-    <Paper className={classes.root}>
+    <div className={classes.root}>
       { (sess && sess.status === 1) &&
         <React.Fragment>
           <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`} component={SystemComponent} />
@@ -196,6 +192,6 @@ export default function Management(props) {
           {/*<RouteUser path={`/user/mangament/user`} {...passingProps} />*/}
         </React.Fragment>
       }
-    </Paper>
+    </div>
   );
 }

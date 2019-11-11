@@ -275,9 +275,10 @@ export default function Header(props) {
                   </React.Fragment>
                 }
                 <div className={classes.grow} />
-                <IconButton style={{ marginRight: 8 }} onClick={()=>setSearchState(!searchState)}>
-                  <SearchIcon />
-                </IconButton>
+                <Button variant="text" style={{ marginRight: 8 }} onClick={()=>setSearchState(!searchState)}>
+                  <SearchIcon style={{ marginRight: 4 }} />
+                  Search
+                </Button>
                 { ( sess && sess.status === 1 ) &&
                   <React.Fragment>
                     {

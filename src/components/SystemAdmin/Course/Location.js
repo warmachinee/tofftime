@@ -1,4 +1,4 @@
-import React from 'react';
+  import React from 'react';
 import { Link } from "react-router-dom";
 import Loadable from 'react-loadable';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -21,8 +21,8 @@ const LocationList = Loadable({
   loading: () => <LDCircular />
 });
 
-const LocationEditor = Loadable({
-  loader: () => import(/* webpackChunkName: "LocationEditor" */'./LocationEditor'),
+const CourseEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "CourseEditor" */'./CourseEditor'),
   loading: () => <LDCircular />
 });
 
@@ -33,6 +33,7 @@ const useStyles = makeStyles(theme => ({
   title: {
     color: primary[900],
     fontSize: 18,
+    textAlign: 'center'
   },
   notice: {
     fontFamily: 'monospace',
@@ -95,11 +96,10 @@ export default function Location(props) {
   const classes = useStyles();
   const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, handleClose, selectedFieldVersion } = props
   const [ pageState, setPageState ] = React.useState('select')
-  const [ edittingField, setEdittingField ] = React.useState(null)
 
   return (
     <div className={classes.root}>
-      { ( pageState === 'edit' || pageState === 'create' ) &&
+      { ( pageState === 'create' ) &&
         <IconButton className={classes.back} onClick={()=>setPageState('select')}>
           <ArrowBackIcon classes={{ root: classes.backIcon }} />
         </IconButton>
@@ -113,18 +113,18 @@ export default function Location(props) {
               <CreateIcon className={classes.createIcon} color="inherit"/>
               { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create field' }
             </GreenButton>
-            <GreenTextButton className={classes.doneButton} onClick={handleClose}>Done</GreenTextButton>
+            { sess && sess.typeid === 'admin' &&
+              <GreenTextButton className={classes.doneButton} onClick={handleClose}>Done</GreenTextButton>
+            }
+
           </div>
+          { selectedField &&
+            <Typography variant="h6">
+              {selectedField.fieldname}
+              {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
+            </Typography>
+          }
           <Typography component="div">
-            <div style={{ display: 'flex' }}>
-              <Box style={{ width: '30%' }} className={classes.title} fontWeight={600} m={1}>
-                { ( sess && sess.language === 'TH' ) ? "สนามที่เลือก" : 'Selected' }
-              </Box>
-              <Box style={{ width: '60%' }} className={classes.title} m={1}>
-                {selectedField ? selectedField.fieldname : ( ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None' )}
-                {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
-              </Box>
-            </div>
             <Box className={classes.notice} m={1}>
               { ( sess && sess.language === 'TH' ) ? "[ กดเพื่อเลือกสนาม ]" : '[ Please pick one ]' }
             </Box>
@@ -135,22 +135,13 @@ export default function Location(props) {
       { pageState === 'select' &&
         <LocationList
           {...props}
-          setEdittingField={setEdittingField}
           setPageState={setPageState} />
       }
 
       { pageState === 'create' &&
-        <LocationEditor
+        <CourseEditor
           {...props}
-          setPageState={setPageState} />
-      }
-
-      { pageState === 'edit' &&
-        <LocationEditor
-          {...props}
-          edittingField={edittingField}
-          setEdittingField={setEdittingField}
-          setPageState={setPageState} />
+          afterSuccess={()=>setPageState('select')} />
       }
 
     </div>

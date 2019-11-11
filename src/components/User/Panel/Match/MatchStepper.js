@@ -44,7 +44,7 @@ export default function MatchStepper(props) {
   const theme = useTheme();
   const {
     API, BTN, sess, token, setCSRFToken, handleSnackBar, setData, setDataClassed, setMatchOwnerStatus,
-    dialogStepper, handleCreateMatchClose, setExpanded, pageOrganizer, pageData
+    setExpanded, pageOrganizer, pageData
   } = props
   const [ activeStep, setActiveStep ] = React.useState(0);
   const maxSteps = labelSteps.length;
@@ -182,27 +182,22 @@ export default function MatchStepper(props) {
         if(selectedFile){
           handleCreatePicture(csrf, d)
         }else{
-          if(dialogStepper){
-            handleCreateMatchClose()
-          }else{
-            setExpanded(false)
-            setMatchOwnerStatus('mine')
-          }
+          /*
+          setExpanded(false)
+          setMatchOwnerStatus('mine')*/
+          window.location.replace(`/user/management/match/${d.matchid}#detail`);
+          /*
           handleFetch()
           handleSnackBar({
             state: true,
             message: d.status,
             variant: /success/.test(d.status) ? d.status : 'error',
             autoHideDuration: /success/.test(d.status)? 2000 : 5000
-          })
+          })*/
         }
       }else{
-        if(dialogStepper){
-          handleCreateMatchClose()
-        }else{
-          setExpanded(false)
-          setMatchOwnerStatus('mine')
-        }
+        setExpanded(false)
+        setMatchOwnerStatus('mine')
         handleFetch()
         handleSnackBar({
           state: true,
@@ -235,12 +230,10 @@ export default function MatchStepper(props) {
       autoHideDuration: /success/.test(status)? 2000 : 5000
     })
     if(/success/.test(status)){
-      if(dialogStepper){
-        handleCreateMatchClose()
-      }else{
-        setExpanded(false)
-        setMatchOwnerStatus('mine')
-      }
+      /*
+      setExpanded(false)
+      setMatchOwnerStatus('mine')*/
+      window.location.replace(`/user/management/match/${d.matchid}#detail`);
     }
     handleFetch()
   }

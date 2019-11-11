@@ -162,7 +162,7 @@ export default function SideMenu(props) {
   const {
     API, BTN, isSupportWebp, token, setCSRFToken, sess, handleSess, open,
     handleDrawerOpen, handleDrawerClose, accountData,
-    notiData, toggleNoti, toggleHistory, toggleUpcoming, toggleCreatePage, toggleCreateMatch,
+    notiData, toggleNoti,
     pageOrganizer, pageData
   } = props
   const [ pageList, setPageList ] = React.useState(null)
@@ -367,15 +367,23 @@ export default function SideMenu(props) {
             </Tooltip>
             <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } />
           </ListItem>
-          <ListItem button onClick={toggleCreateMatch}>
-            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } placement="right">
-              <ListItemIcon>
-                <AddCircleOutline />
-              </ListItemIcon>
-            </Tooltip>
-            <ListItemText className={classes.listTitle}
-              primary={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } />
-          </ListItem>
+          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`}>
+            <ListItem button
+              style={{
+                ...(
+                  window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`
+                ) &&
+                { backgroundColor: COLOR.grey[300] },
+              }}>
+              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } placement="right">
+                <ListItemIcon>
+                  <AddCircleOutline />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={classes.listTitle}
+                primary={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } />
+            </ListItem>
+          </BTN.NoStyleLink>
           <Divider />
         </List>
         { pageOrganizer && accountData &&
@@ -397,15 +405,23 @@ export default function SideMenu(props) {
           </React.Fragment>
         }
         <List>
-          <ListItem button onClick={toggleCreatePage}>
-            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } placement="right">
-              <ListItemIcon>
-                <Flag />
-              </ListItemIcon>
-            </Tooltip>
-            <ListItemText className={classes.listTitle}
-              primary={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
-          </ListItem>
+          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_page`}>
+            <ListItem button
+              style={{
+                ...(
+                  window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_page`
+                ) &&
+                { backgroundColor: COLOR.grey[300] },
+              }}>
+              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } placement="right">
+                <ListItemIcon>
+                  <Flag />
+                </ListItemIcon>
+              </Tooltip>
+              <ListItemText className={classes.listTitle}
+                primary={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
+            </ListItem>
+          </BTN.NoStyleLink>
           <ListPage {...props} />
         </List>
         <Divider />
@@ -521,16 +537,6 @@ export default function SideMenu(props) {
               <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
             </ListItem>
           </BTN.NoStyleLink>
-          {/*
-            <ListItem button onClick={toggleHistory}>
-              <ListItemIcon><History /></ListItemIcon>
-              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
-            </ListItem>
-            <ListItem button onClick={toggleUpcoming}>
-              <ListItemIcon><Event /></ListItemIcon>
-              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
-            </ListItem>*/
-          }
         </List>
         <ListFriend expanded={expanded} handleExpand={handleExpand} state={expanded.friend} {...props} />
         <ListFollow expanded={expanded} handleExpand={handleExpand} state={expanded.follow} {...props} />

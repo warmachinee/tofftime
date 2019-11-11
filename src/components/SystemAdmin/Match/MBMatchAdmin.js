@@ -34,7 +34,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    marginTop: 24,
     boxSizing: 'border-box'
   },
   listLabel: {
@@ -206,7 +205,7 @@ export default function MBMatchAdmin(props){
 
   return(
     <div className={classes.root}>
-      <ListItem className={classes.controls}>
+      <ListItem disableGutters className={classes.controls}>
         <Button className={classes.addAdminButton} variant="contained"
           onClick={handleOpen}>
           <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />

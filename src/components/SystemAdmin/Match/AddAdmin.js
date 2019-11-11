@@ -20,6 +20,7 @@ import Divider from '@material-ui/core/Divider';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import AddIcon from '@material-ui/icons/Add'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -232,7 +233,7 @@ function ListMenu(props) {
 
 export default function AddAdmin(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, admin } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, admin } = props
   const [ data, setData ] = React.useState(null)
   const [ dataSliced, setDataSliced ] = React.useState(10)
   const [ createState, setCreateState ] = React.useState(false)
@@ -422,6 +423,7 @@ export default function AddAdmin(props){
       </ThemeProvider>
       <List className={classes.root}>
         { data && !data.status &&
+          data.length > 0 ?
           [
             ...searchUser? handleSearch() : data
           ].slice(0, dataSliced).map(value => {
@@ -434,6 +436,20 @@ export default function AddAdmin(props){
                 />
               );
           })
+          :
+          <Typography component="div" style={{ width: '100%' }}>
+            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+            </Box>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+              <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
+                <BTN.PrimaryOutlined>
+                  <AddIcon style={{ marginRight: 8 }} />
+                  { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่น" : 'Invite players.' }
+                </BTN.PrimaryOutlined>
+              </BTN.NoStyleLink>
+            </div>
+          </Typography>
         }
         { data && searchUser && handleSearch().length === 0 &&
           <ListItem>

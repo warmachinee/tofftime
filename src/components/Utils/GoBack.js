@@ -9,17 +9,13 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const useStyles = makeStyles(theme => ({
   back: {
-    backgroundColor: 'white',
     '&:hover': {
       backgroundColor: fade(primary[600], 0.25),
     },
   },
   backIcon: {
-    fontSize: '2rem',
     color: primary[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '2.5rem',
-    },
+    fontSize: '2.5rem'
   },
   linkElement: {
     textDecoration: 'none',
@@ -56,7 +52,7 @@ export default function GoBack(props){
   </div>
   */
   return window.history.length > 1 && (
-    <div style={{ width: '100%' }}>
+    <div>
       <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
         <ArrowBackIcon classes={{ root: classes.backIcon }} />
       </IconButton>

@@ -133,6 +133,44 @@ export default function PageOrganizerOverview(props) {
     }
   }
 
+  function requestMainPageComponent(){
+    return (
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
+        { data.mainrequest === 'pending' ?
+          <Button disabled>Pending</Button>
+          :
+          <BTN.Primary
+            disabled={data.mainrequest === 'pending'}
+            style={{ textTransform: 'none' }} onClick={handleRequestMain}>
+            Toff-time Page
+          </BTN.Primary>
+        }
+        <StyledTooltip
+          PopperProps={{
+            disablePortal: true,
+          }}
+          onClose={()=>setHelpState(false)}
+          open={helpState}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          title={
+            <Typography>
+              { ( sess && sess.language === 'TH' ) ?
+                "ส่งคำขอเพื่อแสดงเพจนี้ในหน้า Toff-time"
+                :
+                'Send a request to show this Page on the Toff-time page.'
+              }
+            </Typography>
+          }>
+          <IconButton onClick={handleClickHelpState}>
+            <HelpIcon fontSize="small" style={{ color: data.mainrequest === 'pending' ? 'inherit' : primary[600] }} />
+          </IconButton>
+        </StyledTooltip>
+      </div>
+    );
+  }
+
   async function handleRequestMain(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -142,7 +180,6 @@ export default function PageOrganizerOverview(props) {
         pageid: pageData.pageid,
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      console.log(d);
       handleSnackBar({
         state: true,
         message: d.status,
@@ -218,6 +255,14 @@ export default function PageOrganizerOverview(props) {
               </div>
             </div>
           </div>
+          {/* pageData.pageid && data &&
+            ( (data.mainstatus && data.mainrequest) ?
+              data.mainstatus === 0 && data.mainrequest !== 'complete'
+              :
+              true
+            ) &&
+            requestMainPageComponent()*/
+          }
           { pageData.pageid &&
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24, padding: '0 12px 12px 0' }}>
               <BTN.Primary style={{ textTransform: 'none' }} onClick={handleRequestMain}>

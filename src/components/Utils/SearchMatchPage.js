@@ -172,7 +172,7 @@ export default function SearchMatchPage(props) {
             </Link>
           </List>
         )}
-        style={{ width: '100%' }}
+        style={{ width: '100%', /*onBlur={()=>setSearchState(false)}*/ }}
         renderInput={params => (
           <InputBase
             fullWidth
@@ -180,7 +180,6 @@ export default function SearchMatchPage(props) {
             inputProps={params.inputProps}
             onChange={e =>searchTextOnChange(e)}
             autoFocus={searchState}
-            onBlur={()=>setSearchState(false)}
             placeholder="Search Match or Page"
             />
         )} />

@@ -24,9 +24,14 @@ import {
 
 } from '@material-ui/core';
 
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DragHandleIcon from '@material-ui/icons/DragHandle';
+import {
+  AddCircle,
+  Delete,
+  Delete as DeleteIcon,
+  RemoveCircleOutline,
+
+} from '@material-ui/icons';
+
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -193,7 +198,7 @@ export default function MatchClass(props) {
   const [ lists, setLists ] = React.useState([])
   const [ text, setText ] = React.useState('')
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
-  const [ classAction, setClassAction ] = React.useState('')
+  const [ editting, setEditting ] = React.useState(false)
   const [ arrEdit, setArrEdit ] = React.useState([])
   const [ arrEditColor, setArrEditColor ] = React.useState([])
   const [ arrEditClassno, setArrEditClassno ] = React.useState([])
@@ -260,9 +265,7 @@ export default function MatchClass(props) {
       })
       setCSRFToken(csrf)
       if(/success/.test(d.status)){
-        if(data.scorematch === 0){
-          setText('')
-        }
+        setText('')
       }
       try {
         handleFetch()
@@ -303,6 +306,7 @@ export default function MatchClass(props) {
             variant: 'success',
             autoHideDuration: 2000
           })
+          setEditting(false)
         }
       }else{
         handleSnackBar({
@@ -311,6 +315,9 @@ export default function MatchClass(props) {
           variant: /success/.test(d.status) ? d.status : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
+        if(/success/.test(d.status)){
+          setEditting(false)
+        }
       }
       setCSRFToken(csrf)
       try {
@@ -393,13 +400,13 @@ export default function MatchClass(props) {
           setArrEditColor(classColor)
         }
       }
+
     }
   },[ data ])
 
   function ListColorSelector(props){
-    const { index } = props
+    const { index, disabled } = props
     const [ anchorEl, setAnchorEl ] = React.useState(null);
-    const [ buttonHover, setButtonHover ] = React.useState(null)
 
     function handleMenuClick(event) {
       setAnchorEl(event.currentTarget);
@@ -435,32 +442,22 @@ export default function MatchClass(props) {
 
     return (
       <React.Fragment>
-        <Button variant="outlined" onClick={handleMenuClick}
-          style={{
-            marginLeft: 8,
-            color: ( arrEditColor[index] !=='' && arrEditColor[index] !=='none' ) ? COLOR[arrEditColor[index]][600] : COLOR.grey[600] ,
-            backgroundColor: buttonHover ? ( ( arrEditColor[index] !=='' && arrEditColor[index] !=='none' ) ? COLOR[arrEditColor[index]][100] : COLOR.grey[100] ) : 'inherit',
-            transition: '.2s',
-            padding: 8
-          }}
-          onMouseEnter={()=>setButtonHover(true)}
-          onMouseLeave={()=>setButtonHover(false)}>
+        <IconButton disabled={disabled} onClick={handleMenuClick}>
           { ( arrEditColor[index] !=='' && arrEditColor[index] !=='none' ) ?
             <div style={{
-                width: 16, height: 16,
+                width: 20, height: 20,
                 backgroundColor: COLOR[arrEditColor[index]][600],
                 borderRadius: '50%',
                 boxSizing: 'border-box'
               }} />
             :
-            'No Color'
+            <RemoveCircleOutline />
           }
-        </Button>
+        </IconButton>
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
+          onClose={handleMenuClose}>
           <MenuItem onClick={()=>handleSelectColor('none')}>
             None
           </MenuItem>
@@ -475,36 +472,12 @@ export default function MatchClass(props) {
     );
   }
 
-  function ButtonVariant(props) {
-    const { variant, classAction } = props
-    const textInButton = {
-      add: ( ( sess && sess.language === 'TH' ) ? "เพิ่ม" : 'Add' ),
-      edit: ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' ),
-      delete: ( ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' )
-    }
-    return (
-      <React.Fragment>
-        { classAction === variant ?
-          <GreenButton className={classes.button} onClick={()=>setClassAction('')}>
-            {textInButton[variant]}
-          </GreenButton>
-          :
-          <GreenTextButton variant="outlined" className={classes.button} onClick={()=>setClassAction(variant)}>
-            {textInButton[variant]}
-          </GreenTextButton>
-        }
-      </React.Fragment>
-    );
-  }
-
   return (
     <div>
-      <div className={classes.controls}>
-        <ButtonGroup fullWidth>
-          <ButtonVariant variant="add" classAction={classAction} />
-          <ButtonVariant variant="edit" classAction={classAction} />
-          <ButtonVariant variant="delete" classAction={classAction} />
-        </ButtonGroup>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <GreenTextButton onClick={()=>setEditting(!editting)}>
+          {editting ? 'Done' : 'Edit'}
+        </GreenTextButton>
       </div>
       <List className={classes.root}>
         { lists && lists.length === 0 && data &&
@@ -525,23 +498,23 @@ export default function MatchClass(props) {
               }()} />
           </ListItem>
         }
-        { lists && ( classAction === '' || classAction === 'add' ) &&
+        { lists && !editting &&
           lists.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
+                { data.scorematch !== 0 &&
+                  <ListItemIcon>
+                    <ListColorSelector disabled index={i} />
+                  </ListItemIcon>
+                }
                 <ListItemText primary={ data.scorematch === 0? (
                     arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
                   ) : d.classname } />
-                { data.scorematch !== 0 &&
-                  <ListItemIcon>
-                    <ListColorSelector index={i} />
-                  </ListItemIcon>
-                }
               </ListItem>
             )
           }
         )}
-        { classAction === 'add' && data &&
+        { !editting && data &&
           <ListItem className={classes.addClass}>
             <ThemeProvider theme={theme}>
               <TextField
@@ -567,19 +540,23 @@ export default function MatchClass(props) {
             </ThemeProvider>
             <ListItemIcon className={classes.addClassButtonGrid}>
               <GreenTextButton disabled={!text} className={classes.addClassButton} variant="outlined" onClick={handleAddItem}>
-                <AddCircleIcon style={{ marginRight: 12 }} />
+                <AddCircle style={{ marginRight: 12 }} />
                 { ( sess && sess.language === 'TH' ) ? "เพิ่ม" : 'Add' }
               </GreenTextButton>
             </ListItemIcon>
           </ListItem>
         }
-        { lists && classAction === 'edit' && data &&
+        { lists && data && editting &&
           arrEdit.map( (d, i) =>{
             return (
               <ListItem key={i}>
+                { data.scorematch !== 0 &&
+                  <ListColorSelector index={i} />
+                }
                 <ThemeProvider theme={theme}>
                   <TextField
                     fullWidth
+                    style={{ marginRight: 16 }}
                     autoFocus={i==0}
                     value={arrEdit[i] || ''}
                     onChange={e =>handleEditClass(d, e, i)}
@@ -598,14 +575,16 @@ export default function MatchClass(props) {
                     />
                   </div>
                 }
-                { data.scorematch !== 0 &&
-                  <ListColorSelector index={i} />
-                }
+                <ListItemSecondaryAction>
+                  <IconButton onClick={()=>handleDeleteItem(lists[i])}>
+                    <DeleteIcon classes={{ root: classes.deleteIcon }} />
+                  </IconButton>
+                </ListItemSecondaryAction>
               </ListItem>
             )
           }
         )}
-        { lists && classAction === 'delete' &&
+        {/* lists && classAction === 'delete' &&
           lists.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
@@ -620,9 +599,9 @@ export default function MatchClass(props) {
               </ListItem>
             )
           }
-        )}
+        )*/}
       </List>
-      { classAction === 'edit' && lists && lists.length > 0 && data &&
+      { editting && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenButton className={classes.saveButton} onClick={handleSave}>
             { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }

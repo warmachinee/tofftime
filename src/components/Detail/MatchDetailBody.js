@@ -122,11 +122,15 @@ function DetailComponent(props){
   const { detail } = props
 
   return(
-    <div className="ql-container ql-snow">
-      <div className="ql-editor">
-        {ReactHtmlParser(detail)}
-      </div>
-    </div>
+    <React.Fragment>
+      { ReactHtmlParser(detail).textContent &&
+        <div className="ql-container ql-snow">
+          <div className="ql-editor">
+            {ReactHtmlParser(detail)}
+          </div>
+        </div>
+      }
+    </React.Fragment>
   );
 }
 
@@ -226,7 +230,7 @@ export default function MatchDetailBody(props) {
               {data?data.title:'Match Title'}
             </Typography>
           </Tooltip>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '.35em' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
             <Typography gutterBottom variant="body2"
               style={{
                 color: data.scorematch === 1 ? primary[700] : 'inherit',
@@ -246,9 +250,7 @@ export default function MatchDetailBody(props) {
                 }()
               }
             </Typography>
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-              {handleGetButton()}
-            </div>
+            {handleGetButton()}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
             <Typography variant="h6">
@@ -286,6 +288,7 @@ export default function MatchDetailBody(props) {
               </BTN.PrimaryOutlined>
             }
           </div>
+          <DetailComponent detail={data.message} />
           <div className={classes.imageGrid}>
             { data.picture &&
               <img align="left" className={classes.image}
@@ -321,7 +324,6 @@ export default function MatchDetailBody(props) {
               })
             }
           </div>
-          <DetailComponent detail={data.message} />
           <ListItem button onClick={expandHandler}
             style={{
               marginTop: 16,

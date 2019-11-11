@@ -11,6 +11,7 @@ import {
   Typography,
   Box,
   TextField,
+  Paper,
 
 } from '@material-ui/core'
 
@@ -20,11 +21,6 @@ import {
 
 } from '@material-ui/icons';
 
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../../Utils/TemplateDialog'),
-  loading: () => null
-});
-
 const LabelText = Loadable({
   loader: () => import(/* webpackChunkName: "LabelText" */ './../../Utils/LabelText'),
   loading: () => null
@@ -32,7 +28,13 @@ const LabelText = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
-
+    position: 'relative',
+    padding: theme.spacing(1, 2),
+    width: '100%',
+    boxSizing: 'border-box',
+    maxWidth: 1200,
+    marginLeft: 'auto',
+    marginRight: 'auto'
   },
   margin: {
     width: '100%',
@@ -42,11 +44,10 @@ const useStyles = makeStyles(theme => ({
     },
   },
   button: {
-    width: '100%',
     padding: 8,
     margin: theme.spacing(1,0),
     [theme.breakpoints.up(500)]: {
-      padding: 16,
+      padding: '12px 48px',
     },
   },
   matchImg: {
@@ -66,6 +67,9 @@ const useStyles = makeStyles(theme => ({
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
     objectFit: 'cover',
+    maxHeight: 480,
+    maxWidth: 900,
+    margin: 'auto'
   },
   matchFile: {
     position: 'relative',
@@ -113,7 +117,7 @@ const theme = createMuiTheme({
 
 export default function CreatePage(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleSnackBar, createPageState, toggleCreatePage } = props
+  const { sess, token, setCSRFToken, handleSnackBar } = props
   const [ pageName, setPageName ] = React.useState('')
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
@@ -187,7 +191,7 @@ export default function CreatePage(props) {
         autoHideDuration: /success/.test(response.status)? 2000 : 5000
       })
       if(/success/.test(response.status)){
-        toggleCreatePage()
+        //
       }
     }else{
       setCSRFToken(csrf)
@@ -198,89 +202,89 @@ export default function CreatePage(props) {
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
       if(/success/.test(d.status)){
-        toggleCreatePage()
+        //
       }
     }
   }
 
   return (
-    <TemplateDialog open={createPageState} handleClose={toggleCreatePage} maxWidth={450}>
-      <div className={classes.root}>
-        <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
-        <div style={{ marginTop: 24 }}>
-          <ThemeProvider theme={theme}>
-            <TextField
-              autoFocus
-              className={classes.margin}
-              label={ ( sess && sess.language === 'TH' ) ? "ชื่อเพจ" : 'Page name' }
-              variant="outlined"
-              onChange={(e)=>setPageName(e.target.value)}
-              onKeyPress={e =>handleKeyPress(e)}
-            />
-          </ThemeProvider>
-          { ( selectedFile )?
-            <div style={{
-                position: 'relative', marginTop: 16, marginBottom: 24,
-                display: 'flex', flexDirection: 'column', justifyContent: 'center'
-              }}
-              onMouseEnter={()=>handleFileHover(true)}
-              onMouseLeave={()=>handleFileHover(false)}>
-              <Typography variant="caption">{selectedFile.name}</Typography>
-              <img ref={imgRef}
-                style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
-                className={classes.matchImg}
-                src={tempFile} />
-              { imgRef.current &&
-                <div
-                  style={{
-                    display: 'flex',
-                    position: 'absolute',
-                    height: imgRef.current.offsetHeight,
-                    width: imgRef.current.offsetWidth,
-                    top: 0, left: 0,
-                  }}>
-                  <div style={{ flex: 1 }} />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ flex: 1 }} />
-                    <StyledIconButton className={classes.matchFile}>
-                      <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                      <CloudUpload fontSize="large" style={{ color: primary[400] }} />
-                    </StyledIconButton>
-                    <div style={{ flex: 1 }} />
-                  </div>
-                  <div style={{ flex: 1 }} />
-                </div>
-              }
-            </div>
-            :
-            <div
-              style={{
-                position: 'relative', marginTop: 16, marginBottom: 24,
-                display: 'flex', flexDirection: 'column', justifyContent: 'center'
-              }}>
-              <Typography variant="caption" style={{ textAlign: 'center' }}>
-                { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
-              </Typography>
-              <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
+    <div className={classes.root}>
+      <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
+      <div style={{ marginTop: 24, maxWidth: 900, marginLeft: 'auto', marginRight: 'auto' }}>
+        <ThemeProvider theme={theme}>
+          <TextField
+            autoFocus
+            className={classes.margin}
+            label={ ( sess && sess.language === 'TH' ) ? "ชื่อเพจ" : 'Page name' }
+            variant="outlined"
+            onChange={(e)=>setPageName(e.target.value)}
+            onKeyPress={e =>handleKeyPress(e)}
+          />
+        </ThemeProvider>
+        { ( selectedFile )?
+          <div style={{
+              position: 'relative', marginTop: 16, marginBottom: 24,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center'
+            }}
+            onMouseEnter={()=>handleFileHover(true)}
+            onMouseLeave={()=>handleFileHover(false)}>
+            <Typography variant="caption">{selectedFile.name}</Typography>
+            <img ref={imgRef}
+              style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
+              className={classes.matchImg}
+              src={tempFile} />
+            { imgRef.current &&
+              <div
+                style={{
+                  display: 'flex',
+                  position: 'absolute',
+                  height: imgRef.current.offsetHeight,
+                  width: imgRef.current.offsetWidth,
+                  top: 0, left: 0,
+                }}>
                 <div style={{ flex: 1 }} />
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
                     <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                    <CloudUpload fontSize="large" style={{ color: primary[500] }} />
+                    <CloudUpload fontSize="large" style={{ color: primary[400] }} />
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
                 </div>
                 <div style={{ flex: 1 }} />
               </div>
+            }
+          </div>
+          :
+          <div
+            style={{
+              position: 'relative', marginTop: 16, marginBottom: 24,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center'
+            }}>
+            <Typography variant="caption" style={{ textAlign: 'center' }}>
+              { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
+            </Typography>
+            <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
+              <div style={{ flex: 1 }} />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flex: 1 }} />
+                <StyledIconButton className={classes.matchFile}>
+                  <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                  <CloudUpload fontSize="large" style={{ color: primary[500] }} />
+                </StyledIconButton>
+                <div style={{ flex: 1 }} />
+              </div>
+              <div style={{ flex: 1 }} />
             </div>
-          }
+          </div>
+        }
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenButton variant="contained" color="primary" className={classes.button}
             onClick={handleCreatePage}>
             { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
           </GreenButton>
         </div>
       </div>
-    </TemplateDialog>
+    </div>
   );
 }

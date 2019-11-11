@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Paper,
   Typography,
+  Box,
   List,
   ListItem,
   ListItemText,
@@ -13,6 +14,7 @@ import {
 } from '@material-ui/core'
 
 import {
+  Add as AddIcon,
   LocationOn,
 
 } from '@material-ui/icons';
@@ -105,7 +107,7 @@ export default function Schedule(props) {
       setCSRFToken(csrf)
       if(d.team && d.team.length > 0){
         setMatchDetail(d)
-        document.title = `(Schedule) ${d.title} - T-off Time`
+        document.title = `( Schedule ) ${d.title} - T-off Time`
         handleFetchSchedule()
       }else{
         handleSnackBar({
@@ -115,7 +117,7 @@ export default function Schedule(props) {
           autoHideDuration: 2000
         })
         setTimeout(()=>{
-          window.location.href = `/match/${props.computedMatch.params.matchid}`
+          window.location.replace(`/match/${props.computedMatch.params.matchid}`);
         }, 2000)
       }
     })
@@ -145,20 +147,25 @@ export default function Schedule(props) {
       <GoBack />
       { matchDetail &&
         <div className={classes.content}>
+          <Typography gutterBottom variant="h4">
+            { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+          </Typography>
+          <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
+          <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
+            <Typography variant="h6">
+              {API._dateToString(matchDetail.date)}
+            </Typography>
+            <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+            <LocationOn style={{ color: COLOR.primary[600], marginRight: 4 }} />
+            <Typography variant="h6">
+              {matchDetail.location} ({matchDetail.locationversion})
+            </Typography>
+          </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             { data &&
               <SchedulePDF {...props} data={data} matchDetail={matchDetail} />
             }
           </div>
-          <Typography gutterBottom variant="h4">
-            { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
-          </Typography>
-          <Typography gutterBottom variant="h5">{matchDetail.title}</Typography>
-          <Typography gutterBottom variant="h6" component="div" style={{ display: 'flex' }}>
-            <LocationOn style={{ color: COLOR.primary[600] }} />
-            {matchDetail.location} ({matchDetail.locationversion})
-          </Typography>
-          <Typography gutterBottom variant="subtitle2" color="textSecondary">{matchDetail.date}</Typography>
           <List disablePadding style={{ marginTop: 16 }}>
             <ListItem style={{ backgroundColor: COLOR.grey[900], paddingTop: 12, paddingBottom: 12 }}>
               <ListItemText className={classes.listTeam} style={{ color: 'white' }}
@@ -177,6 +184,9 @@ export default function Schedule(props) {
           </List>
           <List disablePadding>
             { data &&
+              data.filter( item =>{
+                return item.teamno !== 0
+              }).length > 0 ?
               data.filter( item =>{
                 return item.teamno !== 0
               }).map( (d, i) =>
@@ -251,6 +261,12 @@ export default function Schedule(props) {
                   <Divider />
                 </React.Fragment>
               )
+              :
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+                </Box>
+              </Typography>
             }
           </List>
         </div>

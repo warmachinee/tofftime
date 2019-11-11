@@ -38,7 +38,7 @@ const LabelText = Loadable({
 });
 
 const Location = Loadable({
-  loader: () => import(/* webpackChunkName: "Location" */'./Location'),
+  loader: () => import(/* webpackChunkName: "Location" */'./../Course/Location'),
   loading: () => <LDCircular />
 });
 
@@ -52,7 +52,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    marginTop: 24,
     boxSizing: 'border-box',
     marginLeft: 'auto',
     marginRight: 'auto',
@@ -591,16 +590,6 @@ export default function MBOverview(props){
                   ) }
                   {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
                 </GreenTextButton>
-                <GreenTextButton
-                  variant="outlined"
-                  className={classes.button}
-                  style={{ textTransform: 'none' }}
-                  onClick={handleRulesOpen}>
-                  { ( sess && sess.language === 'TH' ) ?
-                    "กฏ กติกา และ รายละเอียดการแข่งขัน" :
-                    'Match Rules, Regulations and Detail'
-                  }
-                </GreenTextButton>
                 {/*
                   <GreenTextButton
                     disabled={!editting}
@@ -699,6 +688,16 @@ export default function MBOverview(props){
               </ThemeProvider>
             </div>
           </div>
+          <GreenTextButton
+            variant="outlined"
+            className={classes.button}
+            style={{ textTransform: 'none' }}
+            onClick={handleRulesOpen}>
+            { ( sess && sess.language === 'TH' ) ?
+              "กฏ กติกา และ รายละเอียดการแข่งขัน" :
+              'Match Rules, Regulations and Detail'
+            }
+          </GreenTextButton>
           { isEditDetail() &&
             <div className={classes.buttonControl}>
               <div style={{ flex: 2 }}></div>
@@ -710,7 +709,7 @@ export default function MBOverview(props){
           }
         </React.Fragment>
       }
-      <TemplateDialog open={rulesState} handleClose={handleRulesClose} fullScreen>
+      <TemplateDialog open={rulesState} handleClose={handleRulesClose} maxWidth={900}>
         <div>
           <LabelText
             style={{ marginBottom: 24 }}

@@ -172,7 +172,7 @@ const theme = createMuiTheme({
 
 function MBScoreEditorContainer(props){
   const classes = useStyles();
-  const { sess, matchid, data, matchDetail, selected, handleSelectPlayer, expanded, setExpanded, mainClassSelected, setMainClassSelected, setupState } = props
+  const { sess, matchid, data, matchDetail, selected, handleSelectPlayer, expanded, setExpanded, mainClassSelected, setMainClassSelected, isSetup } = props
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ dataSliced, setDataSliced ] = React.useState(10)
 
@@ -257,7 +257,7 @@ function MBScoreEditorContainer(props){
     <div id="mb-scoreeditor-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto', marginBottom: 16 }}>
         <GreenTextButton
-          disabled={!setupState}
+          disabled={!isSetup}
           className={classes.selectPlayerButton}
           variant="outlined"
           onClick={expandHandler}>
@@ -316,7 +316,7 @@ function MBScoreEditorContainer(props){
                 style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
                 {`${data.length} player${data.length > 1? 's' : ''}`}
               </Typography>
-              { matchDetail && matchDetail.scorematch !== 0 &&
+              {/* matchDetail && matchDetail.scorematch !== 0 &&
                 <FormControl className={classes.formControl}>
                   <InputLabel>Main Class</InputLabel>
                   <Select
@@ -329,7 +329,7 @@ function MBScoreEditorContainer(props){
                         </MenuItem>
                     )}
                   </Select>
-                </FormControl>
+                </FormControl>*/
               }
               </React.Fragment>
           }
@@ -345,7 +345,7 @@ function MBScoreEditorContainer(props){
               } />
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={ window.innerWidth < 450? "" : ( ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' ) } />
-            { window.innerWidth > 450 &&
+            {/* window.innerWidth > 450 &&
               <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass}
                 primary={
                   matchDetail &&
@@ -361,7 +361,7 @@ function MBScoreEditorContainer(props){
                         return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
                     }
                   }()
-                } />
+                } />*/
             }
 
           </ListItem>
@@ -384,43 +384,45 @@ function MBScoreEditorContainer(props){
                         { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
                       </div>
                       : value.firstname
-                    }
-                    secondary={
-                      matchDetail && matchDetail.mainclass && window.innerWidth < 450 &&
-                      ( matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
-                        ( value.classno === 0 ?
-                          <React.Fragment>
-                            <br></br>
-                            {"-"}
-                          </React.Fragment>
-                          :
-                          matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                            return d.classno === value.classno
-                          }).map((d, i) =>
-                            d &&
-                            <React.Fragment key={i}>
-                              <br></br>
-                              {
-                                matchDetail.scorematch !== 0 ?
-                                d.classname
-                                :
-                                String.fromCharCode(65 + value.classno - 1)
-                              }
-                            </React.Fragment>
-                          )
-                        )
-                        :
+                    } />
+                  {/*secondary=
+                    matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                    window.innerWidth < 450 &&
+                    ( matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
+                      ( value.classno === 0 ?
                         <React.Fragment>
                           <br></br>
-                          { ( sess && sess.language === 'TH' ) ? "ไม่มีประเภท" : 'No class' }
+                          {"-"}
                         </React.Fragment>
+                        :
+                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                          return d.classno === value.classno
+                        }).map((d, i) =>
+                          d &&
+                          <React.Fragment key={i}>
+                            <br></br>
+                            {
+                              matchDetail.scorematch !== 0 ?
+                              d.classname
+                              :
+                              String.fromCharCode(65 + value.classno - 1)
+                            }
+                          </React.Fragment>
+                        )
                       )
-                    } />
+                      :
+                      <React.Fragment>
+                        <br></br>
+                        { ( sess && sess.language === 'TH' ) ? "ไม่มีประเภท" : 'No class' }
+                      </React.Fragment>
+                    )*/
+                  }
                   { window.innerWidth > 450 &&
                     <ListItemText className={classes.listText}
                       primary={value.lastname} />
                   }
-                  { matchDetail && matchDetail.mainclass && window.innerWidth > 450 &&
+                  {/* matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                    window.innerWidth > 450 &&
                     ( matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
                       ( value.classno === 0 ?
                         <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
@@ -440,7 +442,7 @@ function MBScoreEditorContainer(props){
                       :
                       <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
                         primary={ ( sess && sess.language === 'TH' ) ? "ไม่มีประเภท" : 'No class' } />
-                    )
+                    )*/
                   }
                 </ListItem>
                 <Divider />
@@ -472,7 +474,9 @@ function MBScoreEditorContainer(props){
                   ) }
                 </Button>
                 { data && dataSliced < handleSearch().length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>
+                    { ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }
+                  </Button>
                 }
               </React.Fragment>
             }
@@ -494,7 +498,7 @@ function MBScoreEditorContainer(props){
 
 export default function MBScoreEditor(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, setupState, pageOrganizer, pageData } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, pageOrganizer, pageData, isSetup } = props
   const tempArr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -502,8 +506,8 @@ export default function MBScoreEditor(props){
   const [ oldSelected, setOldSelected ] = React.useState(null)
   const [ arrScore, setArrScore ] = React.useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
   const [ gridWidth, setGridWidth ] = React.useState(0)
-  const [ expanded, setExpanded ] = React.useState(setupState)
-  const [ predictScore, setPredictScore ] = React.useState(0)
+  const [ expanded, setExpanded ] = React.useState(isSetup)
+  const [ predictScore, setPredictScore ] = React.useState(selected ? selected.predictscore : 0)
   const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
   function handleSetPredictScore(score){
@@ -740,20 +744,21 @@ export default function MBScoreEditor(props){
 
   return(
     <div className={classes.root}>
-      { !setupState &&
+      { !isSetup &&
         <div style={{ display: 'flex', marginBottom: 24 }}>
           <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
             { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
           </Typography>
-          <Link to={
-            sess.typeid === 'admin' ?
-            `/admin/match/${matchid}` :
-            `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
-            }>
-            <BTN.RedOutlined style={{ color: red[600], fontWeight: 600 }}>
-              { ( sess && sess.language === 'TH' ) ? "กลับไปขั้นตอนการตั้งค่า์" : 'Go back to Setup step.' }
+          <BTN.NoStyleLink
+            to={
+              sess.typeid === 'admin' ?
+              `/admin/match/${matchid}` :
+              `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
+              }>
+            <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
+              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
             </BTN.RedOutlined>
-          </Link>
+          </BTN.NoStyleLink>
         </div>
       }
       <MBScoreEditorContainer
@@ -771,21 +776,31 @@ export default function MBScoreEditor(props){
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <Typography variant="h5" className={classes.scorcardLabel}>Score card</Typography>
           <Typography variant="body1" className={classes.scorcardPlayer}>
-            {selected && `${selected.firstname} ${selected.lastname} (${
-              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                return d.classno === selected.classno
-              }).map((d, i) =>{
-                return (
-                  matchDetail.scorematch !== 0 ?
-                  d.classname
-                  :
-                  String.fromCharCode(65 + value.classno - 1)
-                )
-              })
-            })`}
+            {selected && `${selected.firstname} ${selected.lastname}`}
+            {/*
+              (${
+                matchDetail &&
+                matchDetail.mainclass &&
+                matchDetail.mainclass.length > 0 &&
+                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                  return d.classno === selected.classno
+                }).map((d, i) =>{
+                  return (
+                    matchDetail.scorematch !== 0 ?
+                    d.classname
+                    :
+                    String.fromCharCode(65 + value.classno - 1)
+                  )
+                })
+              })*/
+            }
           </Typography>
         </div>
-        <Typography variant="caption" className={classes.scorcardMainClass} color="textSecondary">{`Main Class ${mainClassSelected}`}</Typography>
+        {/*
+          <Typography variant="caption" className={classes.scorcardMainClass} color="textSecondary">
+            {`Main Class ${mainClassSelected}`}
+          </Typography>*/
+        }
         <div style={{
             overflow: 'auto', marginTop: 24, marginBottom: 24,
             width: gridWidth,
@@ -837,7 +852,7 @@ export default function MBScoreEditor(props){
         </Box>
       </Typography>
       <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
-      { matchDetail && matchDetail.scorematch === 2 &&
+      { matchDetail && matchDetail.scorematch === 2 && selected &&
         <ThemeProvider theme={theme}>
           <div className={classes.predictScoreChildGrid}>
             <TextField label="Predict Score"
@@ -866,7 +881,7 @@ export default function MBScoreEditor(props){
           <Button
             disabled
             variant="contained" color="primary"
-            className={classes.button} >{ ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }</Button>
+            className={classes.button}>{ ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }</Button>
         }
       </div>
     </div>

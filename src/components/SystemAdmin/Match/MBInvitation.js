@@ -26,6 +26,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Slide from '@material-ui/core/Slide';
 import Divider from '@material-ui/core/Divider';
 
+import AddIcon from '@material-ui/icons/Add';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -60,7 +61,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    marginTop: 24,
     boxSizing: 'border-box'
   },
   listRoot: {
@@ -68,7 +68,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     width: '100%',
     backgroundColor: grey[50],
-    marginTop: 24,
     overflow: 'auto',
     boxSizing: 'border-box'
   },
@@ -135,10 +134,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   controlsEditButton: {
-    marginTop: 'auto',
-    [theme.breakpoints.up(500)]: {
-      padding: '8px 16px',
-    },
+    padding: '8px 16px',
   },
   controlsEditButton2: {
     marginTop: 2,
@@ -428,7 +424,13 @@ export default function MBInvitation(props){
   return(
     <div className={classes.root}>
       <List className={classes.listRoot}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', marginBottom: 8 }}>
+          <RedButton className={classes.iconButton} variant="contained"
+            onClick={handleAddOpen}>
+            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
+            { ( sess && sess.language === 'TH' ) ? "ชวนผู้เล่น" : 'Invite' }
+          </RedButton>
+          <div style={{ flex: 1 }} />
           <a href={`/matchform/${matchid}`}
             target='_blank'
             style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -437,49 +439,38 @@ export default function MBInvitation(props){
             </GreenTextButton>
           </a>
         </div>
-        <ListItem className={classes.controls}>
-          <RedButton className={classes.iconButton} variant="contained"
-            style={{ margin: '2px 0'}}
-            onClick={handleAddOpen}>
-            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-            { ( sess && sess.language === 'TH' ) ? "ชวนผู้เล่น" : 'Invite' }
-          </RedButton>
-        </ListItem>
-        <ListItem className={classes.controls}>
-          <GreenTextButton
-            onClick={handleDummyOpen}>
-            { ( sess && sess.language === 'TH' ) ? "ดีมมี่" : 'Dummy' }
-          </GreenTextButton>
-        </ListItem>
-        <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
-          <ThemeProvider theme={theme}>
-            <TextField
-              className={classes.searchBox}
-              variant="outlined"
-              placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search player' ) : '' }
-              value={searchUser}
-              onChange={e =>setSearchUser(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="primary"/>
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    { searchUser?
-                      <IconButton onClick={()=>setSearchUser('')}>
-                        <ClearIcon color="inherit" fontSize="small"/>
-                      </IconButton>
-                      :
-                      <div style={{ width: 44 }}></div>
-                    }
-                  </InputAdornment>
-                )
-              }}
-            />
-          </ThemeProvider>
-        </ListItem>
+        {/* data && data.length > 10 &&
+          <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
+            <ThemeProvider theme={theme}>
+              <TextField
+                className={classes.searchBox}
+                variant="outlined"
+                placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search player' ) : '' }
+                value={searchUser}
+                onChange={e =>setSearchUser(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon color="primary"/>
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      { searchUser?
+                        <IconButton onClick={()=>setSearchUser('')}>
+                          <ClearIcon color="inherit" fontSize="small"/>
+                        </IconButton>
+                        :
+                        <div style={{ width: 44 }}></div>
+                      }
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </ThemeProvider>
+          </ListItem>
+          */
+        }
         <div style={{ overflow: 'auto', position: 'relative' }}>
           <ListItem role={undefined}
             style={{
@@ -503,6 +494,7 @@ export default function MBInvitation(props){
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
             { data && !data.status &&
+              data.length > 0?
               [
                 ...searchUser? handleSearch() : data
               ].slice(0, dataSliced).map(value => {
@@ -582,6 +574,18 @@ export default function MBInvitation(props){
                   </React.Fragment>
                 );
               })
+              :
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่นเข้าการแข่งขัน" : 'Invite players to a match.' }
+                </Box>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                  <BTN.PrimaryOutlined onClick={handleAddOpen}>
+                    <AddIcon style={{ marginRight: 8 }} />
+                    { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่น" : 'Invite players.' }
+                  </BTN.PrimaryOutlined>
+                </div>
+              </Typography>
             }
             <ListItem role={undefined} dense style={{ display: 'flex' }}>
               { data && data.length > 10 && !searchUser &&
@@ -629,6 +633,7 @@ export default function MBInvitation(props){
         <AddPlayerModal
           {...props}
           playerAction="invite"
+          handleDummyOpen={handleDummyOpen}
           data={data} />
       </TemplateDialog>
       <TemplateDialog open={dummyState} handleClose={handleDummyClose} maxWidth={800}>

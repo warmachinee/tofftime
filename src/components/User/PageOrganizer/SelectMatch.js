@@ -91,7 +91,7 @@ export default function PageOrganizerCreatePost(props) {
   const {
     sess, BTN, COLOR, token, setCSRFToken, handleSnackBar,
     pageOrganizer, pageData, pageList,
-    selectMatchState, setSelectMatchState, setSelectedMatch, toggleCreateMatch, createMatchState
+    selectMatchState, setSelectMatchState, setSelectedMatch, toggleCreateMatch
   } = props
   const [ data, setData ] = React.useState(null)
 
@@ -126,7 +126,7 @@ export default function PageOrganizerCreatePost(props) {
     if(selectMatchState){
       handleFetch()
     }
-  },[ selectMatchState, createMatchState ])
+  },[ selectMatchState ])
 
   return (
     <TemplateDialog open={selectMatchState} handleClose={handleClose} maxWidth={900}>

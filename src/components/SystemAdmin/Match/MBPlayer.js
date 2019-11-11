@@ -32,6 +32,7 @@ import {
 
 } from '@material-ui/core';
 
+import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
@@ -62,7 +63,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    marginTop: 24,
     boxSizing: 'border-box'
   },
   listRoot: {
@@ -70,7 +70,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     width: '100%',
     backgroundColor: grey[50],
-    marginTop: 24,
     overflow: 'auto',
     boxSizing: 'border-box'
   },
@@ -221,7 +220,7 @@ const theme = createMuiTheme({
 
 export default function MBPlayer(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
   const [ editting, setEditting ] = React.useState(false);
   const [ edittingClass, setEdittingClass ] = React.useState(false);
   const [ edittingDisplay, setEdittingDisplay ] = React.useState(false);
@@ -484,22 +483,26 @@ export default function MBPlayer(props){
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
         ){
-          var normalData
-          if(!/no/.test(d.userscore.status)){
-            normalData = d.userscore
-          }else{
-            normalData = []
-          }
-          var remainUser = []
-          defaultPlayer.forEach( e =>{
-            const filtered = normalData.filter( de =>{
-              return de.userid === e.userid
-            })
-            if(filtered.length === 0){
-              remainUser.push(e)
+          if(!/wrong matchid or mainclass/.test(d.status)){
+            var normalData
+            if(!/no/.test(d.userscore.status)){
+              normalData = d.userscore
+            }else{
+              normalData = []
             }
-          })
-          setData(remainUser.concat(normalData))
+            var remainUser = []
+            defaultPlayer.forEach( e =>{
+              const filtered = normalData.filter( de =>{
+                return de.userid === e.userid
+              })
+              if(filtered.length === 0){
+                remainUser.push(e)
+              }
+            })
+            setData(remainUser.concat(normalData))
+          }else{
+            setData([])
+          }
         }else{
           handleSnackBar({
             state: true,
@@ -687,7 +690,7 @@ export default function MBPlayer(props){
                 }
               </div>
             </ListItem>
-            <ListItem className={classes.controlsSecondary}>
+            <ListItem disableGutters className={classes.controlsSecondary}>
               { edittingClass && matchDetail &&
                 function(){
                   switch (matchDetail.scorematch) {
@@ -720,7 +723,7 @@ export default function MBPlayer(props){
                           </div>
                           <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
                             { selectedClass !== 0?
-                              matchDetail && matchDetail.mainclass &&
+                              matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
                               matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( item =>{
                                 return item.classno === selectedClass
                               }).map( d =>
@@ -748,7 +751,7 @@ export default function MBPlayer(props){
                           </div>
                           <GreenTextButton variant="outlined" className={classes.controlsEditButton} onClick={handleMenuClick}>
                             { selectedClass !== 0?
-                              matchDetail && matchDetail.mainclass &&
+                              matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
                               matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( item =>{
                                 return item.classno === selectedClass
                               }).map( d =>
@@ -769,40 +772,44 @@ export default function MBPlayer(props){
                   { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }
                 </GreenTextButton>
               }
-              { !( editting || edittingClass) &&
+              {/* !( editting || edittingClass) &&
                 <div style={{ height: 42 }}></div>
+                */
               }
             </ListItem>
-            <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
-              <ThemeProvider theme={theme}>
-                <TextField
-                  disabled={data === null}
-                  className={classes.searchBox}
-                  variant="outlined"
-                  placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
-                  value={searchUser}
-                  onChange={e =>setSearchUser(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon color="primary"/>
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        { searchUser?
-                          <IconButton onClick={()=>setSearchUser('')}>
-                            <ClearIcon color="inherit" fontSize="small"/>
-                          </IconButton>
-                          :
-                          <div style={{ width: 44 }}></div>
-                        }
-                      </InputAdornment>
-                    )
-                  }}
-                />
-              </ThemeProvider>
-            </ListItem>
+            { /*
+              <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
+                <ThemeProvider theme={theme}>
+                  <TextField
+                    disabled={data === null}
+                    className={classes.searchBox}
+                    variant="outlined"
+                    placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
+                    value={searchUser}
+                    onChange={e =>setSearchUser(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon color="primary"/>
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          { searchUser?
+                            <IconButton onClick={()=>setSearchUser('')}>
+                              <ClearIcon color="inherit" fontSize="small"/>
+                            </IconButton>
+                            :
+                            <div style={{ width: 44 }}></div>
+                          }
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </ThemeProvider>
+              </ListItem>
+              */
+            }
             { data &&
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Typography variant="caption" align="right"
@@ -873,6 +880,7 @@ export default function MBPlayer(props){
               <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
 
                 { data && !data.status && matchDetail && matchDetail.mainclass &&
+                  data.length > 0 ?
                   [
                     ...searchUser? handleSearch() : data
                   ].slice(0, dataSliced).map(value => {
@@ -926,7 +934,8 @@ export default function MBPlayer(props){
                                   </Typography>
                                 }
                                 { window.innerWidth < 600 &&
-                                  ( matchDetail.mainclass && matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0?
+                                  ( matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                                    matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0?
                                     ( value.classno === 0 ?
                                       <React.Fragment>
                                         <br></br>
@@ -969,7 +978,8 @@ export default function MBPlayer(props){
                           }
 
                           { window.innerWidth > 600 &&
-                            ( matchDetail.mainclass && matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
+                            ( matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
                               ( value.classno === 0 ?
                                 <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
                                   primary={"-"} />
@@ -1008,6 +1018,20 @@ export default function MBPlayer(props){
                       </React.Fragment>
                     );
                   })
+                  :
+                  <Typography component="div" style={{ width: '100%' }}>
+                    <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                      { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+                    </Box>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                      <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
+                        <BTN.PrimaryOutlined>
+                          <AddIcon style={{ marginRight: 8 }} />
+                          { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่น" : 'Invite players.' }
+                        </BTN.PrimaryOutlined>
+                      </BTN.NoStyleLink>
+                    </div>
+                  </Typography>
                 }
                 <ListItem role={undefined} dense style={{ display: 'flex' }}>
                   { data && data.length > 10 && !searchUser &&
@@ -1058,7 +1082,7 @@ export default function MBPlayer(props){
             onClose={handleMenuClose}
           >
             <MenuItem onClick={()=>handleSelectedClass(0)}>{"-"}</MenuItem>
-            { matchDetail && matchDetail.mainclass &&
+            { matchDetail && matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
               matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (d, i) =>
                 d &&
                 <MenuItem key={"i : " + i + " data: " + d} onClick={()=>handleSelectedClass(d)}>{d.classname}</MenuItem>

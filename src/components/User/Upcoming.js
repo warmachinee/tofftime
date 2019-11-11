@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, userid, userData, createMatchState, pageOrganizer, pageData } = props
+  const { API, sess, token, setCSRFToken, userid, userData, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -73,7 +73,7 @@ export default function Upcoming(props) {
     if (!(userData && userData.privacy === 'private')){
       handleFetch()
     }
-  },[ userid, createMatchState ])
+  },[ userid ])
 
   return(
     <div className={classes.root}>
