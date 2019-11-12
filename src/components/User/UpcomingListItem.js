@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function UpcomingListItem(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, token, setCSRFToken, data, isSupportWebp, open } = props
+  const { sess, API, BTN, COLOR, token, setCSRFToken, data, isSupportWebp, open } = props
 
   const [ ,updateState ] = React.useState(null)
 
@@ -116,7 +116,12 @@ export default function UpcomingListItem(props) {
                   secondary={
                     <React.Fragment>
                       <Typography variant="caption" color="textSecondary">
-                        {API._shotnessNumber(data.views)} {` view${data.views > 1? 's' : ''}`}
+                        {`${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.views)} ${
+                          ( sess && sess.language === 'TH' ) ?
+                          `การดู ${API._shotnessNumber(data.views)} ครั้ง`
+                          :
+                          `view${data.views > 1? 's' : ''}`
+                        }`}
                       </Typography>
                     </React.Fragment>
                   } />
@@ -128,7 +133,14 @@ export default function UpcomingListItem(props) {
                   <React.Fragment>
                     { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
                       <Typography variant="caption" color="textSecondary">
-                        {`${API._dateToString(data.matchdate)} • ${API._shotnessNumber(data.views)} view${data.views > 1? 's' : ''}`}
+                        {`${API._dateToString(data.matchdate)} •
+                        ${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.views)} 
+                        ${
+                          ( sess && sess.language === 'TH' ) ?
+                          `การดู ${API._shotnessNumber(data.views)} ครั้ง`
+                          :
+                          `view${data.views > 1? 's' : ''}`
+                        }`}
                       </Typography>
                     }
                     <Typography variant="body2" color="textPrimary" className={classes.listTitle}>

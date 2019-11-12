@@ -52,20 +52,30 @@ export default function Announce(props) {
     `?_csrf=${token? token : resToken.token}&action=announcelist`
     )
     setCSRFToken(d.token)
-    setData({
-      primary: d.response.slice(0, 1).concat(d.response.slice(3, d.response.length)),
-      secondary: d.response.slice(1, 3)
-    })
+    if(window.innerWidth <= 500){
+      setData(d.response)
+    }else{
+      setData({
+        primary: d.response.slice(0, 1).concat(d.response.slice(3, d.response.length)),
+        secondary: d.response.slice(1, 3)
+      })
+    }
   }
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ window.innerWidth ])
 
   return (
     <div className={classes.root}>
-      <AnnouncePrimary {...props} data={ data ? data.primary : null} />
-      { data && data.secondary.length > 0 &&
+      <AnnouncePrimary {...props}
+        data={
+          window.innerWidth > 500 ?
+          (data ? data.primary : null)
+          :
+          data
+        } />
+      { data && window.innerWidth > 500 && data.secondary.length > 0 &&
         <AnnounceSecondary {...props} data={ data ? data.secondary : null} />
       }
     </div>

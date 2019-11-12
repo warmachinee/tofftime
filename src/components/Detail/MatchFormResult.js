@@ -4,6 +4,7 @@ import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
 
 import {
+  Button,
   Paper,
   Typography,
   Box,
@@ -13,6 +14,9 @@ import {
   ListItemText,
   Divider,
   Avatar,
+  Tooltip,
+  IconButton,
+  Dialog,
 
 } from '@material-ui/core'
 
@@ -20,12 +24,25 @@ import {
   Add as AddIcon,
   AccountCircle,
   LocationOn,
+  Close as CloseIcon,
 
 } from '@material-ui/icons';
+
+import { LDCircular } from './../loading/LDCircular'
 
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../Utils/GoBack'),
   loading: () => null
+});
+
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../Utils/LabelText'),
+  loading: () => <LDCircular />
+});
+
+const CourseScorecard = Loadable({
+  loader: () => import(/* webpackChunkName: "CourseScorecard" */'./../SystemAdmin/Course/CourseScorecard'),
+  loading: () => <LDCircular />
 });
 
 const useStyles = makeStyles(theme => ({
@@ -82,6 +99,9 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
   },
+  paperWidthSm: {
+    maxWidth: 700
+  },
 
 }))
 
@@ -90,6 +110,15 @@ export default function MatchFormResult(props) {
   const { API, COLOR, sess, token, setCSRFToken, isSupportWebp, handleSnackBar } = props
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ data, setData ] = React.useState(null)
+  const [ scorecardState, setScorecardState ] = React.useState(false);
+
+  const handleScorecardOpen = () => {
+    setScorecardState(true);
+  };
+
+  const handleScorecardClose = value => {
+    setScorecardState(false);
+  };
 
   function getStatus(status){
     switch (true) {
@@ -202,7 +231,7 @@ export default function MatchFormResult(props) {
       { matchDetail &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h4">
-            { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Player register list' }
+            { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }
           </Typography>
           <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
           <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
@@ -210,10 +239,12 @@ export default function MatchFormResult(props) {
               {API._dateToString(matchDetail.date)}
             </Typography>
             <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
-            <LocationOn style={{ color: COLOR.primary[600], marginRight: 4 }} />
-            <Typography variant="h6">
-              {matchDetail.location} ({matchDetail.locationversion})
-            </Typography>
+            <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
+              <LocationOn style={{ color: COLOR.primary[600], marginRight: 4 }} />
+              <Typography variant="h6">
+                {matchDetail.location}
+              </Typography>
+            </Button>
           </div>
           <List disablePadding style={{ marginTop: 16 }}>
             <ListItem style={{ backgroundColor: COLOR.grey[900] }}>
@@ -301,6 +332,16 @@ export default function MatchFormResult(props) {
           </List>
         </div>
       }
+      <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
+        {/*<LabelText text={( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'Golf Scorecard'} />*/}
+        <LabelText text="Golf Scorecard" />
+        <IconButton onClick={handleScorecardClose} style={{ position: 'absolute', top: 8, right: 8 }}>
+          <CloseIcon />
+        </IconButton>
+        { matchDetail &&
+          <CourseScorecard {...props} field={matchDetail} />
+        }
+      </Dialog>
     </Paper>
   );
 }

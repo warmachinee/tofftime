@@ -121,7 +121,7 @@ export default function MatchTeam(props) {
             style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
             <Typography component="div">
               <Box fontSize={24} fontWeight={600} textAlign="center">
-                No image
+                { ( sess && sess.language === 'TH' ) ? "ไม่มีรูป" : 'No image' }
               </Box>
             </Typography>
           </div>
@@ -131,13 +131,13 @@ export default function MatchTeam(props) {
           <RedButton className={classes.iconButton} variant="contained"
             onClick={()=>handleUpdateForm('reject')}>
             <CancelIcon style={{ marginRight: 8, marginLeft: 12 }} />
-            Decline
+            { ( sess && sess.language === 'TH' ) ? "ปฏิเสธ" : 'Decline' }
           </RedButton>
           <div style={{ width: 16 }} />
           <GreenButton className={classes.iconButton} variant="contained"
             onClick={()=>handleUpdateForm('accept')}>
             <DoneIcon style={{ marginRight: 8, marginLeft: 12 }} />
-            Accept
+            { ( sess && sess.language === 'TH' ) ? "ยอมรับ" : 'Accept' }
           </GreenButton>
         </ListItem>
       </React.Fragment>

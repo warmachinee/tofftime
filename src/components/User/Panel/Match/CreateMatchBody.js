@@ -27,6 +27,11 @@ const Location = Loadable({
   loading: () => <LDCircular />
 });
 
+const RichTextEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "RichTextEditor" */'./../../../Utils/RichTextEditor'),
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -198,7 +203,7 @@ export default function CreateMatchBody(props){
   const {
     API, sess, setData, setDataClassed, token, setCSRFToken, handleSnackBar, activeStep,
     matchName, matchClass, selectedField, selectedPrivacy, selectedMatchType, selectedDate, selectedFile, tempFile,
-    setMatchName, setSelectedField, handlePrivacy, handleMatchType, handleDateChange, handlePicture,
+    setMatchName, setSelectedField, handleEditorOnChange, handlePrivacy, handleMatchType, handleDateChange, handlePicture,
 
   } = props
   const imgRef = React.useRef(null)
@@ -219,6 +224,13 @@ export default function CreateMatchBody(props){
                       className={classes.margin}
                       label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
                       value={matchName || ''}
+                      error={matchName === ''}
+                      helperText={
+                        matchName === ''?
+                        ( ( sess && sess.language === 'TH' ) ? "กรุณาชื่อการแข่งขัน" : 'Please fill Match name.' )
+                        :
+                        null
+                      }
                       onChange={e =>setMatchName(e.target.value)}
                     />
                   </ThemeProvider>
@@ -351,6 +363,12 @@ export default function CreateMatchBody(props){
                     </div>
                   }
                 </div>
+              );
+            case 3:
+              return (
+                <React.Fragment>
+                  <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+                </React.Fragment>
               );
             default:
               return null;

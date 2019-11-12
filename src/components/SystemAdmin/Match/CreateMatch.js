@@ -223,7 +223,7 @@ function CreateMatchBody(props){
   const [ fileHover, handleFileHover ] = React.useState(false);
 
   const [ matchName, setMatchName ] = React.useState('');
-  const [ selectedField, setSelectedField ] = React.useState('');
+  const [ selectedField, setSelectedField ] = React.useState(null);
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState('1');
@@ -332,7 +332,7 @@ function CreateMatchBody(props){
         if(selectedFile){
           handleCreatePicture(csrf, d)
         }else{
-          window.location.replace(`/user/management/match/${d.matchid}#detail`);
+          window.location.replace(`/user/management/match/${d.matchid}#invitation`);
           /*
           handleFetch()
           handleSnackBar({
@@ -375,7 +375,7 @@ function CreateMatchBody(props){
       autoHideDuration: /success/.test(status)? 2000 : 5000
     })
     if(/success/.test(status)){
-      window.location.replace(`/user/management/match/${d.matchid}#detail`);
+      window.location.replace(`/user/management/match/${d.matchid}#invitation`);
     }
     handleFetch()
   }

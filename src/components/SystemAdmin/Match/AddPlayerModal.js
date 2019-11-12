@@ -380,9 +380,9 @@ export default function AddPlayerModal(props){
           }}
         />
         <GreenTextButton
-          style={{ marginLeft: 16 }}
+          style={{ marginTop: 10 }}
           onClick={handleDummyOpen}>
-          { ( sess && sess.language === 'TH' ) ? "ดีมมี่" : 'Dummy' }
+          { ( sess && sess.language === 'TH' ) ? "ดัมมี่" : 'Dummy' }
         </GreenTextButton>
       </ThemeProvider>
       <List className={classes.root}>

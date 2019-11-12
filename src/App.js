@@ -266,7 +266,7 @@ import MatchEditor from './components/SystemAdmin/Match/MatchEditor'
 import MBGroup from './components/SystemAdmin/Match/MBGroup'
 import RichTextEditor from './components/Utils/RichTextEditor'
 import NewsEditor from './components/SystemAdmin/News/NewsEditor'
-import DummyPlayer from './components/SystemAdmin/Match/DummyPlayer'
+import CourseScorecard from './components/SystemAdmin/Course/CourseScorecard'
 
 export default function App() {
   const [ passwordAccess, setPasswordAccess ] = React.useState(!/localhost/.test(window.location.href) ? null : 'cat15000')
@@ -415,7 +415,7 @@ export default function App() {
             </Switch>
             :
             <div style={{ maxWidth: 1200, margin: 'auto' }}>
-              <MBGroup {...passingProps} />
+              <CourseScorecard {...passingProps} />
             </div>
           }
 

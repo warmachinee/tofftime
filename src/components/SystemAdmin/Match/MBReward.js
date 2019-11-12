@@ -553,7 +553,7 @@ export default function MBReward(props){
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             { matchDetail && matchDetail.scorematch !== 0 &&
               <FormControl className={classes.formControl}>
-                <InputLabel>Main Class</InputLabel>
+                <InputLabel>{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' }</InputLabel>
                 <Select
                   value={mainClassSelected}
                   onChange={e => setMainClassSelected(e.target.value)}>

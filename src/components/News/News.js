@@ -61,7 +61,7 @@ export default function News(props) {
     <div id="el_news" className={classes.root}>
       { data && data.length > 0 &&
         <React.Fragment>
-          <LabelText text={ ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' } />
+          <LabelText text={'News' /*( sess && sess.language === 'TH' ) ? "ข่าว" : 'News'*/ } />
           <div className={classes.grid}>
             { data?
               data.map( d => <NewsCard key={d.newsid} {...props} data={d} /> )

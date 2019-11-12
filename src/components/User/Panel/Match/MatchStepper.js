@@ -36,7 +36,8 @@ const useStyles = makeStyles(theme => ({
 const labelSteps = [
   'Math detail',
   'Course',
-  'Picture'
+  'Add Picture',
+  'Match Rules, Regulations and Detail'
 ]
 
 export default function MatchStepper(props) {
@@ -49,7 +50,7 @@ export default function MatchStepper(props) {
   const [ activeStep, setActiveStep ] = React.useState(0);
   const maxSteps = labelSteps.length;
   const [ matchName, setMatchName ] = React.useState('');
-  const [ selectedField, setSelectedField ] = React.useState('');
+  const [ selectedField, setSelectedField ] = React.useState(null);
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState('1');
@@ -57,6 +58,7 @@ export default function MatchStepper(props) {
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ pageState, setPageState ] = React.useState('select')
+  const [ rulesData, setRulesData ] = React.useState(null);
 
   const passingFunction = {
     matchName: matchName,
@@ -75,7 +77,8 @@ export default function MatchStepper(props) {
     handlePicture: handlePicture,
     setSelectedFieldVersion: setSelectedFieldVersion,
     pageState: pageState,
-    setPageState: setPageState
+    setPageState: setPageState,
+    handleEditorOnChange: handleEditorOnChange
   }
 
   function getLabel(label){
@@ -87,8 +90,11 @@ export default function MatchStepper(props) {
         case label === 'Course':
           return 'เลือกสนาม'
           break;
+        case label === 'Add Picture':
+          return 'เพิ่มรูปภาพ'
+          break;
         default:
-          return 'รูปภาพ'
+          return 'กฏ กติกา และ รายละเอียดการแข่งขัน'
       }
     }else{
       return label
@@ -101,6 +107,21 @@ export default function MatchStepper(props) {
 
   function handleBack() {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
+  }
+
+  function handleReset() {
+    setSelectedField('')
+    setSelectedFieldVersion(1)
+    setSelectedPrivacy('public')
+    setSelectedMatchType('1')
+    setSelectedDate(new Date())
+    setSelectedFile(null)
+    setTempFile(null)
+    setPageState('select')
+  }
+
+  function handleEditorOnChange(data){
+    setRulesData(data)
   }
 
   function handlePrivacy(event) {
@@ -179,22 +200,7 @@ export default function MatchStepper(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(/success/.test(d.status)){
-        if(selectedFile){
-          handleCreatePicture(csrf, d)
-        }else{
-          /*
-          setExpanded(false)
-          setMatchOwnerStatus('mine')*/
-          window.location.replace(`/user/management/match/${d.matchid}#detail`);
-          /*
-          handleFetch()
-          handleSnackBar({
-            state: true,
-            message: d.status,
-            variant: /success/.test(d.status) ? d.status : 'error',
-            autoHideDuration: /success/.test(d.status)? 2000 : 5000
-          })*/
-        }
+        handleCreatePicture(csrf, d)
       }else{
         setExpanded(false)
         setMatchOwnerStatus('mine')
@@ -210,32 +216,65 @@ export default function MatchStepper(props) {
   }
 
   async function handleCreatePicture(csrf, d){
-    var status = d.status
-    const formData = new FormData()
-    formData.append('matchimage', selectedFile)
-    const response = await API._fetchPostFile(
-      'mmatchsystem',
-      `?_csrf=${csrf}`, {
-      action: 'edit',
-      matchid: d.matchid,
-      photopath: true,
-    }, formData)
-    const resToken = await API._xhrGet('getcsrf')
-    setCSRFToken(resToken.token)
-    status = response.status
-    handleSnackBar({
-      state: true,
-      message: status,
-      variant: /success/.test(status) ? status : 'error',
-      autoHideDuration: /success/.test(status)? 2000 : 5000
-    })
-    if(/success/.test(status)){
-      /*
-      setExpanded(false)
-      setMatchOwnerStatus('mine')*/
-      window.location.replace(`/user/management/match/${d.matchid}#detail`);
+    if(selectedFile){
+      var status = d.status
+      const formData = new FormData()
+      formData.append('matchimage', selectedFile)
+      const response = await API._fetchPostFile(
+        'mmatchsystem',
+        `?_csrf=${csrf}`, {
+        action: 'edit',
+        matchid: d.matchid,
+        photopath: true,
+      }, formData)
+      const resToken = await API._xhrGet('getcsrf')
+      setCSRFToken(resToken.token)
+      status = response.status
+      if(/success/.test(status)){
+        handleRulesSave(d.matchid)
+        /*
+        setExpanded(false)
+        setMatchOwnerStatus('mine')*/
+      }else{
+        handleSnackBar({
+          state: true,
+          message: status,
+          variant: /success/.test(status) ? status : 'error',
+          autoHideDuration: /success/.test(status)? 2000 : 5000
+        })
+      }
+    }else{
+      handleRulesSave(d.matchid)
     }
-    handleFetch()
+  }
+
+  async function handleRulesSave(matchid){
+    if(rulesData){
+      let res = await API._xhrGet('getcsrf')
+      const sendObj = {
+        action: 'edit',
+        matchid: parseInt(matchid)
+      };
+      Object.assign(sendObj, { message: rulesData });
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin'? 'matchsystem' : 'mmatchsystem', sendObj,
+        (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        if(/success/.test(d.status)){
+          window.location.replace(`/match/${matchid}`);
+        }
+      })
+    }else{
+      window.location.replace(`/match/${matchid}`);
+      //window.location.replace(`/user/management/match/${d.matchid}#invitation`)
+    }
   }
 
   async function handleFetch(){
@@ -277,16 +316,32 @@ export default function MatchStepper(props) {
             { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
           </BTN.Primary>
           :
-          <BTN.PrimaryText size="small" onClick={handleNext}>
+          <BTN.PrimaryText
+            disabled={function(){
+              switch (activeStep) {
+                case 0:
+                  return matchName === ''
+                  break;
+                case 1:
+                  return selectedField === null
+                  break;
+                default:
+                  return false
+              }
+            }()}
+            size="small" onClick={handleNext}>
             { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
             {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
           </BTN.PrimaryText>
         }
         backButton={
-          <BTN.PrimaryText size="small" onClick={handleBack} disabled={activeStep === 0}>
+          activeStep > 0 ?
+          <BTN.PrimaryText size="small" onClick={handleBack}>
             {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
             { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
           </BTN.PrimaryText>
+          :
+          <div style={{ width: 24 }} />
         }
       />
 

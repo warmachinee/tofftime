@@ -1,6 +1,7 @@
 import React from 'react'
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import * as API from './../../api'
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 pdfMake.fonts = {
   THSarabunNew: {
@@ -74,7 +75,7 @@ function PDFFile(data, matchDetail, sess){
     {text: matchDetail.title + '\t', fontSize: 28, bold: true, margin: [0, 0, 0, 24]},
     {text: matchDetail.location + `(${matchDetail.locationversion})` + '\t', fontSize: 24, bold: true, margin: [0, 0, 0, 24]},
     {
-      text: `${( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }\t${matchDetail.date}` + '\t',
+      text: `${( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }\t${API._dateToString(matchDetail.date)}` + '\t',
       fontSize: 24, bold: true, margin: [0, 0, 0, 24]
     },
     {

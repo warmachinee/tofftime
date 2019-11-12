@@ -98,7 +98,7 @@ export default function OrganizerList(props) {
     <div id="el_organizer" className={classes.root}>
       { data && data.length > 0 &&
         <React.Fragment>
-          <LabelText text={ ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' } />
+          <LabelText text={'Organizer' /*( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer'*/ } />
           <div className={classes.grid}>
             { data.map(
               d =>

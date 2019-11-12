@@ -243,32 +243,32 @@ export default function AddPageModal(props){
             );
           })
         }
-        <ListItem key="More button" role={undefined} dense style={{ display: 'flex' }}>
-          { pageListData && handleSearch().length > 10 && searchPage &&
-            <React.Fragment>
-              <Button fullWidth onClick={handleMore}>
-                { dataSliced >= handleSearch().length ? (
-                  ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                ):(
-                  ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                ) }
-              </Button>
-              { pageListData && dataSliced < handleSearch().length &&
-                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-              }
-            </React.Fragment>
-          }
-        </ListItem>
-        { searchPage && handleSearch().length === 0 &&
-          <ListItem>
-            <Typography component="div" style={{ width: '100%' }}>
-              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                No Result
-              </Box>
-            </Typography>
-          </ListItem>
-        }
       </List>
+      <ListItem key="More button" role={undefined} dense style={{ display: 'flex' }}>
+        { pageListData && handleSearch().length > 10 && searchPage &&
+          <React.Fragment>
+            <Button fullWidth onClick={handleMore}>
+              { dataSliced >= handleSearch().length ? (
+                ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+              ):(
+                ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+              ) }
+            </Button>
+            { pageListData && dataSliced < handleSearch().length &&
+              <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+            }
+          </React.Fragment>
+        }
+      </ListItem>
+      { searchPage && handleSearch().length === 0 &&
+        <ListItem>
+          <Typography component="div" style={{ width: '100%' }}>
+            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              No Result
+            </Box>
+          </Typography>
+        </ListItem>
+      }
     </div>
   );
 }

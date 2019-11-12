@@ -270,7 +270,7 @@ function MBScoreEditorContainer(props){
           <a href={`/display/${matchid}/${selected.userid}`}
             target='_blank'
             style={{ textDecoration: 'none', color: 'inherit' }}>
-            <GreenTextButton>Match Display</GreenTextButton>
+            <GreenTextButton>{ ( sess && sess.language === 'TH' ) ? "คะแนนรายคน" : 'Score Display' }</GreenTextButton>
           </a>
         }
       </div>
@@ -314,11 +314,15 @@ function MBScoreEditorContainer(props){
             <React.Fragment>
               <Typography variant="caption" align="right"
                 style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
-                {`${data.length} player${data.length > 1? 's' : ''}`}
+                { ( sess && sess.language === 'TH' ) ?
+                  `ผู้เล่น ${data.length} คน`
+                  :
+                  `${data.length} player${data.length > 1? 's' : ''}`
+                }
               </Typography>
               {/* matchDetail && matchDetail.scorematch !== 0 &&
                 <FormControl className={classes.formControl}>
-                  <InputLabel>Main Class</InputLabel>
+                  <InputLabel>{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' }</InputLabel>
                   <Select
                     value={mainClassSelected}
                     onChange={e => setMainClassSelected(e.target.value)}>
@@ -449,6 +453,8 @@ function MBScoreEditorContainer(props){
               </React.Fragment>
             )
           }
+        </List>
+        <List disablePadding>
           <ListItem role={undefined} dense style={{ display: 'flex' }}>
             { data && data.length > 10 && !searchUser &&
               <React.Fragment>
@@ -774,31 +780,35 @@ export default function MBScoreEditor(props){
       <ThemeProvider theme={theme}>
         <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          <Typography variant="h5" className={classes.scorcardLabel}>Score card</Typography>
-          <Typography variant="body1" className={classes.scorcardPlayer}>
-            {selected && `${selected.firstname} ${selected.lastname}`}
-            {/*
-              (${
-                matchDetail &&
-                matchDetail.mainclass &&
-                matchDetail.mainclass.length > 0 &&
-                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                  return d.classno === selected.classno
-                }).map((d, i) =>{
-                  return (
-                    matchDetail.scorematch !== 0 ?
-                    d.classname
-                    :
-                    String.fromCharCode(65 + value.classno - 1)
-                  )
-                })
-              })*/
-            }
+          <Typography variant="h5" className={classes.scorcardLabel}>
+            {`${ ( sess && sess.language === 'TH' ) ? "กรอกคะแนนผู้เล่น" : 'Scorecard' } ${selected && `${selected.firstname} ${selected.lastname}`}`}
           </Typography>
+          {/*
+            <Typography variant="body1" className={classes.scorcardPlayer}>
+              {selected && `${selected.firstname} ${selected.lastname}`}
+              {
+                (${
+                  matchDetail &&
+                  matchDetail.mainclass &&
+                  matchDetail.mainclass.length > 0 &&
+                  matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                    return d.classno === selected.classno
+                  }).map((d, i) =>{
+                    return (
+                      matchDetail.scorematch !== 0 ?
+                      d.classname
+                      :
+                      String.fromCharCode(65 + value.classno - 1)
+                    )
+                  })
+                })
+              }
+            </Typography>*/
+          }
         </div>
         {/*
           <Typography variant="caption" className={classes.scorcardMainClass} color="textSecondary">
-            {`Main Class ${mainClassSelected}`}
+            {`{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' } ${mainClassSelected}`}
           </Typography>*/
         }
         <div style={{
@@ -855,7 +865,7 @@ export default function MBScoreEditor(props){
       { matchDetail && matchDetail.scorematch === 2 && selected &&
         <ThemeProvider theme={theme}>
           <div className={classes.predictScoreChildGrid}>
-            <TextField label="Predict Score"
+            <TextField label={ ( sess && sess.language === 'TH' ) ? "คะแนนที่ทาย" : 'Predict Score' }
               type="number"
               value={predictScore}
               onChange={e =>handleSetPredictScore(e.target.value)}

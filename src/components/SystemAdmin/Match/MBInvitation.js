@@ -309,6 +309,7 @@ export default function MBInvitation(props){
 
   function handleAddClose(){
     setAddState(false);
+    setDummyState(false);
   };
 
   function handleDummyOpen(){
@@ -317,6 +318,7 @@ export default function MBInvitation(props){
 
   function handleDummyClose(){
     setDummyState(false);
+    setAddState(false);
   };
 
   function handleFormOpen(d){
@@ -587,46 +589,46 @@ export default function MBInvitation(props){
                 </div>
               </Typography>
             }
-            <ListItem role={undefined} dense style={{ display: 'flex' }}>
-              { data && data.length > 10 && !searchUser &&
-                <React.Fragment>
-                  <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= data.length ? (
-                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                    ):(
-                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                    ) }
-                  </Button>
-                  { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                  }
-                </React.Fragment>
-              }
-              { data && handleSearch().length > 10 && searchUser &&
-                <React.Fragment>
-                  <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= handleSearch().length ? (
-                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                    ):(
-                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                    ) }
-                  </Button>
-                  { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                  }
-                </React.Fragment>
-              }
-            </ListItem>
-            { searchUser && handleSearch().length === 0 &&
-              <ListItem>
-                <Typography component="div" style={{ width: '100%' }}>
-                  <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                    { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
-                  </Box>
-                </Typography>
-              </ListItem>
-            }
           </div>
+          <ListItem role={undefined} dense style={{ display: 'flex' }}>
+            { data && data.length > 10 && !searchUser &&
+              <React.Fragment>
+                <Button fullWidth onClick={handleMore}>
+                  { dataSliced >= data.length ? (
+                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                  ):(
+                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                  ) }
+                </Button>
+                { data && dataSliced < data.length &&
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                }
+              </React.Fragment>
+            }
+            { data && handleSearch().length > 10 && searchUser &&
+              <React.Fragment>
+                <Button fullWidth onClick={handleMore}>
+                  { dataSliced >= handleSearch().length ? (
+                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                  ):(
+                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                  ) }
+                </Button>
+                { data && dataSliced < handleSearch().length &&
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                }
+              </React.Fragment>
+            }
+          </ListItem>
+          { searchUser && handleSearch().length === 0 &&
+            <ListItem>
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
+                </Box>
+              </Typography>
+            </ListItem>
+          }
         </div>
       </List>
       <TemplateDialog open={addState} handleClose={handleAddClose}>

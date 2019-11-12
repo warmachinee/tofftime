@@ -46,7 +46,6 @@ const useStyles = makeStyles(theme => ({
   },
   textFieldGrid: {
     padding: 16,
-    marginBottom: 24,
     marginTop: 36,
     border: `3px solid ${primary[800]}`,
   },
@@ -180,7 +179,7 @@ function ListDummy(props){
           editting ?
           <TextField
             className={classes.textField}
-            label="Full name"
+            label={( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full name'}
             value={fullname}
             onChange={e =>setFullname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -194,7 +193,7 @@ function ListDummy(props){
           editting ?
           <TextField
             className={classes.textField}
-            label="Full name"
+            label={( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name'}
             value={lastname}
             onChange={e =>setLastname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -324,14 +323,14 @@ export default function DummyPlayer(props){
 
   return(
     <div className={classes.root}>
-      <LabelText text="Create Dummy" />
+      <LabelText text={( sess && sess.language === 'TH' ) ? "สร้างดัมมี่" : 'Create Dummy'} />
       <div className={classes.textFieldGrid}>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
             className={classes.textField}
             variant="outlined"
-            label="Full name"
+            label={( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full name'}
             value={fullname}
             onChange={e =>setFullname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -339,7 +338,7 @@ export default function DummyPlayer(props){
           <TextField
             className={classes.textField}
             variant="outlined"
-            label="Last name"
+            label={( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name'}
             value={lastname}
             onChange={e =>setLastname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -348,25 +347,39 @@ export default function DummyPlayer(props){
         <div className={classes.buttonGrid}>
           <Typography component="div">
             <Box className={classes.notice} m={1}>
-              Fill the form and click confirm <br></br>to create a new player.
+              {( sess && sess.language === 'TH' ) ? "กรอกข้อมูลแล้วกดยืนยัน" : 'Fill the form and click confirm'}
+              <br></br>
+              {( sess && sess.language === 'TH' ) ? "เพื่อสร้างผู้เล่นใหม่" : 'to create a new player.'}
             </Box>
           </Typography>
           <div style={{ flex: 1 }} />
           <GreenButton
             className={classes.confirmButton}
             onClick={()=> sess.typeid === 'admin' ? handleCreatePlayer() : handleCreateDummy()}>
-            Confirm
+            {( sess && sess.language === 'TH' ) ? "ยืนยัน" : 'Confirm'}
           </GreenButton>
         </div>
       </div>
-      <LabelText text="Edit Dummy" style={{ marginBottom: 24 }} />
+      <LabelText text={( sess && sess.language === 'TH' ) ? "แก้ไขดัมมี่" : 'Edit Dummy'} style={{ marginBottom: 24 }} />
       <div style={{ display: 'flex', padding: '0 12px' }}>
         { ( editting || !removeState ) &&
-          <GreenTextButton variant="outlined" onClick={()=>setEditting(!editting)}>{editting ? 'Done' : 'Edit'}</GreenTextButton>
+          <GreenTextButton variant="outlined" onClick={()=>setEditting(!editting)}>
+            {editting ?
+              (( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done')
+              :
+              (( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit')
+            }
+          </GreenTextButton>
         }
         <div style={{ flexGrow: 1 }} />
         { ( !editting || removeState ) &&
-          <GreenTextButton variant="outlined" onClick={()=>setRemoveState(!removeState)}>{removeState ? 'Done' : 'Remove'}</GreenTextButton>
+          <GreenTextButton variant="outlined" onClick={()=>setRemoveState(!removeState)}>
+            {removeState ?
+              (( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done')
+              :
+              (( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove')
+            }
+          </GreenTextButton>
         }
       </div>
       <List>
@@ -380,7 +393,7 @@ export default function DummyPlayer(props){
             :
             <ListItem>
               <ListItemText style={{ textTransform: 'capitalize' }}
-                primary="No Dummy" />
+                primary={( sess && sess.language === 'TH' ) ? "ไม่มีดัมมี่" : 'No Dummy'} />
             </ListItem>
           )
         }

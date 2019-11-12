@@ -460,6 +460,8 @@ export default function AddAdmin(props){
             </Typography>
           </ListItem>
         }
+      </List>
+      <List disablePadding>
         <ListItem role={undefined} dense style={{ display: 'flex' }}>
           { data && data.length > 10 && !searchUser &&
             <React.Fragment>

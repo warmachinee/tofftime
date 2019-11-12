@@ -7,32 +7,40 @@ import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red, amber, green } from './../../../api/palette'
 
-import Paper from '@material-ui/core/Paper';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Slide from '@material-ui/core/Slide';
-import Divider from '@material-ui/core/Divider';
+import {
+  Paper,
+  Collapse,
+  IconButton,
+  Typography,
+  Button,
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
+  Checkbox,
+  TextField,
+  InputAdornment,
+  Menu,
+  MenuItem,
+  Slide,
+  Divider,
+  Tooltip,
 
-import AddIcon from '@material-ui/icons/Add';
-import ClearIcon from '@material-ui/icons/Clear';
-import SearchIcon from '@material-ui/icons/Search';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import ClassIcon from '@material-ui/icons/Class';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
+} from '@material-ui/core';
+
+import {
+  Add as AddIcon,
+  Help as HelpIcon,
+  Clear as ClearIcon,
+  Search as SearchIcon,
+  AddCircle as AddCircleIcon,
+  Class as ClassIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  AccessTime as AccessTimeIcon,
+
+} from '@material-ui/icons';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -167,6 +175,16 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
+const StyledTooltip = withStyles(theme => ({
+  tooltip: {
+    backgroundColor: primary[50],
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 250,
+    fontSize: theme.typography.pxToRem(12),
+    border: `1px solid ${primary[200]}`,
+  },
+}))(Tooltip);
+
 const RedButton = withStyles(theme => ({
   root: {
     color: theme.palette.getContrastText(red[600]),
@@ -223,6 +241,11 @@ export default function MBSchedule(props){
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ selectedTeam, setSelectedTeam ] = React.useState(0)
   const [ selectedUser, setSelectedUser ] = React.useState(null)
+  const [ helpState, setHelpState ] = React.useState(false)
+
+  function handleClickHelpState(){
+    setHelpState(!helpState)
+  }
 
   function handleMenuClick(event) {
     setAnchorEl(event.currentTarget);
@@ -450,7 +473,7 @@ export default function MBSchedule(props){
     <div className={classes.root}>
       <List className={classes.listRoot}>
         { matchDetail && matchDetail.team && matchDetail.team.length > 0 &&
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <a href={`/schedule/${matchid}`}
               target='_blank'
               style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -496,14 +519,38 @@ export default function MBSchedule(props){
           </GreenTextButton>
         </ListItem>
         <ListItem disableGutters>
-          <GreenTextButton
-            className={classes.button}
-            onClick={handleFetchSwitchHostForm}
-            variant="outlined">
-            { ( sess && sess.language === 'TH' ) ? "สลับผู้จัด" : 'Switch Host' }
-          </GreenTextButton>
+          <div style={{ display: 'flex' }}>
+            <GreenTextButton
+              className={classes.button}
+              onClick={handleFetchSwitchHostForm}
+              variant="outlined">
+              { ( sess && sess.language === 'TH' ) ? "สลับผู้จัด" : 'Switch Host' }
+            </GreenTextButton>
+            <StyledTooltip
+              PopperProps={{
+                disablePortal: true,
+              }}
+              onClose={()=>setHelpState(false)}
+              open={helpState}
+              disableFocusListener
+              disableHoverListener
+              disableTouchListener
+              title={
+                <Typography>
+                  { ( sess && sess.language === 'TH' ) ?
+                    "กดปุ่มนี้เพื่อเพิ่มผู้จัดการแข่งขันเข้าไปในรายชื่อ ในกรณีที่ต้องการเข้าร่วมการแข่งขัน"
+                    :
+                    'Click this button to add the organizer to the list. In the case of wanting to participate in the match.'
+                  }
+                </Typography>
+              }>
+              <IconButton onClick={handleClickHelpState}>
+                <HelpIcon fontSize="small" style={{ color: primary[600] }} />
+              </IconButton>
+            </StyledTooltip>
+          </div>
           <div style={{ flex: 1 }} />
-          { checked.length > 0 &&
+          { checked.length > 0 && selectedTeam !== 0 &&
             <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
               { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
             </GreenButton>
@@ -563,21 +610,20 @@ export default function MBSchedule(props){
           </ListItem>
           { matchDetail && matchDetail.team && matchDetail.team.length === 0 &&
             <ListItem>
-              <Typography component="div" style={{ width: '100%' }}>
+              <Typography component="div" style={{ width: '100%', display: 'flex' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                   { ( sess && sess.language === 'TH' ) ? "ยังไม่มีตารางเวลา" : 'No schedule yet.' }
                 </Box>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                  <BTN.PrimaryOutlined onClick={handleTeamOpen}>
-                    <AddIcon style={{ marginRight: 8 }} />
-                    { ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create schedule.' }
-                  </BTN.PrimaryOutlined>
-                </div>
+                <BTN.PrimaryOutlined onClick={handleTeamOpen}>
+                  <AddIcon style={{ marginRight: 8 }} />
+                  { ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create schedule.' }
+                </BTN.PrimaryOutlined>
               </Typography>
             </ListItem>
           }
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
             { data && !data.status &&
+              data.length > 0 ?
               [
                 ...searchUser? handleSearch() : data
               ].slice(0, dataSliced).map(value => {
@@ -586,11 +632,15 @@ export default function MBSchedule(props){
                     <ListItem role={undefined} button
                       onClick={()=>handleToggle(value)}>
                       <ListItemIcon>
-                        <GreenCheckbox
-                          edge="start"
-                          checked={checked.indexOf(value) !== -1}
-                          tabIndex={-1}
-                          disableRipple />
+                        {selectedTeam !== 0 ?
+                          <GreenCheckbox
+                            edge="start"
+                            checked={checked.indexOf(value) !== -1}
+                            tabIndex={-1}
+                            disableRipple />
+                          :
+                          <div style={{ width: 42 }} />
+                        }
                       </ListItemIcon>
 
                       <ListItemText className={classes.listText}
@@ -668,47 +718,61 @@ export default function MBSchedule(props){
                   </React.Fragment>
                 );
               })
-            }
-            <ListItem role={undefined} dense style={{ display: 'flex' }}>
-              { data && data.length > 10 && !searchUser &&
-                <React.Fragment>
-                  <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= data.length ? (
-                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                    ):(
-                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                    ) }
-                  </Button>
-                  { data && dataSliced < data.length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                  }
-                </React.Fragment>
-              }
-              { data && handleSearch().length > 10 && searchUser &&
-                <React.Fragment>
-                  <Button fullWidth onClick={handleMore}>
-                    { dataSliced >= handleSearch().length ? (
-                      ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                    ):(
-                      ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                    ) }
-                  </Button>
-                  { data && dataSliced < handleSearch().length &&
-                    <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                  }
-                </React.Fragment>
-              }
-            </ListItem>
-            { searchUser && handleSearch().length === 0 &&
-              <ListItem>
-                <Typography component="div" style={{ width: '100%' }}>
-                  <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                    { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
-                  </Box>
-                </Typography>
-              </ListItem>
+              :
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+                </Box>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                  <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
+                    <BTN.PrimaryOutlined>
+                      <AddIcon style={{ marginRight: 8 }} />
+                      { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่น" : 'Invite players.' }
+                    </BTN.PrimaryOutlined>
+                  </BTN.NoStyleLink>
+                </div>
+              </Typography>
             }
           </div>
+          <ListItem role={undefined} dense style={{ display: 'flex' }}>
+            { data && data.length > 10 && !searchUser &&
+              <React.Fragment>
+                <Button fullWidth onClick={handleMore}>
+                  { dataSliced >= data.length ? (
+                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                  ):(
+                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                  ) }
+                </Button>
+                { data && dataSliced < data.length &&
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                }
+              </React.Fragment>
+            }
+            { data && handleSearch().length > 10 && searchUser &&
+              <React.Fragment>
+                <Button fullWidth onClick={handleMore}>
+                  { dataSliced >= handleSearch().length ? (
+                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                  ):(
+                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                  ) }
+                </Button>
+                { data && dataSliced < handleSearch().length &&
+                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                }
+              </React.Fragment>
+            }
+          </ListItem>
+          { searchUser && handleSearch().length === 0 &&
+            <ListItem>
+              <Typography component="div" style={{ width: '100%' }}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
+                </Box>
+              </Typography>
+            </ListItem>
+          }
         </div>
       </List>
       <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth={500}>

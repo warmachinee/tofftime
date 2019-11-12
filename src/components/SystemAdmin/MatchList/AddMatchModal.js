@@ -234,6 +234,8 @@ export default function AddMatchModal(props){
             );
           })
         }
+      </List>
+      <List disablePadding>
         <ListItem key="More button" role={undefined} dense style={{ display: 'flex' }}>
           { matchListData && handleSearch().length > 10 && searchMatch &&
             <React.Fragment>

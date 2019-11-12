@@ -30,11 +30,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import { LDCircular } from './../../loading/LDCircular'
 
-const CreateMatch = Loadable({
-  loader: () => import(/* webpackChunkName: "CreateMatch" */'./CreateMatch'),
-  loading: () => <LDCircular />
-});
-
 const LabelText = Loadable({
   loader: () => import(/* webpackChunkName: "LabelText" */'./../../Utils/LabelText'),
   loading: () => <LDCircular />
@@ -398,16 +393,15 @@ export default function MatchBody(props){
   return(
     <div className={classes.root}>
       <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
-      <div style={{ marginTop: 24 }}>
-        <CreateMatch setData={setData} setDataClassed={setDataClassed} setMatchOwnerStatus={setMatchOwnerStatus} {...props} />
-      </div>
       { sess && sess.typeid !== 'admin' &&
         <div style={{ marginTop: 24, boxSizing: 'border-box' }}>
           <FormControl component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">Type</FormLabel>
+            <FormLabel component="legend">{( sess && sess.language === 'TH' ) ? "ประเภท" : 'Type'}</FormLabel>
             <RadioGroup value={matchOwnerStatus} onChange={handleChange}>
-              <FormControlLabel value="mine" control={<Radio />} label="My match" />
-              <FormControlLabel value="admin" control={<Radio />} label="Admin" />
+              <FormControlLabel value="mine" control={<Radio />}
+                label={( sess && sess.language === 'TH' ) ? "การแข่งขันของฉัน" : 'My match'} />
+              <FormControlLabel value="admin" control={<Radio />}
+                label={( sess && sess.language === 'TH' ) ? "แอดมิน" : 'Admin'} />
             </RadioGroup>
           </FormControl>
         </div>
@@ -441,10 +435,11 @@ export default function MatchBody(props){
             { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&
               <StyledText primary={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' } className={classes.tableDate} />
             }
-            <StyledText primary="Views" className={classes.tableView} />
+            <StyledText
+              primary={( sess && sess.language === 'TH' ) ? "การดู" : 'View'} className={classes.tableView} />
             <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } className={classes.tableTitle} />
             { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editting &&
-              <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location' } className={classes.tableLocation} />
+              <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } className={classes.tableLocation} />
             }
             { editting &&
               <ListItemSecondaryAction>

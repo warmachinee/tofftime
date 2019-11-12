@@ -228,7 +228,9 @@ export default function CreatePage(props) {
             }}
             onMouseEnter={()=>handleFileHover(true)}
             onMouseLeave={()=>handleFileHover(false)}>
-            <Typography variant="caption">{selectedFile.name}</Typography>
+            {/*
+              <Typography variant="caption">{selectedFile.name}</Typography>*/
+            }
             <img ref={imgRef}
               style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
               className={classes.matchImg}
@@ -261,9 +263,11 @@ export default function CreatePage(props) {
               position: 'relative', marginTop: 16, marginBottom: 24,
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
-            <Typography variant="caption" style={{ textAlign: 'center' }}>
-              { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
-            </Typography>
+            { /*
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
+                { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
+              </Typography>*/
+            }
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>

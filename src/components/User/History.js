@@ -371,7 +371,7 @@ export default function History(props) {
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
               <ListItemText
                 style={{ width: 100, color: 'white' }}
-                primary={ (sess && sess.language === 'TH')? 'สนาม' : 'Location' } />
+                primary={ (sess && sess.language === 'TH')? 'สนาม' : 'Course' } />
             }
             <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
               <Typography variant="subtitle2" color="textSecondary" style={{ color: 'white' }}>

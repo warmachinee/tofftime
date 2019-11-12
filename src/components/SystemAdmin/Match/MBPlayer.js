@@ -814,11 +814,15 @@ export default function MBPlayer(props){
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Typography variant="caption" align="right"
                   style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
-                  {`${data.length} player${data.length > 1? 's' : ''}`}
+                  { ( sess && sess.language === 'TH' ) ?
+                    `ผู้เล่น ${data.length} คน`
+                    :
+                    `${data.length} player${data.length > 1? 's' : ''}`
+                  }
                 </Typography>
                 { matchDetail && matchDetail.scorematch !== 0 &&
                   <FormControl className={classes.formControl}>
-                    <InputLabel>Main Class</InputLabel>
+                    <InputLabel>{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' }</InputLabel>
                     <Select
                       value={mainClassSelected}
                       onChange={e => setMainClassSelected(e.target.value)}>
@@ -1033,46 +1037,47 @@ export default function MBPlayer(props){
                     </div>
                   </Typography>
                 }
-                <ListItem role={undefined} dense style={{ display: 'flex' }}>
-                  { data && data.length > 10 && !searchUser &&
-                    <React.Fragment>
-                      <Button fullWidth onClick={handleMore}>
-                        { dataSliced >= data.length ? (
-                          ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                        ):(
-                          ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                        ) }
-                      </Button>
-                      { data && dataSliced < data.length &&
-                        <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                      }
-                    </React.Fragment>
-                  }
-                  { data && handleSearch().length > 10 && searchUser &&
-                    <React.Fragment>
-                      <Button fullWidth onClick={handleMore}>
-                        { dataSliced >= handleSearch().length ? (
-                          ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
-                        ):(
-                          ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
-                        ) }
-                      </Button>
-                      { data && dataSliced < handleSearch().length &&
-                        <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
-                      }
-                    </React.Fragment>
-                  }
-                </ListItem>
-                { searchUser && handleSearch().length === 0 &&
-                  <ListItem>
-                    <Typography component="div" style={{ width: '100%' }}>
-                      <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                        { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
-                      </Box>
-                    </Typography>
-                  </ListItem>
-                }
               </div>
+              <ListItem role={undefined} dense style={{ display: 'flex' }}>
+                { data && data.length > 10 && !searchUser &&
+                  <React.Fragment>
+                    <Button fullWidth onClick={handleMore}>
+                      { dataSliced >= data.length ? (
+                        ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                      ):(
+                        ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                      ) }
+                    </Button>
+                    { data && dataSliced < data.length &&
+                      <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                    }
+                  </React.Fragment>
+                }
+                { data && handleSearch().length > 10 && searchUser &&
+                  <React.Fragment>
+                    <Button fullWidth onClick={handleMore}>
+                      { dataSliced >= handleSearch().length ? (
+                        ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                      ):(
+                        ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                      ) }
+                    </Button>
+                    { data && dataSliced < handleSearch().length &&
+                      <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                    }
+                  </React.Fragment>
+                }
+              </ListItem>
+              { searchUser && handleSearch().length === 0 &&
+                <ListItem>
+                  <Typography component="div" style={{ width: '100%' }}>
+                    <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                      { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
+                    </Box>
+                  </Typography>
+                </ListItem>
+              }
+
             </div>
           </List>
           <Menu

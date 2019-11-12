@@ -9,6 +9,7 @@ import { primary } from './../../api/palette'
 
 import {
   Button,
+  Dialog,
   Paper,
   IconButton,
   Typography,
@@ -26,6 +27,7 @@ import {
 import {
   ExpandMore as ExpandMoreIcon,
   LocationOn,
+  Close as CloseIcon,
 
 } from '@material-ui/icons';
 
@@ -41,6 +43,15 @@ const GoBack = Loadable({
   loading: () => <LDCircular />
 });
 
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../Utils/LabelText'),
+  loading: () => <LDCircular />
+});
+
+const CourseScorecard = Loadable({
+  loader: () => import(/* webpackChunkName: "CourseScorecard" */'./../SystemAdmin/Course/CourseScorecard'),
+  loading: () => <LDCircular />
+});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -115,21 +126,26 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+  paperWidthSm: {
+    maxWidth: 700
+  },
 
 }));
 
 function DetailComponent(props){
   const { detail } = props
 
+  React.useEffect(()=>{
+    console.log(ReactHtmlParser(detail).textContent);
+  },[ ])
+
   return(
     <React.Fragment>
-      { ReactHtmlParser(detail).textContent &&
-        <div className="ql-container ql-snow">
-          <div className="ql-editor">
-            {ReactHtmlParser(detail)}
-          </div>
+      <div className="ql-container ql-snow">
+        <div className="ql-editor">
+          {ReactHtmlParser(detail)}
         </div>
-      }
+      </div>
     </React.Fragment>
   );
 }
@@ -143,6 +159,15 @@ export default function MatchDetailBody(props) {
   const [ expanded, setExpanded ] = React.useState(true)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
+  const [ scorecardState, setScorecardState ] = React.useState(false);
+
+  const handleScorecardOpen = () => {
+    setScorecardState(true);
+  };
+
+  const handleScorecardClose = value => {
+    setScorecardState(false);
+  };
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -174,15 +199,23 @@ export default function MatchDetailBody(props) {
         case data.permission === 'host' || data.permission === 'admin':
           return (
             <BTN.NoStyleLink to={`/user/management/match/${matchid}`}>
-              <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+              <BTN.Primary style={{ padding: '4px 16px' }}>
+                { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+              </BTN.Primary>
             </BTN.NoStyleLink>
           )
           break;
         case data.permission === 'pending':
-          return (<Button disabled>Pending</Button>)
+          return (
+            <Button disabled>{ ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending' }</Button>
+          )
           break;
         case data.permission === 'none':
-          return (<BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>)
+          return (
+            <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>
+              { ( sess && sess.language === 'TH' ) ? "เข้าร่วม" : 'Join' }
+            </BTN.Primary>
+          )
           break;
         default:
           return null
@@ -257,12 +290,17 @@ export default function MatchDetailBody(props) {
               {data?API._dateToString(data.date):'date'}
             </Typography>
             <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
-            <LocationOn style={{ color: primary[600], marginRight: 4 }} />
-            <Typography variant="h6">
-              {data?data.location:'Location'} {data? '(' + data.locationversion + ')':''}
-            </Typography>
+            <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
+              <LocationOn style={{ color: primary[600], marginRight: 4 }} />
+              <Typography variant="h6">
+                {data?data.location:'Course'}
+              </Typography>
+            </Button>
           </div>
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', marginBottom: 24 }}>
+            <BTN.PrimaryOutlined onClick={handleScorecardOpen}>
+              { ( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'Scorecard' }
+            </BTN.PrimaryOutlined>
             { matchid &&
               <BTN.NoStyleLink to={`/matchform/${matchid}`}>
                 <BTN.PrimaryOutlined>{ ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }</BTN.PrimaryOutlined>
@@ -348,6 +386,16 @@ export default function MatchDetailBody(props) {
           </Collapse>
         </div>
       }
+      <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
+        {/*<LabelText text={( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'Golf Scorecard'} />*/}
+        <LabelText text="Golf Scorecard" />
+        <IconButton onClick={handleScorecardClose} style={{ position: 'absolute', top: 8, right: 8 }}>
+          <CloseIcon />
+        </IconButton>
+        { data &&
+          <CourseScorecard {...props} field={data} />
+        }
+      </Dialog>
       <Menu
         anchorEl={anchorEl}
         keepMounted

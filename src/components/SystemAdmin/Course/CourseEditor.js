@@ -530,9 +530,9 @@ export default function CourseEditor(props){
         <Box className={classes.headerText} m={1}>
           {
             edittingField?
-            ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' )
+            ( ( sess && sess.language === 'TH' ) ? "แก้ไขสนาม" : 'Edit Course' )
             :
-            ( ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' )
+            ( ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create Course' )
           }
         </Box>
       </Typography>
@@ -545,7 +545,9 @@ export default function CourseEditor(props){
               onChange={handleVersionChange}>
               {
                 courseVersion.map( d =>
-                  <MenuItem key={d.createdate} value={d.version}>{( ( sess && sess.language === 'TH' ) ? "เวอร์ชัน " : 'Version ' ) + d.version}</MenuItem>
+                  <MenuItem key={d.createdate} value={d.version}>
+                    {( ( sess && sess.language === 'TH' ) ? "เวอร์ชัน " : 'Version ' ) + d.version}
+                  </MenuItem>
               )}
             </Select>
           </FormControl>
@@ -554,7 +556,7 @@ export default function CourseEditor(props){
       <div className={classes.flexGrid}>
         <TextField
           fullWidth
-          label="Location name"
+          label={ ( sess && sess.language === 'TH' ) ? "ชื่อสนาม" : 'Course name' }
           value={ location ? location : '' }
           onChange={e =>setLocation(e.target.value)}
           variant="outlined"

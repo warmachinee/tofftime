@@ -111,24 +111,22 @@ export default function Location(props) {
               className={classes.createButton}
               onClick={()=>setPageState('create')}>
               <CreateIcon className={classes.createIcon} color="inherit"/>
-              { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create field' }
+              { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create Course' }
             </GreenButton>
             { sess && sess.typeid === 'admin' &&
               <GreenTextButton className={classes.doneButton} onClick={handleClose}>Done</GreenTextButton>
             }
-
           </div>
-          { selectedField &&
-            <Typography variant="h6">
+          { selectedField ?
+            <Typography variant="h4">
               {selectedField.fieldname}
               {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
             </Typography>
+            :
+            <Typography variant="h4">
+              { ( sess && sess.language === 'TH' ) ? "กรุณาเลือกสนาม" : 'Please Select Course.' }
+            </Typography>
           }
-          <Typography component="div">
-            <Box className={classes.notice} m={1}>
-              { ( sess && sess.language === 'TH' ) ? "[ กดเพื่อเลือกสนาม ]" : '[ Please pick one ]' }
-            </Box>
-          </Typography>
         </div>
       }
 

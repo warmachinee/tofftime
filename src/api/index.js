@@ -485,6 +485,8 @@ function objectException(object, attribute){
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
 
+import wording from './wording'
+
 export {
   dummyPlayer,
   _webURL,
@@ -515,4 +517,5 @@ export {
 
   objectException,
 
+  wording as _getWord,
 }

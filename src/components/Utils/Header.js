@@ -264,13 +264,13 @@ export default function Header(props) {
                   <React.Fragment>
                     <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
                     <Button size="small" onClick={()=>API._handleScrolllTo('match')}>
-                      { ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
+                      Match {/* ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' */}
                     </Button>
                     <Button size="small" onClick={()=>API._handleScrolllTo('news')}>
-                      { ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' }
+                      News {/* ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' */}
                     </Button>
                     <Button size="small" onClick={()=>API._handleScrolllTo('organizer')}>
-                      { ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' }
+                      Organizer {/* ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' */}
                     </Button>
                   </React.Fragment>
                 }

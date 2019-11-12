@@ -94,7 +94,9 @@ export default function MatchCard(props) {
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
               <BTN.NoStyleLink
                 to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${data.matchid}`}>
-                <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+                <BTN.Primary style={{ padding: '4px 16px' }}>
+                  {( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit'}
+                </BTN.Primary>
               </BTN.NoStyleLink>
             </div>
           )
@@ -102,14 +104,16 @@ export default function MatchCard(props) {
         case data.permission === 'pending':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <Button disabled>Pending</Button>
+              <Button disabled>{( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending'}</Button>
             </div>
           )
           break;
         case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>
+                {( sess && sess.language === 'TH' ) ? "เข้าร่วม" : 'Join'}
+              </BTN.Primary>
             </div>
           )
           break;
@@ -169,13 +173,13 @@ export default function MatchCard(props) {
             {function(){
               switch (data.scorematch) {
                 case 0:
-                  return 'Amateur'
+                  return ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur'
                   break;
                 case 1:
-                  return 'Professional'
+                  return ( sess && sess.language === 'TH' ) ? "มืออาชีพ" : 'Professional'
                   break;
                 default:
-                  return 'Charity'
+                  return ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity'
               }
             }()}
           </Typography>
@@ -191,7 +195,12 @@ export default function MatchCard(props) {
               {data.fieldname}
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              {`${API._shotnessNumber(data.views)} view${data.views > 1? 's' : ''}`}
+              {`${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.views)} ${
+                ( sess && sess.language === 'TH' ) ?
+                `การดู ${API._shotnessNumber(data.views)} ครั้ง`
+                :
+                `view${data.views > 1? 's' : ''}`
+              }`}
             </Typography>
           </BTN.NoStyleLink>
         </Box>

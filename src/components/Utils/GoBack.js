@@ -9,6 +9,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const useStyles = makeStyles(theme => ({
   back: {
+    zIndex: 2,
     '&:hover': {
       backgroundColor: fade(primary[600], 0.25),
     },
@@ -51,11 +52,15 @@ export default function GoBack(props){
     </Link>
   </div>
   */
-  return window.history.length > 1 && (
-    <div>
-      <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
-        <ArrowBackIcon classes={{ root: classes.backIcon }} />
-      </IconButton>
-    </div>
+  return (
+    <React.Fragment>
+      { window.history.length > 1 ?
+        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+          <ArrowBackIcon classes={{ root: classes.backIcon }} />
+        </IconButton>
+        :
+        <div style={{ height: 36 }} />
+      }
+    </React.Fragment>
   );
 }

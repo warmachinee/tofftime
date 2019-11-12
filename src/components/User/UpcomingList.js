@@ -147,7 +147,7 @@ export default function UpcomingList(props) {
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
               <ListItemText
                 style={{ width: 100, color: 'white' }}
-                primary={ (sess && sess.language === 'TH')? 'สนาม' : 'Location' } />
+                primary={ (sess && sess.language === 'TH')? 'สนาม' : 'Course' } />
             }
           </ListItem>
         </List>

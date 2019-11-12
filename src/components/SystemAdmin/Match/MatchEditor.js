@@ -377,7 +377,7 @@ function MenuCard(props){
         break;
       case 'group':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Group' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "จัดการกลุ่ม" : 'Group' ),
         }
         break;
       case 'schedule':
@@ -392,7 +392,7 @@ function MenuCard(props){
         break;
       case 'scorecard':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Scorecard' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "จัดการคะแนน" : 'Scorecard' ),
         }
         break;
       case 'playoff':
@@ -412,7 +412,7 @@ function MenuCard(props){
         break;
       default:
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "แก้ไขรายละเอียด" : 'Detail' ),
         }
     }
   }
@@ -605,7 +605,7 @@ export default function MatchEditor(props){
       case 'group':
         return {
           id: 2,
-          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Group' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "จัดการกลุ่ม" : 'Group' ),
           component: <MBGroup {...passingProps} data={data} setData={setData} />
         }
         break;
@@ -626,7 +626,7 @@ export default function MatchEditor(props){
       case 'scorecard':
         return {
           id: 5,
-          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Player Scorecard' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "จัดการคะแนน" : 'Player Scorecard' ),
           component: (
             <MBScoreEditor {...passingProps}
               warningObj={warningObj} />
@@ -657,7 +657,7 @@ export default function MatchEditor(props){
       default:
         return {
           id: 0,
-          label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "แก้ไขรายละเอียด" : 'Detail' ),
           component: <MBOverview {...passingProps} setData={setData} data={data} />
         }
     }
@@ -674,7 +674,7 @@ export default function MatchEditor(props){
       case 2:
         return {
           hash: 'group',
-          label: ( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Group' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "จัดการกลุ่ม" : 'Group' ),
         }
         break;
       case 3:
@@ -692,7 +692,7 @@ export default function MatchEditor(props){
       case 5:
         return {
           hash: 'scorecard',
-          label: ( ( sess && sess.language === 'TH' ) ? "คะแนนของผู้เล่น" : 'Scorecard' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "จัดการคะแนน" : 'Scorecard' ),
         }
         break;
       case 6:
@@ -716,7 +716,7 @@ export default function MatchEditor(props){
       default:
         return {
           hash: 'detail',
-          label: ( ( sess && sess.language === 'TH' ) ? "รายละเอียด" : 'Detail' ),
+          label: ( ( sess && sess.language === 'TH' ) ? "แก้ไขรายละเอียด" : 'Detail' ),
         }
     }
   }
@@ -725,11 +725,11 @@ export default function MatchEditor(props){
     return (
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
         { (mainRequest === 'pending') ?
-          <Button disabled>Pending</Button>
+          <Button disabled>{( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending'}</Button>
           :
           <BTN.Primary
             style={{ textTransform: 'none' }} onClick={handleRequestMain}>
-            Toff-time Page
+            {( sess && sess.language === 'TH' ) ? "หน้า Toff-time" : 'Toff-time Page'}
           </BTN.Primary>
         }
         <StyledTooltip
@@ -777,99 +777,114 @@ export default function MatchEditor(props){
     setHashParam(window.location.hash.substring(1, window.location.hash.length))
   },[ window.location.hash ])
 
-  return ( !/localhost/.test(window.location.href) ? param : true) && (
-    <div className={classes.root}>
-      <div style={{ position: 'relative' }}>
-        <GoBack />
-        { hashParam !== '' &&
-          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute', top: 14 }}>
-            <Link to={
-                sess.typeid === 'admin' ?
-                `/admin/match/${matchid}` :
-                `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${param}`
-              }
-              style={{ textDecoration: 'none', color: 'inherit' }}>
-              <BTN.PrimaryOutlined style={{ textTransform: 'none' }}>
-                { ( sess && sess.language === 'TH' ) ? "เมนูหลัก" : 'Main menu' }
-              </BTN.PrimaryOutlined>
-            </Link>
-          </div>
-        }
-      </div>
-      <Typography component="div">
-        { BTN && param &&
-          <BTN.NoStyleLink to={`/match/${param}`}>
-            <Box className={classes.title} fontWeight={600} style={{ cursor: 'pointer' }}>
-              {data && data.title}
-            </Box>
-          </BTN.NoStyleLink>
-        }
-      </Typography>
-      { hashParam === ''?
-        <React.Fragment>
-          { param && data &&
-            function(){
-              switch (mainRequest) {
-                case 'complete':
-                  return false
-                  break;
-                case 'pending':
-                  return true
-                  break;
-                case 'reject':
-                  return false
-                  break;
-                default:
-                  return true
-              }
-            }() &&
-            requestMainPageComponent()
-          }
-          <LabelText text="Match Setup" />
-          <SetUpMatchComponent warning={warningObj} sess={sess} />
-          <Divider style={{ margin: '16px auto', width: '80%' }} />
-          <LabelText text="Match Management" />
-          {/* !isSetup &&
-            <div style={{ display: 'flex', marginTop: 24 }}>
-              <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
-                { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
-              </Typography>
-            </div>*/
-          }
-          <ManagementMatchComponent warning={warningObj} isSetup={isSetup} sess={sess} />
-        </React.Fragment>
-        :
-        <div style={{ position: 'relative' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute' }}>
-            {getComponent().id <= 4 && <Typography>{`${getComponent().id + 1}/5`}</Typography>}
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            { getComponent().id !== 0 &&
-              <Link to={`${window.location.pathname}#${getComponentByIndex(getComponent().id - 1).hash}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}>
-                <BTN.PrimaryText style={{ textTransform: 'none' }}>
-                  <ArrowBackIos />
-                  {getComponentByIndex(getComponent().id - 1).label}
-                </BTN.PrimaryText>
-              </Link>
-            }
-            <div style={{ flex: 1 }} />
-            { getComponent().id !== 8 &&
-              <Link to={`${window.location.pathname}#${getComponentByIndex(getComponent().id + 1).hash}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}>
-                <BTN.PrimaryText style={{ textTransform: 'none' }}>
-                  {getComponentByIndex(getComponent().id + 1).label}
-                  <ArrowForwardIos />
-                </BTN.PrimaryText>
-              </Link>
+  return (
+    <React.Fragment>
+      { ( !/localhost/.test(window.location.href) ? param : true) && data &&
+        <div className={classes.root}>
+          <div style={{ position: 'relative' }}>
+            <GoBack />
+            { hashParam !== '' &&
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute', top: 14 }}>
+                <Link to={
+                    sess.typeid === 'admin' ?
+                    `/admin/match/${matchid}` :
+                    `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${param}`
+                  }
+                  style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <BTN.PrimaryOutlined style={{ textTransform: 'none' }}>
+                    { ( sess && sess.language === 'TH' ) ? "เมนูหลัก" : 'Main menu' }
+                  </BTN.PrimaryOutlined>
+                </Link>
+              </div>
             }
           </div>
-          <Divider style={{ margin: '12px auto', width: '80%' }} />
-          <LabelText text={`${getComponent().label}`} style={{ paddingTop: 0 }} />
-          {getComponent().component}
+          <Typography component="div">
+            { BTN && param &&
+              <BTN.NoStyleLink to={`/match/${param}`}>
+                <Box className={classes.title} fontWeight={600} style={{ cursor: 'pointer' }}>
+                  {data && data.title}
+                </Box>
+              </BTN.NoStyleLink>
+            }
+          </Typography>
+          { hashParam === ''?
+            <React.Fragment>
+              { param && data &&
+                function(){
+                  switch (mainRequest) {
+                    case 'complete':
+                      return false
+                      break;
+                    case 'pending':
+                      return true
+                      break;
+                    case 'reject':
+                      return false
+                      break;
+                    default:
+                      return true
+                  }
+                }() &&
+                requestMainPageComponent()
+              }
+              <LabelText text={( sess && sess.language === 'TH' ) ? "การตั้งค่าการแข่งขัน" : 'Match Setup'} />
+              <SetUpMatchComponent warning={warningObj} sess={sess} />
+              <Divider style={{ margin: '16px auto', width: '80%' }} />
+              <LabelText text={( sess && sess.language === 'TH' ) ? "การจัดการการแข่งขัน" : 'Match Management'} />
+              {/* !isSetup &&
+                <div style={{ display: 'flex', marginTop: 24 }}>
+                  <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
+                    { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+                  </Typography>
+                </div>*/
+              }
+              <ManagementMatchComponent warning={warningObj} isSetup={isSetup} sess={sess} />
+            </React.Fragment>
+            :
+            <div style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute' }}>
+                { getComponent().id > 0 &&
+                  getComponent().id < (data.scorematch === 0 ? 4 : 5) &&
+                  <Typography>{`${getComponent().id}/${data.scorematch === 0 ? 3 : 4}`}</Typography>
+                }
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                { getComponent().id > 1 && getComponent().id < (data.scorematch === 0 ? 4 : 5) &&
+                  <Link to={`${window.location.pathname}#${getComponentByIndex(getComponent().id - 1).hash}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <BTN.PrimaryText style={{ textTransform: 'none' }}>
+                      <ArrowBackIos />
+                      {getComponentByIndex(getComponent().id - 1).label}
+                    </BTN.PrimaryText>
+                  </Link>
+                }
+                <div style={{ flex: 1 }} />
+                { getComponent().id === 0 || getComponent().id >= (data.scorematch === 0 ? 3 : 4) ?
+                  <Link to={`${window.location.pathname}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <BTN.PrimaryText style={{ textTransform: 'none' }}>
+                      { ( sess && sess.language === 'TH' ) ? "เสร็จสิ้น" : 'Finish' }
+                    </BTN.PrimaryText>
+                  </Link>
+                  :
+                  <Link to={`${window.location.pathname}#${getComponentByIndex(getComponent().id + 1).hash}`}
+                    style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <BTN.PrimaryText style={{ textTransform: 'none' }}>
+                      {getComponentByIndex(getComponent().id + 1).label}
+                      <ArrowForwardIos />
+                    </BTN.PrimaryText>
+                  </Link>
+                }
+              </div>
+              <Divider style={{ margin: '12px auto', width: '80%' }} />
+              <LabelText text={`${getComponent().label}`} style={{ paddingTop: 0 }} />
+              {getComponent().component}
+            </div>
+          }
+
         </div>
       }
-    </div>
+    </React.Fragment>
   );
 }
 

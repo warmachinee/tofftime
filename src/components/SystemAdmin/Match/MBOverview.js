@@ -580,16 +580,24 @@ export default function MBOverview(props){
             </div>
             <div className={classes.gridChild2}>
               <ThemeProvider theme={theme}>
-                <GreenTextButton
-                  variant="outlined"
-                  className={classes.button}
-                  style={{ textTransform: 'none' }}
-                  onClick={()=>handleOpen('location')}>
-                  { data?( selectedField? selectedField.fieldname : data.location ) : (
-                    ( sess && sess.language === 'TH' ) ? "สนาม" : 'Location'
-                  ) }
-                  {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
-                </GreenTextButton>
+                <FormControl component="fieldset" className={classes.margin}
+                  style={{
+                    width: '100%',
+                    border: '1px rgba(0, 0, 0, 0.23) solid', borderRadius: 4, boxSizing: 'border-box'
+                  }}>
+                  <FormLabel component="legend" style={{ marginLeft: 16, fontSize: 12 }}>
+                    { ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' }
+                  </FormLabel>
+                  <GreenTextButton
+                    className={classes.button}
+                    style={{ textTransform: 'none', marginTop: 0 }}
+                    onClick={()=>handleOpen('location')}>
+                    { data?( selectedField? selectedField.fieldname : data.location ) : (
+                      ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course'
+                    ) }
+                    {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
+                  </GreenTextButton>
+                </FormControl>
                 {/*
                   <GreenTextButton
                     disabled={!editting}
@@ -632,9 +640,11 @@ export default function MBOverview(props){
                   style={{
                     width: '100%',
                     border: '1px rgba(0, 0, 0, 0.23) solid',
-                     padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box'
+                    padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box'
                   }}>
-                  <FormLabel component="legend" style={{ marginLeft: 16 }}>{ ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }</FormLabel>
+                  <FormLabel component="legend" style={{ marginLeft: 16, fontSize: 12 }}>
+                    { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }
+                  </FormLabel>
                   <RadioGroup
                     value={
                       data?( selectedPrivacy? selectedPrivacy : data.privacy ):'public'
@@ -739,6 +749,7 @@ export default function MBOverview(props){
         <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
           <Location
             {...props}
+            overviewEdit
             selectedField={selectedField}
             setSelectedField={setSelectedField}
             selectedFieldVersion={selectedFieldVersion}

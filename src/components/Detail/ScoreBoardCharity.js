@@ -356,7 +356,7 @@ export default function ScoreBoardCharity(props){
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         { data && data.scorematch !== 0 &&
           <FormControl className={classes.formControl}>
-            <InputLabel>Main Class</InputLabel>
+            <InputLabel>Main Group</InputLabel>
             <Select
               value={mainClassSelected}
               onChange={e => setMainClassSelected(e.target.value)}>

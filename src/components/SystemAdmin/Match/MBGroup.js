@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
     width: 4,
   },
   textColorInherit: {
-    opacity: .7
+    opacity: .5
   },
   tabPanel: {
     width: '80%',
@@ -89,7 +89,6 @@ const useStyles = makeStyles(theme => ({
     },
   },
   addClassButton: {
-    width: '100%',
     marginLeft: 0,
     marginTop: 16,
     [theme.breakpoints.up(400)]: {
@@ -122,7 +121,7 @@ function TabPanel(props) {
 export default function MBGroup(props){
   const classes = useStyles();
   const { BTN, API, sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
-  const [value, setValue] = React.useState(0);
+  const [ value, setValue ] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -186,7 +185,7 @@ export default function MBGroup(props){
 
   return (
     <div className={classes.root}>
-      <List className={classes.listRoot}>
+      <List disablePadding className={classes.tabRoot} style={{ marginTop: 16 }}>
         {/* data && data.mainclass && data.mainclass.length === 0 &&
           <React.Fragment>
             <ListItem>
@@ -208,12 +207,12 @@ export default function MBGroup(props){
           </React.Fragment>*/
         }
         { data && ( data.scorematch === 0 ? !( data.mainclass && data.mainclass.length > 0 ) : true ) &&
-          <ListItem className={classes.addClass}>
+          <ListItem disableGutters className={classes.addClass}>
             <ListItemIcon className={classes.addClassButtonGrid}>
-              <BTN.PrimaryOutlined className={classes.addClassButton} variant="outlined" onClick={handleFetchCreate}>
-                <AddCircle style={{ marginRight: 12 }} />
+              <BTN.Red className={classes.addClassButton} variant="outlined" onClick={handleFetchCreate}>
+                <AddCircle style={{ marginRight: 8 }} />
                 { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
-              </BTN.PrimaryOutlined>
+              </BTN.Red>
             </ListItemIcon>
           </ListItem>
         }
@@ -232,12 +231,13 @@ export default function MBGroup(props){
               data.mainclass.map(d =>
               <Tab
                 key={d.mainclass}
+                style={{ textTransform: 'none' }}
                 classes={{ textColorInherit: classes.textColorInherit }}
                 label={
                   data && data.scorematch === 0 ?
-                  'Amateur Flight'
+                  ( ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight' )
                   :
-                  `Main group ${d.mainclass}`
+                  `${( ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main group' )} ${d.mainclass}`
                 } />
             )}
           </Tabs>

@@ -105,7 +105,7 @@ function PDFFile(data, userscore, classname, sortBy, sess){
         margin: [24, 0, 0, 0],
 				text: [
           {text: data.title + '\n', fontSize: 36},
-          {text: data.date, fontSize: 20},
+          {text: API._dateToString(data.date), fontSize: 20},
           {text: `\t${( sess && sess.language === 'TH' ) ? "ณ สนาม" : 'at'}\t`, fontSize: 28},
           {text: data.location, fontSize: 24},
           {text: `\t${( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'}\t` + classname, fontSize: 28, bold: true},

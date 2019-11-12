@@ -168,7 +168,7 @@ export default function LocationList(props){
   const classes = useStyles();
   const {
     BTN, sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, pageOrganizer,
-    setSelectedFieldVersion, setPageState
+    setSelectedFieldVersion, setPageState, overviewEdit
   } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
@@ -300,6 +300,19 @@ export default function LocationList(props){
             }}
           />
         </ThemeProvider>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        <Typography component="div">
+          <Box className={classes.notice} m={1}>
+            { ( sess && sess.language === 'TH' ) ? "[ กดเพื่อเลือกสนาม ]" : '[ Please pick one ]' }
+          </Box>
+        </Typography>
+        <div style={{ flex: 1 }} />
+        { selectedField && overviewEdit &&
+          <GreenButton onClick={()=>setPageState('select')}>
+            { ( sess && sess.language === 'TH' ) ? "ตกลง" : 'Ok' }
+          </GreenButton>
+        }
       </div>
       <List className={classes.list}>
         <Divider />

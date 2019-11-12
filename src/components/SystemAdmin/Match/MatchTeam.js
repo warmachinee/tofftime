@@ -11,6 +11,7 @@ import {
   Typography,
   Box,
   Button,
+  IconButton,
   TextField,
   FormControl,
   FormControlLabel,
@@ -22,6 +23,11 @@ import {
   FormLabel,
 
 } from '@material-ui/core';
+
+import {
+  Close as CloseIcon,
+
+} from '@material-ui/icons';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -57,11 +63,11 @@ const useStyles = makeStyles(theme => ({
     marginTop: 24
   },
   editNoteGrid: {
-    display: 'flex', width: '100%'
+    display: 'flex', width: '100%',
+    justifyContent: 'flex-end'
   },
   saveButton: {
     marginTop: 'auto',
-    marginLeft: 12
   },
   formControl: {
     margin: theme.spacing(3, 0),
@@ -144,11 +150,14 @@ export default function MatchTeam(props) {
 
     return (
       <div className={classes.editNoteGrid}>
-        <TextField label="Note"
+        <TextField label={ ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' }
           value={note || ''}
           onChange={e =>setNote(e.target.value)}
           onKeyPress={e =>handleKeyPressEditNote(e)}
           onFocus={e => e.target.select()} />
+        <IconButton onClick={()=>setEditting(false)} style={{ padding: 8, marginTop: 'auto' }}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
         <BTN.Primary className={classes.saveButton}
           onClick={handleEditTeamNote}>Save</BTN.Primary>
       </div>
@@ -291,10 +300,14 @@ export default function MatchTeam(props) {
               type="number"/>
             <div style={{ marginTop: 16 }}>
               <FormControl component="fieldset" className={classes.formControl}>
-                <FormLabel component="legend">Number Type</FormLabel>
+                <FormLabel component="legend">
+                  { ( sess && sess.language === 'TH' ) ? "ประเภทของจำนวน" : 'Type of amount' }
+                </FormLabel>
                 <RadioGroup style={{ flexDirection: 'row' }} value={scheduleNumberType} onChange={e => setScheduleNumberType(event.target.value)}>
-                  <FormControlLabel value="person" control={<Radio />} label="Person" />
-                  <FormControlLabel value="team" control={<Radio />} label="Team" />
+                  <FormControlLabel value="person" control={<Radio />}
+                    label={ ( sess && sess.language === 'TH' ) ? "บุคคล" : 'Person' } />
+                  <FormControlLabel value="team" control={<Radio />}
+                    label={ ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' } />
                 </RadioGroup>
               </FormControl>
             </div>
@@ -309,9 +322,9 @@ export default function MatchTeam(props) {
               error={person <= 0}
               helperText={
                 ( sess && sess.language === 'TH' ) ?
-                (scheduleNumberType === 'person' ? 'จำนวนคนต่อทีม' : 'Number of person in the team' )
+                (scheduleNumberType === 'person' ? 'จำนวนคนต่อทีม' : 'จำนวนทีม' )
                 :
-                (scheduleNumberType === 'person' ? 'จำนวนทีม' : 'Number of team' )
+                (scheduleNumberType === 'person' ? 'Number of person in the team' : 'Number of team' )
               }
               value={ !isNaN(person) ? person : '' }
               onKeyPress={e =>handleKeyPress(e.key)}
@@ -323,7 +336,7 @@ export default function MatchTeam(props) {
                 <FormControl component="fieldset">
                   <FormControlLabel
                     control={<Switch checked={autoGen} onChange={()=>setAutoGen(!autoGen)} />}
-                    label="Auto gen"
+                    label={ ( sess && sess.language === 'TH' ) ? "สร้างอัตโนมัติ" : 'Auto-generate' }
                   />
                 </FormControl>
               </div>
@@ -331,19 +344,27 @@ export default function MatchTeam(props) {
             { matchDetail && matchDetail.team.length !== 0 &&
               <div style={{ marginTop: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <BTN.PrimaryText onClick={()=>setEditting(!editting)}>{ editting ? 'Done' : 'Edit' }</BTN.PrimaryText>
+                  { !editting &&
+                    <BTN.PrimaryText onClick={()=>setEditting(!editting)}>
+                      { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+                    </BTN.PrimaryText>
+                  }
                 </div>
                 <List>
                   <ListItem style={{ backgroundColor: grey[900] }}>
-                    <ListItemText style={{ color: 'white', width: '100%' }} primary="Team" />
+                    <ListItemText style={{ color: 'white', width: '100%' }}
+                      primary={ ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' } />
                     { !editting &&
-                      <ListItemText style={{ color: 'white', width: '100%' }} primary="Note" />
+                      <ListItemText style={{ color: 'white', width: '100%' }}
+                        primary={ ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' } />
                     }
                   </ListItem>
                   { matchDetail &&
                     matchDetail.team.map( t =>
                       <ListItem key={t.teamno}>
-                        <ListItemText style={{ width: '100%' }} primary={t.teamname} />
+                        <ListItemText
+                          style={{ width: editting ? '20%' : '100%', ...editting && {marginTop: 'auto'} }}
+                          primary={t.teamname} />
                         <ListItemText style={{ width: '100%' }} primary={
                           <React.Fragment>
                             { editting ?
@@ -359,29 +380,33 @@ export default function MatchTeam(props) {
                 </List>
               </div>
             }
-            { ( period <= 0 || person <= 0 ) ?
-              <Button
-                disabled
-                fullWidth
-                variant="contained"
-                className={classes.createButton}>
-                { matchDetail && matchDetail.team.length === 0 ? (
-                  ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
-                ) : (
-                  ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
-                ) }
-              </Button>
-              :
-              <GreenButton
-                fullWidth
-                className={classes.createButton}
-                onClick={handleSchedule}>
-                { matchDetail && matchDetail.team.length === 0 ? (
-                  ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
-                ) : (
-                  ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
-                ) }
-              </GreenButton>
+            { !editting &&
+              <React.Fragment>
+                { ( period <= 0 || person <= 0 ) ?
+                  <Button
+                    disabled
+                    fullWidth
+                    variant="contained"
+                    className={classes.createButton}>
+                    { matchDetail && matchDetail.team.length === 0 ? (
+                      ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
+                    ) : (
+                      ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
+                    ) }
+                  </Button>
+                  :
+                  <GreenButton
+                    fullWidth
+                    className={classes.createButton}
+                    onClick={handleSchedule}>
+                    { matchDetail && matchDetail.team.length === 0 ? (
+                      ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
+                    ) : (
+                      ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
+                    ) }
+                  </GreenButton>
+                }
+              </React.Fragment>
             }
           </ThemeProvider>
         </div>

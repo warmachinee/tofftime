@@ -77,7 +77,7 @@ const useStyles = makeStyles(theme => ({
     color: 'red'
   },
   deleteIcon: {
-    color: primary[600]
+    //color: primary[600]
   },
   controls: {
     marginTop: 36,
@@ -475,9 +475,11 @@ export default function MatchClass(props) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <GreenTextButton onClick={()=>setEditting(!editting)}>
-          {editting ? 'Done' : 'Edit'}
-        </GreenTextButton>
+        { !editting &&
+          <GreenTextButton onClick={()=>setEditting(!editting)}>
+            { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+          </GreenTextButton>
+        }
       </div>
       <List className={classes.root}>
         { lists && lists.length === 0 && data &&
@@ -507,7 +509,14 @@ export default function MatchClass(props) {
                     <ListColorSelector disabled index={i} />
                   </ListItemIcon>
                 }
-                <ListItemText primary={ data.scorematch === 0? (
+                { data.scorematch === 0 &&
+                  <ListItemText
+                    style={{ width: 48, flex: 'none' }}
+                    primary={
+                      <Typography variant="h6">{API._handleAmateurClass(d.classno)}</Typography>
+                    } />
+                }
+                <ListItemText primary={ data.scorematch === 0 ? (
                     arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
                   ) : d.classname } />
               </ListItem>
@@ -603,6 +612,9 @@ export default function MatchClass(props) {
       </List>
       { editting && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <GreenTextButton className={classes.saveButton} onClick={()=>setEditting(false)}>
+            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+          </GreenTextButton>
           <GreenButton className={classes.saveButton} onClick={handleSave}>
             { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
           </GreenButton>
