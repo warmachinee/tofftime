@@ -262,11 +262,13 @@ const Footer = Loadable({
   loading: () => null
 });
 
+/*
 import MatchEditor from './components/SystemAdmin/Match/MatchEditor'
 import MBGroup from './components/SystemAdmin/Match/MBGroup'
 import RichTextEditor from './components/Utils/RichTextEditor'
 import NewsEditor from './components/SystemAdmin/News/NewsEditor'
 import CourseScorecard from './components/SystemAdmin/Course/CourseScorecard'
+*/
 
 export default function App() {
   const [ passwordAccess, setPasswordAccess ] = React.useState(!/localhost/.test(window.location.href) ? null : 'cat15000')
@@ -353,8 +355,27 @@ export default function App() {
     await detectWebp()
   }
 
+  function detectOnError(msg){
+    if(msg){
+      const message = msg.message
+      const url = msg.currentTarget.location.href
+      const file = msg.filename
+      const stack = msg.error.stack
+      var alertMessage = [
+        'Message: ' + message,
+        'URL: ' + url,
+        'File: ' + file,
+        'Stack: ' + stack,
+      ].join('\n');
+      alert(alertMessage);
+    }else{
+      return false;
+    }
+  }
+
   React.useEffect(()=>{
     handleGetUserinfo()
+    window.addEventListener("error", detectOnError)
   },[ ])
 
   React.useEffect(()=>{
@@ -415,7 +436,7 @@ export default function App() {
             </Switch>
             :
             <div style={{ maxWidth: 1200, margin: 'auto' }}>
-              <CourseScorecard {...passingProps} />
+              {{/*<CourseScorecard {...passingProps} />*/}}
             </div>
           }
 

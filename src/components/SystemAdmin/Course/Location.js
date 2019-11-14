@@ -94,7 +94,7 @@ const GreenTextButton = withStyles(theme => ({
 
 export default function Location(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, handleClose, selectedFieldVersion } = props
+  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, selectedFieldVersion, handleOnDoneSelectField } = props
   const [ pageState, setPageState ] = React.useState('select')
 
   return (
@@ -114,7 +114,7 @@ export default function Location(props) {
               { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create Course' }
             </GreenButton>
             { sess && sess.typeid === 'admin' &&
-              <GreenTextButton className={classes.doneButton} onClick={handleClose}>Done</GreenTextButton>
+              <GreenTextButton className={classes.doneButton} onClick={handleOnDoneSelectField}>Done</GreenTextButton>
             }
           </div>
           { selectedField ?

@@ -201,18 +201,6 @@ export default function AddPlayerModal(props){
     }
   }
 
-  async function handleLoadUser(){
-    const resToken = token? token : await API._xhrGet('getcsrf')
-    await API._xhrPost(
-      token? token : resToken.token,
-      sess.typeid === 'admin' ? 'loaduser' : 'mloaduser', {
-        action: 'userlist'
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      setData(d.userscore)
-    })
-  }
-
   async function handleAddUser(d){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -230,36 +218,6 @@ export default function AddPlayerModal(props){
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
     })
-  }
-
-  async function handleFetchMatchDetail(){
-    if(matchid){
-      const resToken = token? token : await API._xhrGet('getcsrf')
-      await API._xhrPost(
-        token? token : resToken.token,
-        sess.typeid === 'admin' ? 'loadmatchsystem' : 'mloadmatch', {
-          action: 'detail',
-          matchid: matchid
-      }, (csrf, d) =>{
-        setCSRFToken(csrf)
-        if(
-          d.status !== 'class database error' ||
-          d.status !== 'wrong matchid' ||
-          d.status !== 'wrong action' ||
-          d.status !== 'wrong params'
-        ){
-          setMBMatchDetail(d)
-          handleLoadUser()
-        }else{
-          handleSnackBar({
-            state: true,
-            message: d.status,
-            variant: 'error',
-            autoHideDuration: 5000
-          })
-        }
-      })
-    }
   }
 
   function handleChangePerson(e){

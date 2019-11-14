@@ -55,7 +55,7 @@ export default function GoBack(props){
   return (
     <React.Fragment>
       { window.history.length > 1 ?
-        <IconButton className={classes.back} onClick={()=>window.history.go(-1)}>
+        <IconButton className={classes.back} onClick={()=>window.history.back()}>
           <ArrowBackIcon classes={{ root: classes.backIcon }} />
         </IconButton>
         :

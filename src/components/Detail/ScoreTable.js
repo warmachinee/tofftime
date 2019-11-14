@@ -141,7 +141,7 @@ function ScoreRow(props){
         </div>
         { (wd >= 450) &&
           <React.Fragment>
-            { wd >= 750 &&
+            { wd >= 850 &&
               <React.Fragment>
                 <div className={classes.tableCell} style={tableCell}>{row.out}</div>
                 <div className={classes.tableCell} style={tableCell}>{row.in}</div>
@@ -149,14 +149,17 @@ function ScoreRow(props){
             }
             <div className={classes.tableCell} style={tableCell}>{row.out + row.in}</div>
             { data.scorematch !== 1 &&
-              <div className={classes.tableCell} style={tableCell}>{row.hc}</div>
+              <React.Fragment>
+                <div className={classes.tableCell} style={tableCell}>{row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par}</div>
+                <div className={classes.tableCell} style={tableCell}>{row.hc}</div>
+              </React.Fragment>
             }
           </React.Fragment>
         }
         <div className={classes.tableCell} style={tableCell}>
           { data.scorematch === 1 ?
             (
-              row.par > 0? '+' + row.par : row.par === 0?'E' : row.par
+              row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par
             )
             :
             ( sortBy === 'net' ? row.net : row.sf )
@@ -345,15 +348,19 @@ export default function ScoreTable(props) {
                 </StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>
-                    { (wd >= 750) &&
+                    { (wd >= 850) &&
                       <React.Fragment>
                         <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
                         <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
                       </React.Fragment>
                     }
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
+
                     { data.scorematch !== 1 &&
-                      <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
+                      <React.Fragment>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">PAR</StyledTableCell>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
+                      </React.Fragment>
                     }
                   </React.Fragment>
                 }
@@ -393,7 +400,7 @@ export default function ScoreTable(props) {
                 </StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>
-                    { (wd >= 750) &&
+                    { (wd >= 850) &&
                       <React.Fragment>
                         <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
                         <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
@@ -401,7 +408,10 @@ export default function ScoreTable(props) {
                     }
                     <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
                     { data.scorematch !== 1 &&
-                      <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
+                      <React.Fragment>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">PAR</StyledTableCell>
+                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
+                      </React.Fragment>
                     }
                   </React.Fragment>
                 }

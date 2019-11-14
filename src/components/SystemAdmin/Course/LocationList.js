@@ -168,7 +168,7 @@ export default function LocationList(props){
   const classes = useStyles();
   const {
     BTN, sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, pageOrganizer,
-    setSelectedFieldVersion, setPageState, overviewEdit
+    setSelectedFieldVersion, setPageState, overviewEdit, handleOnDoneSelectField
   } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
@@ -308,8 +308,8 @@ export default function LocationList(props){
           </Box>
         </Typography>
         <div style={{ flex: 1 }} />
-        { selectedField && overviewEdit &&
-          <GreenButton onClick={()=>setPageState('select')}>
+        { selectedField && overviewEdit && handleOnDoneSelectField &&
+          <GreenButton onClick={handleOnDoneSelectField}>
             { ( sess && sess.language === 'TH' ) ? "ตกลง" : 'Ok' }
           </GreenButton>
         }

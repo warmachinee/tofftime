@@ -467,7 +467,7 @@ export default function MBPlayer(props){
     }
   }
 
-  async function handleFetch(mainclass, defaultPlayer){
+  async function handleFetch(mainclass, defaultPlayer, matchDetail){
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -535,7 +535,7 @@ export default function MBPlayer(props){
           try {
             handleFetch(
               mainClassSelected !== '1' ? parseInt(mainClassSelected) : ( d.mainclass.length > 0 ? d.mainclass[0].mainclass : 1 )
-              , defaultPlayer
+              , defaultPlayer, d
             )
           }catch(err) { console.log(err.message) }
         }else{

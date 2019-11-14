@@ -432,7 +432,7 @@ export default function Profile(props) {
       { pageOrganizer ?
         <Paper className={classes.paper}>
           <div>
-            <IconButton onClick={()=>window.history.go(-1)}>
+            <IconButton onClick={()=>window.history.back()}>
               <ChevronLeftIcon fontSize="large"/>
             </IconButton>
           </div>
@@ -444,7 +444,7 @@ export default function Profile(props) {
         ( accountData &&
           <Paper className={classes.paper}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <IconButton onClick={()=>window.history.go(-1)}>
+              <IconButton onClick={()=>window.history.back()}>
                 <ChevronLeftIcon fontSize="large"/>
               </IconButton>
               <BTN.PrimaryText onClick={toggleEditting}>

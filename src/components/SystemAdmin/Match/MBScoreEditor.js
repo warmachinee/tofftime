@@ -270,7 +270,7 @@ function MBScoreEditorContainer(props){
           <a href={`/display/${matchid}/${selected.userid}`}
             target='_blank'
             style={{ textDecoration: 'none', color: 'inherit' }}>
-            <GreenTextButton>{ ( sess && sess.language === 'TH' ) ? "คะแนนรายคน" : 'Score Display' }</GreenTextButton>
+            <GreenTextButton variant="outlined">{ ( sess && sess.language === 'TH' ) ? "คะแนนรายคน" : 'Score Display' }</GreenTextButton>
           </a>
         }
       </div>
@@ -666,7 +666,7 @@ export default function MBScoreEditor(props){
     })
   }
 
-  async function handleFetch(){
+  async function handleFetch(matchDetail){
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -715,6 +715,7 @@ export default function MBScoreEditor(props){
           d.status !== 'wrong params'
         ){
           setMatchDetail(d)
+          handleFetch(d)
         }else{
           handleSnackBar({
             state: true,
@@ -732,7 +733,7 @@ export default function MBScoreEditor(props){
   },[ ])
 
   React.useEffect(()=>{
-    handleFetch()
+    handleFetchMatchDetail()
     if(selected){
       setArrScore(selected.score)
     }else{
@@ -781,7 +782,7 @@ export default function MBScoreEditor(props){
         <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <Typography variant="h5" className={classes.scorcardLabel}>
-            {`${ ( sess && sess.language === 'TH' ) ? "กรอกคะแนนผู้เล่น" : 'Scorecard' } ${selected && `${selected.firstname} ${selected.lastname}`}`}
+            {`${ ( sess && sess.language === 'TH' ) ? "กรอกคะแนนผู้เล่น" : 'Scorecard' } ${selected ? ` | ${selected.firstname} ${selected.lastname}` : ''}`}
           </Typography>
           {/*
             <Typography variant="body1" className={classes.scorcardPlayer}>

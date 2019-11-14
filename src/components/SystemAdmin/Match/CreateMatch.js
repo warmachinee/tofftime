@@ -555,7 +555,7 @@ function CreateMatchBody(props){
         <Location
           {...props}
           {...passingFunction}
-          handleClose={handleClose}
+          handleOnDoneSelectField={handleClose}
            />
       </TemplateDialog>
     </div>

@@ -76,7 +76,6 @@ const useStyles = makeStyles(theme => ({
   },
   image: {
     maxWidth: 800,
-    height: window.innerWidth * .45,
     maxHeight: 450,
     color: 'black',
     backgroundColor: '#ccc',
@@ -133,15 +132,36 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function DetailComponent(props){
-  const { detail } = props
+  const classes = useStyles();
+  const { detail, picture, isSupportWebp } = props
 
   React.useEffect(()=>{
-    console.log(ReactHtmlParser(detail).textContent);
+    console.log(ReactHtmlParser(detail));
   },[ ])
+
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
 
   return(
     <React.Fragment>
       <div className="ql-container ql-snow">
+        <div className={classes.imageGrid}>
+          { picture &&
+            <img align="left" className={classes.image}
+              style={{ height: window.innerWidth * .45, }}
+              src={API._getPictureUrl(picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+          }
+        </div>
         <div className="ql-editor">
           {ReactHtmlParser(detail)}
         </div>
@@ -326,13 +346,7 @@ export default function MatchDetailBody(props) {
               </BTN.PrimaryOutlined>
             }
           </div>
-          <DetailComponent detail={data.message} />
-          <div className={classes.imageGrid}>
-            { data.picture &&
-              <img align="left" className={classes.image}
-                src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
-            }
-          </div>
+          <DetailComponent detail={data.message} picture={data.picture} isSupportWebp={isSupportWebp} />
           <div style={{ marginTop: 16 }}>
             { data.scorematch === 0 && data.mainclass && data.mainclass.length > 0 &&
               data.mainclass[parseInt(mainClassSelected) - 1].values.map( (d, i) =>{
@@ -380,7 +394,7 @@ export default function MatchDetailBody(props) {
             </IconButton>
           </ListItem>
           <Collapse in={expanded} timeout="auto" unmountOnExit>
-            { data.mainclass && data.mainclass.length > 0 && userscore &&
+            { data.mainclass && data.mainclass.length > 0 && userscore && userscore.length > 0 &&
               <Scoreboard {...props} matchClass={data.mainclass[parseInt(mainClassSelected) - 1].values} />
             }
           </Collapse>

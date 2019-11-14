@@ -408,7 +408,7 @@ export default function MBInvitation(props){
 
   React.useEffect(()=>{
     handleFetchForm()
-  },[ formState, dummyState ])
+  },[ addState, formState, dummyState ])
 
   const [ ,updateState ] = React.useState(null)
 

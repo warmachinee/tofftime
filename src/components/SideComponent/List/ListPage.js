@@ -71,7 +71,7 @@ export default function ListPage(props) {
                     <Avatar className={classes.avatarImage}
                       src={API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
                     :
-                    <AccountCircle classes={{ root: classes.avatar }} style={{ color: COLOR[d.color][600] }} />
+                    <AccountCircle classes={{ root: classes.avatar }} style={{ ...(COLOR[d.color]) && { color: COLOR[d.color][600] } }} />
                   }
                 </ListItemIcon>
               </Tooltip>

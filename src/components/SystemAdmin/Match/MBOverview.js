@@ -448,6 +448,7 @@ export default function MBOverview(props){
       status = response.status
     }else{
       setCSRFToken(csrf)
+      window.location.replace(`/user/management/match/${matchid}`);
     }
     handleSnackBar({
       state: true,
@@ -457,7 +458,7 @@ export default function MBOverview(props){
     })
     await handleFetch()
     if(/success/.test(status)){
-
+      window.location.replace(`/user/management/match/${matchid}`);
     }
   }
 
@@ -754,7 +755,7 @@ export default function MBOverview(props){
             setSelectedField={setSelectedField}
             selectedFieldVersion={selectedFieldVersion}
             setSelectedFieldVersion={setSelectedFieldVersion}
-            handleClose={handleClose} />
+            handleOnDoneSelectField={handleClose} />
         </TemplateDialog>
       }
       { modalType && modalType === 'class' &&

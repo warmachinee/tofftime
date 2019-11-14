@@ -463,10 +463,10 @@ export default function CourseEditor(props){
           statusRes.push(d[e])
         }
       })
-      if(statusRes.every(item => /success/.test(item))){
-        if(selectedFile){
-          handleEditPicture(edittingField.fieldid)
-        }else{
+      if(selectedFile){
+        handleEditPicture(edittingField.fieldid)
+      }else{
+        if(statusRes.every(item => /success/.test(item))){
           afterSuccess()
           handleSnackBar({
             state: true,
