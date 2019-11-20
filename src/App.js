@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route, Link, Switch, Redirect } from "react-ro
 import * as API from './api'
 import * as COLOR from './api/palette'
 import * as BTN from './components/Button'
-import TextField from '@material-ui/core/TextField';
 
 const RouteMain = Loadable.Map({
   loader: {
@@ -262,16 +261,7 @@ const Footer = Loadable({
   loading: () => null
 });
 
-/*
-import MatchEditor from './components/SystemAdmin/Match/MatchEditor'
-import MBGroup from './components/SystemAdmin/Match/MBGroup'
-import RichTextEditor from './components/Utils/RichTextEditor'
-import NewsEditor from './components/SystemAdmin/News/NewsEditor'
-import CourseScorecard from './components/SystemAdmin/Course/CourseScorecard'
-*/
-
 export default function App() {
-  const [ passwordAccess, setPasswordAccess ] = React.useState(!/localhost/.test(window.location.href) ? null : 'cat15000')
   const [ token, setCSRFToken ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
   const [ drawerState, setDrawerState ] = React.useState(false);
@@ -391,129 +381,106 @@ export default function App() {
     updateState({})
   },[ locationPath ])
 
-  function handleCheckErr(){
-    console.log(asdasdasdasd);
-  }
-
   return (
     <React.Fragment>
-      { ( passwordAccess === 'cat15000' || ( sess && sess.status === 1 ) ) ?
-        <div style={{ backgroundColor: '#f5f7f8' }}>
-          { !/\/user|\/organizer/.test(window.location.pathname) &&
-            <Header
-              {...passingProps}
-              drawerOpen={toggleDrawer}
-              handleOpen={toggleDialog} />
-          }
-
-          { !/localhost/.test(window.location.href) ?
-            <Switch>
-              <RouteMain exact path="/"
-                {...passingProps} />
-              <RouteOrganizer path="/page/:pageid"
-                {...passingProps} />
-
-              <RouteUserPage path="/user"
-                {...passingProps} />
-              <RoutePageOrganizer path="/organizer/:pageid"
-                {...passingProps} />
-              <RouteSystemAdmin path="/system_admin"
-                {...passingProps} />
-
-              <RouteAnnounceDetail path="/announce/:detailparam"
-                {...passingProps} />
-              <RouteNewsDetail path="/news/:detailparam"
-                {...passingProps} />
-              <RouteMatchDetail path="/match/:matchid"
-                {...passingProps}
-                handleSnackBarL={handleSnackBarL} />
-              <RouteOrganizerPostDetail path="/post/:pageid/:postid"
-                {...passingProps} />
-
-              <RouteSchedule path="/schedule/:matchid"
-                {...passingProps} />
-              <RouteMatchFormResult path="/matchform/:matchid"
-                {...passingProps} />
-              <RouteSignIn path="/login"
-                {...passingProps} />
-              <RouteScoreDisplay path="/display/:matchid/:userid"
-                {...passingProps} />
-              <Route component={NoMatch} />
-            </Switch>
-            :
-            <div style={{ maxWidth: 1200, margin: 'auto', backgroundColor: COLOR.grey[100] }}>
-              <BTN.Primary onClick={handleCheckErr}>Check error</BTN.Primary>
-              {asd}
-            </div>
-          }
-
-          { sess && sess.status !== 1 && /\/user|\/system_admin|\/organizer/.test(window.location.pathname) &&
-            <Redirect to={`/`} />
-          }
-
-          { sess && sess.status === 1 && /\/login/.test(window.location.pathname) &&
-            <Redirect to={`/`} />
-          }
-
-          <SnackBarAlert
-            variant={snackBar.variant}
-            autoHideDuration={snackBar.autoHideDuration}
-            open={snackBar.state}
-            onClose={()=>handleSnackBar({
-              state: false,
-              message: '',
-              variant: 'error',
-              autoHideDuration: 2000
-            })}
-            message={snackBar.message} />
-
-          <SnackBarLong
-            autoHideDuration={15000}
-            open={snackBarL.state}
-            onClose={()=>handleSnackBarL({
-              state: false,
-              sFULLNAME: '',
-              sLASTNAME: '',
-              sOUT: 0,
-              sIN: 0,
-              sTOTAL: 0,
-              sPAR: 0
-            })}
-            sFULLNAME={snackBarL.sFULLNAME}
-            sLASTNAME={snackBarL.sLASTNAME}
-            sOUT={snackBarL.sOUT}
-            sIN={snackBarL.sIN}
-            sTOTAL={snackBarL.sTOTAL}
-            sPAR={snackBarL.sPAR}
-            />
-
-          <Dialog
+      <div style={{ backgroundColor: '#f5f7f8' }}>
+        { !/\/user|\/organizer/.test(window.location.pathname) &&
+          <Header
             {...passingProps}
-            open={open}
-            handleClose={toggleDialog}
-            handleSess={handleSess} />
+            drawerOpen={toggleDrawer}
+            handleOpen={toggleDialog} />
+        }
 
-          <SideDrawer
+        <Switch>
+          <RouteMain exact path="/"
+            {...passingProps} />
+          <RouteOrganizer path="/page/:pageid"
+            {...passingProps} />
+
+          <RouteUserPage path="/user"
+            {...passingProps} />
+          <RoutePageOrganizer path="/organizer/:pageid"
+            {...passingProps} />
+          <RouteSystemAdmin path="/system_admin"
+            {...passingProps} />
+
+          <RouteAnnounceDetail path="/announce/:detailparam"
+            {...passingProps} />
+          <RouteNewsDetail path="/news/:detailparam"
+            {...passingProps} />
+          <RouteMatchDetail path="/match/:matchid"
             {...passingProps}
-            drawerState={drawerState}
-            drawerClose={toggleDrawer} />
+            handleSnackBarL={handleSnackBarL} />
+          <RouteOrganizerPostDetail path="/post/:pageid/:postid"
+            {...passingProps} />
 
-          { !/\/user|\/organizer/.test(window.location.pathname) &&
-            <Footer />
-          }
+          <RouteSchedule path="/schedule/:matchid"
+            {...passingProps} />
+          <RouteMatchFormResult path="/matchform/:matchid"
+            {...passingProps} />
+          <RouteSignIn path="/login"
+            {...passingProps} />
+          <RouteScoreDisplay path="/display/:matchid/:userid"
+            {...passingProps} />
+          <Route component={NoMatch} />
+        </Switch>
 
-        </div>
-        :
-        <div style={{ padding: 16 }}>
-          <TextField
-            autoFocus
-            label="Password"
-            variant="outlined"
-            type="password"
-            onChange={e => setPasswordAccess(e.target.value)} />
+        { sess && sess.status !== 1 && /\/user|\/system_admin|\/organizer/.test(window.location.pathname) &&
+          <Redirect to={`/`} />
+        }
 
-        </div>
-      }
+        { sess && sess.status === 1 && /\/login/.test(window.location.pathname) &&
+          <Redirect to={`/`} />
+        }
+
+        <SnackBarAlert
+          variant={snackBar.variant}
+          autoHideDuration={snackBar.autoHideDuration}
+          open={snackBar.state}
+          onClose={()=>handleSnackBar({
+            state: false,
+            message: '',
+            variant: 'error',
+            autoHideDuration: 2000
+          })}
+          message={snackBar.message} />
+
+        <SnackBarLong
+          autoHideDuration={15000}
+          open={snackBarL.state}
+          onClose={()=>handleSnackBarL({
+            state: false,
+            sFULLNAME: '',
+            sLASTNAME: '',
+            sOUT: 0,
+            sIN: 0,
+            sTOTAL: 0,
+            sPAR: 0
+          })}
+          sFULLNAME={snackBarL.sFULLNAME}
+          sLASTNAME={snackBarL.sLASTNAME}
+          sOUT={snackBarL.sOUT}
+          sIN={snackBarL.sIN}
+          sTOTAL={snackBarL.sTOTAL}
+          sPAR={snackBarL.sPAR}
+          />
+
+        <Dialog
+          {...passingProps}
+          open={open}
+          handleClose={toggleDialog}
+          handleSess={handleSess} />
+
+        <SideDrawer
+          {...passingProps}
+          drawerState={drawerState}
+          drawerClose={toggleDrawer} />
+
+        { !/\/user|\/organizer/.test(window.location.pathname) &&
+          <Footer />
+        }
+
+      </div>
     </React.Fragment>
   );
 }

@@ -296,9 +296,6 @@ export default function UserPage(props) {
       window.location.pathname = '/system_admin'
     }
     window.scrollTo(0, 0)
-    if(/localhost/.test(window.location.href)){
-      LoadTempData()
-    }
   },[ sess, props.location ])
 
   return (

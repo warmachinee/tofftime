@@ -775,7 +775,7 @@ export default function MatchEditor(props){
 
   return (
     <React.Fragment>
-      { ( !/localhost/.test(window.location.href) ? param : true) && data &&
+      { param && data &&
         <div className={classes.root}>
           <div style={{ position: 'relative' }}>
             <GoBack />

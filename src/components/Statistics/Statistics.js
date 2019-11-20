@@ -195,11 +195,7 @@ export default function Statistics(props) {
 
   React.useEffect(()=>{
     if(!(userData && userData.privacy === 'private')){
-      if(/localhost/.test(window.location.href)){
-        LoadTempData()
-      }else{
-        handleFetch()
-      }
+      handleFetch()
     }
   },[ userid ])
 
