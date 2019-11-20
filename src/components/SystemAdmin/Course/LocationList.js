@@ -277,7 +277,7 @@ export default function LocationList(props){
             autoFocus
             className={classes.searchBox}
             variant="outlined"
-            placeholder={ !searchField? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
+            placeholder={ !searchField? ( API._getWord(sess && sess.language).Search ) : '' }
             value={searchField}
             onChange={handleChangeField}
             InputProps={{
@@ -304,13 +304,13 @@ export default function LocationList(props){
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         <Typography component="div">
           <Box className={classes.notice} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "[ กดเพื่อเลือกสนาม ]" : '[ Please pick one ]' }
+            { API._getWord(sess && sess.language)['Please pick one.'] }
           </Box>
         </Typography>
         <div style={{ flex: 1 }} />
         { selectedField && overviewEdit && handleOnDoneSelectField &&
           <GreenButton onClick={handleOnDoneSelectField}>
-            { ( sess && sess.language === 'TH' ) ? "ตกลง" : 'Ok' }
+            { API._getWord(sess && sess.language).Ok }
           </GreenButton>
         }
       </div>
@@ -333,12 +333,12 @@ export default function LocationList(props){
           :
           <Typography component="div" style={{ width: '100%' }}>
             <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-              { ( sess && sess.language === 'TH' ) ? "ไม่มีสนาม" : 'No course.' }
+              { API._getWord(sess && sess.language).No_course }
             </Box>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
               <BTN.PrimaryOutlined onClick={()=>setPageState('create')}>
                 <AddIcon style={{ marginRight: 8 }} />
-                { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create course.' }
+                { API._getWord(sess && sess.language).Create_Course }
               </BTN.PrimaryOutlined>
             </div>
           </Typography>
@@ -349,7 +349,7 @@ export default function LocationList(props){
         open={open} handleClose={handleClose}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
+            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
@@ -358,10 +358,10 @@ export default function LocationList(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleClose} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
           <RedButton onClick={handleDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+            { API._getWord(sess && sess.language).Delete }
           </RedButton>
         </div>
       </TemplateDialog>

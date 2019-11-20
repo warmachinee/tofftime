@@ -180,13 +180,13 @@ export default function EditDisplayModal(props){
         <ThemeProvider theme={theme}>
           <FormControl component="fieldset">
             <FormLabel component="legend">
-              { ( sess && sess.language === 'TH' ) ? "แก้ไขการแสดงผลของผู้เล่น" : 'Set player display' }
+              { API._getWord(sess && sess.language).Set_player_display }
             </FormLabel>
             <FormControlLabel
               control={
                 <GreenSwitch checked={state} onChange={handleChange} />
               }
-              label={ ( sess && sess.language === 'TH' ) ? "การแสดงผล" : 'Display' }
+              label={ API._getWord(sess && sess.language).Display }
             />
           </FormControl>
         </ThemeProvider>
@@ -194,7 +194,7 @@ export default function EditDisplayModal(props){
       <ListItem>
         <ThemeProvider theme={theme}>
           <FormControl component="fieldset" style={{ width: '100%' }}>
-            <FormLabel component="legend">{ ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' }</FormLabel>
+            <FormLabel component="legend">{ API._getWord(sess && sess.language).Note }</FormLabel>
             <TextField
               fullWidth
               onChange={e => setComment(e.target.value)}
@@ -205,16 +205,16 @@ export default function EditDisplayModal(props){
       </ListItem>
       <ListItem style={{ justifyContent: 'flex-end', marginTop: 24 }}>
         <GreenTextButton className={classes.button} onClick={handleClose}>
-          { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+          { API._getWord(sess && sess.language).Cancel }
         </GreenTextButton>
         { (state === (selectedPlayer.display === 1)) && comment === '' ?
           <Button className={classes.button} variant="contained" disabled>
-            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+            { API._getWord(sess && sess.language).Save }
           </Button>
           :
           <GreenButton
             className={classes.button}
-            onClick={handleSave}>{ ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }</GreenButton>
+            onClick={handleSave}>{ API._getWord(sess && sess.language).Save }</GreenButton>
         }
       </ListItem>
     </div>

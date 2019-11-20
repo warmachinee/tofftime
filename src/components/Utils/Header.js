@@ -44,8 +44,6 @@ import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle'
 import CloseIcon from '@material-ui/icons/Close'
 
-import ic_logo from './../img/logoX2.png'
-
 const SearchMatchPage = Loadable({
   loader: () => import(/* webpackChunkName: "SearchMatchPage" */'./SearchMatchPage'),
   loading: () => null
@@ -224,38 +222,14 @@ export default function Header(props) {
                     <MenuIcon />
                   </IconButton>
                 }
-                {
-                  /*
-                  window.location.pathname === '/' ?
-                  (
-                    <IconButton
-                      edge="start"
-                      className={classes.logo}
-                      onClick={()=>window.scrollTo(0, 0)}
-                    >
-                      <img src={ic_logo} className={classes.logoImg} />
-                    </IconButton>
-                  )
-                  :
-                  (
-                    <Link to="/" style={{ textDecoration: 'none' }}>
-                      <IconButton
-                        edge="start"
-                        className={classes.logo}
-                      >
-                        <img src={ic_logo} className={classes.logoImg} />
-                      </IconButton>
-                    </Link>
-                  )*/
-                  <Link to="/" style={{ textDecoration: 'none' }}>
-                    <IconButton
-                      edge="start"
-                      className={classes.logo}
-                    >
-                      <img src={ic_logo} className={classes.logoImg} />
-                    </IconButton>
-                  </Link>
-                }
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                  <IconButton
+                    edge="start"
+                    className={classes.logo}
+                  >
+                    <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
+                  </IconButton>
+                </Link>
                 { window.innerWidth < 600 && <div className={classes.grow} /> }
                 <Typography className={classes.title} variant="h6" noWrap>
                   { 'T-off Time' }
@@ -264,13 +238,13 @@ export default function Header(props) {
                   <React.Fragment>
                     <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
                     <Button size="small" onClick={()=>API._handleScrolllTo('match')}>
-                      Match {/* ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' */}
+                      Match
                     </Button>
                     <Button size="small" onClick={()=>API._handleScrolllTo('news')}>
-                      News {/* ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' */}
+                      News
                     </Button>
                     <Button size="small" onClick={()=>API._handleScrolllTo('organizer')}>
-                      Organizer {/* ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' */}
+                      Organizer
                     </Button>
                   </React.Fragment>
                 }
@@ -304,7 +278,7 @@ export default function Header(props) {
                         </IconButton>
                       </Link>
                       :
-                      <Link to={`/admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <Link to={`/system_admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
                         <IconButton
                           style={{ padding: 8 }}>
                           <SupervisedUserCircleIcon classes={{ root: classes.avatar }} />
@@ -320,7 +294,7 @@ export default function Header(props) {
                 }
                 { !( sess && sess.status === 1 ) &&
                   <Button className={classes.loginBtn}
-                    onClick={handleLogin}>{ ( sess && sess.language === 'TH' ) ? "เข้าสู่ระบบ" : 'Login' }</Button>
+                    onClick={handleLogin}>{ API._getWord(sess && sess.language).Login }</Button>
                 }
               </React.Fragment>
             }
@@ -340,16 +314,16 @@ export default function Header(props) {
             !( window.location.pathname === '/' ) &&
             <Link to={`/`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
-                { ( sess && sess.language === 'TH' ) ? "หน้าแรก" : 'Home' }
+                { API._getWord(sess && sess.language).Home }
               </MenuItem>
             </Link>
           }
 
           { sess && sess.status === 1 && sess.typeid === 'admin' &&
-            !/\/admin/.test(window.location.pathname) &&
-            <Link to={`/admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            !/\/system_admin/.test(window.location.pathname) &&
+            <Link to={`/system_admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
-                { ( sess && sess.language === 'TH' ) ? "แอดมิน" : 'Admin' }
+                { API._getWord(sess && sess.language).Admin }
               </MenuItem>
             </Link>
           }
@@ -358,14 +332,14 @@ export default function Header(props) {
             !/\/user/.test(window.location.pathname) &&
             <Link to={`/user`/*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
-                { ( sess && sess.language === 'TH' ) ? "ผู้ใช้งาน" : 'User' }
+                { API._getWord(sess && sess.language).User }
               </MenuItem>
             </Link>
           }
 
           { ( sess && sess.status === 1 ) &&
             <MenuItem onClick={handleLogout}>
-              { ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' }
+              { API._getWord(sess && sess.language).Log_out }
             </MenuItem>
           }
 
@@ -379,7 +353,7 @@ export default function Header(props) {
       {
         sess && sess.status !== 1 &&
         window.location.pathname !== '/' &&
-        /.com\/admin/.test(window.location.href) && /.com\/match/.test(window.location.href) &&
+        /.com\/system_admin/.test(window.location.href) && /.com\/match/.test(window.location.href) &&
         <Redirect to='/' />
       }
     </React.Fragment>

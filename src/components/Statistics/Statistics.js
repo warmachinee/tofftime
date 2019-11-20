@@ -240,7 +240,7 @@ export default function Statistics(props) {
           <div className={classes.statLabel}>
             <GolfCourse className={classes.icon} style={{ color: primary[700] }} />
             <Typography variant="body1" className={classes.typo} style={{ color: primary[300] }}>
-              { ( sess && sess.language === 'TH' ) ? "จำนวนการแข่งขัน" : `Matche${ (data && data.matchnum > 1) ? 's': '' }` }
+              { ( sess && sess.language === 'TH' ) ? "จำนวนการแข่งขัน" : `Match${ (data && data.matchnum > 1) ? 'es': '' }` }
             </Typography>
           </div>
           <div className={classes.valueGrid}>
@@ -261,7 +261,7 @@ export default function Statistics(props) {
           <div className={classes.statLabel}>
             <AssignmentInd className={classes.icon} style={{ color: COLOR.primary[700] }} />
             <Typography variant="body1" className={classes.typo} style={{ color: COLOR.primary[300] }}>
-              { ( sess && sess.language === 'TH' ) ? "แฮนดิแคป" : 'Handicap' }
+              { API._getWord(sess && sess.language).Handicap }
             </Typography>
           </div>
           <div className={classes.valueGrid}>

@@ -222,12 +222,12 @@ export default function CreateMatchBody(props){
                       autoFocus={activeStep === 0}
                       variant="outlined"
                       className={classes.margin}
-                      label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
+                      label={ API._getWord(sess && sess.language).Match_name }
                       value={matchName || ''}
                       error={matchName === ''}
                       helperText={
                         matchName === ''?
-                        ( ( sess && sess.language === 'TH' ) ? "กรุณาชื่อการแข่งขัน" : 'Please fill Match name.' )
+                        ( API._getWord(sess && sess.language)['Please fill Match name.'] )
                         :
                         null
                       }
@@ -238,25 +238,25 @@ export default function CreateMatchBody(props){
                     <FormControl component="fieldset" className={classes.margin}
                       style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}>
                       <FormLabel component="legend" style={{ marginLeft: 16 }}>
-                        { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }
+                        { API._getWord(sess && sess.language).Privacy }
                       </FormLabel>
                       <RadioGroup value={selectedPrivacy} onChange={handlePrivacy} row>
                         <FormControlLabel
                           value={'public'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
+                          label={ API._getWord(sess && sess.language).Public }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'friend'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
+                          label={ API._getWord(sess && sess.language).Friend }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'private'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
+                          label={ API._getWord(sess && sess.language).Private }
                           labelPlacement="end"
                         />
                       </RadioGroup>
@@ -264,25 +264,25 @@ export default function CreateMatchBody(props){
                     <FormControl component="fieldset" className={classes.margin}
                       style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box' }}>
                       <FormLabel component="legend" style={{ marginLeft: 16 }}>
-                        { ( sess && sess.language === 'TH' ) ? "ประเภทการแข่งขัน" : 'Type' }
+                        { API._getWord(sess && sess.language).Type }
                       </FormLabel>
                       <RadioGroup value={selectedMatchType} onChange={handleMatchType} row>
                         <FormControlLabel
                           value={'1'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "มืออาชีพ" : 'Professional' }
+                          label={ API._getWord(sess && sess.language).Professional }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'0'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur' }
+                          label={ API._getWord(sess && sess.language).Amateur }
                           labelPlacement="end"
                         />
                         <FormControlLabel
                           value={'2'}
                           control={<GreenRadio />}
-                          label={ ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity' }
+                          label={ API._getWord(sess && sess.language).Charity }
                           labelPlacement="end"
                         />
                       </RadioGroup>
@@ -295,7 +295,7 @@ export default function CreateMatchBody(props){
                           clearable
                           style={{ marginTop: 24 }}
                           className={classes.margin}
-                          label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Match Date' }
+                          label={ API._getWord(sess && sess.language).Match_Date }
                           inputVariant="outlined"
                           format="dd/MM/yyyy"
                           value={selectedDate}

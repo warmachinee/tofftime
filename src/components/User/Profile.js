@@ -221,13 +221,13 @@ export default function Profile(props) {
   function getPrivacy(privacy){
     switch (true) {
       case privacy === 'public':
-        return ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public'
+        return API._getWord(sess && sess.language).Public
         break;
       case privacy === 'friend':
-        return ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend'
+        return API._getWord(sess && sess.language).Friend
         break;
       default:
-        return ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private'
+        return API._getWord(sess && sess.language).Private
     }
   }
 
@@ -450,9 +450,9 @@ export default function Profile(props) {
               <BTN.PrimaryText onClick={toggleEditting}>
                 {
                   editting ?
-                  ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
+                  ( API._getWord(sess && sess.language).Done )
                   :
-                  ( ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' )
+                  ( API._getWord(sess && sess.language).Edit )
                 }
               </BTN.PrimaryText>
             </div>
@@ -478,7 +478,7 @@ export default function Profile(props) {
                   <div style={{ position: 'absolute', color: 'black', bottom: -16, display: 'flex' }}>
                     <EditIcon fontSize="small"/>
                     <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>
-                      { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload' }
+                      { API._getWord(sess && sess.language).Upload_image }
                     </Typography>
                   </div>
                 </IconButton>
@@ -506,7 +506,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' }
+                    label={ API._getWord(sess && sess.language).First_name }
                     className={classes.margin}
                     value={edittingData.fullname}
                     onChange={e => setEdittingData({ ...edittingData, fullname: e.target.value})}
@@ -517,7 +517,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' }
+                    label={ API._getWord(sess && sess.language).Last_name }
                     className={classes.margin}
                     value={edittingData.lastname}
                     onChange={e => setEdittingData({ ...edittingData, lastname: e.target.value})}
@@ -553,7 +553,7 @@ export default function Profile(props) {
                 <ListItem>
                   <TextField
                     fullWidth
-                    label={ ( sess && sess.language === 'TH' ) ? "ชื่อเล่น" : 'Nickname' }
+                    label={ API._getWord(sess && sess.language).Nickname }
                     className={classes.margin}
                     value={edittingData.displayname}
                     onChange={e => setEdittingData({ ...edittingData, displayname: e.target.value})}
@@ -566,7 +566,7 @@ export default function Profile(props) {
 
             { !editting &&
               <Typography variant="subtitle2" className={classes.email}>
-                { ( sess && sess.language === 'TH' ) ? "อีเมล" : 'email' } : {accountData.email}
+                { API._getWord(sess && sess.language).email } : {accountData.email}
               </Typography>
             }
 
@@ -578,25 +578,25 @@ export default function Profile(props) {
                   borderRadius: 4, boxSizing: 'border-box'
                 }}>
                 <FormLabel component="legend" style={{ marginLeft: 16 }}>
-                  { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }
+                  { API._getWord(sess && sess.language).Privacy }
                 </FormLabel>
                 <RadioGroup value={edittingData.privacy} onChange={e => setEdittingData({ ...edittingData, privacy: e.target.value})} row>
                   <FormControlLabel
                     value={'public'}
                     control={<Radio />}
-                    label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
+                    label={ API._getWord(sess && sess.language).Public }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'friend'}
                     control={<Radio />}
-                    label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
+                    label={ API._getWord(sess && sess.language).Friend }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'private'}
                     control={<Radio />}
-                    label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
+                    label={ API._getWord(sess && sess.language).Private }
                     labelPlacement="end"
                   />
                 </RadioGroup>
@@ -605,7 +605,7 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' } : {getPrivacy(accountData.privacy)}
+                    { API._getWord(sess && sess.language).Privacy } : {getPrivacy(accountData.privacy)}
                   </Typography>
                 </ListItem>
               </List>
@@ -615,7 +615,7 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem button onClick={toggleChangePassword}>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    { ( sess && sess.language === 'TH' ) ? "เปลี่ยนรหัสผ่าน" : 'Change password' }
+                    { API._getWord(sess && sess.language).Change_password }
                   </Typography>
                 </ListItem>
               </List>
@@ -636,13 +636,13 @@ export default function Profile(props) {
                     input={<OutlinedInput />}
                   >
                     <MenuItem value='-'>
-                      { ( sess && sess.language === 'TH' ) ? "เพศ" : 'Gender' }
+                      { API._getWord(sess && sess.language).Gender }
                     </MenuItem>
                     <MenuItem value='male'>
-                      { ( sess && sess.language === 'TH' ) ? "ชาย" : 'Male' }
+                      { API._getWord(sess && sess.language).Male }
                     </MenuItem>
                     <MenuItem value='female'>
-                      { ( sess && sess.language === 'TH' ) ? "หญิง" : 'Female' }
+                      { API._getWord(sess && sess.language).Female }
                     </MenuItem>
                   </Select>
                   <div style={{ width: 24 }} />
@@ -650,7 +650,7 @@ export default function Profile(props) {
                     className={classes.margin}
                     inputComponent={TextMaskCustom}
                     value={edittingData.tel}
-                    placeholder={ ( sess && sess.language === 'TH' ) ? "เบอร์โทรศัพท์" : 'Phone number' }
+                    placeholder={ API._getWord(sess && sess.language).Phone_number }
                     onChange={e => handlePhoneNumber(e.target.value)}
                     onKeyPress={e =>handleKeyPress(e)}
                   />
@@ -660,12 +660,12 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name} style={{ marginRight: 16 }}>
-                    { ( sess && sess.language === 'TH' ) ? "เพศ" : 'Gender' } : {accountData.gender}
+                    { API._getWord(sess && sess.language).Gender } : {accountData.gender}
                   </Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'TH' ) ? "เบอร์โทรศัพท์" : 'Phone number' } : {accountData.tel}
+                    { API._getWord(sess && sess.language).Phone_number } : {accountData.tel}
                   </Typography>
                 </ListItem>
               </List>
@@ -680,7 +680,7 @@ export default function Profile(props) {
                         clearable
                         disableFuture
                         className={classes.margin}
-                        label={ ( sess && sess.language === 'TH' ) ? "วันเกิด" : 'Birthday' }
+                        label={ API._getWord(sess && sess.language).Birthday }
                         openTo="year"
                         inputVariant="outlined"
                         format="dd/MM/yyyy"
@@ -696,13 +696,13 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'TH' ) ? "อายุ" : 'Age' } :
+                    { API._getWord(sess && sess.language).Age } :
                     {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
                   </Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'TH' ) ? "วันเกิด" : 'Birthday' } :
+                    { API._getWord(sess && sess.language).Birthday } :
                     {accountData.birthdate && API._dateToString(accountData.birthdate)}
                   </Typography>
                 </ListItem>
@@ -716,7 +716,7 @@ export default function Profile(props) {
                     fullWidth
                     variant="outlined"
                     className={classes.margin}
-                    label={ ( sess && sess.language === 'TH' ) ? "อุปกรณ์ที่ชอบใช้" : 'Golf favorite equipment' }
+                    label={ API._getWord(sess && sess.language).Golf_favorite_equipment }
                     value={edittingData.favgolf}
                     onChange={e => setEdittingData({ ...edittingData, favgolf: e.target.value})}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -728,7 +728,7 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { ( sess && sess.language === 'TH' ) ? "อุปกรณ์ที่ใช้" : 'Equipment' } : {accountData.favgolf}
+                    { API._getWord(sess && sess.language).Equipment } : {accountData.favgolf}
                   </Typography>
                 </ListItem>
               </List>
@@ -737,7 +737,7 @@ export default function Profile(props) {
             <div style={{ display: 'flex', marginTop: 36, justifyContent: 'flex-end' }}>
               { editting &&
                 <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>
-                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+                  { API._getWord(sess && sess.language).Save }
                 </BTN.Primary>
               }
             </div>
@@ -747,13 +747,13 @@ export default function Profile(props) {
       }
       { !pageOrganizer &&
         <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth={500}>
-          <LabelText text={ ( sess && sess.language === 'TH' ) ? "เปลี่ยนรหัสผ่าน" : 'Change password' } />
+          <LabelText text={ API._getWord(sess && sess.language).Change_password } />
           <div style={{ marginTop: 24, marginBottom: 24 }}>
             <ThemeProvider theme={theme}>
               <TextField
                 autoFocus={changePasswordState}
                 fullWidth
-                label={ ( sess && sess.language === 'TH' ) ? "รหัสผ่านเก่า" : 'Old password' }
+                label={ API._getWord(sess && sess.language).Old_password }
                 variant="outlined"
                 type="password"
                 className={classes.margin}
@@ -763,7 +763,7 @@ export default function Profile(props) {
               />
               <TextField
                 fullWidth
-                label={ ( sess && sess.language === 'TH' ) ? "รหัสผ่านใหม่" : 'New password' }
+                label={ API._getWord(sess && sess.language).New_password }
                 variant="outlined"
                 type="password"
                 error={errorPassword.oldNew}
@@ -775,7 +775,7 @@ export default function Profile(props) {
               />
               <TextField
                 fullWidth
-                label={ ( sess && sess.language === 'TH' ) ? "ยืนยันรหัสผ่าน่" : 'Confirm password' }
+                label={ API._getWord(sess && sess.language).Confirm_password }
                 variant="outlined"
                 type="password"
                 error={errorPassword.changeConfirm}
@@ -788,7 +788,7 @@ export default function Profile(props) {
             </ThemeProvider>
             <BTN.Primary style={{ padding: '16px 36px', width: '100%', marginTop: 24 }}
               onClick={handleSave}>
-              { ( sess && sess.language === 'TH' ) ? "ยืนยัน" : 'Confirm' }
+              { API._getWord(sess && sess.language).Confirm }
             </BTN.Primary>
           </div>
         </TemplateDialog>

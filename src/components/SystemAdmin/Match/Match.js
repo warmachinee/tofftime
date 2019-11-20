@@ -77,9 +77,9 @@ export default function Match(props){
     <Switch>
       { ( sess && sess.status === 1 && sess.typeid === 'admin' ) ?
         <React.Fragment>
-          <RouteMatchBody exact path="/admin/match"
+          <RouteMatchBody exact path="/system_admin/match"
             {...passingProps} />
-          <RouteMatchEditor path="/admin/match/:matchparam"
+          <RouteMatchEditor path="/system_admin/match/:matchparam"
             {...passingProps} />
         </React.Fragment>
         :

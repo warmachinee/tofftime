@@ -272,7 +272,7 @@ export default function AddPlayerModal(props){
             <ExpandMoreIcon
               className={classes.expandIcon}
               style={{ transform: createState?'rotate(180deg)':'rotate(0deg)' }} />
-            { ( sess && sess.language === 'TH' ) ? "สร้างผู้ใช้งาน" : 'Create user' }
+            { API._getWord(sess && sess.language).Create_user }
           </GreenTextButton>
         </div>
       }
@@ -315,7 +315,7 @@ export default function AddPlayerModal(props){
           autoFocus
           className={classes.searchBox}
           variant="outlined"
-          placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
+          placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search ) : '' }
           value={searchUser}
           onChange={handleChangePerson}
           InputProps={{
@@ -340,7 +340,7 @@ export default function AddPlayerModal(props){
         <GreenTextButton
           style={{ marginTop: 10 }}
           onClick={handleDummyOpen}>
-          { ( sess && sess.language === 'TH' ) ? "ดัมมี่" : 'Dummy' }
+          { API._getWord(sess && sess.language).Dummy }
         </GreenTextButton>
       </ThemeProvider>
       <List className={classes.root}>
@@ -378,19 +378,19 @@ export default function AddPlayerModal(props){
         ( searchUser ?
           <Typography component="div" style={{ width: '100%' }}>
             <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-              { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์ ? สร้างผู้เล่นใหม่" : 'No Result? Create one.' }
+              { API._getWord(sess && sess.language)['No Result? Create one.'] }
             </Box>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
               <BTN.PrimaryOutlined onClick={handleDummyOpen/*()=>setCreateState(!createState)*/}>
                 <AddIcon style={{ marginRight: 8 }} />
-                { ( sess && sess.language === 'TH' ) ? "สร้างผู้เล่นใหม่" : 'Create New User.' }
+                { API._getWord(sess && sess.language).Create_New_User }
               </BTN.PrimaryOutlined>
             </div>
           </Typography>
           :
           <Typography component="div" style={{ width: '100%' }}>
             <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-              { ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่นที่คุณต้องการเชิญ" : 'Search player that you want to invite' }
+              { API._getWord(sess && sess.language)['Search player that you want to invite'] }
             </Box>
           </Typography>
         )

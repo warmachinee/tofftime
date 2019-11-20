@@ -94,13 +94,13 @@ function ListMenu(props) {
   function getAdminRole(role){
     switch (true) {
       case role === 'host':
-        return ( sess && sess.language === 'TH' ) ? "เจ้าของการแข่งขัน" : 'Host'
+        return API._getWord(sess && sess.language).Host
         break;
       case role === 'admin':
-        return ( sess && sess.language === 'TH' ) ? "ผู้ดูแล" : 'Admin'
+        return API._getWord(sess && sess.language).Admin
         break;
       default:
-        return ( sess && sess.language === 'TH' ) ? "สมาชิก" : 'Member'
+        return API._getWord(sess && sess.language).Member
     }
   }
 
@@ -166,7 +166,7 @@ function ListMenu(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>{ ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }</MenuItem>
+        <MenuItem onClick={()=>handleSelectRole(primary, 'unset')}>{ API._getWord(sess && sess.language).Remove }</MenuItem>
       </Menu>
     </div>
   );
@@ -209,20 +209,20 @@ export default function MBMatchAdmin(props){
         <Button className={classes.addAdminButton} variant="contained"
           onClick={handleOpen}>
           <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-          { ( sess && sess.language === 'TH' ) ? "เพิ่มแอดมิน" : 'Add admin' }
+          { API._getWord(sess && sess.language).Add_admin }
         </Button>
         <div style={{ flex: 1 }} />
       </ListItem>
       <List>
         <ListItem className={classes.listLabel}>
           <StyledText className={classes.listText}
-            primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' } />
+            primary={ API._getWord(sess && sess.language).First_name } />
           { window.innerWidth >= 600 &&
             <StyledText className={classes.listText}
-              primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
+              primary={ API._getWord(sess && sess.language).Last_name } />
           }
           <StyledText className={classes.listStatus}
-            primary={ ( sess && sess.language === 'TH' ) ? "ตำแหน่ง" : 'Role' } />
+            primary={ API._getWord(sess && sess.language).Role } />
         </ListItem>
         { data &&
           data.map( d =>

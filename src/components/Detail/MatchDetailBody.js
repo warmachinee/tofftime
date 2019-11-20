@@ -220,20 +220,20 @@ export default function MatchDetailBody(props) {
           return (
             <BTN.NoStyleLink to={`/user/management/match/${matchid}`}>
               <BTN.Primary style={{ padding: '4px 16px' }}>
-                { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+                { API._getWord(sess && sess.language).Edit }
               </BTN.Primary>
             </BTN.NoStyleLink>
           )
           break;
         case data.permission === 'pending':
           return (
-            <Button disabled>{ ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending' }</Button>
+            <Button disabled>{ API._getWord(sess && sess.language).Pending }</Button>
           )
           break;
         case data.permission === 'none':
           return (
             <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>
-              { ( sess && sess.language === 'TH' ) ? "เข้าร่วม" : 'Join' }
+              { API._getWord(sess && sess.language).Join }
             </BTN.Primary>
           )
           break;
@@ -319,22 +319,22 @@ export default function MatchDetailBody(props) {
           </div>
           <div style={{ display: 'flex', marginBottom: 24 }}>
             <BTN.PrimaryOutlined onClick={handleScorecardOpen}>
-              { ( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'Scorecard' }
+              { API._getWord(sess && sess.language).Scorecard }
             </BTN.PrimaryOutlined>
             { matchid &&
               <BTN.NoStyleLink to={`/matchform/${matchid}`}>
-                <BTN.PrimaryOutlined>{ ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }</BTN.PrimaryOutlined>
+                <BTN.PrimaryOutlined>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
               </BTN.NoStyleLink>
             }
             { data.team &&
               ( data.team.length === 0 ?
                 <BTN.PrimaryText disabled>
-                  { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+                  { API._getWord(sess && sess.language).Schedule }
                 </BTN.PrimaryText>
                 :
                 <BTN.NoStyleLink to={`/schedule/${matchid}`}>
                   <BTN.PrimaryOutlined>
-                    { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+                    { API._getWord(sess && sess.language).Schedule }
                   </BTN.PrimaryOutlined>
                 </BTN.NoStyleLink>
               )
@@ -342,7 +342,7 @@ export default function MatchDetailBody(props) {
             <div style={{ flex: 1 }} />
             { BTN && data.scorematch === 2 &&
               <BTN.PrimaryOutlined onClick={handleClick}>
-                { ( sess && sess.language === 'TH' ) ? "มินิเกม" : 'Mini Game' }
+                { API._getWord(sess && sess.language).Mini_Game }
               </BTN.PrimaryOutlined>
             }
           </div>
@@ -381,7 +381,7 @@ export default function MatchDetailBody(props) {
               marginTop: 16,
               boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
             }}>
-            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ตารางคะแนน" : 'Scoreboard' } />
+            <ListItemText primary={ API._getWord(sess && sess.language).Scoreboard } />
             <IconButton
               disableRipple
               className={classes.expandIcon}
@@ -401,7 +401,6 @@ export default function MatchDetailBody(props) {
         </div>
       }
       <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
-        {/*<LabelText text={( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'Golf Scorecard'} />*/}
         <LabelText text="Golf Scorecard" />
         <IconButton onClick={handleScorecardClose} style={{ position: 'absolute', top: 8, right: 8 }}>
           <CloseIcon />

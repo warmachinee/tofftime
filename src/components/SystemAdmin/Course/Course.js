@@ -56,7 +56,7 @@ export default function Course(props){
   return(
     <Switch>
       { ( sess && sess.status === 1 && sess.typeid === 'admin' ) ?
-        <RouteCourseBody exact path="/admin/course"
+        <RouteCourseBody exact path="/system_admin/course"
           {...passingProps} />
         :
         <RouteCourseBody exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`}

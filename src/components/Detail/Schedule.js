@@ -177,7 +177,7 @@ export default function Schedule(props) {
       { matchDetail &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h4">
-            { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+            { API._getWord(sess && sess.language).Schedule }
           </Typography>
           <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
           <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
@@ -200,16 +200,16 @@ export default function Schedule(props) {
           <List disablePadding style={{ marginTop: 16 }}>
             <ListItem style={{ backgroundColor: COLOR.grey[900], paddingTop: 12, paddingBottom: 12 }}>
               <ListItemText className={classes.listTeam} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' } />
+                primary={ API._getWord(sess && sess.language).Team } />
               <ListItemText className={classes.listTime} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
+                primary={ API._getWord(sess && sess.language).Time } />
               <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' } />
+                primary={ API._getWord(sess && sess.language).First_name } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Lastname' } />
+                primary={ API._getWord(sess && sess.language).Last_name } />
               { window.innerWidth >= 600 &&
                 <ListItemText className={classes.listNote} style={{ color: 'white' }}
-                  primary={ ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' } />
+                  primary={ API._getWord(sess && sess.language).Note } />
               }
             </ListItem>
           </List>
@@ -295,7 +295,7 @@ export default function Schedule(props) {
               :
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+                  { API._getWord(sess && sess.language).No_player }
                 </Box>
               </Typography>
             }
@@ -303,7 +303,6 @@ export default function Schedule(props) {
         </div>
       }
       <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
-        {/*<LabelText text={( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'Golf Scorecard'} />*/}
         <LabelText text="Golf Scorecard" />
         <IconButton onClick={handleScorecardClose} style={{ position: 'absolute', top: 8, right: 8 }}>
           <CloseIcon />

@@ -479,7 +479,7 @@ export default function MBSchedule(props){
               style={{ textDecoration: 'none', color: 'inherit' }}>
               <GreenTextButton className={classes.controlsEditButton}>
                 {/*<ClassIcon className={classes.controlsEditButtonIcon} />*/}
-                { ( sess && sess.language === 'TH' ) ? "ตารางการแข่งขัน" : 'Schedule' }
+                { API._getWord(sess && sess.language).Schedule }
               </GreenTextButton>
             </a>
           </div>
@@ -492,19 +492,19 @@ export default function MBSchedule(props){
             variant="outlined">
             { matchDetail && matchDetail.team && matchDetail.team.length > 0?
               (
-                ( ( sess && sess.language === 'TH' ) ? "จัดการตารางเวลา" : 'Manage Schedule' ) + '( ' + matchDetail.team.length + ' )'
+                ( API._getWord(sess && sess.language).Manage_Schedule ) + '( ' + matchDetail.team.length + ' )'
               )
               :
-              ( ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create Schedule' )
+              ( API._getWord(sess && sess.language).Create_schedule )
             }
           </GreenTextButton>
           <div style={{ flex: 1 }} />
           <GreenTextButton variant="outlined" className={classes.button} onClick={handleMenuClick}>
             <AccessTimeIcon fontSize="large" style={{ color: primary[600], marginRight: 4 }} />
             { selectedTeam !== 0 ? (
-              ( sess && sess.language === 'TH' ) ? "เวลาที่เลือก  : " : 'Selected Time  : '
+              sess && `${API._getWord(sess.language).Selected_Time} : `
             ): (
-              ( sess && sess.language === 'TH' ) ? "เลือกเวลา" : 'Select Time'
+              API._getWord(sess && sess.language).Select_Time
             ) }
             { selectedTeam !== 0?
               matchDetail && matchDetail.team &&
@@ -524,7 +524,7 @@ export default function MBSchedule(props){
               className={classes.button}
               onClick={handleFetchSwitchHostForm}
               variant="outlined">
-              { ( sess && sess.language === 'TH' ) ? "สลับผู้จัด" : 'Switch Host' }
+              { API._getWord(sess && sess.language).Switch_Host }
             </GreenTextButton>
             <StyledTooltip
               PopperProps={{
@@ -552,7 +552,7 @@ export default function MBSchedule(props){
           <div style={{ flex: 1 }} />
           { checked.length > 0 && selectedTeam !== 0 &&
             <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
-              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+              { API._getWord(sess && sess.language).Save }
             </GreenButton>
           }
         </ListItem>
@@ -562,7 +562,7 @@ export default function MBSchedule(props){
               <TextField
                 className={classes.searchBox}
                 variant="outlined"
-                placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search player' ) : '' }
+                placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search_player ) : '' }
                 value={searchUser}
                 onChange={e =>setSearchUser(e.target.value)}
                 InputProps={{
@@ -595,28 +595,28 @@ export default function MBSchedule(props){
             <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
+                ( API._getWord(sess && sess.language).Full_name )
                 :
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
+                ( API._getWord(sess && sess.language).First_name )
               } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
+                primary={ API._getWord(sess && sess.language).Last_name } />
             }
             { window.innerWidth > 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20 }} className={classes.listTeam}
-                primary={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' } />
+                primary={ API._getWord(sess && sess.language).Time } />
             }
           </ListItem>
           { matchDetail && matchDetail.team && matchDetail.team.length === 0 &&
             <ListItem>
               <Typography component="div" style={{ width: '100%', display: 'flex' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ยังไม่มีตารางเวลา" : 'No schedule yet.' }
+                  { API._getWord(sess && sess.language).No_schedule_yet }
                 </Box>
                 <BTN.PrimaryOutlined onClick={handleTeamOpen}>
                   <AddIcon style={{ marginRight: 8 }} />
-                  { ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create schedule.' }
+                  { API._getWord(sess && sess.language).Create_schedule }
                 </BTN.PrimaryOutlined>
               </Typography>
             </ListItem>
@@ -721,13 +721,13 @@ export default function MBSchedule(props){
               :
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+                  { API._getWord(sess && sess.language).No_player }
                 </Box>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
                   <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
                     <BTN.PrimaryOutlined>
                       <AddIcon style={{ marginRight: 8 }} />
-                      { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่น" : 'Invite players.' }
+                      { API._getWord(sess && sess.language).Invite_players }
                     </BTN.PrimaryOutlined>
                   </BTN.NoStyleLink>
                 </div>
@@ -739,13 +739,13 @@ export default function MBSchedule(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= data.length ? (
-                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                    API._getWord(sess && sess.language).Collapse
                   ):(
-                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                    API._getWord(sess && sess.language).More
                   ) }
                 </Button>
                 { data && dataSliced < data.length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
                 }
               </React.Fragment>
             }
@@ -753,13 +753,13 @@ export default function MBSchedule(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= handleSearch().length ? (
-                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                    API._getWord(sess && sess.language).Collapse
                   ):(
-                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                    API._getWord(sess && sess.language).More
                   ) }
                 </Button>
                 { data && dataSliced < handleSearch().length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
                 }
               </React.Fragment>
             }
@@ -768,7 +768,7 @@ export default function MBSchedule(props){
             <ListItem>
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
+                  { API._getWord(sess && sess.language).No_Result }
                 </Box>
               </Typography>
             </ListItem>

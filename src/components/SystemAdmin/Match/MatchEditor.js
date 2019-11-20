@@ -372,47 +372,47 @@ function MenuCard(props){
     switch (variant) {
       case 'invitation':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
+          label: ( API._getWord(sess && sess.language).Invitation ),
         }
         break;
       case 'group':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "จัดการกลุ่ม" : 'Group' ),
+          label: ( API._getWord(sess && sess.language).Group_M ),
         }
         break;
       case 'schedule':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule' ),
+          label: ( API._getWord(sess && sess.language).Schedule_M ),
         }
         break;
       case 'player':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "จัดการผู้เล่น" : 'Manage Player' ),
+          label: ( API._getWord(sess && sess.language).Manage_Player ),
         }
         break;
       case 'scorecard':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "จัดการคะแนน" : 'Scorecard' ),
+          label: ( API._getWord(sess && sess.language).Scorecard_M ),
         }
         break;
       case 'playoff':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+          label: ( API._getWord(sess && sess.language).Playoff ),
         }
         break;
       case 'reward':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+          label: ( API._getWord(sess && sess.language).Reward ),
         }
         break;
       case 'admin':
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+          label: ( API._getWord(sess && sess.language).Admin_M ),
         }
         break;
       default:
         return {
-          label: ( ( sess && sess.language === 'TH' ) ? "แก้ไขรายละเอียด" : 'Detail' ),
+          label: ( API._getWord(sess && sess.language).Detail_M ),
         }
     }
   }
@@ -598,35 +598,35 @@ export default function MatchEditor(props){
       case 'invitation':
         return {
           id: 1,
-          label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
+          label: ( API._getWord(sess && sess.language).Invitation ),
           component: <MBInvitation {...passingProps} />
         }
         break;
       case 'group':
         return {
           id: 2,
-          label: ( ( sess && sess.language === 'TH' ) ? "จัดการกลุ่ม" : 'Group' ),
+          label: ( API._getWord(sess && sess.language).Group_M ),
           component: <MBGroup {...passingProps} data={data} setData={setData} />
         }
         break;
       case 'schedule':
         return {
           id: 3,
-          label: ( ( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule' ),
+          label: ( API._getWord(sess && sess.language).Schedule_M ),
           component: <MBSchedule {...passingProps} />
         }
         break;
       case 'player':
         return {
           id: 4,
-          label: ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
+          label: ( API._getWord(sess && sess.language).Player_management ),
           component: <MBPlayer {...passingProps} />
         }
         break;
       case 'scorecard':
         return {
           id: 5,
-          label: ( ( sess && sess.language === 'TH' ) ? "จัดการคะแนน" : 'Player Scorecard' ),
+          label: ( API._getWord(sess && sess.language).Player_Scorecard ),
           component: (
             <MBScoreEditor {...passingProps}
               warningObj={warningObj} />
@@ -636,28 +636,28 @@ export default function MatchEditor(props){
       case 'playoff':
         return {
           id: 6,
-          label: ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+          label: ( API._getWord(sess && sess.language).Playoff ),
           component: <MBPlayoff {...passingProps} />
         }
         break;
       case 'reward':
         return {
           id: 7,
-          label: ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+          label: ( API._getWord(sess && sess.language).Reward ),
           component: <MBReward {...passingProps} />
         }
         break;
       case 'admin':
         return {
           id: 8,
-          label: ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+          label: ( API._getWord(sess && sess.language).Admin_M ),
           component: <MBMatchAdmin {...passingProps} />
         }
         break;
       default:
         return {
           id: 0,
-          label: ( ( sess && sess.language === 'TH' ) ? "แก้ไขรายละเอียด" : 'Detail' ),
+          label: ( API._getWord(sess && sess.language).Detail_M ),
           component: <MBOverview {...passingProps} setData={setData} data={data} />
         }
     }
@@ -668,55 +668,55 @@ export default function MatchEditor(props){
       case 1:
         return {
           hash: 'invitation',
-          label: ( ( sess && sess.language === 'TH' ) ? "การเชิญ" : 'Invitation' ),
+          label: ( API._getWord(sess && sess.language).Invitation ),
         }
         break;
       case 2:
         return {
           hash: 'group',
-          label: ( ( sess && sess.language === 'TH' ) ? "จัดการกลุ่ม" : 'Group' ),
+          label: ( API._getWord(sess && sess.language).Group_M ),
         }
         break;
       case 3:
         return {
           hash: 'schedule',
-          label: ( ( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule' ),
+          label: ( API._getWord(sess && sess.language).Schedule_M ),
         }
         break;
       case 4:
         return {
           hash: 'player',
-          label: ( ( sess && sess.language === 'TH' ) ? "ระบบจัดการผู้เล่น" : 'Player management' ),
+          label: ( API._getWord(sess && sess.language).Player_management ),
         }
         break;
       case 5:
         return {
           hash: 'scorecard',
-          label: ( ( sess && sess.language === 'TH' ) ? "จัดการคะแนน" : 'Scorecard' ),
+          label: ( API._getWord(sess && sess.language).Scorecard_M ),
         }
         break;
       case 6:
         return {
           hash: 'playoff',
-          label: ( ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' ),
+          label: ( API._getWord(sess && sess.language).Playoff ),
         }
         break;
       case 7:
         return {
           hash: 'reward',
-          label: ( ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' ),
+          label: ( API._getWord(sess && sess.language).Reward ),
         }
         break;
       case 8:
         return {
           hash: 'admin',
-          label: ( ( sess && sess.language === 'TH' ) ? "ผู้ดูแลการแข่งขัน" : 'Admin' ),
+          label: ( API._getWord(sess && sess.language).Admin ),
         }
         break;
       default:
         return {
           hash: 'detail',
-          label: ( ( sess && sess.language === 'TH' ) ? "แก้ไขรายละเอียด" : 'Detail' ),
+          label: ( API._getWord(sess && sess.language).Detail_M ),
         }
     }
   }
@@ -725,11 +725,11 @@ export default function MatchEditor(props){
     return (
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
         { (mainRequest === 'pending') ?
-          <Button disabled>{( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending'}</Button>
+          <Button disabled>{API._getWord(sess && sess.language).Pending}</Button>
           :
           <BTN.Primary
             style={{ textTransform: 'none' }} onClick={handleRequestMain}>
-            {( sess && sess.language === 'TH' ) ? "หน้า Toff-time" : 'Toff-time Page'}
+            {API._getWord(sess && sess.language).Request_mainpage_BTN}
           </BTN.Primary>
         }
         <StyledTooltip
@@ -743,11 +743,7 @@ export default function MatchEditor(props){
           disableTouchListener
           title={
             <Typography>
-              { ( sess && sess.language === 'TH' ) ?
-                "ส่งคำขอเพื่อแสดงการแข่งขันนี้ในหน้า Toff-time"
-                :
-                'Send a request to show this Match on the Toff-time page.'
-              }
+              { API._getWord(sess && sess.language)['Send a request to show this Match on the Toff-time page.'] }
             </Typography>
           }>
           <IconButton onClick={handleClickHelpState}>
@@ -762,7 +758,7 @@ export default function MatchEditor(props){
     if(props.location){
       const match = matchPath( props.location.pathname, {
         path: sess.typeid === 'admin' ?
-        "/admin/match/:matchparam" :
+        "/system_admin/match/:matchparam" :
         `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/:matchparam`
       });
       if(match){
@@ -787,12 +783,12 @@ export default function MatchEditor(props){
               <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute', top: 14 }}>
                 <Link to={
                     sess.typeid === 'admin' ?
-                    `/admin/match/${matchid}` :
+                    `/system_admin/match/${param}` :
                     `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${param}`
                   }
                   style={{ textDecoration: 'none', color: 'inherit' }}>
                   <BTN.PrimaryOutlined style={{ textTransform: 'none' }}>
-                    { ( sess && sess.language === 'TH' ) ? "เมนูหลัก" : 'Main menu' }
+                    { API._getWord(sess && sess.language).Main_menu }
                   </BTN.PrimaryOutlined>
                 </Link>
               </div>
@@ -827,17 +823,10 @@ export default function MatchEditor(props){
                 }() &&
                 requestMainPageComponent()
               }
-              <LabelText text={( sess && sess.language === 'TH' ) ? "การตั้งค่าการแข่งขัน" : 'Match Setup'} />
+              <LabelText text={API._getWord(sess && sess.language).Match_Setup} />
               <SetUpMatchComponent warning={warningObj} sess={sess} />
               <Divider style={{ margin: '16px auto', width: '80%' }} />
-              <LabelText text={( sess && sess.language === 'TH' ) ? "การจัดการการแข่งขัน" : 'Match Management'} />
-              {/* !isSetup &&
-                <div style={{ display: 'flex', marginTop: 24 }}>
-                  <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
-                    { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
-                  </Typography>
-                </div>*/
-              }
+              <LabelText text={API._getWord(sess && sess.language).Match_Management} />
               <ManagementMatchComponent warning={warningObj} isSetup={isSetup} sess={sess} />
             </React.Fragment>
             :
@@ -863,7 +852,7 @@ export default function MatchEditor(props){
                   <Link to={`${window.location.pathname}`}
                     style={{ textDecoration: 'none', color: 'inherit' }}>
                     <BTN.PrimaryText style={{ textTransform: 'none' }}>
-                      { ( sess && sess.language === 'TH' ) ? "เสร็จสิ้น" : 'Finish' }
+                      { API._getWord(sess && sess.language).Finish }
                     </BTN.PrimaryText>
                   </Link>
                   :

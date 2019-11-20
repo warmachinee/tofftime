@@ -97,7 +97,7 @@ export default function ListFriend(props) {
               { expanded.friend ? <ExpandLess /> : <ExpandMore /> }
             </ListItemIcon>
             :
-            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ค้นหาเพื่อน" : 'Search Friend' } placement="right">
+            <Tooltip title={ API._getWord(sess && sess.language).Search_Friend } placement="right">
               <ListItemIcon>
                 <Search />
               </ListItemIcon>
@@ -107,9 +107,9 @@ export default function ListFriend(props) {
           <ListItemText
             primary={
               ( data && data.length > 0 ) ?
-              ( ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' )
+              ( API._getWord(sess && sess.language).Friend )
               :
-              ( ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add friend' )
+              ( API._getWord(sess && sess.language).Add_friend )
             } />
         </ListItem>
       </List>
@@ -118,12 +118,12 @@ export default function ListFriend(props) {
           { data && data.length > 0 &&
             <ListItem button
               onClick={()=>toggleAddFriend()}>
-              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ค้นหาเพื่อน" : 'Search Friend' } placement="right">
+              <Tooltip title={ API._getWord(sess && sess.language).Search_Friend } placement="right">
                 <ListItemIcon>
                   <Search />
                 </ListItemIcon>
               </Tooltip>
-              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add friend' } />
+              <ListItemText primary={ API._getWord(sess && sess.language).Add_friend } />
             </ListItem>
           }
           { data &&

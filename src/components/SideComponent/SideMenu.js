@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import * as COLOR from './../../api/palette'
-import ic_logo from './../img/logoX2.png'
 
 import {
   Button,
@@ -350,7 +349,7 @@ export default function SideMenu(props) {
         <Divider />
         <List>
           <ListItem button onClick={toggleNoti} className={classes.iconHidden}>
-            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } placement="right">
+            <Tooltip title={ API._getWord(sess && sess.language).Notifications } placement="right">
               <ListItemIcon>
                 { notiData && notiData.length > 0?
                   <Badge badgeContent={
@@ -365,7 +364,7 @@ export default function SideMenu(props) {
                 }
               </ListItemIcon>
             </Tooltip>
-            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } />
+            <ListItemText primary={ API._getWord(sess && sess.language).Notifications } />
           </ListItem>
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`}>
             <ListItem button
@@ -375,13 +374,13 @@ export default function SideMenu(props) {
                 ) &&
                 { backgroundColor: COLOR.grey[300] },
               }}>
-              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } placement="right">
+              <Tooltip title={ API._getWord(sess && sess.language).Create_Match } placement="right">
                 <ListItemIcon>
                   <AddCircleOutline />
                 </ListItemIcon>
               </Tooltip>
               <ListItemText className={classes.listTitle}
-                primary={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } />
+                primary={ API._getWord(sess && sess.language).Create_Match } />
             </ListItem>
           </BTN.NoStyleLink>
           <Divider />
@@ -398,7 +397,7 @@ export default function SideMenu(props) {
                     <AccountCircle classes={{ root: classes.avatar }} />
                   }
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ผู้ใช้งาน" : 'User' } />
+                <ListItemText primary={ API._getWord(sess && sess.language).User } />
               </ListItem>
             </BTN.NoStyleLink>
             <Divider />
@@ -413,13 +412,13 @@ export default function SideMenu(props) {
                 ) &&
                 { backgroundColor: COLOR.grey[300] },
               }}>
-              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } placement="right">
+              <Tooltip title={ API._getWord(sess && sess.language).Create_Organizer } placement="right">
                 <ListItemIcon>
                   <Flag />
                 </ListItemIcon>
               </Tooltip>
               <ListItemText className={classes.listTitle}
-                primary={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
+                primary={ API._getWord(sess && sess.language).Create_Organizer } />
             </ListItem>
           </BTN.NoStyleLink>
           <ListPage {...props} />
@@ -430,7 +429,7 @@ export default function SideMenu(props) {
             <BTN.NoStyleLink to='/'>
               <ListItem button>
                 <ListItemIcon>
-                  <img src={ic_logo} className={classes.logoImg} />
+                  <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
                 </ListItemIcon>
                 <ListItemText primary="ToffTime" />
               </ListItem>
@@ -443,10 +442,10 @@ export default function SideMenu(props) {
                   ...(window.location.pathname === `/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`) &&
                   { backgroundColor: COLOR.grey[300] },
                 }}>
-                <Tooltip title={ ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' } placement="right">
+                <Tooltip title={ API._getWord(sess && sess.language).Dashboard } placement="right">
                   <ListItemIcon><Dashboard /></ListItemIcon>
                 </Tooltip>
-                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' } />
+                <ListItemText primary={ API._getWord(sess && sess.language).Dashboard } />
               </ListItem>
             </BTN.NoStyleLink>
           }
@@ -456,10 +455,10 @@ export default function SideMenu(props) {
             </BTN.NoStyleLink>*/
           }
           <ListItem button onClick={()=>handleExpand('management')}>
-            <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } placement="right">
+            <Tooltip title={ API._getWord(sess && sess.language).Management } placement="right">
               <ListItemIcon><SettingsApplications /></ListItemIcon>
             </Tooltip>
-            <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } />
+            <ListItemText primary={ API._getWord(sess && sess.language).Management } />
           </ListItem>
           <Collapse in={expanded.management} timeout="auto" style={{ minHeight: 'auto' }}>
             <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`}>
@@ -470,12 +469,12 @@ export default function SideMenu(props) {
                 }}>
                 {!open &&
                   <Tooltip
-                    title={ ( sess && sess.language === 'TH' ) ? "การจัดการการแข่งขัน" : 'Match Management' }
+                    title={ API._getWord(sess && sess.language).Match_Management }
                     placement="right">
                     <ListItemIcon><FontAwesomeIcon icon={faTrophy} style={{ fontSize: 20 }} /></ListItemIcon>
                   </Tooltip>
                 }
-                <ListItemText inset={open} primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
+                <ListItemText inset={open} primary={ API._getWord(sess && sess.language).Match } />
               </ListItem>
             </BTN.NoStyleLink>
             <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`}>
@@ -486,12 +485,12 @@ export default function SideMenu(props) {
                 }}>
                 {!open &&
                   <Tooltip
-                    title={ ( sess && sess.language === 'TH' ) ? "การจัดการสนาม" : 'Course Management' }
+                    title={ API._getWord(sess && sess.language).Course_Management }
                     placement="right">
                     <ListItemIcon><GolfCourse /></ListItemIcon>
                   </Tooltip>
                 }
-                <ListItemText inset={open} primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
+                <ListItemText inset={open} primary={ API._getWord(sess && sess.language).Course } />
               </ListItem>
             </BTN.NoStyleLink>
             { pageOrganizer &&
@@ -503,12 +502,12 @@ export default function SideMenu(props) {
                   }}>
                   {!open &&
                     <Tooltip
-                      title={ ( sess && sess.language === 'TH' ) ? "การจัดโพสต์" : 'Post Management' }
+                      title={ API._getWord(sess && sess.language).Post_Management }
                       placement="right">
                       <ListItemIcon><NoteIcon /></ListItemIcon>
                     </Tooltip>
                   }
-                  <ListItemText inset primary={ ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' } />
+                  <ListItemText inset primary={ API._getWord(sess && sess.language).Post } />
                 </ListItem>
               </BTN.NoStyleLink>
             }
@@ -519,10 +518,10 @@ export default function SideMenu(props) {
                 ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`) &&
                 { backgroundColor: COLOR.grey[300] },
               }}>
-              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } placement="right">
+              <Tooltip title={ API._getWord(sess && sess.language).Upcoming } placement="right">
                 <ListItemIcon><Event /></ListItemIcon>
               </Tooltip>
-              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "เร็วๆนี้" : 'Upcoming' } />
+              <ListItemText primary={ API._getWord(sess && sess.language).Upcoming } />
             </ListItem>
           </BTN.NoStyleLink>
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}>
@@ -531,10 +530,10 @@ export default function SideMenu(props) {
                 ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`) &&
                 { backgroundColor: COLOR.grey[300] },
               }}>
-              <Tooltip title={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } placement="right">
+              <Tooltip title={ API._getWord(sess && sess.language).History } placement="right">
                 <ListItemIcon><History /></ListItemIcon>
               </Tooltip>
-              <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
+              <ListItemText primary={ API._getWord(sess && sess.language).History } />
             </ListItem>
           </BTN.NoStyleLink>
         </List>
@@ -545,7 +544,7 @@ export default function SideMenu(props) {
           <ListItem button onClick={toggleConfirmLogout} className={classes.logout}>
             <ListItemIcon><ExitToApp classes={{ root: classes. logoutIcon }} /></ListItemIcon>
             <ListItemText className={classes.logoutTitle}
-              primary={ ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' } />
+              primary={ API._getWord(sess && sess.language).Log_out } />
           </ListItem>
         </List>
       </Drawer>
@@ -553,16 +552,16 @@ export default function SideMenu(props) {
         {/*handleLogout*/}
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ต้องการลงชื่อออกหรือไม่ ?" : 'Are you sure you want to Log out?' }
+            { API._getWord(sess && sess.language)['Are you sure you want to Log out?'] }
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <BTN.PrimaryText fullWidth onClick={toggleConfirmLogout} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </BTN.PrimaryText>
           <BTN.Red fullWidth onClick={handleLogout} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' }
+            { API._getWord(sess && sess.language).Log_out }
           </BTN.Red>
         </div>
       </TemplateDialog>

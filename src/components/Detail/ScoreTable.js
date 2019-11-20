@@ -268,7 +268,7 @@ function ScoreRow(props){
 
 export default function ScoreTable(props) {
   const classes = useStyles();
-  const { sess, data, userscore, matchClass, sortBy } = props
+  const { API, sess, data, userscore, matchClass, sortBy } = props
   const inputEl = React.useRef(null);
   const [ op, setOp ] = React.useState(true)
   const [ widthEl, setWidthEl ] = React.useState(0)
@@ -341,10 +341,10 @@ export default function ScoreTable(props) {
             <TableBody>
               <TableRow>
                 <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
-                  { ( sess && sess.language === 'TH' ) ? "อันดับ" : 'Rank' }
+                  { API._getWord(sess && sess.language).Rank }
                 </StyledTableRank>
                 <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Player' }
+                  { API._getWord(sess && sess.language).Player_name }
                 </StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>
@@ -393,10 +393,10 @@ export default function ScoreTable(props) {
             <TableBody>
               <TableRow>
                 <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
-                  { ( sess && sess.language === 'TH' ) ? "อันดับ" : 'Rank' }
+                  { API._getWord(sess && sess.language).Rank }
                 </StyledTableRank>
                 <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { ( sess && sess.language === 'TH' ) ? "ชื่อผู้เล่น" : 'Player' }
+                  { API._getWord(sess && sess.language).Player_name }
                 </StyledTableHead>
                 { (wd >= 450) &&
                   <React.Fragment>

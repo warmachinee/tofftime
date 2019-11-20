@@ -150,7 +150,7 @@ export default function MatchTeam(props) {
 
     return (
       <div className={classes.editNoteGrid}>
-        <TextField label={ ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' }
+        <TextField label={ API._getWord(sess && sess.language).Note }
           value={note || ''}
           onChange={e =>setNote(e.target.value)}
           onKeyPress={e =>handleKeyPressEditNote(e)}
@@ -271,9 +271,9 @@ export default function MatchTeam(props) {
         <Typography component="div">
           <Box className={classes.title} fontWeight={600}>
             { matchDetail && matchDetail.team.length === 0 ? (
-              ( sess && sess.language === 'TH' ) ? "สร้างตารางเวลา" : 'Create schedule'
+              API._getWord(sess && sess.language).Create_schedule
             ) : (
-              ( sess && sess.language === 'TH' ) ? "แก้ไขตารางเวลา" : 'Edit schedule'
+              API._getWord(sess && sess.language).Edit_schedule
             ) }
           </Box>
         </Typography>
@@ -282,7 +282,7 @@ export default function MatchTeam(props) {
             <TextField
               fullWidth
               className={classes.timePicker}
-              label={ ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' }
+              label={ API._getWord(sess && sess.language).Time }
               type="time"
               onKeyPress={e =>handleKeyPress(e.key)}
               onChange={e => setCurrentTime(e.target.value)}
@@ -290,9 +290,9 @@ export default function MatchTeam(props) {
             <TextField
               className={classes.textField}
               variant="outlined"
-              label={ ( sess && sess.language === 'TH' ) ? "ระยะห่างเวลาต่อทีม" : 'Period' }
+              label={ API._getWord(sess && sess.language).Period_T }
               error={period <= 0}
-              helperText={`0 - 59 ${ ( sess && sess.language === 'TH' ) ? "นาที" : 'minute' }`}
+              helperText={`0 - 59 ${ API._getWord(sess && sess.language).minute }`}
               value={ !isNaN(period) ? period : '' }
               onKeyPress={e =>handleKeyPress(e.key)}
               onChange={e => handlePeriodChange(parseInt(e.target.value))}
@@ -301,13 +301,13 @@ export default function MatchTeam(props) {
             <div style={{ marginTop: 16 }}>
               <FormControl component="fieldset" className={classes.formControl}>
                 <FormLabel component="legend">
-                  { ( sess && sess.language === 'TH' ) ? "ประเภทของจำนวน" : 'Type of amount' }
+                  { API._getWord(sess && sess.language).Type_of_amount }
                 </FormLabel>
                 <RadioGroup style={{ flexDirection: 'row' }} value={scheduleNumberType} onChange={e => setScheduleNumberType(event.target.value)}>
                   <FormControlLabel value="person" control={<Radio />}
-                    label={ ( sess && sess.language === 'TH' ) ? "บุคคล" : 'Person' } />
+                    label={ API._getWord(sess && sess.language).Person } />
                   <FormControlLabel value="team" control={<Radio />}
-                    label={ ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' } />
+                    label={ API._getWord(sess && sess.language).Team } />
                 </RadioGroup>
               </FormControl>
             </div>
@@ -336,7 +336,7 @@ export default function MatchTeam(props) {
                 <FormControl component="fieldset">
                   <FormControlLabel
                     control={<Switch checked={autoGen} onChange={()=>setAutoGen(!autoGen)} />}
-                    label={ ( sess && sess.language === 'TH' ) ? "สร้างอัตโนมัติ" : 'Auto-generate' }
+                    label={ API._getWord(sess && sess.language).Auto_generate }
                   />
                 </FormControl>
               </div>
@@ -346,17 +346,17 @@ export default function MatchTeam(props) {
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   { !editting &&
                     <BTN.PrimaryText onClick={()=>setEditting(!editting)}>
-                      { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+                      { API._getWord(sess && sess.language).Edit }
                     </BTN.PrimaryText>
                   }
                 </div>
                 <List>
                   <ListItem style={{ backgroundColor: grey[900] }}>
                     <ListItemText style={{ color: 'white', width: '100%' }}
-                      primary={ ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' } />
+                      primary={ API._getWord(sess && sess.language).Team } />
                     { !editting &&
                       <ListItemText style={{ color: 'white', width: '100%' }}
-                        primary={ ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' } />
+                        primary={ API._getWord(sess && sess.language).Note } />
                     }
                   </ListItem>
                   { matchDetail &&
@@ -389,9 +389,9 @@ export default function MatchTeam(props) {
                     variant="contained"
                     className={classes.createButton}>
                     { matchDetail && matchDetail.team.length === 0 ? (
-                      ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
+                      API._getWord(sess && sess.language).Create
                     ) : (
-                      ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
+                      API._getWord(sess && sess.language).Save
                     ) }
                   </Button>
                   :
@@ -400,9 +400,9 @@ export default function MatchTeam(props) {
                     className={classes.createButton}
                     onClick={handleSchedule}>
                     { matchDetail && matchDetail.team.length === 0 ? (
-                      ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create'
+                      API._getWord(sess && sess.language).Create
                     ) : (
-                      ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save'
+                      API._getWord(sess && sess.language).Save
                     ) }
                   </GreenButton>
                 }

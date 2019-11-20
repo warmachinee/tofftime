@@ -142,7 +142,7 @@ export default function HistoryList(props) {
                   <React.Fragment>
                     { !( open ? window.innerWidth >= 840 : window.innerWidth >= 600) &&
                       <Typography variant="caption" color="textSecondary">
-                        {`${API._dateToString(data.matchdate)} • 
+                        {`${API._dateToString(data.matchdate)} •
                           ${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.views)}
                           ${( sess && sess.language === 'TH' ) ? `การดู ${API._shotnessNumber(data.views)} ครั้ง` : `view${data.views > 1? 's' : ''}`}
                         `}

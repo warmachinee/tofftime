@@ -22,7 +22,7 @@ import {
 } from '@material-ui/icons';
 
 export default function CreateMatchDialog(props) {
-  const { sess } = props
+  const { API, sess } = props
 
   return (
     <div style={{
@@ -34,7 +34,7 @@ export default function CreateMatchDialog(props) {
         marginLeft: 'auto',
         marginRight: 'auto'
       }}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' } />
+      <LabelText text={ API._getWord(sess && sess.language).Create_Match } />
       <MatchStepper {...props} />
     </div>
   );

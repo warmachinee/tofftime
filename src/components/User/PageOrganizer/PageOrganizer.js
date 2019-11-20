@@ -50,7 +50,7 @@ export default function PageOrganizer(props) {
       handleFetchInfo()
     }
     if(sess && sess.status === 1 && sess.typeid === 'admin'){
-      window.location.pathname = '/admin'
+      window.location.pathname = '/system_admin'
     }
   }, [ sess, props.location ])
 

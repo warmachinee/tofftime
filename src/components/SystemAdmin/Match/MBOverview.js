@@ -504,9 +504,9 @@ export default function MBOverview(props){
               <ThemeProvider theme={theme}>
                 <TextField
                   className={classes.textMatchname}
-                  label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
+                  label={ API._getWord(sess && sess.language).Match_name }
                   value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                    ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name'
+                    API._getWord(sess && sess.language).Match_name
                   ) }
                   onChange={e =>setSelectedMatchName(e.target.value)}
                 />
@@ -517,7 +517,7 @@ export default function MBOverview(props){
                     <KeyboardDatePicker
                       clearable
                       className={classes.margin}
-                      label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }
+                      label={ API._getWord(sess && sess.language).Match_Date }
                       inputVariant="outlined"
                       format="dd/MM/yyyy"
                       value={ data?( selectedDate ? selectedDate : new Date(data.date) ):new Date() }
@@ -587,14 +587,14 @@ export default function MBOverview(props){
                     border: '1px rgba(0, 0, 0, 0.23) solid', borderRadius: 4, boxSizing: 'border-box'
                   }}>
                   <FormLabel component="legend" style={{ marginLeft: 16, fontSize: 12 }}>
-                    { ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' }
+                    { API._getWord(sess && sess.language).Course }
                   </FormLabel>
                   <GreenTextButton
                     className={classes.button}
                     style={{ textTransform: 'none', marginTop: 0 }}
                     onClick={()=>handleOpen('location')}>
                     { data?( selectedField? selectedField.fieldname : data.location ) : (
-                      ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course'
+                      API._getWord(sess && sess.language).Course
                     ) }
                     {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
                   </GreenTextButton>
@@ -644,7 +644,7 @@ export default function MBOverview(props){
                     padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box'
                   }}>
                   <FormLabel component="legend" style={{ marginLeft: 16, fontSize: 12 }}>
-                    { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }
+                    { API._getWord(sess && sess.language).Privacy }
                   </FormLabel>
                   <RadioGroup
                     value={
@@ -654,19 +654,19 @@ export default function MBOverview(props){
                     <FormControlLabel
                       value={'public'}
                       control={<GreenRadio />}
-                      label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
+                      label={ API._getWord(sess && sess.language).Public }
                       labelPlacement="end"
                     />
                     <FormControlLabel
                       value={'friend'}
                       control={<GreenRadio />}
-                      label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
+                      label={ API._getWord(sess && sess.language).Friend }
                       labelPlacement="end"
                     />
                     <FormControlLabel
                       value={'private'}
                       control={<GreenRadio />}
-                      label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
+                      label={ API._getWord(sess && sess.language).Private }
                       labelPlacement="end"
                     />
                   </RadioGroup>
@@ -704,17 +704,14 @@ export default function MBOverview(props){
             className={classes.button}
             style={{ textTransform: 'none' }}
             onClick={handleRulesOpen}>
-            { ( sess && sess.language === 'TH' ) ?
-              "กฏ กติกา และ รายละเอียดการแข่งขัน" :
-              'Match Rules, Regulations and Detail'
-            }
+            { API._getWord(sess && sess.language)['Match Rules, Regulations and Detail'] }
           </GreenTextButton>
           { isEditDetail() &&
             <div className={classes.buttonControl}>
               <div style={{ flex: 2 }}></div>
               <GreenButton className={classes.button}
                 onClick={handleEditMatch}>
-                { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+                { API._getWord(sess && sess.language).Save }
               </GreenButton>
             </div>
           }
@@ -724,10 +721,7 @@ export default function MBOverview(props){
         <div>
           <LabelText
             style={{ marginBottom: 24 }}
-            text={ ( sess && sess.language === 'TH' ) ?
-              "กฏ กติกา และ รายละเอียดการแข่งขัน" :
-              'Match Rules, Regulations and Detail'
-            } />
+            text={ API._getWord(sess && sess.language)['Match Rules, Regulations and Detail'] } />
           { (data && data.message) ?
             <RichTextEditor HTMLData={data.message} handleGetHTML={e =>handleEditorOnChange(e)} />
             :
@@ -737,11 +731,11 @@ export default function MBOverview(props){
             <div style={{ flex: 3 }} />
             <GreenTextButton className={classes.button}
               onClick={handleRulesCancel}>
-              { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+              { API._getWord(sess && sess.language).Cancel }
             </GreenTextButton>
             <GreenButton className={classes.button}
               onClick={handleRulesSave}>
-              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+              { API._getWord(sess && sess.language).Save }
             </GreenButton>
           </div>
         </div>

@@ -37,20 +37,6 @@ const useStyles = makeStyles(theme => ({
   divider: {
     margin: "24px 0",
   },
-  title: {
-    textAlign: 'center', color: grey[800],
-    fontSize: 28,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 32,
-    },
-  },
-  accountCircle: {
-    fontSize: '5rem',
-    color: grey[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '10rem',
-    },
-  },
   button: {
     width: '100%',
     padding: 8,
@@ -129,10 +115,10 @@ export default function SignUpComponent(props){
   const [ username, setUsername ] = React.useState('')
   const [ password, setPassword ] = React.useState('')
   const [ phoneNumber, setPhoneNumber ] = React.useState('');
-  const [ fullname, setFullName ] = React.useState('')
+  const [ firstname, setFullName ] = React.useState('')
   const [ lastname, setLastName ] = React.useState('')
-  const [ gender, setGender ] = React.useState('')
-  const [ selectedDate, setSelectedDate ] = React.useState(new Date());
+  const [ gender, setGender ] = React.useState('male')
+  const [ selectedDate, setSelectedDate ] = React.useState(null);
 
   const [ phoneWidth, setPhoneWidth ] = React.useState(0);
   const [ genderWidth, setGenderWidth ] = React.useState(0);
@@ -150,15 +136,37 @@ export default function SignUpComponent(props){
 
   function handleKeyPress(e){
     if(e.key === 'Enter'){
-      handleSignUp({
-        username: username,
-        password: password,
-        tel: phoneNumber,
-        fullname: fullname,
-        lastname: lastname,
-        gender: gender,
-        birthdate: API._dateSendToAPI(selectedDate)
-      })
+      if(
+        username !== '' &&
+        password !== '' &&
+        firstname !== '' &&
+        lastname !== '' &&
+        isPhoneNumberComplete() &&
+        selectedDate !== null
+      ){
+        handleSignUp({
+          username: username,
+          password: password,
+          tel: phoneNumber,
+          fullname: firstname,
+          lastname: lastname,
+          gender: gender,
+          birthdate: API._dateSendToAPI(selectedDate)
+        })
+      }
+    }
+  }
+
+  function isPhoneNumberComplete(){
+    if(phoneNumber.length === 10){
+      for(var i = 0;i < 10;i++){
+        if(phoneNumber.substring(i, i + 1) === " "){
+          return false
+        }
+      }
+      return true
+    }else{
+      return false
     }
   }
 
@@ -169,116 +177,106 @@ export default function SignUpComponent(props){
 
   return(
     <div>
-      <Typography component="div">
-        <Box className={classes.title} fontWeight={600} m={1}>
-          Sign up
-        </Box>
-      </Typography>
-      <div style={{ display: 'flex', marginBottom: 16 }}>
-        <div style={{ flexGrow: 1 }}></div>
-        { window.innerHeight >= 500 &&
-          <AccountCircleIcon classes={{ root: classes.accountCircle }} />
-        }
-        <div style={{ flexGrow: 1 }}></div>
-      </div>
-      <div>
-        <ThemeProvider theme={theme}>
-          <TextField
-            autoFocus
-            required
-            error={actionStatus === 'email is used' || actionStatus === 'invalid email'}
-            className={classes.margin}
-            label="Email"
-            helperText={
-              ( actionStatus === 'email is used' || actionStatus === 'invalid email' )?
-              ( actionStatus === 'email is used'? 'Email is used' : 'Invalid email' )
-              :
-              null
-            }
-            variant="outlined"
-            onChange={e => setUsername(e.target.value)}
-            onKeyPress={e =>handleKeyPress(e)}
-          />
-          <TextField
-            required
-            className={classes.margin}
-            label="Password"
-            variant="outlined"
-            type="password"
-            onChange={e => setPassword(e.target.value)}
-            onKeyPress={e =>handleKeyPress(e)}
-          />
-          <TextField
-            required
-            className={classes.margin}
-            label="First name"
-            variant="outlined"
-            onChange={e => setFullName(e.target.value)}
-            onKeyPress={e =>handleKeyPress(e)}
-          />
-          <TextField
-            required
-            className={classes.margin}
-            label="Last name"
-            variant="outlined"
-            onChange={e => setLastName(e.target.value)}
-            onKeyPress={e =>handleKeyPress(e)}
-          />
-          <div style={{ display: 'flex' }} className={classes.margin}>
-            <FormControl style={{ width: '40%' }} variant="outlined">
-              <InputLabel ref={genderRef} htmlFor="age-customized-select">Gender</InputLabel>
-              <Select
-                value={gender}
-                onChange={e =>setGender(e.target.value)}
-                input={<OutlinedInput labelWidth={genderWidth} />}
-              >
-                <MenuItem value='male'>Male</MenuItem>
-                <MenuItem value='female'>Female</MenuItem>
-              </Select>
-            </FormControl>
-            <div className={classes.space}></div>
-            <FormControl style={{ width: '60%' }} variant="outlined">
-              <InputLabel ref={phoneRef} htmlFor="component-outlined">
-                { ( window.innerWidth >= 500 )? "Phone number" : "Phone" }
-              </InputLabel>
-              <OutlinedInput
-                labelWidth={phoneWidth}
-                inputComponent={TextMaskCustom}
-                onChange={e =>handlePhoneNumber(e.target.value)}
-                onKeyPress={e =>handleKeyPress(e)}
-              />
-            </FormControl>
-          </div>
-        </ThemeProvider>
-        <ThemeProvider theme={datePickers}>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              clearable
-              disableFuture
-              className={classes.margin}
-              label="Birthday"
-              openTo="year"
-              inputVariant="outlined"
-              format="dd/MM/yyyy"
-              value={selectedDate}
-              onChange={date => handleDateChange(date)}
+      <ThemeProvider theme={theme}>
+        <TextField
+          autoFocus
+          error={actionStatus === 'email is used' || actionStatus === 'invalid email'}
+          className={classes.margin}
+          label="Email"
+          helperText={
+            ( actionStatus === 'email is used' || actionStatus === 'invalid email' )?
+            ( actionStatus === 'email is used'? 'Email is used' : 'Invalid email' )
+            :
+            null
+          }
+          variant="outlined"
+          onChange={e => setUsername(e.target.value)}
+          onKeyPress={e =>handleKeyPress(e)}
+        />
+        <TextField
+          className={classes.margin}
+          label="Password"
+          variant="outlined"
+          type="password"
+          onChange={e => setPassword(e.target.value)}
+          onKeyPress={e =>handleKeyPress(e)}
+        />
+        <TextField
+          className={classes.margin}
+          label="First name"
+          variant="outlined"
+          onChange={e => setFullName(e.target.value)}
+          onKeyPress={e =>handleKeyPress(e)}
+        />
+        <TextField
+          className={classes.margin}
+          label="Last name"
+          variant="outlined"
+          onChange={e => setLastName(e.target.value)}
+          onKeyPress={e =>handleKeyPress(e)}
+        />
+        <div style={{ display: 'flex' }} className={classes.margin}>
+          <FormControl style={{ width: '40%' }} variant="outlined">
+            <InputLabel ref={genderRef} htmlFor="age-customized-select">Gender</InputLabel>
+            <Select
+              value={gender}
+              onChange={e =>setGender(e.target.value)}
+              input={<OutlinedInput labelWidth={genderWidth} />}
+            >
+              <MenuItem value='male'>Male</MenuItem>
+              <MenuItem value='female'>Female</MenuItem>
+            </Select>
+          </FormControl>
+          <div className={classes.space}></div>
+          <FormControl style={{ width: '60%' }} variant="outlined">
+            <InputLabel ref={phoneRef} htmlFor="component-outlined">
+              { ( window.innerWidth >= 500 )? "Phone number" : "Phone" }
+            </InputLabel>
+            <OutlinedInput
+              labelWidth={phoneWidth}
+              inputComponent={TextMaskCustom}
+              onChange={e =>handlePhoneNumber(e.target.value)}
               onKeyPress={e =>handleKeyPress(e)}
             />
-          </MuiPickersUtilsProvider>
-        </ThemeProvider>
-        <SignUpButton variant="contained" color="primary" className={classes.button}
-          onClick={()=>handleSignUp({
-            username: username,
-            password: password,
-            tel: phoneNumber,
-            fullname: fullname,
-            lastname: lastname,
-            gender: gender,
-            birthdate: API._dateSendToAPI(selectedDate)
-          })}>
-          Confirm
-        </SignUpButton>
-      </div>
+          </FormControl>
+        </div>
+      </ThemeProvider>
+      <ThemeProvider theme={datePickers}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDatePicker
+            clearable
+            disableFuture
+            className={classes.margin}
+            label="Birthday (D/M/Y)"
+            openTo="year"
+            inputVariant="outlined"
+            format="dd/MM/yyyy"
+            value={selectedDate}
+            onChange={date => handleDateChange(date)}
+            onKeyPress={e =>handleKeyPress(e)}
+          />
+        </MuiPickersUtilsProvider>
+      </ThemeProvider>
+      <SignUpButton variant="contained" color="primary" className={classes.button}
+        disabled={!(
+          username !== '' &&
+          password !== '' &&
+          firstname !== '' &&
+          lastname !== '' &&
+          isPhoneNumberComplete() &&
+          selectedDate !== null
+        )}
+        onClick={()=>handleSignUp({
+          username: username,
+          password: password,
+          tel: phoneNumber,
+          fullname: firstname,
+          lastname: lastname,
+          gender: gender,
+          birthdate: API._dateSendToAPI(selectedDate)
+        })}>
+        Confirm
+      </SignUpButton>
     </div>
   );
 }

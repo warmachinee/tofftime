@@ -91,7 +91,7 @@ export default function UserOverview(props) {
         </BTN.NoStyleLink>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
           <BTN.PrimaryText style={{ padding: 4, width: '100%' }} onClick={handleClose}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </BTN.PrimaryText>
           <BTN.Primary style={{ padding: 4, width: '100%' }}
             onClick={()=>
@@ -99,11 +99,11 @@ export default function UserOverview(props) {
               alreadyFriend ? handleFriendClick(data.userid, 'un') : handleFriendClick(data.userid, 'add')
             }>
             {
-              data.status === 'pending' ? ( ( sess && sess.language === 'TH' ) ? "ลบเพื่อน" : 'Unfriend' ) :
+              data.status === 'pending' ? ( API._getWord(sess && sess.language).Unfriend ) :
               ( alreadyFriend ?
-                ( ( sess && sess.language === 'TH' ) ? "ลบเพื่อน" : 'Unfriend' )
+                ( API._getWord(sess && sess.language).Unfriend )
                 :
-                ( ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add' )
+                ( API._getWord(sess && sess.language).Add_Friend )
               )
             }
           </BTN.Primary>

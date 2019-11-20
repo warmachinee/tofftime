@@ -186,32 +186,12 @@ export default function MBGroup(props){
   return (
     <div className={classes.root}>
       <List disablePadding className={classes.tabRoot} style={{ marginTop: 16 }}>
-        {/* data && data.mainclass && data.mainclass.length === 0 &&
-          <React.Fragment>
-            <ListItem>
-              <ListItemText
-                style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, color: primary[900] }}
-                primary={function(){
-                  switch (data.scorematch) {
-                    case 0:
-                      return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No flight'
-                      break;
-                    case 1:
-                      return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No class'
-                      break;
-                    default:
-                      return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No Team'
-                  }
-                }()} />
-            </ListItem>
-          </React.Fragment>*/
-        }
         { data && ( data.scorematch === 0 ? !( data.mainclass && data.mainclass.length > 0 ) : true ) &&
           <ListItem disableGutters className={classes.addClass}>
             <ListItemIcon className={classes.addClassButtonGrid}>
               <BTN.Red className={classes.addClassButton} variant="outlined" onClick={handleFetchCreate}>
                 <AddCircle style={{ marginRight: 8 }} />
-                { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
+                { API._getWord(sess && sess.language).Create }
               </BTN.Red>
             </ListItemIcon>
           </ListItem>
@@ -235,9 +215,9 @@ export default function MBGroup(props){
                 classes={{ textColorInherit: classes.textColorInherit }}
                 label={
                   data && data.scorematch === 0 ?
-                  ( ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight' )
+                  ( API._getWord(sess && sess.language).Flight )
                   :
-                  `${( ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main group' )} ${d.mainclass}`
+                  `${( API._getWord(sess && sess.language).Main_group )} ${d.mainclass}`
                 } />
             )}
           </Tabs>
@@ -251,12 +231,12 @@ export default function MBGroup(props){
         :
         <Typography component="div" style={{ width: '100%' }}>
           <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "สร้างกลุ่มการแข่งขัน" : 'Create the match group.' }
+            { API._getWord(sess && sess.language)['Create the match group.'] }
           </Box>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
             <BTN.PrimaryOutlined onClick={handleFetchCreate}>
               <AddIcon style={{ marginRight: 8 }} />
-              { ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create group.' }
+              { API._getWord(sess && sess.language).Create_group }
             </BTN.PrimaryOutlined>
           </div>
         </Typography>

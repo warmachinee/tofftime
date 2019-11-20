@@ -345,16 +345,16 @@ export default function MBPlayoff(props){
       { !isSetup ?
         <div style={{ display: 'flex', marginTop: 24 }}>
           <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
-            { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+            { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
           </Typography>
           <BTN.NoStyleLink
             to={
               sess.typeid === 'admin' ?
-              `/admin/match/${matchid}` :
+              `/system_admin/match/${matchid}` :
               `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
               }>
             <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
-              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+              { API._getWord(sess && sess.language).Back }
             </BTN.RedOutlined>
           </BTN.NoStyleLink>
         </div>
@@ -362,11 +362,11 @@ export default function MBPlayoff(props){
         <div className={classes.root}>
           <Typography component="div" style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Box className={classes.notice} m={1}>
-              { ( sess && sess.language === 'TH' ) ? "เลือกประเภท" : 'Select class' }
+              { API._getWord(sess && sess.language).Select_Group }
             </Box>
             { matchDetail && matchDetail.scorematch !== 0 &&
               <FormControl className={classes.formControl}>
-                <InputLabel>{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' }</InputLabel>
+                <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                 <Select
                   value={mainClassSelected}
                   onChange={e => setMainClassSelected(e.target.value)}>
@@ -408,17 +408,17 @@ export default function MBPlayoff(props){
                         <React.Fragment>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
                             <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
-                              { ( sess && sess.language === 'TH' ) ? "เคลียร์" : 'Clear' }
+                              { API._getWord(sess && sess.language).Clear }
                             </GreenTextButton>
                           </div>
                           <ListItem className={classes.listItem}>
                             <ListItemText style={{ color: 'white' }} className={classes.listText}
-                              primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' } />
+                              primary={ API._getWord(sess && sess.language).First_name } />
                             <ListItemText style={{ color: 'white' }} className={classes.listText}
-                              primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
+                              primary={ API._getWord(sess && sess.language).Last_name } />
                             <ListItemIcon className={classes.listStatus}>
                               <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>
-                                { ( sess && sess.language === 'TH' ) ? "เพลย์ออฟ" : 'Playoff' }
+                                { API._getWord(sess && sess.language).Playoff }
                               </div>
                             </ListItemIcon>
                           </ListItem>
@@ -437,7 +437,7 @@ export default function MBPlayoff(props){
                             <ListItem>
                               <Typography component="div" style={{ width: '100%' }}>
                                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่นเพลย์ออฟ" : 'No playoff player' }
+                                  { API._getWord(sess && sess.language).No_playoff_player }
                                 </Box>
                               </Typography>
                             </ListItem>

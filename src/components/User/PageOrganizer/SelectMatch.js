@@ -131,11 +131,11 @@ export default function PageOrganizerCreatePost(props) {
   return (
     <TemplateDialog open={selectMatchState} handleClose={handleClose} maxWidth={900}>
       <div className={classes.root}>
-        <LabelText text={ ( sess && sess.language === 'TH' ) ? "เลือกการแข่งขัน" : 'Select match' } />
+        <LabelText text={ API._getWord(sess && sess.language).Select_match } />
         <div className={classes.grid}>
           <BTN.Red style={{ paddingRight: 16 }} onClick={toggleCreateMatch}>
             <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-            { ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create Match' }
+            { API._getWord(sess && sess.language).Create_Match }
           </BTN.Red>
           <List style={{ marginTop: 16 }}>
             <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
@@ -151,15 +151,15 @@ export default function PageOrganizerCreatePost(props) {
               </ListItemIcon>
               { window.innerWidth >= 600 &&
                 <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                  primary={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' } />
+                  primary={ API._getWord(sess && sess.language).Match_Date } />
               }
               <ListItemText style={{ color: 'white', width: 100 }}
-                primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
+                primary={ API._getWord(sess && sess.language).Match } />
 
               { window.innerWidth >= 900 &&
                 <ListItemText
                   style={{ width: 100, color: 'white' }}
-                  primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
+                  primary={ API._getWord(sess && sess.language).Course } />
               }
             </ListItem>
           </List>

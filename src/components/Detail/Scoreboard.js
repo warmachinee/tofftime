@@ -56,7 +56,7 @@ function TabContainer(props) {
         { data && data.scorematch !== 1 &&
           <div>
             <FormControl className={classes.formControl}>
-              <InputLabel>{ ( sess && sess.language === 'TH' ) ? "จัดเรียงตาม" : 'Sort by' }</InputLabel>
+              <InputLabel>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
               <Select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
@@ -186,7 +186,7 @@ export default function Scoreboard(props) {
             )
           }
           { data.scorematch === 0 &&
-            <StyledTab label={ ( sess && sess.language === 'TH' ) ? "อื่นๆ" : 'Other' } />
+            <StyledTab label={ API._getWord(sess && sess.language).Other } />
           }
         </StyledTabs>
       </Paper>

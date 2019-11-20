@@ -171,8 +171,7 @@ function ListMenu(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {/* <MenuItem onClick={()=>handleSelectRole(value, 'set')}>{ ( sess && sess.language === 'TH' ) ? "ผู้ดูแล" : 'Admin' }</MenuItem> */}
-        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>{ ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }</MenuItem>
+        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>{ API._getWord(sess && sess.language).Remove }</MenuItem>
       </Menu>
     </div>
   );
@@ -221,7 +220,7 @@ export default function AddAdmin(props){
           autoFocus
           className={classes.searchBox}
           variant="outlined"
-          placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
+          placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search ) : '' }
           value={searchUser}
           onChange={handleChangePerson}
           InputProps={{

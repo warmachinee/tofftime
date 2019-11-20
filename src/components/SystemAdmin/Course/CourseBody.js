@@ -224,14 +224,14 @@ export default function CourseBody(props){
 
   return(
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
+      <LabelText text={ API._getWord(sess && sess.language).Course } />
       <List>
         <ListItem style={{ marginTop: 24, cursor: 'auto' }}>
           <ThemeProvider theme={theme}>
             <TextField
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchField? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
+              placeholder={ !searchField? ( API._getWord(sess && sess.language).Search ) : '' }
               value={searchField}
               onChange={e =>setSearchField(e.target.value)}
               InputProps={{
@@ -257,12 +257,12 @@ export default function CourseBody(props){
         </ListItem>
       </List>
       <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
-        <BTN.PrimaryText onClick={handleCreateCourse}>{ ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }</BTN.PrimaryText>
+        <BTN.PrimaryText onClick={handleCreateCourse}>{ API._getWord(sess && sess.language).Create }</BTN.PrimaryText>
         <BTN.PrimaryText onClick={()=>setRemoveState(!removeState)}>
           { !removeState ?
-            ( ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' )
+            ( API._getWord(sess && sess.language).Remove )
             :
-            ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
+            ( API._getWord(sess && sess.language).Done )
           }
         </BTN.PrimaryText>
       </div>
@@ -270,13 +270,13 @@ export default function CourseBody(props){
         <ListItem>
           <ListItemIcon className={classes.listOfficial}>
             <Typography style={{ color: 'white' }}>
-              { ( sess && sess.language === 'TH' ) ? "เป็นทางการ" : 'Official' }
+              { API._getWord(sess && sess.language).Official }
             </Typography>
           </ListItemIcon>
           <ListItemIcon className={classes.listImage}>
             <Skeleton className={classes.image} style={{ margin: 0, backgroundColor: 'inherit', height: 0 }} disableAnimate />
           </ListItemIcon>
-          <ListItemText style={{ color: 'white' }} primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } />
+          <ListItemText style={{ color: 'white' }} primary={ API._getWord(sess && sess.language).Course } />
         </ListItem>
       </List>
       <List>
@@ -308,7 +308,7 @@ export default function CourseBody(props){
                 </ListItemIcon>
                 <ListItemText primary={d.fieldname}
                   {...(sess && sess.typeid !== 'admin' && d.fieldversion > 1)?
-                    { secondary: d.fieldversion + ( ( sess && sess.language === 'TH' ) ? ' เวอร์ชัน' : ' version') } : null }
+                    { secondary: d.fieldversion + ( ` ${API._getWord(sess && sess.language).version}` ) } : null }
                     />
                 <ListItemSecondaryAction>
                   { removeState ?
@@ -339,7 +339,7 @@ export default function CourseBody(props){
         open={open} handleClose={handleClose}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
+            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
@@ -348,10 +348,10 @@ export default function CourseBody(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleClose} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </BTN.PrimaryText>
           <BTN.Red onClick={handleDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+            { API._getWord(sess && sess.language).Delete }
           </BTN.Red>
         </div>
       </TemplateDialog>

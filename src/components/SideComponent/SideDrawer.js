@@ -129,7 +129,7 @@ export default function SideDrawer(props) {
               </BTN.NoStyleLink>
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
                 <BTN.Red onClick={handleLogout}>
-                  { ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Log out' }
+                  { API._getWord(sess && sess.language).Log_out }
                 </BTN.Red>
               </div>
             </div>
@@ -137,42 +137,25 @@ export default function SideDrawer(props) {
           </React.Fragment>
         }
         <List>
-          { /*sess && sess.status === 1 &&
-            <ListItem button>
-              <ListItemIcon>
-                <NotificationsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Notification" />
-            </ListItem>
-            <Button size="small" onClick={()=>API._handleScrolllTo('match')}>Match</Button>
-            <Button size="small" onClick={()=>API._handleScrolllTo('news')}>News</Button>
-            <Button size="small" onClick={()=>API._handleScrolllTo('organizer')}>Organizer</Button>
-            <ListItem button>
-              <ListItemIcon>
-                <MailIcon />
-              </ListItemIcon>
-              <ListItemText primary="Inbox" />
-            </ListItem>*/
-          }
           { window.location.pathname === '/' &&
             <React.Fragment>
               <ListItem button onClick={()=>handleScroll('match')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
+                <ListItemText primary={ API._getWord(sess && sess.language).Match } />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('news')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ข่าว" : 'News' } />
+                <ListItemText primary={ API._getWord(sess && sess.language).News } />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('organizer')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "ผู้จัดการแข่งขัน" : 'Organizer' } />
+                <ListItemText primary={ API._getWord(sess && sess.language).Organizer } />
               </ListItem>
               <Divider />
             </React.Fragment>

@@ -13,11 +13,6 @@ import Divider from '@material-ui/core/Divider';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-import ic_facebook from './../components/img/facebook.png'
-import ic_facebook_16 from './../components/img/facebook16px.png'
-import ic_google from './../components/img/google.png'
-import ic_google_16 from './../components/img/google16px.png'
-
 const useStyles = makeStyles(theme => ({
   margin: {
     width: '100%',
@@ -170,12 +165,15 @@ export default function SignInComponent(props){
         </div>
         <Facebook variant="contained" color="primary" className={classes.button}
           onClick={()=>window.location.pathname = '/session/auth/facebook'}>
-          <img src={ (window.innerWidth >= 500)?ic_facebook:ic_facebook_16} className={classes.loginWith} />
+          <img
+            src={ (window.innerWidth >= 500)? "https://file.thai-pga.com/system/image/facebook.png" : "https://file.thai-pga.com/system/image/facebook16px.png"}
+            className={classes.loginWith} />
           Sign in with Facebook
         </Facebook>
         <Google variant="contained" color="primary" className={classes.button}
           onClick={()=>window.location.pathname = '/session/auth/google'}>
-          <img src={ (window.innerWidth >= 500)?ic_google:ic_google_16} className={classes.loginWith} />
+          <img
+            src={ (window.innerWidth >= 500)? "https://file.thai-pga.com/system/image/google.png" : "https://file.thai-pga.com/system/image/google16px.png"} className={classes.loginWith} />
           Sign in with Google
         </Google>
         <div style={{ display: 'flex' }}>

@@ -5,18 +5,17 @@ import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../api'
 import { primary, grey } from './../../api/palette'
 
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Divider from '@material-ui/core/Divider';
+import {
+  Typography,
+  Box,
+  Button,
+  TextField,
+  Divider,
+  Avatar,
+
+} from '@material-ui/core';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
-import ic_facebook from './../img/facebook.png'
-import ic_facebook_16 from './../img/facebook16px.png'
-import ic_google from './../img/google.png'
-import ic_google_16 from './../img/google16px.png'
 
 const useStyles = makeStyles(theme => ({
   margin: {
@@ -33,20 +32,6 @@ const useStyles = makeStyles(theme => ({
     position: 'absolute',
     top: 8,
     right: 8
-  },
-  title: {
-    textAlign: 'center', color: grey[800],
-    fontSize: 28,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 32,
-    },
-  },
-  accountCircle: {
-    fontSize: '5rem',
-    color: grey[800],
-    [theme.breakpoints.up(500)]: {
-      fontSize: '10rem',
-    },
   },
   button: {
     width: '100%',
@@ -118,19 +103,6 @@ export default function SignInComponent(props){
 
   return(
     <div>
-      <Typography component="div">
-        <Box className={classes.title} fontWeight={600} m={1}>
-          Sign in
-        </Box>
-      </Typography>
-      <div style={{ display: 'flex', marginBottom: 16 }}>
-        <div style={{ flexGrow: 1 }}></div>
-        { window.innerHeight >= 500 &&
-          <AccountCircleIcon classes={{ root: classes.accountCircle }} />
-        }
-        <div style={{ flexGrow: 1 }}></div>
-      </div>
-      <div>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
@@ -160,7 +132,7 @@ export default function SignInComponent(props){
         </ThemeProvider>
         <SignInButton variant="contained" color="primary" className={classes.button}
           onClick={handleSignIn}>
-          Sign in
+          Sign in {/*disabled={!( username !== '' && password !== '' )}*/}
         </SignInButton>
         <div style={{ position: 'relative' }}>
           <Divider variant="middle" className={classes.divider} />
@@ -170,12 +142,16 @@ export default function SignInComponent(props){
         </div>
         <Facebook variant="contained" color="primary" className={classes.button}
           onClick={()=>window.location.pathname = '/session/auth/facebook'}>
-          <img src={ (window.innerWidth >= 500)?ic_facebook:ic_facebook_16} className={classes.loginWith} />
+          <img
+            src={ (window.innerWidth >= 500)? "https://file.thai-pga.com/system/image/facebook.png" : "https://file.thai-pga.com/system/image/facebook16px.png"}
+            className={classes.loginWith} />
           Sign in with Facebook
         </Facebook>
         <Google variant="contained" color="primary" className={classes.button}
           onClick={()=>window.location.pathname = '/session/auth/google'}>
-          <img src={ (window.innerWidth >= 500)?ic_google:ic_google_16} className={classes.loginWith} />
+          <img
+            src={ (window.innerWidth >= 500)? "https://file.thai-pga.com/system/image/google.png" : "https://file.thai-pga.com/system/image/google16px.png"}
+            className={classes.loginWith} />
           Sign in with Google
         </Google>
         <div style={{ display: 'flex' }}>
@@ -188,6 +164,5 @@ export default function SignInComponent(props){
           </Button>
         </div>
       </div>
-    </div>
   );
 }

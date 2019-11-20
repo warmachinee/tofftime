@@ -2,12 +2,20 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Modal from '@material-ui/core/Modal';
-import Portal from '@material-ui/core/Portal';
-import IconButton from '@material-ui/core/IconButton';
+import {
+  Typography,
+  Box,
+  Avatar,
+  Modal,
+  Portal,
+  IconButton,
+
+} from '@material-ui/core';
 
 import CloseIcon from '@material-ui/icons/Close';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+
+import { grey } from './../../api/palette'
 
 const SignInComponent = Loadable({
   loader: () => import(/* webpackChunkName: "SignIn" */'./SignInComponent'),
@@ -81,6 +89,28 @@ const useStyles = makeStyles(theme => ({
   },
   closeIcon: {
     fontSize: '2rem',
+  },
+  logo: {
+    height: '5rem',
+    width: '5rem',
+    [theme.breakpoints.up(500)]: {
+      height: '10rem',
+      width: '10rem',
+    },
+  },
+  title: {
+    textAlign: 'center', color: grey[800],
+    fontSize: 28,
+    [theme.breakpoints.up(500)]: {
+      fontSize: 32,
+    },
+  },
+  accountCircle: {
+    fontSize: '5rem',
+    color: grey[800],
+    [theme.breakpoints.up(500)]: {
+      fontSize: '10rem',
+    },
   },
 
 }));
@@ -168,6 +198,13 @@ export default function Dialog(props) {
     })
   }
 
+  React.useEffect(()=>{
+    if(!open){
+      setUsername('')
+      setPassword('')
+    }
+  },[ open ])
+
   return (
     <div>
       <Portal container={container.current}>
@@ -184,6 +221,17 @@ export default function Dialog(props) {
             <IconButton className={classes.close} onClick={handleClose}>
               <CloseIcon classes={{ root: classes.closeIcon }} />
             </IconButton>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              { window.innerHeight >= 600 &&
+                <Avatar className={classes.logo} src="https://file.thai-pga.com/system/image/logoX2.png" />
+                /*<AccountCircleIcon classes={{ root: classes.accountCircle }} />*/
+              }
+            </div>
+            <Typography component="div" style={{ marginBottom: 36 }}>
+              <Box className={classes.title} fontWeight={600} m={1}>
+                { pageState === 'signin' ? 'Sign in' : 'Sign up' }
+              </Box>
+            </Typography>
             { pageState === 'signin' &&
               <SignInComponent
                 {...props}

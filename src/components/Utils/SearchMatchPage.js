@@ -72,7 +72,9 @@ const useStyles = makeStyles(theme => ({
     },
   },
   popup: {
-    zIndex: 1100
+    zIndex: 1100,
+    overflowScrolling: 'touch',
+    WebkitOverflowScrolling: 'touch',
   },
 
 }));

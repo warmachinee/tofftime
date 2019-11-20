@@ -313,7 +313,7 @@ export default function MatchStepper(props) {
         nextButton={
           activeStep === maxSteps - 1 ?
           <BTN.Primary size="small" onClick={handleCreate}>
-            { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
+            { API._getWord(sess && sess.language).Create }
           </BTN.Primary>
           :
           <BTN.PrimaryText
@@ -330,7 +330,7 @@ export default function MatchStepper(props) {
               }
             }()}
             size="small" onClick={handleNext}>
-            { ( sess && sess.language === 'TH' ) ? "ถัดไป" : 'Next' }
+            { API._getWord(sess && sess.language).Next }
             {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
           </BTN.PrimaryText>
         }
@@ -338,7 +338,7 @@ export default function MatchStepper(props) {
           activeStep > 0 ?
           <BTN.PrimaryText size="small" onClick={handleBack}>
             {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+            { API._getWord(sess && sess.language).Back }
           </BTN.PrimaryText>
           :
           <div style={{ width: 24 }} />

@@ -62,7 +62,7 @@ export default function OrganizerPost(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' } />
+      <LabelText text={ API._getWord(sess && sess.language).Post } />
       <div className={classes.grid}>
         { data?
           ( data.length > 0 ?

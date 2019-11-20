@@ -126,8 +126,8 @@ export default function OrganizerOverview(props) {
               </Typography>
               <Typography gutterBottom variant="body2" className={classes.followers}>
                 {data.subscriber} { (
-                  ( sess && sess.language === 'TH' ) ? "ผู้ติดตาม" : 'follower'
-                ) + ( data.subscriber > 1 ? ( ( sess && sess.language === 'TH' ) ? '' : 's' ) : '')}
+                  API._getWord(sess && sess.language).follower
+                ) + ( data.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
               </Typography>
             </div>
           </div>
@@ -136,7 +136,7 @@ export default function OrganizerOverview(props) {
               { ( sess.status !== 1 )?
                 <BTN.NoStyleLink to="/login">
                   <BTN.Primary size="large">
-                    { ( sess && sess.language === 'TH' ) ? "ติดตาม" : 'Follow' }
+                    { API._getWord(sess && sess.language).Follow }
                     <div style={{ marginLeft: 12 }}>
                       {data.subscriber}
                     </div>
@@ -146,12 +146,12 @@ export default function OrganizerOverview(props) {
                 <React.Fragment>
                   { isFollow ?
                     <BTN.Following size="large" onClick={handleToggleFollow}>
-                      { ( sess && sess.language === 'TH' ) ? "กำลังติดตาม" : 'Following' }
+                      { API._getWord(sess && sess.language).Following }
                     </BTN.Following>
                     :
                     <BTN.Primary size="large"
                       onClick={handleToggleFollow}>
-                      { ( sess && sess.language === 'TH' ) ? "ติดตาม" : 'Follow' }
+                      { API._getWord(sess && sess.language).Follow }
                       <div style={{ marginLeft: 12 }}>
                         {data.subscriber}
                       </div>

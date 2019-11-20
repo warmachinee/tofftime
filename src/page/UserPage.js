@@ -293,7 +293,7 @@ export default function UserPage(props) {
       handleFetchInfo()
     }
     if(sess && sess.status === 1 && sess.typeid === 'admin'){
-      window.location.pathname = '/admin'
+      window.location.pathname = '/system_admin'
     }
     window.scrollTo(0, 0)
     if(/localhost/.test(window.location.href)){
@@ -307,7 +307,6 @@ export default function UserPage(props) {
       <SideMenu {...props} {...dialogProps} notiData={notiData} setNotiData={setNotiData} />
       <main className={classes.content} style={{ width: `calc(100% - ${open ? 240 : 73}px)` }}>
         <div className={classes.toolbar} />
-
         <Route exact path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }`}
           render={()=> <UserDashboard {...props} {...dialogProps} />} />
         <RouteProfile path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer ? '' : ':userid' }`}
@@ -353,13 +352,6 @@ function UserDashboard(props){
 
   return(
     <React.Fragment>
-      { /*
-        <div className={classes.grid}>
-          <OverviewProfile {...props} />
-          <Statistics userid={sess && sess.userid} {...props} />
-        </div>
-        <FriendFollowList {...props} />*/
-      }
       { pageOrganizer &&
         <React.Fragment>
           <PageOrganizerOverview {...props} />
@@ -371,14 +363,10 @@ function UserDashboard(props){
           <div style={{ height: 4, backgroundColor: COLOR.grey[600], margin: '48px 12px', borderRadius: 4 }} />
         </React.Fragment>
       }
-      {/* !pageOrganizer &&
-        <Statistics {...props} />
-        */
-      }
       <Upcoming {...props} />
       <History {...props} />
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&
-        <Redirect to={`/admin`} />
+        <Redirect to={`/system_admin`} />
       }
     </React.Fragment>
   );

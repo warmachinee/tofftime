@@ -95,7 +95,7 @@ export default function MatchCard(props) {
               <BTN.NoStyleLink
                 to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${data.matchid}`}>
                 <BTN.Primary style={{ padding: '4px 16px' }}>
-                  {( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit'}
+                  {API._getWord(sess && sess.language).Edit}
                 </BTN.Primary>
               </BTN.NoStyleLink>
             </div>
@@ -104,7 +104,7 @@ export default function MatchCard(props) {
         case data.permission === 'pending':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <Button disabled>{( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending'}</Button>
+              <Button disabled>{API._getWord(sess && sess.language).Pending}</Button>
             </div>
           )
           break;
@@ -112,7 +112,7 @@ export default function MatchCard(props) {
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
               <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>
-                {( sess && sess.language === 'TH' ) ? "เข้าร่วม" : 'Join'}
+                {API._getWord(sess && sess.language).Join}
               </BTN.Primary>
             </div>
           )
@@ -173,13 +173,13 @@ export default function MatchCard(props) {
             {function(){
               switch (data.scorematch) {
                 case 0:
-                  return ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur'
+                  return API._getWord(sess && sess.language).Amateur
                   break;
                 case 1:
-                  return ( sess && sess.language === 'TH' ) ? "มืออาชีพ" : 'Professional'
+                  return API._getWord(sess && sess.language).Professional
                   break;
                 default:
-                  return ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity'
+                  return API._getWord(sess && sess.language).Charity
               }
             }()}
           </Typography>
@@ -196,7 +196,7 @@ export default function MatchCard(props) {
             </Typography>
             <Typography variant="caption" color="textSecondary">
               {`${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.views)} ${
-                ( sess && sess.language === 'TH' ) ?
+                ( sess && sess.language === 'TH' ) ? 
                 `การดู ${API._shotnessNumber(data.views)} ครั้ง`
                 :
                 `view${data.views > 1? 's' : ''}`

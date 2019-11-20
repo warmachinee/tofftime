@@ -179,7 +179,7 @@ function ListDummy(props){
           editting ?
           <TextField
             className={classes.textField}
-            label={( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full name'}
+            label={API._getWord(sess && sess.language).First_name}
             value={fullname}
             onChange={e =>setFullname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -193,7 +193,7 @@ function ListDummy(props){
           editting ?
           <TextField
             className={classes.textField}
-            label={( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name'}
+            label={API._getWord(sess && sess.language).Last_name}
             value={lastname}
             onChange={e =>setLastname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -323,14 +323,14 @@ export default function DummyPlayer(props){
 
   return(
     <div className={classes.root}>
-      <LabelText text={( sess && sess.language === 'TH' ) ? "สร้างดัมมี่" : 'Create Dummy'} />
+      <LabelText text={API._getWord(sess && sess.language).Create_Dummy} />
       <div className={classes.textFieldGrid}>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
             className={classes.textField}
             variant="outlined"
-            label={( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full name'}
+            label={API._getWord(sess && sess.language).First_name}
             value={fullname}
             onChange={e =>setFullname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -338,7 +338,7 @@ export default function DummyPlayer(props){
           <TextField
             className={classes.textField}
             variant="outlined"
-            label={( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name'}
+            label={API._getWord(sess && sess.language).Last_name}
             value={lastname}
             onChange={e =>setLastname(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -347,27 +347,27 @@ export default function DummyPlayer(props){
         <div className={classes.buttonGrid}>
           <Typography component="div">
             <Box className={classes.notice} m={1}>
-              {( sess && sess.language === 'TH' ) ? "กรอกข้อมูลแล้วกดยืนยัน" : 'Fill the form and click confirm'}
+              {API._getWord(sess && sess.language)['Fill the form and click confirm']}
               <br></br>
-              {( sess && sess.language === 'TH' ) ? "เพื่อสร้างผู้เล่นใหม่" : 'to create a new player.'}
+              {API._getWord(sess && sess.language)['to create a new player.']}
             </Box>
           </Typography>
           <div style={{ flex: 1 }} />
           <GreenButton
             className={classes.confirmButton}
             onClick={()=> sess.typeid === 'admin' ? handleCreatePlayer() : handleCreateDummy()}>
-            {( sess && sess.language === 'TH' ) ? "ยืนยัน" : 'Confirm'}
+            {API._getWord(sess && sess.language).Confirm}
           </GreenButton>
         </div>
       </div>
-      <LabelText text={( sess && sess.language === 'TH' ) ? "แก้ไขดัมมี่" : 'Edit Dummy'} style={{ marginBottom: 24 }} />
+      <LabelText text={API._getWord(sess && sess.language).Edit_Dummy} style={{ marginBottom: 24 }} />
       <div style={{ display: 'flex', padding: '0 12px' }}>
         { ( editting || !removeState ) &&
           <GreenTextButton variant="outlined" onClick={()=>setEditting(!editting)}>
             {editting ?
-              (( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done')
+              (API._getWord(sess && sess.language).Done)
               :
-              (( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit')
+              (API._getWord(sess && sess.language).Edit)
             }
           </GreenTextButton>
         }
@@ -375,9 +375,9 @@ export default function DummyPlayer(props){
         { ( !editting || removeState ) &&
           <GreenTextButton variant="outlined" onClick={()=>setRemoveState(!removeState)}>
             {removeState ?
-              (( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done')
+              (API._getWord(sess && sess.language).Done)
               :
-              (( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove')
+              (API._getWord(sess && sess.language).Remove)
             }
           </GreenTextButton>
         }
@@ -393,7 +393,7 @@ export default function DummyPlayer(props){
             :
             <ListItem>
               <ListItemText style={{ textTransform: 'capitalize' }}
-                primary={( sess && sess.language === 'TH' ) ? "ไม่มีดัมมี่" : 'No Dummy'} />
+                primary={API._getWord(sess && sess.language).No_Dummy} />
             </ListItem>
           )
         }
@@ -404,7 +404,7 @@ export default function DummyPlayer(props){
         open={open} handleClose={handleClose}>
         <Typography component="div">
           <Box className={classes.confirmDeleteTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
+            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
           </Box>
           <Box className={classes.confirmDeleteSubtitle} m={3}>
             ( { selectedDeleteItem && `${selectedDeleteItem.fullname} ${selectedDeleteItem.lastname}` } )
@@ -413,10 +413,10 @@ export default function DummyPlayer(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleClose} className={classes.confirmDeleteButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </BTN.PrimaryText>
           <BTN.Red onClick={handleRemoveDummy} className={classes.confirmDeleteButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+            { API._getWord(sess && sess.language).Delete }
           </BTN.Red>
         </div>
       </TemplateDialog>

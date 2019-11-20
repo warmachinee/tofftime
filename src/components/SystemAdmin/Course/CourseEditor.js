@@ -530,9 +530,9 @@ export default function CourseEditor(props){
         <Box className={classes.headerText} m={1}>
           {
             edittingField?
-            ( ( sess && sess.language === 'TH' ) ? "แก้ไขสนาม" : 'Edit Course' )
+            ( API._getWord(sess && sess.language).Edit_Course )
             :
-            ( ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create Course' )
+            ( API._getWord(sess && sess.language).Create_Course )
           }
         </Box>
       </Typography>
@@ -546,7 +546,7 @@ export default function CourseEditor(props){
               {
                 courseVersion.map( d =>
                   <MenuItem key={d.createdate} value={d.version}>
-                    {( ( sess && sess.language === 'TH' ) ? "เวอร์ชัน " : 'Version ' ) + d.version}
+                    {( `${API._getWord(sess && sess.language).Version_up} ` ) + d.version}
                   </MenuItem>
               )}
             </Select>
@@ -556,7 +556,7 @@ export default function CourseEditor(props){
       <div className={classes.flexGrid}>
         <TextField
           fullWidth
-          label={ ( sess && sess.language === 'TH' ) ? "ชื่อสนาม" : 'Course name' }
+          label={ API._getWord(sess && sess.language).Course_name }
           value={ location ? location : '' }
           onChange={e =>setLocation(e.target.value)}
           variant="outlined"
@@ -574,7 +574,7 @@ export default function CourseEditor(props){
           <FormControl component="fieldset">
             <FormControlLabel
               control={<Switch checked={official} onChange={()=>setOfficial(!official)} />}
-              label={ ( sess && sess.language === 'TH' ) ? "เป็นทางการ" : 'Official' }
+              label={ API._getWord(sess && sess.language).Official }
             />
           </FormControl>
         </div>
@@ -639,7 +639,7 @@ export default function CourseEditor(props){
           { selectedFile && selectedFile.name }
         </Box>
         <Box className={classes.title} m={1}>
-          { ( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'PAR Score' }
+          { API._getWord(sess && sess.language).PAR_Score }
         </Box>
       </Typography>
 
@@ -647,7 +647,7 @@ export default function CourseEditor(props){
 
       <Typography component="div">
         <Box className={classes.title} m={1}>
-          { ( sess && sess.language === 'TH' ) ? "แฮนดิแคป" : 'Handicap' }
+          { API._getWord(sess && sess.language).Handicap }
         </Box>
       </Typography>
 
@@ -655,15 +655,15 @@ export default function CourseEditor(props){
 
       <div className={classes.buttonGrid}>
         <GreenTextButton className={classes.button} onClick={handleCancel}>
-          { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+          { API._getWord(sess && sess.language).Cancel }
         </GreenTextButton>
         <GreenButton className={classes.button} variant="contained"
           onClick={ edittingField? handleEdit : handleCreate}>
           {
             edittingField?
-            ( ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' )
+            ( API._getWord(sess && sess.language).Save )
             :
-            ( ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' )
+            ( API._getWord(sess && sess.language).Create )
           }
         </GreenButton>
       </div>

@@ -209,13 +209,13 @@ export default function CreatePage(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "สร้างกลุ่ม" : 'Create Organizer' } />
+      <LabelText text={ API._getWord(sess && sess.language).Create_Organizer } />
       <div style={{ marginTop: 24, maxWidth: 900, marginLeft: 'auto', marginRight: 'auto' }}>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
             className={classes.margin}
-            label={ ( sess && sess.language === 'TH' ) ? "ชื่อเพจ" : 'Page name' }
+            label={ API._getWord(sess && sess.language).Page_name }
             variant="outlined"
             onChange={(e)=>setPageName(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -265,7 +265,7 @@ export default function CreatePage(props) {
             }}>
             { /*
               <Typography variant="caption" style={{ textAlign: 'center' }}>
-                { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
+                { API._getWord(sess && sess.language).Upload_image }
               </Typography>*/
             }
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
@@ -285,7 +285,7 @@ export default function CreatePage(props) {
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenButton variant="contained" color="primary" className={classes.button}
             onClick={handleCreatePage}>
-            { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
+            { API._getWord(sess && sess.language).Create }
           </GreenButton>
         </div>
       </div>

@@ -249,13 +249,13 @@ export default function AddPageModal(props){
           <React.Fragment>
             <Button fullWidth onClick={handleMore}>
               { dataSliced >= handleSearch().length ? (
-                ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                API._getWord(sess && sess.language).Collapse
               ):(
-                ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                API._getWord(sess && sess.language).More
               ) }
             </Button>
             { pageListData && dataSliced < handleSearch().length &&
-              <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+              <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
             }
           </React.Fragment>
         }

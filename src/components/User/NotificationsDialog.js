@@ -54,12 +54,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function NotificationsDialog(props) {
   const classes = useStyles();
-  const { sess, notiState, toggleNoti, notiData } = props
+  const { API, sess, notiState, toggleNoti, notiData } = props
 
   return (
     <TemplateDialog open={notiState} handleClose={toggleNoti} fullScreen>
       <div className={classes.root}>
-        <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแจ้งเตือน" : 'Notifications' } />
+        <LabelText text={ API._getWord(sess && sess.language).Notifications } />
         <List>
           { notiData &&
             notiData.map( d => <ListNotiItem key={d.createdate} {...props} data={d} />)
@@ -93,22 +93,22 @@ function ListNotiItem(props) {
   function getNotiLabel(action, type){
     switch (true) {
       case type === 'friend' && action === 'add':
-        return ( sess && sess.language === 'TH' ) ? "คำขอเป็นเพื่อน" : 'Friend request'
+        return API._getWord(sess && sess.language).Friend_request
         break;
       case type === 'friend' && action === 'accept':
-        return ( sess && sess.language === 'TH' ) ? "ยอมรับคำขอเป็นเพื่อน" : 'Accepted your friend request'
+        return API._getWord(sess && sess.language)['Accepted your friend request']
         break;
       case type === 'match' && action === 'join':
-        return ( sess && sess.language === 'TH' ) ? "ขอเข้าร่วมการแข่งขัน" : 'Match join request'
+        return API._getWord(sess && sess.language)['Match join request']
         break;
       case type === 'match' && action === 'invite':
-        return ( sess && sess.language === 'TH' ) ? "เชิญเข้าร่วมการแข่งขัน" : 'Match invite request'
+        return API._getWord(sess && sess.language)['Match invite request']
         break;
       case type === 'match' && action === 'accept':
-        return ( sess && sess.language === 'TH' ) ? "เข้าร่วมการแข่งขัน" : 'Joined match'
+        return API._getWord(sess && sess.language).Joined_match
         break;
       case type === 'match' && action === 'acceptfrominvite':
-        return ( sess && sess.language === 'TH' ) ? "เข้าร่วมการแข่งขัน" : 'Joined match'
+        return API._getWord(sess && sess.language).Joined_match
         break;
       default:
 
@@ -123,12 +123,12 @@ function ListNotiItem(props) {
             <BTN.Primary
               style={{ padding: '4px 12px' }}
               onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'accept')}>
-              { ( sess && sess.language === 'TH' ) ? "ยืนยัน" : 'Confirm' }
+              { API._getWord(sess && sess.language).Confirm }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px' }}
               onClick={()=>handleConfirmFriend(data.fromdetail.userid, 'reject')}>
-              { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+              { API._getWord(sess && sess.language).Delete }
             </BTN.PrimaryText>
           </React.Fragment>
         )
@@ -142,12 +142,12 @@ function ListNotiItem(props) {
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'accept', 'host')}>
-              { ( sess && sess.language === 'TH' ) ? "ยอมรับ" : 'Accept' }
+              { API._getWord(sess && sess.language).Accept }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'host')}>
-              { ( sess && sess.language === 'TH' ) ? "ปฏิเสธ" : 'Reject' }
+              { API._getWord(sess && sess.language).Reject }
             </BTN.PrimaryText>
           </React.Fragment>
         )
@@ -158,12 +158,12 @@ function ListNotiItem(props) {
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'acceptfrominvite', 'target')}>
-              { ( sess && sess.language === 'TH' ) ? "เข้าร่วม" : 'Join' }
+              { API._getWord(sess && sess.language).Join }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
               onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'target')}>
-              { ( sess && sess.language === 'TH' ) ? "ปฏิเสธ" : 'Reject' }
+              { API._getWord(sess && sess.language).Reject }
             </BTN.PrimaryText>
           </React.Fragment>
         )

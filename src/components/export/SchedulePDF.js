@@ -57,25 +57,25 @@ function PDFFile(data, matchDetail, sess){
 
   let labelBody = (
     [
-      {text: ( ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team' ), fillColor: '#e0e0e0'},
-      {text: ( ( sess && sess.language === 'TH' ) ? "เวลา" : 'Time' ), fillColor: '#e0e0e0'},
+      {text: ( API._getWord(sess && sess.language).Team ), fillColor: '#e0e0e0'},
+      {text: ( API._getWord(sess && sess.language).Time ), fillColor: '#e0e0e0'},
       {
-        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Full Name' ),
+        text: ( API._getWord(sess && sess.language).First_name ),
         fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
       },
-      {text: ( ( sess && sess.language === 'TH' ) ? "หมายเหตุ" : 'Note' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
+      {text: ( API._getWord(sess && sess.language).Note ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
     ]
   )
 
   let label = [
     [
-      {text: `${( sess && sess.language === 'TH' ) ? "ตารางเวลา" : 'Schedule'}\t`, fontSize: 36},
+      {text: `${API._getWord(sess && sess.language).Schedule}\t`, fontSize: 36},
       {text: data.title, fontSize: 30},
     ],
     {text: matchDetail.title + '\t', fontSize: 28, bold: true, margin: [0, 0, 0, 24]},
     {text: matchDetail.location + `(${matchDetail.locationversion})` + '\t', fontSize: 24, bold: true, margin: [0, 0, 0, 24]},
     {
-      text: `${( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' }\t${API._dateToString(matchDetail.date)}` + '\t',
+      text: `${API._getWord(sess && sess.language).Date}\t${API._dateToString(matchDetail.date)}` + '\t',
       fontSize: 24, bold: true, margin: [0, 0, 0, 24]
     },
     {

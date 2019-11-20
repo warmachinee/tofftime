@@ -107,14 +107,14 @@ export default function AddFriend(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' } />
+      <LabelText text={ API._getWord(sess && sess.language).Search } />
       <ThemeProvider theme={theme}>
         <TextField
           autoFocus
           className={classes.searchBox}
           style={{ marginTop: 24 }}
           variant="outlined"
-          placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาเพื่อน" : 'Search' ) : '' }
+          placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search_Friend ) : '' }
           value={searchUser}
           onChange={handleChangePerson}
           InputProps={{
@@ -155,10 +155,10 @@ function ListPlayerItem(props) {
   function getFriendStatus(status){
     switch (true) {
       case status === 'pending':
-        return ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending'
+        return API._getWord(sess && sess.language).Pending
         break;
       case status === 'friend':
-        return ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend'
+        return API._getWord(sess && sess.language).Friend
         break;
       default:
         return ''
@@ -250,13 +250,13 @@ function ListPlayerItem(props) {
             { status === 'pending'?
               <BTN.Red style={{ padding: '4px 12px' }}
                 onClick={()=>handleFriendClick(data.userid, 'un')}>
-                { ( sess && sess.language === 'TH' ) ? "ลบเพื่อน" : 'Unfriend' }
+                { API._getWord(sess && sess.language).Unfriend }
               </BTN.Red>
               :
               <BTN.Primary
                 style={{ padding: 4 }}
                 onClick={()=>handleFriendClick(data.userid, 'add')}>
-                { ( sess && sess.language === 'TH' ) ? "เพิ่มเพื่อน" : 'Add' }
+                { API._getWord(sess && sess.language).Add_Friend }
               </BTN.Primary>
             }
           </ListItemIcon>

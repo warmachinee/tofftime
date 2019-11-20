@@ -224,8 +224,7 @@ function ListMenu(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {/* <MenuItem onClick={()=>handleSelectRole(value, 'set')}>{ ( sess && sess.language === 'TH' ) ? "ผู้ดูแล" : 'Admin' }</MenuItem> */}
-        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>{ ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' }</MenuItem>
+        <MenuItem onClick={()=>handleSelectRole(value, 'unset')}>{ API._getWord(sess && sess.language).Remove }</MenuItem>
       </Menu>
     </div>
   );
@@ -398,7 +397,7 @@ export default function AddAdmin(props){
           disabled={data === null}
           className={classes.searchBox}
           variant="outlined"
-          placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหา" : 'Search' ) : '' }
+          placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search ) : '' }
           value={searchUser}
           onChange={e =>setSearchUser(e.target.value)}
           InputProps={{
@@ -439,13 +438,13 @@ export default function AddAdmin(props){
           :
           <Typography component="div" style={{ width: '100%' }}>
             <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-              { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+              { API._getWord(sess && sess.language).No_player }
             </Box>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
               <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
                 <BTN.PrimaryOutlined>
                   <AddIcon style={{ marginRight: 8 }} />
-                  { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่น" : 'Invite players.' }
+                  { API._getWord(sess && sess.language).Invite_players }
                 </BTN.PrimaryOutlined>
               </BTN.NoStyleLink>
             </div>
@@ -467,13 +466,13 @@ export default function AddAdmin(props){
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
                 { dataSliced >= data.length ? (
-                  ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                  API._getWord(sess && sess.language).Collapse
                 ):(
-                  ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                  API._getWord(sess && sess.language).More
                 ) }
               </Button>
               { data && dataSliced < data.length &&
-                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
               }
             </React.Fragment>
           }
@@ -481,13 +480,13 @@ export default function AddAdmin(props){
             <React.Fragment>
               <Button fullWidth onClick={handleMore}>
                 { dataSliced >= handleSearch().length ? (
-                  ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                  API._getWord(sess && sess.language).Collapse
                 ):(
-                  ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                  API._getWord(sess && sess.language).More
                 ) }
               </Button>
               { data && dataSliced < handleSearch().length &&
-                <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
               }
             </React.Fragment>
           }

@@ -357,6 +357,7 @@ export default function App() {
 
   function detectOnError(msg){
     if(msg){
+      console.log(msg);
       const message = msg.message
       const url = msg.currentTarget.location.href
       const file = msg.filename
@@ -367,15 +368,17 @@ export default function App() {
         'File: ' + file,
         'Stack: ' + stack,
       ].join('\n');
-      alert(alertMessage);
-    }else{
-      return false;
+      console.log(alertMessage);
+      //alert(alertMessage);
     }
   }
 
   React.useEffect(()=>{
     handleGetUserinfo()
     window.addEventListener("error", detectOnError)
+    return()=>{
+      window.removeEventListener("error", detectOnError)
+    }
   },[ ])
 
   React.useEffect(()=>{
@@ -388,11 +391,14 @@ export default function App() {
     updateState({})
   },[ locationPath ])
 
+  function handleCheckErr(){
+    console.log(asdasdasdasd);
+  }
+
   return (
     <React.Fragment>
       { ( passwordAccess === 'cat15000' || ( sess && sess.status === 1 ) ) ?
         <div style={{ backgroundColor: '#f5f7f8' }}>
-
           { !/\/user|\/organizer/.test(window.location.pathname) &&
             <Header
               {...passingProps}
@@ -411,7 +417,7 @@ export default function App() {
                 {...passingProps} />
               <RoutePageOrganizer path="/organizer/:pageid"
                 {...passingProps} />
-              <RouteSystemAdmin path="/admin"
+              <RouteSystemAdmin path="/system_admin"
                 {...passingProps} />
 
               <RouteAnnounceDetail path="/announce/:detailparam"
@@ -435,12 +441,13 @@ export default function App() {
               <Route component={NoMatch} />
             </Switch>
             :
-            <div style={{ maxWidth: 1200, margin: 'auto' }}>
-              {{/*<CourseScorecard {...passingProps} />*/}}
+            <div style={{ maxWidth: 1200, margin: 'auto', backgroundColor: COLOR.grey[100] }}>
+              <BTN.Primary onClick={handleCheckErr}>Check error</BTN.Primary>
+              {asd}
             </div>
           }
 
-          { sess && sess.status !== 1 && /\/user|\/admin|\/organizer/.test(window.location.pathname) &&
+          { sess && sess.status !== 1 && /\/user|\/system_admin|\/organizer/.test(window.location.pathname) &&
             <Redirect to={`/`} />
           }
 

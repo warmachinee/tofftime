@@ -111,7 +111,7 @@ export default function Location(props) {
               className={classes.createButton}
               onClick={()=>setPageState('create')}>
               <CreateIcon className={classes.createIcon} color="inherit"/>
-              { ( sess && sess.language === 'TH' ) ? "สร้างสนาม" : 'Create Course' }
+              { API._getWord(sess && sess.language).Create_Course }
             </GreenButton>
             { sess && sess.typeid === 'admin' &&
               <GreenTextButton className={classes.doneButton} onClick={handleOnDoneSelectField}>Done</GreenTextButton>
@@ -124,7 +124,7 @@ export default function Location(props) {
             </Typography>
             :
             <Typography variant="h4">
-              { ( sess && sess.language === 'TH' ) ? "กรุณาเลือกสนาม" : 'Please Select Course.' }
+              { API._getWord(sess && sess.language)['Please Select Course.'] }
             </Typography>
           }
         </div>

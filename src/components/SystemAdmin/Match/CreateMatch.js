@@ -414,7 +414,7 @@ function CreateMatchBody(props){
             <TextField
               autoFocus
               className={classes.margin}
-              label={ ( sess && sess.language === 'TH' ) ? "ชื่อการแข่งขัน" : 'Match name' }
+              label={ API._getWord(sess && sess.language).Match_name }
               value={matchName || ''}
               onChange={e =>setMatchName(e.target.value)}
             />
@@ -426,7 +426,7 @@ function CreateMatchBody(props){
                   clearable
                   style={{ marginTop: 24 }}
                   className={classes.margin}
-                  label={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Match Date' }
+                  label={ API._getWord(sess && sess.language).Match_Date }
                   inputVariant="outlined"
                   format="dd/MM/yyyy"
                   value={selectedDate}
@@ -488,30 +488,30 @@ function CreateMatchBody(props){
               onClick={handleOpen}
               className={classes.button}
               style={{ textTransform: 'none' }}>
-              { selectedField ? selectedField.fieldname : ( ( sess && sess.language === 'TH' ) ? "เลือกสนาม" : 'Select Location' ) }
+              { selectedField ? selectedField.fieldname : ( API._getWord(sess && sess.language).Select_Course ) }
             </StyledTextButton>
             <FormControl component="fieldset" className={classes.margin}
               style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}>
               <FormLabel component="legend" style={{ marginLeft: 16 }}>
-                { ( sess && sess.language === 'TH' ) ? "ความเป็นส่วนตัว" : 'Privacy' }
+                { API._getWord(sess && sess.language).Privacy }
               </FormLabel>
               <RadioGroup value={selectedPrivacy} onChange={handlePrivacy} row>
                 <FormControlLabel
                   value={'public'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "สาธารณะ" : 'Public' }
+                  label={ API._getWord(sess && sess.language).Public }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'friend'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "เพื่อน" : 'Friend' }
+                  label={ API._getWord(sess && sess.language).Friend }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'private'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "ส่วนตัว" : 'Private' }
+                  label={ API._getWord(sess && sess.language).Private }
                   labelPlacement="end"
                 />
               </RadioGroup>
@@ -523,19 +523,19 @@ function CreateMatchBody(props){
                 <FormControlLabel
                   value={'1'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "มืออาชีพ" : 'Professional' }
+                  label={ API._getWord(sess && sess.language).Professional }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'0'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "มือสมัครเล่น" : 'Amateur' }
+                  label={ API._getWord(sess && sess.language).Amateur }
                   labelPlacement="end"
                 />
                 <FormControlLabel
                   value={'2'}
                   control={<GreenRadio />}
-                  label={ ( sess && sess.language === 'TH' ) ? "การกุศล" : 'Charity' }
+                  label={ API._getWord(sess && sess.language).Charity }
                   labelPlacement="end"
                 />
               </RadioGroup>
@@ -547,9 +547,9 @@ function CreateMatchBody(props){
       <div className={classes.buttonControl}>
         <div style={{ flex: 2 }}></div>
         <StyledTextButton className={classes.button}
-          onClick={handleReset}>{ ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }</StyledTextButton>
+          onClick={handleReset}>{ API._getWord(sess && sess.language).Reset }</StyledTextButton>
         <StyledButton className={classes.button}
-          onClick={handleCreate}>{ ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }</StyledButton>
+          onClick={handleCreate}>{ API._getWord(sess && sess.language).Create }</StyledButton>
       </div>
       <TemplateDialog open={open} handleClose={handleClose} maxWidth={700}>
         <Location
@@ -575,7 +575,7 @@ export default function CreateMatch(props){
     <Paper className={classes.root} onClick={()=>!expanded ? expandHandler():console.log()}>
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
-          { ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create match' }
+          { API._getWord(sess && sess.language).Create_Match }
         </Box>
       </Typography>
       <IconButton

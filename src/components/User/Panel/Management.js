@@ -138,41 +138,24 @@ export default function Management(props) {
   function SystemComponent(){
     return (sess && sess.status === 1) && (
       <React.Fragment>
-        <LabelText text={ ( sess && sess.language === 'TH' ) ? "ระบบการจัดการ" : 'Management' } />
+        <LabelText text={ API._getWord(sess && sess.language).Management } />
         <div style={{ marginTop: 36 }}>
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
-              { ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' }
+              { API._getWord(sess && sess.language).Match }
             </StyledButton>
           </Link>
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
-              { ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' }
+              { API._getWord(sess && sess.language).Course }
             </StyledButton>
           </Link>
           { pageOrganizer &&
             <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} className={classes.linkElement}>
               <StyledButton variant="contained" color="primary" className={classes.button}>
-                { ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' }
+                { API._getWord(sess && sess.language).Post }
               </StyledButton>
             </Link>
-          }
-          {/*
-            <Link to={`/user/mangament/course`} className={classes.linkElement}>
-              <StyledButton variant="contained" color="primary" className={classes.button}>
-                Course
-              </StyledButton>
-            </Link>
-            <Link to={`/user/mangament/user`} className={classes.linkElement}>
-              <StyledButton variant="contained" color="primary" className={classes.button}>
-                User
-              </StyledButton>
-            </Link>
-            <Link to={`/user/mangament/page`} className={classes.linkElement}>
-              <StyledButton variant="contained" color="primary" className={classes.button}>
-                Page
-              </StyledButton>
-            </Link>*/
           }
         </div>
       </React.Fragment>
@@ -189,7 +172,6 @@ export default function Management(props) {
           { pageOrganizer &&
             <RoutePostManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`} {...passingProps} />
           }
-          {/*<RouteUser path={`/user/mangament/user`} {...passingProps} />*/}
         </React.Fragment>
       }
     </div>

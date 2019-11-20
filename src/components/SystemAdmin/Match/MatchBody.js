@@ -392,16 +392,16 @@ export default function MatchBody(props){
 
   return(
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } />
+      <LabelText text={ API._getWord(sess && sess.language).Match } />
       { sess && sess.typeid !== 'admin' &&
         <div style={{ marginTop: 24, boxSizing: 'border-box' }}>
           <FormControl component="fieldset" className={classes.formControl}>
-            <FormLabel component="legend">{( sess && sess.language === 'TH' ) ? "ประเภท" : 'Type'}</FormLabel>
+            <FormLabel component="legend">{API._getWord(sess && sess.language).Type}</FormLabel>
             <RadioGroup value={matchOwnerStatus} onChange={handleChange}>
               <FormControlLabel value="mine" control={<Radio />}
-                label={( sess && sess.language === 'TH' ) ? "การแข่งขันของฉัน" : 'My match'} />
+                label={API._getWord(sess && sess.language).My_match} />
               <FormControlLabel value="admin" control={<Radio />}
-                label={( sess && sess.language === 'TH' ) ? "แอดมิน" : 'Admin'} />
+                label={API._getWord(sess && sess.language).Admin} />
             </RadioGroup>
           </FormControl>
         </div>
@@ -409,16 +409,16 @@ export default function MatchBody(props){
       <div style={{ display: 'flex', marginTop: 24, justifyContent: 'space-between', boxSizing: 'border-box' }}>
         <GreenTextButton color="primary" onClick={toggleEdittingDisplay}>
           { edittingDisplay?
-            ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
+            ( API._getWord(sess && sess.language).Done )
             :
-            ( ( sess && sess.language === 'TH' ) ? "แก้ไขการแสดง" : 'Edit Display' )
+            ( API._getWord(sess && sess.language).Edit_Display )
           }
         </GreenTextButton>
         <GreenTextButton color="primary" onClick={toggleEditting}>
           { editting?
-            ( ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' )
+            ( API._getWord(sess && sess.language).Done )
             :
-            ( ( sess && sess.language === 'TH' ) ? "ลบ" : 'Remove' )
+            ( API._getWord(sess && sess.language).Remove )
           }
         </GreenTextButton>
       </div>
@@ -428,18 +428,18 @@ export default function MatchBody(props){
             <ListItemIcon>
               <div style={{ width: 42 }}></div>
             </ListItemIcon>
-            <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } className={classes.tableTitle} />
+            <StyledText inset primary={ API._getWord(sess && sess.language).Match } className={classes.tableTitle} />
           </ListItem>
           :
           <ListItem key="Table Head" className={classes.tableHead}>
             { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&
-              <StyledText primary={ ( sess && sess.language === 'TH' ) ? "วันที่" : 'Date' } className={classes.tableDate} />
+              <StyledText primary={ API._getWord(sess && sess.language).Date } className={classes.tableDate} />
             }
             <StyledText
-              primary={( sess && sess.language === 'TH' ) ? "การดู" : 'View'} className={classes.tableView} />
-            <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : 'Match' } className={classes.tableTitle} />
+              primary={API._getWord(sess && sess.language).View} className={classes.tableView} />
+            <StyledText inset primary={ API._getWord(sess && sess.language).Match } className={classes.tableTitle} />
             { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editting &&
-              <StyledText inset primary={ ( sess && sess.language === 'TH' ) ? "สนาม" : 'Course' } className={classes.tableLocation} />
+              <StyledText inset primary={ API._getWord(sess && sess.language).Course } className={classes.tableLocation} />
             }
             { editting &&
               <ListItemSecondaryAction>
@@ -459,7 +459,7 @@ export default function MatchBody(props){
                 <Link className={classes.linkElement}
                   to={
                     sess.typeid === 'admin' ?
-                    `/admin/match/${d.matchid}` :
+                    `/system_admin/match/${d.matchid}` :
                     `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${d.matchid}`
                   }>
                   <ListComponent data={d} open={props.open} />
@@ -508,7 +508,7 @@ export default function MatchBody(props){
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
+            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             { removeData && removeData.title }
@@ -517,10 +517,10 @@ export default function MatchBody(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+            { API._getWord(sess && sess.language).Delete }
           </RedButton>
         </div>
       </TemplateDialog>
@@ -530,7 +530,7 @@ export default function MatchBody(props){
         open={confirmPasswordState} handleClose={handleConfirmPasswordCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ใส่รหัสผ่านของคุณ" : 'Fill your password' }
+            { API._getWord(sess && sess.language)['Fill your password'] }
           </Box>
         </Typography>
         <ThemeProvider theme={theme}>
@@ -539,7 +539,7 @@ export default function MatchBody(props){
             fullWidth
             style={{ marginTop: 16 }}
             className={classes.margin}
-            label={ ( sess && sess.language === 'TH' ) ? "รหัสผ่าน" : 'Password' }
+            label={ API._getWord(sess && sess.language).Password }
             variant="outlined"
             type="password"
             onChange={(e)=>setConfirmPassword(e.target.value)}
@@ -549,10 +549,10 @@ export default function MatchBody(props){
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmPasswordCancel} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
           <RedButton onClick={handleFetchRemove} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+            { API._getWord(sess && sess.language).Delete }
           </RedButton>
         </div>
       </TemplateDialog>

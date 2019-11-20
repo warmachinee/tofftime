@@ -156,11 +156,7 @@ export default function PageOrganizerOverview(props) {
           disableTouchListener
           title={
             <Typography>
-              { ( sess && sess.language === 'TH' ) ?
-                "ส่งคำขอเพื่อแสดงเพจนี้ในหน้า Toff-time"
-                :
-                'Send a request to show this Page on the Toff-time page.'
-              }
+              { API._getWord(sess && sess.language)['Send a request to show this Page on the Toff-time page.'] }
             </Typography>
           }>
           <IconButton onClick={handleClickHelpState}>
@@ -246,8 +242,8 @@ export default function PageOrganizerOverview(props) {
                 </BTN.NoStyleLink>
                 <Typography gutterBottom variant="body1" className={classes.followers}>
                   {pageData.subscriber} { (
-                    ( sess && sess.language === 'TH' ) ? "ผู้ติดตาม" : 'follower'
-                  ) + ( pageData.subscriber > 1 ? ( ( sess && sess.language === 'TH' ) ? '' : 's' ) : '')}
+                    API._getWord(sess && sess.language).follower
+                  ) + ( pageData.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
                 </Typography>
                 <Typography gutterBottom variant="body2" className={classes.followers}>
                   {API._shotnessNumber(pageData.view)} {` view${pageData.view > 1 ? 's' : ''}`}
@@ -279,11 +275,7 @@ export default function PageOrganizerOverview(props) {
                 disableTouchListener
                 title={
                   <Typography>
-                    { ( sess && sess.language === 'TH' ) ?
-                      "ส่งคำขอเพื่อแสดงเพจนี้ในหน้า Toff-time"
-                      :
-                      'Send a request to show this Page on the Toff-time page.'
-                    }
+                    { API._getWord(sess && sess.language)['Send a request to show this Page on the Toff-time page.'] }
                   </Typography>
                 }>
                 <IconButton onClick={handleClickHelpState}>
@@ -297,18 +289,18 @@ export default function PageOrganizerOverview(props) {
       <Paper className={classes.paper}>
         <BTN.Primary className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreateMatch}>
           <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-          { ( sess && sess.language === 'TH' ) ? "สร้างการแข่งขัน" : 'Create match' }
+          { API._getWord(sess && sess.language).Create_Match }
         </BTN.Primary>
         <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={toggleCreatePost}>
           <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-          { ( sess && sess.language === 'TH' ) ? "โพสต์" : 'Post' }
+          { API._getWord(sess && sess.language).Post }
         </BTN.PrimaryOutlined>
         <BTN.PrimaryOutlined className={classes.panelButton} onClick={toggleSetAdmin}>
-          { ( sess && sess.language === 'TH' ) ? "แต่งตั้งผู้ดูแล" : 'Set admin' }
+          { API._getWord(sess && sess.language).Set_admin }
         </BTN.PrimaryOutlined>
         <div style={{ flex: 1 }} />
         <BTN.Red onClick={()=>handleConfirmDeleteState(true)}>
-          { ( sess && sess.language === 'TH' ) ? "ลบเพจ" : 'Delete page' }
+          { API._getWord(sess && sess.language).Delete_page }
         </BTN.Red>
       </Paper>
 
@@ -317,7 +309,7 @@ export default function PageOrganizerOverview(props) {
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
+            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
             { pageData && pageData.pagename }
@@ -326,10 +318,10 @@ export default function PageOrganizerOverview(props) {
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </BTN.PrimaryText>
           <BTN.Red onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+            { API._getWord(sess && sess.language).Delete }
           </BTN.Red>
         </div>
       </TemplateDialog>

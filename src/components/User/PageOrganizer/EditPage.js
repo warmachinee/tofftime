@@ -217,13 +217,13 @@ export default function EditPage(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "แก้ไขเพจ" : 'Edit page' } />
+      <LabelText text={ API._getWord(sess && sess.language).Edit_page } />
       <div style={{ marginTop: 24 }}>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
             className={classes.margin}
-            label={ ( sess && sess.language === 'TH' ) ? "ชื่อเพจ" : 'Page name' }
+            label={ API._getWord(sess && sess.language).Page_name }
             value={pageName}
             variant="outlined"
             onChange={(e)=>setPageName(e.target.value)}
@@ -271,7 +271,7 @@ export default function EditPage(props) {
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
             <Typography variant="caption" style={{ textAlign: 'center' }}>
-              { ( sess && sess.language === 'TH' ) ? "อัพโหลดรูป" : 'Upload image' }
+              { API._getWord(sess && sess.language).Upload_image }
             </Typography>
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
@@ -289,7 +289,7 @@ export default function EditPage(props) {
         }
         <GreenButton variant="contained" color="primary" className={classes.button}
           onClick={handleEditPage}>
-          { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+          { API._getWord(sess && sess.language).Save }
         </GreenButton>
       </div>
     </div>

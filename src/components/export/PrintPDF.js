@@ -58,7 +58,7 @@ function PDFFile(data, userscore, classname, sortBy, sess){
             text: '',
           },
           {
-            text: ( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'PAR Score'
+            text: API._getWord(sess && sess.language).PAR_Score
           },
           {
             border: [false, false, false, false],
@@ -106,9 +106,9 @@ function PDFFile(data, userscore, classname, sortBy, sess){
 				text: [
           {text: data.title + '\n', fontSize: 36},
           {text: API._dateToString(data.date), fontSize: 20},
-          {text: `\t${( sess && sess.language === 'TH' ) ? "ณ สนาม" : 'at'}\t`, fontSize: 28},
+          {text: `\t${API._getWord(sess && sess.language).at}\t`, fontSize: 28},
           {text: data.location, fontSize: 24},
-          {text: `\t${( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'}\t` + classname, fontSize: 28, bold: true},
+          {text: `\t${API._getWord(sess && sess.language).Group}\t` + classname, fontSize: 28, bold: true},
         ]
 			},
 		]

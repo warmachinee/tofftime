@@ -126,10 +126,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
-              { ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete' }
+              { API._getWord(sess && sess.language).Incomplete }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete',
+          text: API._getWord(sess && sess.language).Incomplete,
           color: COLOR.red[500]
         });
         break;
@@ -137,10 +137,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
-              { ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending' }
+              { API._getWord(sess && sess.language).Pending }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending',
+          text: API._getWord(sess && sess.language).Pending,
           color: COLOR.amber[500]
         });
         break;
@@ -148,10 +148,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
-              { ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete' }
+              { API._getWord(sess && sess.language).Complete }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete',
+          text: API._getWord(sess && sess.language).Complete,
           color: COLOR.green[500]
         });
         break;
@@ -159,10 +159,10 @@ export default function MatchFormResult(props) {
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.grey[800] }}>
-              { ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None' }
+              { API._getWord(sess && sess.language).None }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None',
+          text: API._getWord(sess && sess.language).None,
           color: COLOR.grey[500]
         });
     }
@@ -231,7 +231,7 @@ export default function MatchFormResult(props) {
       { matchDetail &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h4">
-            { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }
+            { API._getWord(sess && sess.language).Form }
           </Typography>
           <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
           <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
@@ -252,11 +252,11 @@ export default function MatchFormResult(props) {
                 <div className={classes.avatarImage} />
               </ListItemIcon>
               <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' } />
+                primary={ API._getWord(sess && sess.language).First_Name } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Lastname' } />
+                primary={ API._getWord(sess && sess.language).Last_name } />
               <ListItemText className={classes.listStatus} style={{ color: 'white' }}
-                primary={ ( sess && sess.language === 'TH' ) ? "สถานะ" : 'Status' } />
+                primary={ API._getWord(sess && sess.language).Status } />
             </ListItem>
           </List>
           <List disablePadding>
@@ -325,7 +325,7 @@ export default function MatchFormResult(props) {
               :
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่น" : 'No player.' }
+                  { API._getWord(sess && sess.language).No_player }
                 </Box>
               </Typography>
             }
@@ -333,7 +333,6 @@ export default function MatchFormResult(props) {
         </div>
       }
       <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
-        {/*<LabelText text={( sess && sess.language === 'TH' ) ? "คะแนนสนาม" : 'Golf Scorecard'} />*/}
         <LabelText text="Golf Scorecard" />
         <IconButton onClick={handleScorecardClose} style={{ position: 'absolute', top: 8, right: 8 }}>
           <CloseIcon />

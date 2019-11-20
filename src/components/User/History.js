@@ -272,7 +272,7 @@ export default function History(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text={ ( sess && sess.language === 'TH' ) ? "ประวัติ" : 'History' } />
+      <LabelText text={ API._getWord(sess && sess.language).History } />
       <div className={classes.grid}>
         <div
           className={clsx(classes.gridChild,{

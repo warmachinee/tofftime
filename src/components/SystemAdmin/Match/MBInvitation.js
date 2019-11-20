@@ -225,10 +225,10 @@ export default function MBInvitation(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.red[500] }}>
-              { ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete' }
+              { API._getWord(sess && sess.language).Incomplete }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "ยังไม่อนุมัติ" : 'Incomplete',
+          text: API._getWord(sess && sess.language).Incomplete,
           color: COLOR.red[500]
         });
         break;
@@ -236,10 +236,10 @@ export default function MBInvitation(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.amber[800] }}>
-              { ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending' }
+              { API._getWord(sess && sess.language).Pending }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "รอดำเนินการ" : 'Pending',
+          text: API._getWord(sess && sess.language).Pending,
           color: COLOR.amber[500]
         });
         break;
@@ -247,10 +247,10 @@ export default function MBInvitation(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.green[800] }}>
-              { ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete' }
+              { API._getWord(sess && sess.language).Complete }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "สำเร็จ" : 'Complete',
+          text: API._getWord(sess && sess.language).Complete,
           color: COLOR.green[500]
         });
         break;
@@ -258,10 +258,10 @@ export default function MBInvitation(props){
         return ({
           component: (
             <Typography variant="subtitle2" style={{ color: COLOR.grey[800] }}>
-              { ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None' }
+              { API._getWord(sess && sess.language).None }
             </Typography>
           ),
-          text: ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'None',
+          text: API._getWord(sess && sess.language).None,
           color: COLOR.grey[500]
         });
     }
@@ -430,14 +430,14 @@ export default function MBInvitation(props){
           <RedButton className={classes.iconButton} variant="contained"
             onClick={handleAddOpen}>
             <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-            { ( sess && sess.language === 'TH' ) ? "ชวนผู้เล่น" : 'Invite' }
+            { API._getWord(sess && sess.language).Invite }
           </RedButton>
           <div style={{ flex: 1 }} />
           <a href={`/matchform/${matchid}`}
             target='_blank'
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <GreenTextButton className={classes.controlsEditButton}>
-              { ( sess && sess.language === 'TH' ) ? "รายชื่อผู้สมัคร" : 'Form' }
+              { API._getWord(sess && sess.language).Form }
             </GreenTextButton>
           </a>
         </div>
@@ -447,7 +447,7 @@ export default function MBInvitation(props){
               <TextField
                 className={classes.searchBox}
                 variant="outlined"
-                placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search player' ) : '' }
+                placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search_player ) : '' }
                 value={searchUser}
                 onChange={e =>setSearchUser(e.target.value)}
                 InputProps={{
@@ -481,17 +481,17 @@ export default function MBInvitation(props){
             <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
+                ( API._getWord(sess && sess.language).Full_name )
                 :
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
+                ( API._getWord(sess && sess.language).First_name )
               } />
             { window.innerWidth >= 600 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
-                primary={ ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' } />
+                primary={ API._getWord(sess && sess.language).Last_name } />
             }
             { window.innerWidth > 450 &&
               <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listClass}
-                primary={ ( sess && sess.language === 'TH' ) ? "สถานะ" : 'Status' } />
+                primary={ API._getWord(sess && sess.language).Status } />
             }
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
@@ -579,12 +579,12 @@ export default function MBInvitation(props){
               :
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่นเข้าการแข่งขัน" : 'Invite players to a match.' }
+                  { API._getWord(sess && sess.language)['Invite players to a match.'] }
                 </Box>
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
                   <BTN.PrimaryOutlined onClick={handleAddOpen}>
                     <AddIcon style={{ marginRight: 8 }} />
-                    { ( sess && sess.language === 'TH' ) ? "เชิญผู้เล่น" : 'Invite players.' }
+                    { API._getWord(sess && sess.language).Invite_players }
                   </BTN.PrimaryOutlined>
                 </div>
               </Typography>
@@ -595,13 +595,13 @@ export default function MBInvitation(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= data.length ? (
-                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                    API._getWord(sess && sess.language).Collapse
                   ):(
-                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                    API._getWord(sess && sess.language).More
                   ) }
                 </Button>
                 { data && dataSliced < data.length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
                 }
               </React.Fragment>
             }
@@ -609,13 +609,13 @@ export default function MBInvitation(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= handleSearch().length ? (
-                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                    API._getWord(sess && sess.language).Collapse
                   ):(
-                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                    API._getWord(sess && sess.language).More
                   ) }
                 </Button>
                 { data && dataSliced < handleSearch().length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
                 }
               </React.Fragment>
             }
@@ -624,7 +624,7 @@ export default function MBInvitation(props){
             <ListItem>
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
+                  { API._getWord(sess && sess.language).No_Result }
                 </Box>
               </Typography>
             </ListItem>

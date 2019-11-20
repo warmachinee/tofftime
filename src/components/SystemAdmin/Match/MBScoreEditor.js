@@ -264,13 +264,13 @@ function MBScoreEditorContainer(props){
           <ExpandMoreIcon
             className={classes.expandIcon}
             style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }} />
-          { ( sess && sess.language === 'TH' ) ? "เลือกผู้เล่น" : 'Select Player' }
+          { API._getWord(sess && sess.language).Select_Player }
         </GreenTextButton>
         { selected &&
           <a href={`/display/${matchid}/${selected.userid}`}
             target='_blank'
             style={{ textDecoration: 'none', color: 'inherit' }}>
-            <GreenTextButton variant="outlined">{ ( sess && sess.language === 'TH' ) ? "คะแนนรายคน" : 'Score Display' }</GreenTextButton>
+            <GreenTextButton variant="outlined">{ API._getWord(sess && sess.language).Personal_display }</GreenTextButton>
           </a>
         }
       </div>
@@ -282,7 +282,7 @@ function MBScoreEditorContainer(props){
               autoFocus={expanded}
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchUser? ( ( sess && sess.language === 'TH' ) ? "ค้นหาผู้เล่น" : 'Search Player' ) : '' }
+              placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search_player ) : '' }
               value={searchUser}
               onChange={e =>setSearchUser(e.target.value)}
               InputProps={{
@@ -308,7 +308,7 @@ function MBScoreEditorContainer(props){
         </div>
         <Typography component="div" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           <Box className={classes.notice} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "เลือกผู้เล่นในลิสต์" : 'Please select player in the list.' }
+            { API._getWord(sess && sess.language)['Please select player in the list.'] }
           </Box>
           { data &&
             <React.Fragment>
@@ -322,7 +322,7 @@ function MBScoreEditorContainer(props){
               </Typography>
               {/* matchDetail && matchDetail.scorematch !== 0 &&
                 <FormControl className={classes.formControl}>
-                  <InputLabel>{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' }</InputLabel>
+                  <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                   <Select
                     value={mainClassSelected}
                     onChange={e => setMainClassSelected(e.target.value)}>
@@ -343,12 +343,12 @@ function MBScoreEditorContainer(props){
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={
                 window.innerWidth < 450?
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
+                ( API._getWord(sess && sess.language).Full_name )
                 :
-                ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
+                ( API._getWord(sess && sess.language).First_name )
               } />
             <ListItemText style={{ color: 'white' }} className={classes.listText}
-              primary={ window.innerWidth < 450? "" : ( ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' ) } />
+              primary={ window.innerWidth < 450? "" : ( API._getWord(sess && sess.language).Last_name ) } />
             {/* window.innerWidth > 450 &&
               <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass}
                 primary={
@@ -356,13 +356,10 @@ function MBScoreEditorContainer(props){
                   function(){
                     switch (matchDetail.scorematch) {
                       case 0:
-                        return ( sess && sess.language === 'TH' ) ? "ไฟล์ท" : 'Flight'
-                        break;
-                      case 1:
-                        return ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class'
+                        return API._getWord(sess && sess.language).Flight
                         break;
                       default:
-                        return ( sess && sess.language === 'TH' ) ? "ทีม" : 'Team'
+                        return API._getWord(sess && sess.language).Group
                     }
                   }()
                 } />*/
@@ -417,7 +414,7 @@ function MBScoreEditorContainer(props){
                       :
                       <React.Fragment>
                         <br></br>
-                        { ( sess && sess.language === 'TH' ) ? "ไม่มีประเภท" : 'No class' }
+                        { API._getWord(sess && sess.language).No_group }
                       </React.Fragment>
                     )*/
                   }
@@ -445,7 +442,7 @@ function MBScoreEditorContainer(props){
                       )
                       :
                       <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                        primary={ ( sess && sess.language === 'TH' ) ? "ไม่มีประเภท" : 'No class' } />
+                        primary={ API._getWord(sess && sess.language).No_group } />
                     )*/
                   }
                 </ListItem>
@@ -460,13 +457,13 @@ function MBScoreEditorContainer(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= data.length ? (
-                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                    API._getWord(sess && sess.language).Collapse
                   ):(
-                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                    API._getWord(sess && sess.language).More
                   ) }
                 </Button>
                 { data && dataSliced < data.length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }</Button>
+                  <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
                 }
               </React.Fragment>
             }
@@ -474,14 +471,14 @@ function MBScoreEditorContainer(props){
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
                   { dataSliced >= handleSearch().length ? (
-                    ( sess && sess.language === 'TH' ) ? "ย่อทั้งหมด" : 'Collapse'
+                    API._getWord(sess && sess.language).Collapse
                   ):(
-                    ( sess && sess.language === 'TH' ) ? "แสดง" : 'More'
+                    API._getWord(sess && sess.language).More
                   ) }
                 </Button>
                 { data && dataSliced < handleSearch().length &&
                   <Button fullWidth onClick={handleMoreAll}>
-                    { ( sess && sess.language === 'TH' ) ? "แสดงทั้งหมด" : 'More all' }
+                    { API._getWord(sess && sess.language).Show_all }
                   </Button>
                 }
               </React.Fragment>
@@ -491,7 +488,7 @@ function MBScoreEditorContainer(props){
             <ListItem>
               <Typography component="div" style={{ width: '100%' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { ( sess && sess.language === 'TH' ) ? "ไม่มีผลลัพท์" : 'No Result' }
+                  { API._getWord(sess && sess.language).No_Result }
                 </Box>
               </Typography>
             </ListItem>
@@ -666,7 +663,7 @@ export default function MBScoreEditor(props){
     })
   }
 
-  async function handleFetch(matchDetail){
+  async function handleFetch(){
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -715,7 +712,6 @@ export default function MBScoreEditor(props){
           d.status !== 'wrong params'
         ){
           setMatchDetail(d)
-          handleFetch(d)
         }else{
           handleSnackBar({
             state: true,
@@ -733,7 +729,7 @@ export default function MBScoreEditor(props){
   },[ ])
 
   React.useEffect(()=>{
-    handleFetchMatchDetail()
+    handleFetch()
     if(selected){
       setArrScore(selected.score)
     }else{
@@ -754,16 +750,16 @@ export default function MBScoreEditor(props){
       { !isSetup &&
         <div style={{ display: 'flex', marginBottom: 24 }}>
           <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
-            { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+            { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
           </Typography>
           <BTN.NoStyleLink
             to={
               sess.typeid === 'admin' ?
-              `/admin/match/${matchid}` :
+              `/system_admin/match/${matchid}` :
               `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
               }>
             <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
-              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+              { API._getWord(sess && sess.language).Back }
             </BTN.RedOutlined>
           </BTN.NoStyleLink>
         </div>
@@ -782,7 +778,7 @@ export default function MBScoreEditor(props){
         <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <Typography variant="h5" className={classes.scorcardLabel}>
-            {`${ ( sess && sess.language === 'TH' ) ? "กรอกคะแนนผู้เล่น" : 'Scorecard' } ${selected ? ` | ${selected.firstname} ${selected.lastname}` : ''}`}
+            {`${ API._getWord(sess && sess.language).Scorecard_MBSE } ${selected ? ` | ${selected.firstname} ${selected.lastname}` : ''}`}
           </Typography>
           {/*
             <Typography variant="body1" className={classes.scorcardPlayer}>
@@ -809,8 +805,9 @@ export default function MBScoreEditor(props){
         </div>
         {/*
           <Typography variant="caption" className={classes.scorcardMainClass} color="textSecondary">
-            {`{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' } ${mainClassSelected}`}
-          </Typography>*/
+            {`{ API._getWord(sess && sess.language).Main_group } ${mainClassSelected}`}
+          </Typography>
+          */
         }
         <div style={{
             overflow: 'auto', marginTop: 24, marginBottom: 24,
@@ -866,7 +863,7 @@ export default function MBScoreEditor(props){
       { matchDetail && matchDetail.scorematch === 2 && selected &&
         <ThemeProvider theme={theme}>
           <div className={classes.predictScoreChildGrid}>
-            <TextField label={ ( sess && sess.language === 'TH' ) ? "คะแนนที่ทาย" : 'Predict Score' }
+            <TextField label={ API._getWord(sess && sess.language).Predict_Score }
               type="number"
               value={predictScore}
               onChange={e =>handleSetPredictScore(e.target.value)}
@@ -879,20 +876,20 @@ export default function MBScoreEditor(props){
       }
       <div className={classes.controls}>
         <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
-          { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
+          { API._getWord(sess && sess.language).Reset }
         </Button>
         { selected?
           <GreenButton
             disabled={selected === null}
             variant="contained" color="primary"
             className={classes.button} onClick={handleUpdateScore}>
-            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+            { API._getWord(sess && sess.language).Save }
           </GreenButton>
           :
           <Button
             disabled
             variant="contained" color="primary"
-            className={classes.button}>{ ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }</Button>
+            className={classes.button}>{ API._getWord(sess && sess.language).Save }</Button>
         }
       </div>
     </div>

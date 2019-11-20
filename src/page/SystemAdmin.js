@@ -190,64 +190,60 @@ export default function SystemAdmin(props) {
     return sess && sess.status === 1 && (
       <React.Fragment>
         <div style={{ marginTop: 36 }}>
-          <Link to={`/admin/announce`} className={classes.linkElement}>
+          <Link to={`/system_admin/announce`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Announcement
             </StyledButton>
           </Link>
-          <Link to={`/admin/news`} className={classes.linkElement}>
+          <Link to={`/system_admin/news`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               News
             </StyledButton>
           </Link>
-          <Link to={`/admin/matchlist`} className={classes.linkElement}>
+          <Link to={`/system_admin/matchlist`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Match List
             </StyledButton>
           </Link>
-          <Link to={`/admin/page`} className={classes.linkElement}>
+          <Link to={`/system_admin/page`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Page
             </StyledButton>
           </Link>
         </div>
         <div style={{ marginTop: 36 }}>
-          <Link to={`/admin/match`} className={classes.linkElement}>
+          <Link to={`/system_admin/match`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Match
             </StyledButton>
           </Link>
-          <Link to={`/admin/course`} className={classes.linkElement}>
+          <Link to={`/system_admin/course`} className={classes.linkElement}>
             <StyledButton variant="contained" color="primary" className={classes.button}>
               Course
             </StyledButton>
           </Link>
-          { /*
-            <Link to={`/admin/user`} className={classes.linkElement}>
-              <StyledButton variant="contained" color="primary" className={classes.button}>
-                User
-              </StyledButton>
-            </Link>
-            */
-          }
         </div>
       </React.Fragment>
     )
   }
 
+  React.useEffect(()=>{
+
+  },[ ])
+
   return (
     <Paper className={classes.root}>
       { sess && sess.status === 1 &&
         <React.Fragment>
-          <Route exact path={`/admin`} component={SystemComponent} />
-          <RouteAnnouncement path={`/admin/announce`} {...passingProps} />
-          <RouteNews path={`/admin/news`} {...passingProps} />
-          <RouteMatchList path={`/admin/matchlist`} {...passingProps} />
-          <RouteAdminPageList path={`/admin/page`} {...passingProps} />
+          <Route exact path={`/system_admin`} component={SystemComponent} />
+          <RouteAnnouncement path={`/system_admin/announce`} {...passingProps} />
+          <RouteNews path={`/system_admin/news`} {...passingProps} />
+          <RouteMatchList path={`/system_admin/matchlist`} {...passingProps} />
+          <RouteAdminPageList path={`/system_admin/page`} {...passingProps} />
 
-          <RouteMatch path={`/admin/match`} {...passingProps} />
-          <RouteCourse path={`/admin/course`} {...passingProps} />
-          <RouteUser path={`/admin/user`} {...passingProps} />
+          <RouteMatch path={`/system_admin/match`} {...passingProps} />
+          <RouteCourse path={`/system_admin/course`} {...passingProps} />
+          <RouteUser path={`/system_admin/user`} {...passingProps} />
         </React.Fragment>
       }
     </Paper>

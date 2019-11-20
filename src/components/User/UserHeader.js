@@ -28,8 +28,6 @@ import {
 
 } from '@material-ui/icons';
 
-import ic_logo from './../img/logoX2.png'
-
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -220,7 +218,7 @@ export default function UserHeader(props) {
                 edge="start"
                 className={classes.logo}
               >
-                <img src={ic_logo} className={classes.logoImg} />
+                <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
               </IconButton>
             </Link>
           }
@@ -333,7 +331,7 @@ export default function UserHeader(props) {
           <Link to='/user'
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>
-              { ( sess && sess.language === 'TH' ) ? "ผู้ใช้งาน" : 'User' }
+              { API._getWord(sess && sess.language).User }
             </MenuItem>
           </Link>
         }
@@ -342,19 +340,19 @@ export default function UserHeader(props) {
           <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>
-              { ( sess && sess.language === 'TH' ) ? "หน้าหลัก" : 'Dashboard' }
+              { API._getWord(sess && sess.language).Dashboard }
             </MenuItem>
           </Link>
           :
           <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
             style={{ textDecoration: 'none', color: 'inherit' }}>
             <MenuItem onClick={handleClose}>
-              { ( sess && sess.language === 'TH' ) ? "โปรไฟล์" : 'Profile' }
+              { API._getWord(sess && sess.language).Profile }
             </MenuItem>
           </Link>
           )
         }
-        <MenuItem onClick={handleLogout}>{ ( sess && sess.language === 'TH' ) ? "ลงชื่อออก" : 'Logout' }</MenuItem>
+        <MenuItem onClick={handleLogout}>{ API._getWord(sess && sess.language).Log_out }</MenuItem>
       </Menu>
     </React.Fragment>
   );

@@ -269,7 +269,7 @@ function RewardContainer(props){
                 className={classes.prizeText}
                 value={edittingData || ''}
                 type="number"
-                helperText={ ( sess && sess.language === 'TH' ) ? "ใส่ตัวเลขเท่านั้น" : 'Please input number only.' }
+                helperText={ API._getWord(sess && sess.language)['Please input number only.'] }
                 onChange={e =>handleChange(e.target.value)}
                 onFocus={e => e.target.select()}
                 onKeyPress={e =>handleKeyPress(e)}
@@ -283,7 +283,7 @@ function RewardContainer(props){
                 />
             </ThemeProvider>
             <Button style={{ height: 36 }} color="primary" variant="contained" onClick={handleSave}>
-              { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+              { API._getWord(sess && sess.language).Save }
             </Button>
           </Typography>
         } />
@@ -301,7 +301,7 @@ function RewardContainer(props){
                     className={classes.prizeText}
                     value={edittingData || ''}
                     type="number"
-                    helperText={ ( sess && sess.language === 'TH' ) ? "ใส่ตัวเลขเท่านั้น" : 'Please input number only.' }
+                    helperText={ API._getWord(sess && sess.language)['Please input number only.'] }
                     onChange={e =>handleChange(e.target.value)}
                     onFocus={e => e.target.select()}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -315,7 +315,7 @@ function RewardContainer(props){
                     />
                 </ThemeProvider>
                 <GreenButton style={{ height: 36 }} onClick={handleSave}>
-                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+                  { API._getWord(sess && sess.language).Save }
                 </GreenButton>
               </div>
             } />
@@ -340,10 +340,10 @@ export default function MBReward(props){
   function getRewardStatus(status){
     switch (true) {
       case status === 'reward not create':
-        return ( sess && sess.language === 'TH' ) ? 'ยังไม่ได้เพิ่มเงินรางวัล' : 'Please create reward.'
+        return API._getWord(sess && sess.language)['Please create reward.']
         break;
       default:
-        return ( sess && sess.language === 'TH' ) ? 'ไม่มีเงินรางวัล' : 'No reward'
+        return API._getWord(sess && sess.language).No_reward
     }
   }
 
@@ -535,16 +535,16 @@ export default function MBReward(props){
       { !isSetup ?
         <div style={{ display: 'flex', marginTop: 24 }}>
           <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
-            { ( sess && sess.language === 'TH' ) ? "โปรดทำขั้นตอนการตั้งค่าให้สมบูรณ์" : 'Please complete the Setup step.' }
+            { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
           </Typography>
           <BTN.NoStyleLink
             to={
               sess.typeid === 'admin' ?
-              `/admin/match/${matchid}` :
+              `/system_admin/match/${matchid}` :
               `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
               }>
             <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
-              { ( sess && sess.language === 'TH' ) ? "ย้อนกลับ" : 'Back' }
+              { API._getWord(sess && sess.language).Back }
             </BTN.RedOutlined>
           </BTN.NoStyleLink>
         </div>
@@ -553,7 +553,7 @@ export default function MBReward(props){
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             { matchDetail && matchDetail.scorematch !== 0 &&
               <FormControl className={classes.formControl}>
-                <InputLabel>{ ( sess && sess.language === 'TH' ) ? "กลุ่มหลัก" : 'Main Group' }</InputLabel>
+                <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                 <Select
                   value={mainClassSelected}
                   onChange={e => setMainClassSelected(e.target.value)}>
@@ -588,7 +588,7 @@ export default function MBReward(props){
                 <RedButton className={classes.buttonMargin}
                   style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
                   onClick={handleCreate}>
-                  { ( sess && sess.language === 'TH' ) ? "สร้าง" : 'Create' }
+                  { API._getWord(sess && sess.language).Create }
                 </RedButton>
               }
               { editting &&
@@ -598,19 +598,19 @@ export default function MBReward(props){
                       onChange={e =>handleRewardChange(e.target.value)}
                       onFocus={e => e.target.select()}
                       onKeyPress={e =>handleRewardKeyPress(e)}
-                      label={ ( sess && sess.language === 'TH' ) ? "ตัวเลข" : 'Number' }
-                      helperText={ ( sess && sess.language === 'TH' ) ? "จำนวนผู้เล่นที่จะได้รางวัล" : 'The number of the player who will get a reward.' }
+                      label={ API._getWord(sess && sess.language).Number }
+                      helperText={ API._getWord(sess && sess.language)['The number of the player who will get a reward.'] }
                       type="number"
                     />
                   </ThemeProvider>
                 <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
-                  { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+                  { API._getWord(sess && sess.language).Save }
                 </GreenButton>
                 </React.Fragment>
               }
               { data && /not create/.test(data.status) &&
                 <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
-                  { ( sess && sess.language === 'TH' ) ? "รีเซ็ต" : 'Reset' }
+                  { API._getWord(sess && sess.language).Reset }
                 </GreenTextButton>
               }
               <div style={{ flex: 1 }} />
@@ -618,13 +618,13 @@ export default function MBReward(props){
                 <GreenTextButton
                   className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
                   onClick={()=>setEditting(false)}>
-                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                  { API._getWord(sess && sess.language).Done }
                 </GreenTextButton>
               }
               { !editting &&
                 <GreenButton
                   className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>
-                  { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+                  { API._getWord(sess && sess.language).Edit }
                 </GreenButton>
               }
             </div>
@@ -633,7 +633,7 @@ export default function MBReward(props){
                 <GreenTextButton
                   className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
                   onClick={()=>setEditting(false)}>
-                  { ( sess && sess.language === 'TH' ) ? "เสร็จ" : 'Done' }
+                  { API._getWord(sess && sess.language).Done }
                 </GreenTextButton>
               }
             </div>
@@ -644,17 +644,17 @@ export default function MBReward(props){
                 <ListItemText style={{ color: 'white' }} className={classes.listText}
                   primary={
                     window.innerWidth < 700?
-                    ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'Full Name' )
+                    ( API._getWord(sess && sess.language).Full_name )
                     :
-                    ( ( sess && sess.language === 'TH' ) ? "ชื่อ" : 'First name' )
+                    ( API._getWord(sess && sess.language).First_name )
                   } />
                 { window.innerWidth >= 700 &&
                   <ListItemText style={{ color: 'white' }} className={classes.listText}
-                    primary={ ( ( sess && sess.language === 'TH' ) ? "นามสกุล" : 'Last name' )  } />
+                    primary={ ( API._getWord(sess && sess.language).Last_name )  } />
                 }
                 { !( editting && window.innerWidth < 550 ) &&
                   <ListItemText style={{ color: 'white' }} className={classes.listPrize}
-                    primary={ ( sess && sess.language === 'TH' ) ? "เงินรางวัล" : 'Prize' } />
+                    primary={ API._getWord(sess && sess.language).Prize } />
                 }
               </ListItem>
             </List>
@@ -687,7 +687,7 @@ export default function MBReward(props){
                   <ListItem>
                     <Typography component="div" style={{ width: '100%' }}>
                       <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                        { ( sess && sess.language === 'TH' ) ? "ไม่มีผู้เล่นได้รับรางวัล" : 'No players get the reward.' }
+                        { API._getWord(sess && sess.language)['No players get the reward.'] }
                       </Box>
                     </Typography>
                   </ListItem>
@@ -703,7 +703,7 @@ export default function MBReward(props){
                       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
                         <BTN.PrimaryOutlined onClick={handleCreate}>
                           <AddIcon style={{ marginRight: 8 }} />
-                          { ( sess && sess.language === 'TH' ) ? "สร้างเงินรางวัล" : 'Create reward.' }
+                          { API._getWord(sess && sess.language).Create_reward }
                         </BTN.PrimaryOutlined>
                       </div>
                     }

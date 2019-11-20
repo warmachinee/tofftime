@@ -477,7 +477,7 @@ export default function MatchClass(props) {
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         { !editting &&
           <GreenTextButton onClick={()=>setEditting(!editting)}>
-            { ( sess && sess.language === 'TH' ) ? "แก้ไข" : 'Edit' }
+            { API._getWord(sess && sess.language).Edit }
           </GreenTextButton>
         }
       </div>
@@ -489,13 +489,10 @@ export default function MatchClass(props) {
               primary={function(){
                 switch (data.scorematch) {
                   case 0:
-                    return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No flight'
-                    break;
-                  case 1:
-                    return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No class'
+                    return API._getWord(sess && sess.language).No_flight
                     break;
                   default:
-                    return ( sess && sess.language === 'TH' ) ? "ไม่มี" : 'No Team'
+                    return API._getWord(sess && sess.language).No_group
                 }
               }()} />
           </ListItem>
@@ -534,13 +531,10 @@ export default function MatchClass(props) {
                 helperText={function(){
                   switch (data.scorematch) {
                     case 0:
-                      return ( sess && sess.language === 'TH' ) ? 'ใส่ตัวเลข (HC)' : 'Please input number (HC).'
-                      break;
-                    case 1:
-                      return ( sess && sess.language === 'TH' ) ? 'ใส่ชื่อประเภท' : 'Please input class name.'
+                      return API._getWord(sess && sess.language)['Please input number (HC).']
                       break;
                     default:
-                      return  ( sess && sess.language === 'TH' ) ? 'ใส่ชื่อทีม' : 'Please input team name.'
+                      return  API._getWord(sess && sess.language)['Please input group name.']
                   }
                 }()}
                 onChange={e =>setText(e.target.value)}
@@ -550,7 +544,7 @@ export default function MatchClass(props) {
             <ListItemIcon className={classes.addClassButtonGrid}>
               <GreenTextButton disabled={!text} className={classes.addClassButton} variant="outlined" onClick={handleAddItem}>
                 <AddCircle style={{ marginRight: 12 }} />
-                { ( sess && sess.language === 'TH' ) ? "เพิ่ม" : 'Add' }
+                { API._getWord(sess && sess.language).Add }
               </GreenTextButton>
             </ListItemIcon>
           </ListItem>
@@ -575,7 +569,7 @@ export default function MatchClass(props) {
                 { data.scorematch === 0 &&
                   <div style={{ display: 'flex', width: '100%' }}>
                     <div style={{ marginTop: 'auto', marginBottom: 8, textAlign: 'center', width: 64 }}> {
-                        ( sess && sess.language === 'TH' ) ? 'ถึง' : 'to'
+                        API._getWord(sess && sess.language).to
                       } </div>
                     <TextField
                       disabled
@@ -613,10 +607,10 @@ export default function MatchClass(props) {
       { editting && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton className={classes.saveButton} onClick={()=>setEditting(false)}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
           <GreenButton className={classes.saveButton} onClick={handleSave}>
-            { ( sess && sess.language === 'TH' ) ? "บันทึก" : 'Save' }
+            { API._getWord(sess && sess.language).Save }
           </GreenButton>
         </div>
       }
@@ -625,19 +619,19 @@ export default function MatchClass(props) {
         open={confirmDeleteState} handleClose={handleConfirmCancel}>
         <Typography component="div">
           <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { ( sess && sess.language === 'TH' ) ? "ต้องการลบหรือไม่ ?" : 'Are you sure you want to delete?' }
+            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
           </Box>
           <Box className={classes.confirmSubtitle} m={3}>
-            ( { ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' } : { selectedDeleteItem && selectedDeleteItem.classname } )
+            ( { API._getWord(sess && sess.language).Group } : { selectedDeleteItem && selectedDeleteItem.classname } )
           </Box>
         </Typography>
         <Divider style={{ marginTop: 16, marginBottom: 16 }} />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ยกเลิก" : 'Cancel' }
+            { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
           <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { ( sess && sess.language === 'TH' ) ? "ลบ" : 'Delete' }
+            { API._getWord(sess && sess.language).Delete }
           </RedButton>
         </div>
       </TemplateDialog>

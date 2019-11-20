@@ -26,7 +26,7 @@ export default function RewardPDF(props){
     <React.Fragment>
       { (reward.length !== 0 && !reward.status) ?
         <Button onClick={()=>handleDownload(matchClass, reward, data, sortBy, sess)} color="primary">
-          { ( sess && sess.language === 'TH' ) ? "รางวัล" : 'Reward' }
+          { API._getWord(sess && sess.language).Reward }
         </Button>:
         <Button disabled color="primary">{reward.status}</Button>
       }
@@ -75,33 +75,33 @@ function PDFFile(classname, reward, data, sortBy, sess){
     data.scorematch === 1 ?
     [
       {
-        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Full Name' ),
+        text: ( API._getWord(sess && sess.language).First_name ),
         fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
       },
       {text: 'PAR', fillColor: '#e0e0e0'},
-      {text: ( ( sess && sess.language === 'TH' ) ? "เงินรางวัล" : 'Prize' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
-      {text: ( ( sess && sess.language === 'TH' ) ? "ลายเซ็น" : 'Sign' ), fillColor: '#e0e0e0'},
+      {text: ( API._getWord(sess && sess.language).Prize ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
+      {text: ( API._getWord(sess && sess.language).Sign ), fillColor: '#e0e0e0'},
     ]
     :
     [
       {
-        text: ( ( sess && sess.language === 'TH' ) ? "ชื่อ - นามสกุล" : 'Full Name' ),
+        text: ( API._getWord(sess && sess.language).First_name ),
         fillColor: '#e0e0e0', alignment: 'left', margin: [16, 0, 0, 0]
       },
       {text: 'HC', fillColor: '#e0e0e0'},
       {text: 'SF', fillColor: '#e0e0e0'},
-      {text: ( ( sess && sess.language === 'TH' ) ? "เงินรางวัล" : 'Prize' ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
-      {text: ( ( sess && sess.language === 'TH' ) ? "ลายเซ็น" : 'Sign' ), fillColor: '#e0e0e0'},
+      {text: ( API._getWord(sess && sess.language).Prize ), fillColor: '#e0e0e0', margin: [8, 0, 8, 0]},
+      {text: ( API._getWord(sess && sess.language).Sign ), fillColor: '#e0e0e0'},
     ]
   )
 
   let label = [
     [
-      {text: `${( ( sess && sess.language === 'TH' ) ? "เงินรางวัล" : 'Prize' )}\t`, fontSize: 36},
+      {text: `${( API._getWord(sess && sess.language).Prize )}\t`, fontSize: 36},
       {text: data.title, fontSize: 30},
     ],
     {
-      text: `${( ( sess && sess.language === 'TH' ) ? "ประเภท" : 'Class' )}\t` + classname,
+      text: `${( API._getWord(sess && sess.language).Group )}\t` + classname,
       fontSize: 28, bold: true, margin: [0, 0, 0, 24]
     },
     {

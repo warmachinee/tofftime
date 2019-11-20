@@ -70,7 +70,7 @@ export default function ListFollow(props) {
           <ListItemIcon>
             {expanded.follow ? <ExpandLess /> : <ExpandMore />}
           </ListItemIcon>
-          <ListItemText primary={ ( sess && sess.language === 'TH' ) ? "การติดตาม" : 'Follow' } />
+          <ListItemText primary={ API._getWord(sess && sess.language).Follow } />
         </ListItem>
       </List>
       <Collapse in={state} timeout="auto" style={{ minHeight: 'auto' }}>
