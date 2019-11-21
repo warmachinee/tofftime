@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import { primary } from './../../api/palette'
 
@@ -18,40 +17,12 @@ const useStyles = makeStyles(theme => ({
     color: primary[800],
     fontSize: '2.5rem'
   },
-  linkElement: {
-    textDecoration: 'none',
-    color: 'inherit'
-  },
 
 }))
 
-export default function GoBack(props){
+export default function GoBack(){
   const classes = useStyles();
-  const { goBackDetail = false } = props
 
-  function handleBack(){
-    const root = window.location.pathname
-    const rootSplit = window.location.pathname.split('/')
-    let rootSearchLength
-    let diff
-    if( rootSplit[rootSplit.length - 1] === '' ){
-      diff = goBackDetail? 3 : 2
-      rootSearchLength = root.search(rootSplit[rootSplit.length - diff])
-    }else{
-      diff = goBackDetail? 2 : 1
-      rootSearchLength = root.search(rootSplit[rootSplit.length - diff])
-    }
-    return root.substring(0, rootSearchLength)
-  }
-  /*
-  <div style={{ width: '100%' }}>
-    <Link to={handleBack()} className={classes.linkElement}>
-      <IconButton className={classes.back}>
-        <ArrowBackIcon classes={{ root: classes.backIcon }} />
-      </IconButton>
-    </Link>
-  </div>
-  */
   return (
     <React.Fragment>
       { window.history.length > 1 ?
