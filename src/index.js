@@ -1,10 +1,21 @@
 import React from 'react';
+import Loadable from 'react-loadable';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from "react-router-dom";
 import './index.css';
 import './style.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { LDCircular } from './components/loading/LDCircular'
+
+const App = Loadable({
+  loader: () => import(/* webpackChunkName: "App" */'./App'),
+  loading: () => <LDCircular />
+});
+
+const SomthingWrongPage = Loadable({
+  loader: () => import(/* webpackChunkName: "SomthingWrongPage" */'./components/Utils/SomthingWrongPage'),
+  loading: () => <LDCircular />
+});
 
 class RenderApp extends React.Component {
   constructor(props) {
@@ -30,15 +41,7 @@ class RenderApp extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div>
-          <h1>Something went wrong.</h1>
-          <br></br>
-          <h1 style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.errMsg && this.state.errMsg.error && this.state.errMsg.error.toString()}
-            <br />
-            {this.state.errMsg && this.state.errMsg.stack}
-          </h1>
-        </div>
+        <SomthingWrongPage errMsg={this.state.errMsg} />
       );
     }
 
@@ -56,4 +59,4 @@ ReactDOM.render(<RenderApp />, document.getElementById('root'));
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 //serviceWorker.unregister();
-//serviceWorker.register();
+serviceWorker.register();
