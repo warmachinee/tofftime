@@ -185,7 +185,7 @@ export default function MiniGameMah(props){
   const [ basePrize, setBasePrize ] = React.useState(null)
   const [ under, setUnder ] = React.useState('')
   const [ over, setOver ] = React.useState('')
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
   const [ userList, setUserList ] = React.useState(null)
   const [ betHole, setBetHole ] = React.useState(null)
   const [ anchorEl, setAnchorEl ] = React.useState(null);
@@ -231,7 +231,7 @@ export default function MiniGameMah(props){
 
   function handleMiniGame(matchid, type){
     const gameType = type === 'jao' ? type : 'normal'
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.emit('minigame-client-message', {
       action: gameType,
       matchid: matchid,
@@ -240,7 +240,7 @@ export default function MiniGameMah(props){
 
   function responseMiniGame(matchid, type){
     const gameType = type === 'jao' ? type : 'normal'
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`${matchid}-${gameType}-minigame-server-message`, (messageNew) => {
       if(messageNew){
         const d = messageNew.result
@@ -459,13 +459,13 @@ export default function MiniGameMah(props){
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <Paper style={{ padding: '12px', marginBottom: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditting(!editting)}>{ editting? 'Done' : 'Edit' }</BTN.PrimaryText>
+                <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditing(!editing)}>{ editing? 'Done' : 'Edit' }</BTN.PrimaryText>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
                 <div style={{ marginTop: 12 }}>
                   { gameType !== 'jao' &&
                     <ThemeProvider theme={theme}>
-                      { editting ?
+                      { editing ?
                         <div className={classes.basepriceChildGrid}>
                           <TextField label="Base Price"
                             type="number"
@@ -488,7 +488,7 @@ export default function MiniGameMah(props){
                 <div className={classes.underoverGrid}>
                   <ThemeProvider theme={theme}>
                     <div style={{ margin: 6 }}>
-                      { editting ?
+                      { editing ?
                         <div className={classes.underoverChildGrid}>
                           <TextField label="Under"
                             type="number"
@@ -510,7 +510,7 @@ export default function MiniGameMah(props){
                       }
                     </div>
                     <div style={{ margin: 6 }}>
-                      { editting ?
+                      { editing ?
                         <div className={classes.underoverChildGrid}>
                           <TextField label="Over"
                             type="number"
@@ -560,11 +560,11 @@ export default function MiniGameMah(props){
           <div className={classes.gameUserList}>
             <List disablePadding>
               <ListItem style={{ backgroundColor: COLOR.grey[900], position: 'sticky', top: 0 }}>
-                { editting && gameType === 'jao' &&
+                { editing && gameType === 'jao' &&
                   <ListItemText style={{ color: 'white', width: 120 }} primary="Main player" />
                 }
                 <ListItemText style={{ color: 'white' }} className={classes.listPlayerName} primary="Player" />
-                { !editting &&
+                { !editing &&
                   <React.Fragment>
                     { window.innerWidth >= 600 &&
                       <React.Fragment>
@@ -588,7 +588,7 @@ export default function MiniGameMah(props){
                 userList.map( d =>
                 <React.Fragment key={d.userid}>
                   <ListItem className={classes.listPlayer} style={{ border: d.mainplayer ? `2px solid ${COLOR.grey[900]}` : 'none' }}>
-                    { editting && gameType === 'jao' &&
+                    { editing && gameType === 'jao' &&
                       <ListItemIcon style={{ width: 120 }}>
                         <StyledCheckbox
                           checked={d.mainplayer}
@@ -599,7 +599,7 @@ export default function MiniGameMah(props){
                       primary={
                         <React.Fragment>
                           {`${d.fullname}  ${d.lastname}`}
-                          { editting && window.innerWidth < 600 &&
+                          { editing && window.innerWidth < 600 &&
                             <React.Fragment>
                               <div style={{ marginTop: 16 }}>
                                 <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />
@@ -609,14 +609,14 @@ export default function MiniGameMah(props){
                         </React.Fragment>
                       }
                       secondary={
-                        window.innerWidth < 600 && !editting &&
+                        window.innerWidth < 600 && !editing &&
                         <React.Fragment>
                           <Typography gutterBottom variant="caption" component="span">{`Gross = ${d.gross}`}</Typography>
                           <br></br>
                           <Typography variant="caption" component="span">{`SF = ${d.sf36sys}`}</Typography>
                         </React.Fragment>
                       } />
-                    { editting ?
+                    { editing ?
                       ( window.innerWidth >= 600 &&
                         <ListItemIcon>
                           <ListPredictScore {...props} data={d} matchid={matchid} gameType={gameType} handleMiniGame={handleMiniGame} />

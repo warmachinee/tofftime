@@ -140,15 +140,15 @@ function RewardContainer(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken,
     matchid, handleSnackBar,
-    data, setData, setMatchDetail, editting, mainClassSelected
+    data, setData, setMatchDetail, editing, mainClassSelected
   } = props
-  const [ edittingData, setEdittingData ] = React.useState(data.prize)
+  const [ editingData, setEditingData ] = React.useState(data.prize)
 
   function handleChange(value){
     if(value === ''){
-      setEdittingData(0)
+      setEditingData(0)
     }else{
-      setEdittingData(value)
+      setEditingData(value)
     }
   }
 
@@ -162,7 +162,7 @@ function RewardContainer(props){
     let userid = []
     let prize = []
     userid.push(data.userid)
-    prize.push(parseInt(edittingData))
+    prize.push(parseInt(editingData))
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -261,13 +261,13 @@ function RewardContainer(props){
           </div>
           : data.fullname }
         secondary={
-          editting && window.innerWidth < 550 &&
+          editing && window.innerWidth < 550 &&
           <Typography component="div" style={{ display: 'flex' }}>
             <ThemeProvider theme={theme}>
               <TextField
                 fullWidth
                 className={classes.prizeText}
-                value={edittingData || ''}
+                value={editingData || ''}
                 type="number"
                 helperText={ API._getWord(sess && sess.language)['Please input number only.'] }
                 onChange={e =>handleChange(e.target.value)}
@@ -290,7 +290,7 @@ function RewardContainer(props){
         { window.innerWidth >= 700 &&
           <ListItemText className={classes.listText} primary={data.lastname} />
         }
-      { editting?
+      { editing?
         ( window.innerWidth >= 550 &&
           <ListItemText className={classes.listPrize}
             primary={
@@ -299,7 +299,7 @@ function RewardContainer(props){
                   <TextField
                     fullWidth
                     className={classes.prizeText}
-                    value={edittingData || ''}
+                    value={editingData || ''}
                     type="number"
                     helperText={ API._getWord(sess && sess.language)['Please input number only.'] }
                     onChange={e =>handleChange(e.target.value)}
@@ -333,7 +333,7 @@ export default function MBReward(props){
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
-  const [ editting, setEditting ] = React.useState(false);
+  const [ editing, setEditing ] = React.useState(false);
   const [ rewardEdit, setRewardEdit ] = React.useState([]);
   const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
@@ -591,7 +591,7 @@ export default function MBReward(props){
                   { API._getWord(sess && sess.language).Create }
                 </RedButton>
               }
-              { editting &&
+              { editing &&
                 <React.Fragment>
                   <ThemeProvider theme={theme}>
                     <TextField
@@ -614,25 +614,25 @@ export default function MBReward(props){
                 </GreenTextButton>
               }
               <div style={{ flex: 1 }} />
-              { window.innerWidth >= 500 && editting &&
+              { window.innerWidth >= 500 && editing &&
                 <GreenTextButton
                   className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-                  onClick={()=>setEditting(false)}>
+                  onClick={()=>setEditing(false)}>
                   { API._getWord(sess && sess.language).Done }
                 </GreenTextButton>
               }
-              { !editting &&
+              { !editing &&
                 <GreenButton
-                  className={classes.buttonMargin} color='primary' onClick={()=>setEditting(!editting)}>
+                  className={classes.buttonMargin} color='primary' onClick={()=>setEditing(!editing)}>
                   { API._getWord(sess && sess.language).Edit }
                 </GreenButton>
               }
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              { window.innerWidth < 500 && editting &&
+              { window.innerWidth < 500 && editing &&
                 <GreenTextButton
                   className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-                  onClick={()=>setEditting(false)}>
+                  onClick={()=>setEditing(false)}>
                   { API._getWord(sess && sess.language).Done }
                 </GreenTextButton>
               }
@@ -652,7 +652,7 @@ export default function MBReward(props){
                   <ListItemText style={{ color: 'white' }} className={classes.listText}
                     primary={ ( API._getWord(sess && sess.language).Last_name )  } />
                 }
-                { !( editting && window.innerWidth < 550 ) &&
+                { !( editing && window.innerWidth < 550 ) &&
                   <ListItemText style={{ color: 'white' }} className={classes.listPrize}
                     primary={ API._getWord(sess && sess.language).Prize } />
                 }
@@ -678,7 +678,7 @@ export default function MBReward(props){
                           data={d}
                           setData={setData}
                           setMatchDetail={setMatchDetail}
-                          editting={editting}
+                          editing={editing}
                           mainClassSelected={mainClassSelected} />
                       );
                     })

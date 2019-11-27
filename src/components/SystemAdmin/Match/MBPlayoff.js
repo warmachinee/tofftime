@@ -122,7 +122,7 @@ function PlayoffContainer(props){
   const { sess, token, setCSRFToken, matchid, handleSnackBar, data, setData, setMatchDetail, mainClassSelected } = props
 
   function handleUpdatePlayoff(selected){
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.emit('admin-match-client-message', {
       action: "updateplayoff",
       matchid: matchid,

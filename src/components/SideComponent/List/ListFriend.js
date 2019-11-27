@@ -25,7 +25,7 @@ import {
 } from '@material-ui/icons';
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => null
 });
 
@@ -157,7 +157,7 @@ function ListFriendItem(props) {
     if(sess){
       responseConfirmFriend(sess.userid, userid)
       setTimeout(()=>{
-        const socket = socketIOClient( API._getWebURL() )
+        const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
         socket.emit('friend-client-message', {
           action: action,
           userid: sess.userid,
@@ -169,7 +169,7 @@ function ListFriendItem(props) {
 
   function responseConfirmFriend(sessid, targetid){
     if(sessid && targetid){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.on(`${sessid}-${targetid}-friend-request-server-message`, (messageNew) => {
         if(messageNew && /success/.test(messageNew.status) && messageNew.result && /success/.test(messageNew.result.status)){
           handleClose()

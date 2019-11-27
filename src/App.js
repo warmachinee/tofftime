@@ -345,6 +345,23 @@ export default function App() {
     await detectWebp()
   }
 
+  async function handleReportError(errMsg){
+    const resToken = await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      resToken.token,
+      'report_error', {
+        action: 'assign',
+        type: 'normal',
+        message: errMsg.message,
+        url: errMsg.url,
+        stack: errMsg.stack,
+        file: errMsg.file,
+        object: '',
+    }, (csrf, d) =>{
+      //console.log(d);
+    })
+  }
+
   function detectOnError(msg){
     if(msg){
       console.log(msg);
@@ -352,13 +369,12 @@ export default function App() {
       const url = msg.currentTarget.location.href
       const file = msg.filename
       const stack = msg.error.stack
-      var alertMessage = [
-        'Message: ' + message,
-        'URL: ' + url,
-        'File: ' + file,
-        'Stack: ' + stack,
-      ].join('\n');
-      console.log(alertMessage);
+      handleReportError({
+        message: message,
+        url: url,
+        stack: stack,
+        file: file,
+      })
       //alert(alertMessage);
     }
   }

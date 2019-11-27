@@ -32,7 +32,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -193,7 +193,7 @@ export default function LocationList(props){
     if(e){
       setSearchField(e.target.value)
       if(sess){
-        const socket = socketIOClient( API._getWebURL() )
+        const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
         socket.emit('search-client-message', {
           action: "field",
           userid: sess.userid,
@@ -207,7 +207,7 @@ export default function LocationList(props){
 
   function responseField(){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.on(`${sess.userid}-field-search-server-message`, (messageNew) => {
         setData(messageNew.result.infolist)
       })
@@ -231,7 +231,7 @@ export default function LocationList(props){
 
   function handleLoadDefaultField(){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('search-client-message', {
         action: "field",
         userid: sess.userid,

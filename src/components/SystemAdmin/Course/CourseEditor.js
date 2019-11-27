@@ -251,7 +251,7 @@ function HCPPanel(props){
 
 export default function CourseEditor(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, edittingField, setEdittingField, pageOrganizer, pageData, afterSuccess } = props
+  const { sess, token, setCSRFToken, isSupportWebp, handleSnackBar, editingField, setEditingField, pageOrganizer, pageData, afterSuccess } = props
   const [ location, setLocation ] = React.useState(null)
   const [ holeScore, setHoleScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
   const [ hcpScore, setHCPScore ] = React.useState(['','','','','','','','','','','','','','','','','',''])
@@ -312,8 +312,8 @@ export default function CourseEditor(props){
   }
 
   function handleCancel(){
-    if(edittingField){
-      setEdittingField(null)
+    if(editingField){
+      setEditingField(null)
     }
     afterSuccess()
   }
@@ -415,8 +415,8 @@ export default function CourseEditor(props){
     const formData = new FormData()
     const sendObj = {
       action: 'edit',
-      fieldid: edittingField.fieldid,
-      usertarget: edittingField.hostid
+      fieldid: editingField.fieldid,
+      usertarget: editingField.hostid
     };
 
     if(location){
@@ -464,7 +464,7 @@ export default function CourseEditor(props){
         }
       })
       if(selectedFile){
-        handleEditPicture(edittingField.fieldid)
+        handleEditPicture(editingField.fieldid)
       }else{
         if(statusRes.every(item => /success/.test(item))){
           afterSuccess()
@@ -481,12 +481,12 @@ export default function CourseEditor(props){
 
   async function handleFetchLoadFieldVersion(){
     const resToken = token? token : await API._xhrGet('getcsrf')
-    if(edittingField){
+    if(editingField){
       await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
           action: 'versioncount',
-          fieldid: edittingField.fieldid
+          fieldid: editingField.fieldid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         setCourseVersion(d)
@@ -499,27 +499,27 @@ export default function CourseEditor(props){
 
   async function handleFetchLoadField(version){
     const resToken = token? token : await API._xhrGet('getcsrf')
-    if(edittingField){
+    if(editingField){
       await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
           action: 'score',
-          fieldid: edittingField.fieldid,
+          fieldid: editingField.fieldid,
           fieldversion: version
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         try {
           setHoleScore(d.fieldscore)
           setHCPScore(d.hfieldscore)
-          setLocation(edittingField.fieldname)
-          setTempFile(API._getPictureUrl(edittingField.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString())
+          setLocation(editingField.fieldname)
+          setTempFile(API._getPictureUrl(editingField.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString())
         }catch(err) { console.log(err.message) }
       })
     }
   }
 
   React.useEffect(()=>{
-    if(edittingField){
+    if(editingField){
       handleFetchLoadFieldVersion()
     }
   }, [ ])
@@ -529,7 +529,7 @@ export default function CourseEditor(props){
       <Typography component="div">
         <Box className={classes.headerText} m={1}>
           {
-            edittingField?
+            editingField?
             ( API._getWord(sess && sess.language).Edit_Course )
             :
             ( API._getWord(sess && sess.language).Create_Course )
@@ -569,7 +569,7 @@ export default function CourseEditor(props){
           </GreenButton>*/
         }
       </div>
-      { sess && sess.typeid === 'admin' && !edittingField &&
+      { sess && sess.typeid === 'admin' && !editingField &&
         <div>
           <FormControl component="fieldset">
             <FormControlLabel
@@ -658,9 +658,9 @@ export default function CourseEditor(props){
           { API._getWord(sess && sess.language).Cancel }
         </GreenTextButton>
         <GreenButton className={classes.button} variant="contained"
-          onClick={ edittingField? handleEdit : handleCreate}>
+          onClick={ editingField? handleEdit : handleCreate}>
           {
-            edittingField?
+            editingField?
             ( API._getWord(sess && sess.language).Save )
             :
             ( API._getWord(sess && sess.language).Create )

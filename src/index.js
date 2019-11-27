@@ -4,13 +4,9 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from "react-router-dom";
 import './index.css';
 import './style.css';
+import App from './App'
 import * as serviceWorker from './serviceWorker';
 import { LDCircular } from './components/loading/LDCircular'
-
-const App = Loadable({
-  loader: () => import(/* webpackChunkName: "App" */'./App'),
-  loading: () => <LDCircular />
-});
 
 const SomthingWrongPage = Loadable({
   loader: () => import(/* webpackChunkName: "SomthingWrongPage" */'./components/Utils/SomthingWrongPage'),
@@ -31,7 +27,6 @@ class RenderApp extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    console.log(error);
     this.setState({ errMsg : {
       error: error,
       stack: info.componentStack
@@ -47,16 +42,55 @@ class RenderApp extends React.Component {
 
     return (
       <Router>
-        <App />
+        {/localhost/.test(window.location.href) ? <TestFunction /> : <App />}
       </Router>
     );
   }
 }
 
+/*
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/serviceWorker.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}*/
+
 ReactDOM.render(<RenderApp />, document.getElementById('root'));
+
+import EntireLog from './components/SystemAdmin/Log/EntireLog'
+import ErrorDetection from './components/SystemAdmin/Log/ErrorDetection'
+import * as API from './api'
+import * as COLOR from './api/palette'
+import * as BTN from './components/Button'
+
+function TestFunction() {
+  return (
+    <div style={{
+      minHeight: window.innerHeight * .8,
+      maxWidth: 1200,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      padding: '24px 16px',
+      overflow: 'auto',
+      overflowScrolling: 'touch',
+      WebkitOverflowScrolling: 'touch',
+    }}>
+      <ErrorDetection API={API} COLOR={COLOR} BTN={BTN} />
+    </div>
+  );
+}
+
+//ReactDOM.render(TestFunction, document.getElementById('root'));
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 //serviceWorker.unregister();
-serviceWorker.register();
+//serviceWorker.register();

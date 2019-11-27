@@ -45,7 +45,7 @@ const LabelText = Loadable({
 });
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -122,9 +122,9 @@ export default function CourseBody(props){
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ searchField, setSearchField ] = React.useState('')
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
   const [ removeState, setRemoveState ] = React.useState(false)
-  const [ edittingField, setEdittingField ] = React.useState(null)
+  const [ editingField, setEditingField ] = React.useState(null)
   const [ selectedDeleteItem, handleSelectedDeleteItem ] = React.useState(false)
 
   function handleDelete(){
@@ -142,21 +142,21 @@ export default function CourseBody(props){
   }
 
   function handleCreateCourse(){
-    setEdittingField(null)
-    toggleEditting()
+    setEditingField(null)
+    toggleEditing()
   }
 
-  function toggleEditting(){
-    setEditting(!editting)
+  function toggleEditing(){
+    setEditing(!editing)
   }
 
-  function handleEdittingClose(){
-    setEditting(false)
+  function handleEditingClose(){
+    setEditing(false)
   }
 
   function handleEditCourse(data){
-    setEdittingField(data)
-    toggleEditting()
+    setEditingField(data)
+    toggleEditing()
   }
 
   async function handleFetchToggleOfficial(data){
@@ -220,7 +220,7 @@ export default function CourseBody(props){
 
   React.useEffect(()=>{
     handleFetch()
-  },[ open, editting ])
+  },[ open, editing ])
 
   return(
     <div className={classes.root}>
@@ -327,12 +327,12 @@ export default function CourseBody(props){
           )
         }
       </List>
-      <TemplateDialog open={editting} handleClose={handleEdittingClose} maxWidth={700}>
+      <TemplateDialog open={editing} handleClose={handleEditingClose} maxWidth={700}>
         <CourseEditor
           {...props}
-          afterSuccess={handleEdittingClose}
-          edittingField={edittingField}
-          setEdittingField={setEdittingField} />
+          afterSuccess={handleEditingClose}
+          editingField={editingField}
+          setEditingField={setEditingField} />
       </TemplateDialog>
       <TemplateDialog
         maxWidth={400}

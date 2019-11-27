@@ -28,7 +28,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -196,8 +196,8 @@ export default function User(props){
 
   const [ open, setOpen ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
-  const [ editting, setEditting ] = React.useState(false)
-  const [ edittingUser, setEdittingUser ] = React.useState(null)
+  const [ editing, setEditing ] = React.useState(false)
+  const [ editingUser, setEditingUser ] = React.useState(null)
   const [ dataSliced, setDataSliced ] = React.useState(10)
   const [ createState, setCreateState ] = React.useState(false)
   const [ searchUser, setSearchUser ] = React.useState('')
@@ -210,7 +210,7 @@ export default function User(props){
 
   function handleOpen(d){
     setOpen(!open)
-    setEdittingUser(d)
+    setEditingUser(d)
     setFullname(d.fullname)
     setLastname(d.lastname)
   }
@@ -334,11 +334,11 @@ export default function User(props){
   }
 
   async function handleEditUser(){
-    console.log(edittingUser);
+    console.log(editingUser);
     console.log({
       fullname: fullname,
       lastname: lastname,
-      usertarget: edittingUser.userid
+      usertarget: editingUser.userid
     });
   }
 
@@ -430,7 +430,7 @@ export default function User(props){
         />
       </ThemeProvider>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <GreenTextButton onClick={()=>setEditting(!editting)}>Edit</GreenTextButton>
+        <GreenTextButton onClick={()=>setEditing(!editing)}>Edit</GreenTextButton>
       </div>
       <List className={classes.listRoot}>
         <ListItem role={undefined} style={{ backgroundColor: grey[900], borderRadius: 4, cursor: 'auto', }}>
@@ -448,7 +448,7 @@ export default function User(props){
             return value && (
               <React.Fragment key={value.firstname + `(${value.userid})`}>
                 <ListItem role={undefined}
-                  style={{ cursor: editting? 'pointer' : 'auto' }}>
+                  style={{ cursor: editing? 'pointer' : 'auto' }}>
                   <ListItemText className={classes.listText} primary={value.fullname}
                     secondary={
                       window.innerWidth < 500 &&
@@ -468,7 +468,7 @@ export default function User(props){
                     <ListItemText className={classes.listText} primary={value.lastname} />
                   }
                   <ListItemIcon>
-                    { editting?
+                    { editing?
                       <IconButton
                         onClick={()=>handleOpen(value)}>
                         <CreateIcon classes={{ root: classes.createIcon }} />
@@ -531,7 +531,7 @@ export default function User(props){
               Edit user
             </Box>
           </Typography>
-          { selectedFile || ( edittingUser && edittingUser.photopath )?
+          { selectedFile || ( editingUser && editingUser.photopath )?
             <div style={{ position: 'relative', marginTop: 16, marginBottom: 8, border: `1px solid ${grey[400]}` }}
               onMouseEnter={()=>handleFileHover(true)}
               onMouseLeave={()=>handleFileHover(false)}>
@@ -542,7 +542,7 @@ export default function User(props){
                   selectedFile ?
                   tempFile
                   :
-                  ( isSupportWebp? edittingUser.photopath + '.webp': edittingUser.photopath + '.jpg' )
+                  ( isSupportWebp? editingUser.photopath + '.webp': editingUser.photopath + '.jpg' )
                 } />
               { imgRef.current &&
                 <div

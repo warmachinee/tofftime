@@ -93,7 +93,7 @@ export default function ScoreDisplay(props){
   const [ host, setHost ] = React.useState(null)
 
   function handleFetch(){
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     const userid = hostUserid? hostUserid : parseInt(props.computedMatch.params.userid)
     socket.on(`${matchid}-${userid}-show-server-message`, (messageNew) => {
       if(/success/.test(messageNew.status)){

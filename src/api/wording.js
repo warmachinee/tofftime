@@ -1,7 +1,7 @@
 export default function _getWord(lang){
+  const Declarative = {}
   const Interrogative = {}
   const Imperative = {}
-  const Declarative = {}
 
   Declarative['The number of the player who will get a reward.'] = function(){
     switch (lang) {
@@ -2002,8 +2002,10 @@ export default function _getWord(lang){
   }
 
   return {
+    ...Declarative,
     ...Interrogative,
     ...Imperative,
+    ...Notifications,
     ...Action,
     ...Status,
     ...Name,

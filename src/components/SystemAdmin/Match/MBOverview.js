@@ -23,7 +23,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -601,7 +601,7 @@ export default function MBOverview(props){
                 </FormControl>
                 {/*
                   <GreenTextButton
-                    disabled={!editting}
+                    disabled={!editing}
                     className={classes.button}
                     variant="outlined"
                     onClick={()=>handleOpen('class')}>
@@ -674,7 +674,7 @@ export default function MBOverview(props){
                 { /*
                   <FormControl component="fieldset" className={classes.margin}
                     style={{ width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid', padding: '4px 16px 8px 24px', borderRadius: 4 }}
-                    disabled={!editting}>
+                    disabled={!editing}>
                     <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
                     <RadioGroup
                       value={

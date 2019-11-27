@@ -29,7 +29,7 @@ const LabelText = Loadable({
 });
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */ './../Utils/Dialog/TemplateDialog'),
   loading: () => null
 });
 
@@ -181,7 +181,7 @@ function ListNotiItem(props) {
 
   function handleJoinMatch(userid, action, side){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('match-request-client-message', {
         action: 'confirm',
         matchid: data.typeid,
@@ -196,7 +196,7 @@ function ListNotiItem(props) {
 
   function handleConfirmFriend(userid, action){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('friend-client-message', {
         action: 'confirm',
         userid: sess.userid,

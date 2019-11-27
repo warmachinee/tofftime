@@ -31,7 +31,7 @@ import {
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -118,7 +118,7 @@ const theme = createMuiTheme({
 
 function ListDummy(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, data, editting, setEditting, removeState, setDummyData, handleOpen } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, data, editing, setEditing, removeState, setDummyData, handleOpen } = props
   const [ fullname, setFullname ] = React.useState(data.fullname)
   const [ lastname, setLastname ] = React.useState(data.lastname)
 
@@ -149,7 +149,7 @@ function ListDummy(props){
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         if(/success/.test(d.status)){
-          setEditting(false)
+          setEditing(false)
         }
         handleLoadDummy()
       })
@@ -176,7 +176,7 @@ function ListDummy(props){
       <ListItemText
         style={{ padding: '0 16px', width: '100%' }}
         primary={
-          editting ?
+          editing ?
           <TextField
             className={classes.textField}
             label={API._getWord(sess && sess.language).First_name}
@@ -190,7 +190,7 @@ function ListDummy(props){
       <ListItemText
         style={{ padding: '0 16px', width: '100%' }}
         primary={
-          editting ?
+          editing ?
           <TextField
             className={classes.textField}
             label={API._getWord(sess && sess.language).Last_name}
@@ -201,14 +201,14 @@ function ListDummy(props){
           :
           <Typography variant="body1">{lastname}</Typography>
         } />
-      { (editting || removeState) &&
+      { (editing || removeState) &&
         <React.Fragment>
-          { ( editting || !removeState ) &&
+          { ( editing || !removeState ) &&
             <ListItemIcon>
               <GreenButton onClick={handleEditDummy}>Save</GreenButton>
             </ListItemIcon>
           }
-          { ( !editting || removeState ) &&
+          { ( !editing || removeState ) &&
             <ListItemIcon>
               <IconButton onClick={()=>handleOpen(data)}>
                 <DeleteIcon />
@@ -229,7 +229,7 @@ export default function DummyPlayer(props){
   const [ searchUser, setSearchUser ] = React.useState('')
   const [ fullname, setFullname ] = React.useState('')
   const [ lastname, setLastname ] = React.useState('')
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
   const [ removeState, setRemoveState ] = React.useState(false)
   const [ selectedDeleteItem, handleSelectedDeleteItem ] = React.useState(false)
 
@@ -362,9 +362,9 @@ export default function DummyPlayer(props){
       </div>
       <LabelText text={API._getWord(sess && sess.language).Edit_Dummy} style={{ marginBottom: 24 }} />
       <div style={{ display: 'flex', padding: '0 12px' }}>
-        { ( editting || !removeState ) &&
-          <GreenTextButton variant="outlined" onClick={()=>setEditting(!editting)}>
-            {editting ?
+        { ( editing || !removeState ) &&
+          <GreenTextButton variant="outlined" onClick={()=>setEditing(!editing)}>
+            {editing ?
               (API._getWord(sess && sess.language).Done)
               :
               (API._getWord(sess && sess.language).Edit)
@@ -372,7 +372,7 @@ export default function DummyPlayer(props){
           </GreenTextButton>
         }
         <div style={{ flexGrow: 1 }} />
-        { ( !editting || removeState ) &&
+        { ( !editing || removeState ) &&
           <GreenTextButton variant="outlined" onClick={()=>setRemoveState(!removeState)}>
             {removeState ?
               (API._getWord(sess && sess.language).Done)
@@ -387,7 +387,7 @@ export default function DummyPlayer(props){
           ( data.length > 0 ?
             data.map( d =>
               <ListDummy {...props} key={d.userid} data={d}
-                editting={editting} setEditting={setEditting}
+                editing={editing} setEditing={setEditing}
                 removeState={removeState} setDummyData={setData} handleOpen={handleOpen} />
             )
             :

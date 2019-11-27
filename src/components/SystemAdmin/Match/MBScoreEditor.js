@@ -605,7 +605,7 @@ export default function MBScoreEditor(props){
 
   function handleScoreDisplay(newVal){
     return new Promise(resolve => {
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('player-show-client-message', {
         action: "showplayerscore",
         matchid: matchid,
@@ -624,7 +624,7 @@ export default function MBScoreEditor(props){
   }, [ arrScore, oldSelected, selected ])
 
   function handleUpdateScore(){
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.emit('admin-match-client-message', {
       action: "scorebysystemadmin",
       matchid: matchid,
@@ -640,7 +640,7 @@ export default function MBScoreEditor(props){
   }
 
   function responseUpdateScore(){
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`admin-match-status-${matchid}-server-message`, (messageNew) => {
       const d = messageNew.status
       if(!/fail/.test(d)){

@@ -44,7 +44,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -221,9 +221,9 @@ const theme = createMuiTheme({
 export default function MBPlayer(props){
   const classes = useStyles();
   const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
-  const [ editting, setEditting ] = React.useState(false);
-  const [ edittingClass, setEdittingClass ] = React.useState(false);
-  const [ edittingDisplay, setEdittingDisplay ] = React.useState(false);
+  const [ editing, setEditing ] = React.useState(false);
+  const [ editingClass, setEditingClass ] = React.useState(false);
+  const [ editingDisplay, setEditingDisplay ] = React.useState(false);
   const [ open, setOpen ] = React.useState(false);
   const [ displayModal, setDisplayModal ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
@@ -309,24 +309,24 @@ export default function MBPlayer(props){
     setChecked(newChecked);
   };
 
-  function handleEdittingDisplay(){
-    setEdittingDisplay(!edittingDisplay)
+  function handleEditingDisplay(){
+    setEditingDisplay(!editingDisplay)
 
     setChecked([])
   }
 
-  function handleDoneEditting(){
-    setEditting(!editting)
+  function handleDoneEditing(){
+    setEditing(!editing)
     setChecked([])
   }
 
-  function handleDoneEdittingClass(){
-    setEdittingClass(!edittingClass)
+  function handleDoneEditingClass(){
+    setEditingClass(!editingClass)
     setChecked([])
   }
 
-  function handleDoneEdittingDisplay(){
-    setEdittingDisplay(!edittingDisplay)
+  function handleDoneEditingDisplay(){
+    setEditingDisplay(!editingDisplay)
   }
 
   function handleSave(){
@@ -453,7 +453,7 @@ export default function MBPlayer(props){
         }catch(err) { console.log(err.message) }
       })
     }else{
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('match-request-client-message', {
         action: "confirm",
         matchid: matchid,
@@ -571,7 +571,7 @@ export default function MBPlayer(props){
 
   React.useEffect(()=>{
     setSelectedClass(0)
-  },[ edittingClass ])
+  },[ editingClass ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -603,17 +603,17 @@ export default function MBPlayer(props){
               <div
                 className={classes.controlsEdit}
                 style={{
-                  border: edittingClass && '0 solid',
-                  justifyContent: (editting || edittingClass || edittingDisplay)? 'flex-end' : 'space-around',
+                  border: editingClass && '0 solid',
+                  justifyContent: (editing || editingClass || editingDisplay)? 'flex-end' : 'space-around',
                 }}>
-                { !editting && !edittingClass &&
+                { !editing && !editingClass &&
                   (
-                    edittingDisplay?
-                    <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEdittingDisplay}>
+                    editingDisplay?
+                    <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEditingDisplay}>
                       { API._getWord(sess && sess.language).Done }
                     </GreenTextButton>
                     :
-                    <GreenTextButton className={classes.controlsEditButton} onClick={handleEdittingDisplay}>
+                    <GreenTextButton className={classes.controlsEditButton} onClick={handleEditingDisplay}>
                       <DesktopMacIcon
                         style={{ left:
                           window.innerWidth > 500? 0 :
@@ -624,14 +624,14 @@ export default function MBPlayer(props){
                     </GreenTextButton>
                   )
                 }
-                { !editting && !edittingDisplay && matchDetail &&/*style={{ padding: '8px 36px', margin: '2px 0' }}*/
+                { !editing && !editingDisplay && matchDetail &&/*style={{ padding: '8px 36px', margin: '2px 0' }}*/
                   (
-                    edittingClass?
+                    editingClass?
                     <React.Fragment>
                       {
                         matchDetail.scorematch !== 0?
                         <React.Fragment>
-                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
+                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
                             { API._getWord(sess && sess.language).Done }
                           </GreenTextButton>
                           <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
@@ -640,14 +640,14 @@ export default function MBPlayer(props){
                         </React.Fragment>
                         :
                         <React.Fragment>
-                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingClass}>
+                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
                             { API._getWord(sess && sess.language).Done }
                           </GreenTextButton>
                         </React.Fragment>
                       }
                     </React.Fragment>
                     :
-                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEdittingClass(!edittingClass)}>
+                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditingClass(!editingClass)}>
                       <ClassIcon
                         style={{ left:
                           window.innerWidth > 500? 0 :
@@ -666,15 +666,15 @@ export default function MBPlayer(props){
                     </GreenTextButton>
                   )
                 }
-                { !edittingClass && !edittingDisplay &&
+                { !editingClass && !editingDisplay &&
                   (
-                    editting?
+                    editing?
                     <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
-                      onClick={handleDoneEditting}>
+                      onClick={handleDoneEditing}>
                       { API._getWord(sess && sess.language).Done }
                     </GreenTextButton>
                     :
-                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditting(!editting)}>
+                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditing(!editing)}>
                       <DeleteIcon
                         style={{ left:
                           window.innerWidth > 500? 0 :
@@ -688,7 +688,7 @@ export default function MBPlayer(props){
               </div>
             </ListItem>
             <ListItem disableGutters className={classes.controlsSecondary}>
-              { edittingClass && matchDetail &&
+              { editingClass && matchDetail &&
                 function(){
                   switch (matchDetail.scorematch) {
                     case 0:
@@ -763,13 +763,13 @@ export default function MBPlayer(props){
                   }
                 }()
               }
-              { editting && checked.length > 0 &&
+              { editing && checked.length > 0 &&
                 <GreenTextButton className={classes.controlsEditButton} style={{ marginTop: 1, marginBottom: 1 }} onClick={handleRemovePlayer}>
                   <DeleteIcon />
                   { API._getWord(sess && sess.language).Remove }
                 </GreenTextButton>
               }
-              {/* !( editting || edittingClass) &&
+              {/* !( editing || editingClass) &&
                 <div style={{ height: 42 }}></div>
                 */
               }
@@ -835,12 +835,12 @@ export default function MBPlayer(props){
               </div>
             }
             <div style={{ overflow: 'auto', position: 'relative' }}>
-              {/* ( editting || edittingClass || edittingDisplay ) &&
+              {/* ( editing || editingClass || editingDisplay ) &&
                 <Typography component="div">
                   <Box className={classes.notice} m={1}>
-                    { edittingDisplay && 'Click the list to toggle the player display.'}
-                    { edittingClass && 'Select class and player to change player class.'}
-                    { editting && 'Select the list to delete multiple or Hit the icon on the right to delete single.'}
+                    { editingDisplay && 'Click the list to toggle the player display.'}
+                    { editingClass && 'Select class and player to change player class.'}
+                    { editing && 'Select the list to delete multiple or Hit the icon on the right to delete single.'}
                   </Box>
                 </Typography>*/
               }
@@ -885,25 +885,25 @@ export default function MBPlayer(props){
 
                     return value && (
                       <React.Fragment key={value.userid}>
-                        <ListItem role={undefined} button={editting || edittingClass || edittingDisplay}
+                        <ListItem role={undefined} button={editing || editingClass || editingDisplay}
                           onClick={()=>
-                            ( editting || edittingClass )?
+                            ( editing || editingClass )?
                             handleToggle(value):
-                            ( edittingDisplay && value.classno !== 0?
+                            ( editingDisplay && value.classno !== 0?
                               handleSelectedPlayer(value)
                               :
                               console.log()
                             )
                           }>
                           <ListItemIcon>
-                            { ( editting || edittingClass )?
+                            { ( editing || editingClass )?
                               <GreenCheckbox
                                 edge="start"
                                 checked={checked.indexOf(value) !== -1}
                                 tabIndex={-1}
                                 disableRipple />
                               :
-                              (edittingDisplay && value.classno !== 0 ?
+                              (editingDisplay && value.classno !== 0 ?
                                 <GreenCheckbox
                                   edge="start"
                                   checked={value.display === 1}
@@ -1003,7 +1003,7 @@ export default function MBPlayer(props){
                             )
                           }
                           <ListItemIcon style={{ justifyContent: 'flex-end' }}>
-                            {/* editting?
+                            {/* editing?
                               <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
                                 <DeleteIcon classes={{ root: classes.deleteIcon}} />
                               </IconButton>

@@ -46,6 +46,8 @@ const urlLink = {
   loadusersystem: _getWebURL() + '/users/loadusersystem',
   uusersystem: _getWebURL() + '/users/usersystem',
   //--------------------Admin--------------------
+  load_error: _getWebURL() + '/admin/load_error',
+  report_error: _getWebURL() + '/admin/report_error',
   loadmatch: _getWebURL() + '/admin/loadmatch',
   loaduser: _getWebURL() + '/admin/loaduser',
   matchsystem: _getWebURL() + '/admin/matchsystem',
@@ -80,8 +82,6 @@ const urlLink = {
   ppagesystem: _getWebURL() + '/page/pagesystem',
   ppagesection: _getWebURL() + '/page/pagesection',
 }
-
-const urlHeader = [ 'https://www.', 'https://' ]
 
 /*
  * Fetch function
@@ -376,6 +376,18 @@ function _getTodayTime(){
   return time
 }
 
+function _dateToTimeString(d){
+  if(d){
+    const today = new Date(d)
+    const hr = ( today.getHours() < 10 )? '0' + today.getHours() : today.getHours()
+    const min = ( today.getMinutes() < 10 )? '0' + today.getMinutes() : today.getMinutes()
+    const time = hr + ":" + min
+    return time
+  }else{
+    console.log('ERROR _dateToTimeString', d);
+  }
+}
+
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -506,7 +518,9 @@ export {
   _dateSendToAPI,
   _dateToString,
   _stringToDate,
+
   _getTodayTime,
+  _dateToTimeString,
 
   _handleHoleSum,
   _prefixNumber,

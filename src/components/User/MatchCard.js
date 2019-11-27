@@ -74,7 +74,7 @@ export default function MatchCard(props) {
 
   function handleJoinMatch(){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('match-request-client-message', {
         action: 'join',
         matchid: data.matchid,

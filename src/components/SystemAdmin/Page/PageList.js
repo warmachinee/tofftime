@@ -24,7 +24,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -127,7 +127,7 @@ export default function PageList(props){
   const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
 
   function handleOpen(){
     setOpen(true);
@@ -213,8 +213,8 @@ export default function PageList(props){
           Add page
         </RedButton>
         <div style={{ flex: 1 }} />
-        <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>
-          { editting? 'Done':'Remove from list' }
+        <GreenTextButton color="primary" onClick={()=>setEditing(!editing)}>
+          { editing? 'Done':'Remove from list' }
         </GreenTextButton>
       </div>
       <List>
@@ -269,7 +269,7 @@ export default function PageList(props){
                     </React.Fragment>
                   } />
                 <ListItemIcon className={classes.tableAction}>
-                  { editting?
+                  { editing?
                     <IconButton style={{ padding: 0 }} edge="end" onClick={()=>handleRemove(d)}>
                       <DeleteIcon classes={{ root: classes.deleteIcon }} />
                     </IconButton>

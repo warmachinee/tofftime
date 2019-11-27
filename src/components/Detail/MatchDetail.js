@@ -80,7 +80,7 @@ export default function MatchDetail(props){
 
   function response(action){
     const matchid = parseInt(props.computedMatch.params.matchid)
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
       if(messageNew && /success/.test(messageNew.status)){
         const d = messageNew.result

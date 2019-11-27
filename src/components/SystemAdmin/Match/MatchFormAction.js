@@ -97,7 +97,7 @@ export default function MatchTeam(props) {
   const { sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp, selectedUser, handleClose } = props
 
   function handleUpdateForm(action){
-    const socket = socketIOClient(API._getWebURL())
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.emit('match-request-client-message', {
       action: "confirm",
       matchid: matchid,

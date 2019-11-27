@@ -324,7 +324,6 @@ export default function UserPage(props) {
         <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}
           render={()=> <UpcomingList {...props} {...dialogProps} />} />
       </main>
-
       <NotificationsDialog
         {...props}
         {...dialogProps}

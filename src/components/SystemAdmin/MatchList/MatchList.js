@@ -21,7 +21,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -118,7 +118,7 @@ export default function MatchList(props){
   const { token, setCSRFToken, handleSnackBar, isSupportWebp } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false);
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
 
   function handleOpen(){
     setOpen(true);
@@ -204,8 +204,8 @@ export default function MatchList(props){
           Add match
         </RedButton>
         <div style={{ flex: 1 }} />
-        <GreenTextButton color="primary" onClick={()=>setEditting(!editting)}>
-          { editting? 'Done':'Remove from list' }
+        <GreenTextButton color="primary" onClick={()=>setEditing(!editing)}>
+          { editing? 'Done':'Remove from list' }
         </GreenTextButton>
       </div>
       <List>
@@ -229,7 +229,7 @@ export default function MatchList(props){
             <React.Fragment key={d.matchid}>
               <ListItem>
                 { window.innerWidth >= 500 &&
-                  <ListItemText primary={d.date} className={classes.tableDate} classes={{ primary: classes.tableDateText }} />
+                  <ListItemText primary={API._dateToString(d.date)} className={classes.tableDate} classes={{ primary: classes.tableDateText }} />
                 }
                 <ListItemText inset={window.innerWidth < 700 && window.innerWidth >=450} primary={d.title} className={classes.tableTitle}
                   secondary={
@@ -245,7 +245,7 @@ export default function MatchList(props){
                           variant="caption"
                           color="textPrimary"
                         >
-                          {d.date}
+                          {API._dateToString(d.date)}
                         </Typography>
                         <br></br>
                         {d.location}
@@ -256,7 +256,7 @@ export default function MatchList(props){
                   <ListItemText inset primary={d.location} className={classes.tableLocation} />
                 }
                 <ListItemIcon className={classes.tableAction}>
-                  { editting?
+                  { editing?
                     <IconButton style={{ padding: 0 }} edge="end" onClick={()=>handleRemove(d)}>
                       <DeleteIcon classes={{ root: classes.deleteIcon }} />
                     </IconButton>

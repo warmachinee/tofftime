@@ -128,7 +128,7 @@ const theme = createMuiTheme({
 
 export default function AnnouncementEditor(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData, isSupportWebp, } = props
+  const { sess, token, setCSRFToken, handleClose, handleSnackBar, clickAction, editingData, isSupportWebp, } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
   const [ dataDetail, setDataDetail ] = React.useState(null)
@@ -136,7 +136,7 @@ export default function AnnouncementEditor(props) {
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
-  const matchPicture = edittingData? edittingData.picture : null
+  const matchPicture = editingData? editingData.picture : null
 
   function handleKeyPress(e){
     if (e === 'Enter'){
@@ -184,7 +184,7 @@ export default function AnnouncementEditor(props) {
   async function handleEdit(){
     const sendObj = {
       action: 'edit',
-      announceid: edittingData.announceid,
+      announceid: editingData.announceid,
       display: true
     };
 
@@ -232,7 +232,7 @@ export default function AnnouncementEditor(props) {
     formData.append('announceimage', selectedFile)
     const d = await API._fetchPostFile('announcemain',`?_csrf=${token? token : res.token}`, {
       action: 'edit',
-      announceid: edittingData.announceid,
+      announceid: editingData.announceid,
       photopath: true,
       display: true,
     }, formData)
@@ -319,7 +319,7 @@ export default function AnnouncementEditor(props) {
   async function handleFetchDetail(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     const d = await API._xhrGet('loadgeneral',
-    `?_csrf=${token? token : resToken.token}&action=announcedetail&announceid=${edittingData.announceid}`
+    `?_csrf=${token? token : resToken.token}&action=announcedetail&announceid=${editingData.announceid}`
     )
     setCSRFToken(d.token)
     setTitle(d.response.title)
@@ -328,7 +328,7 @@ export default function AnnouncementEditor(props) {
   }
 
   React.useEffect(()=>{
-    if(clickAction === 'edit' && edittingData){
+    if(clickAction === 'edit' && editingData){
       handleFetchDetail()
     }
   },[ ])

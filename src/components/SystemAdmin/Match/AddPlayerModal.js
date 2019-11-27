@@ -150,7 +150,7 @@ export default function AddPlayerModal(props){
   const [ lastname, setLastname ] = React.useState('')
 
   function handleInviteUser(d){
-    const socket = socketIOClient( API._getWebURL() )//[0] : hostid , [1] : targetuserid
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )//[0] : hostid , [1] : targetuserid
 
     socket.emit('match-request-client-message', {
       action: "invite",
@@ -224,7 +224,7 @@ export default function AddPlayerModal(props){
     if(e){
       setSearchUser(e.target.value)
       if(sess){
-        const socket = socketIOClient( API._getWebURL() )
+        const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
         socket.emit('search-client-message', {
           action: "person",
           userid: sess.userid,
@@ -238,7 +238,7 @@ export default function AddPlayerModal(props){
 
   function handleLoadPersonDefault(){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('search-client-message', {
         action: "person",
         userid: sess.userid,
@@ -249,7 +249,7 @@ export default function AddPlayerModal(props){
 
   function responsePlayer(){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
         setData(messageNew.result.infolist)
       })

@@ -9,14 +9,14 @@ import {
 
 const Btn = withStyles(theme => ({
   root: {
-    color: theme.palette.getContrastText(COLOR.red[600]),
-    backgroundColor: COLOR.red[600],
+    color: theme.palette.getContrastText(COLOR.blue[600]),
+    backgroundColor: COLOR.blue[600],
     '&:hover': {
-      backgroundColor: COLOR.red[800],
+      backgroundColor: COLOR.blue[800],
     },
   },
 }))(props => <Button variant="contained" {...props} />);
 
-export default function Red(props){
+export default function Blue(props){
   return <Btn {...props} />;
 }

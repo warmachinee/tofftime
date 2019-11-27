@@ -36,7 +36,7 @@ const LabelText = Loadable({
 });
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -150,7 +150,7 @@ const theme = createMuiTheme({
 
 function ListComponent(props){
   const classes = useStyles();
-  const { data, editting, setRemoveData, handleConfirmDeleteState } = props
+  const { data, editing, setRemoveData, handleConfirmDeleteState } = props
 
   function handleRemoveMatch(d){
     handleConfirmDeleteState(true)
@@ -181,7 +181,7 @@ function ListComponent(props){
       <ListItemText inset className={classes.tableTitle}
         primary={data.title}
         secondary={
-          ( ( props.open ? window.innerWidth < 1040 : window.innerWidth < 800 ) || editting ) &&
+          ( ( props.open ? window.innerWidth < 1040 : window.innerWidth < 800 ) || editing ) &&
           (
             ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 )?
             data.location
@@ -200,10 +200,10 @@ function ListComponent(props){
             </React.Fragment>
           )
         } />
-      { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editting &&
+      { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editing &&
         <ListItemText inset primary={data.location} className={classes.tableLocation} />
       }
-      { editting &&
+      { editing &&
         <ListItemSecondaryAction>
           <IconButton onClick={()=>handleRemoveMatch(data)}>
             <DeleteIcon />
@@ -219,8 +219,8 @@ export default function MatchBody(props){
   const { sess, token, setCSRFToken, handleSnackBar, pageOrganizer, pageData, pageList } = props
   const [ data, setData ] = React.useState(null)
   const [ dataClassed, setDataClassed ] = React.useState(null)
-  const [ editting, setEditting ] = React.useState(false)
-  const [ edittingDisplay, setEdittingDisplay ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
+  const [ editingDisplay, setEditingDisplay ] = React.useState(false)
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
   const [ removeData, setRemoveData ] = React.useState(null)
   const [ confirmPasswordState, handleConfirmPasswordState ] = React.useState(false)
@@ -231,12 +231,12 @@ export default function MatchBody(props){
     setMatchOwnerStatus(event.target.value);
   };
 
-  function toggleEditting(){
-    setEditting(!editting)
+  function toggleEditing(){
+    setEditing(!editing)
   }
 
-  function toggleEdittingDisplay(){
-    setEdittingDisplay(!edittingDisplay)
+  function toggleEditingDisplay(){
+    setEditingDisplay(!editingDisplay)
   }
 
   function handleConfirmPasswordCancel(){
@@ -407,15 +407,15 @@ export default function MatchBody(props){
         </div>
       }
       <div style={{ display: 'flex', marginTop: 24, justifyContent: 'space-between', boxSizing: 'border-box' }}>
-        <GreenTextButton color="primary" onClick={toggleEdittingDisplay}>
-          { edittingDisplay?
+        <GreenTextButton color="primary" onClick={toggleEditingDisplay}>
+          { editingDisplay?
             ( API._getWord(sess && sess.language).Done )
             :
             ( API._getWord(sess && sess.language).Edit_Display )
           }
         </GreenTextButton>
-        <GreenTextButton color="primary" onClick={toggleEditting}>
-          { editting?
+        <GreenTextButton color="primary" onClick={toggleEditing}>
+          { editing?
             ( API._getWord(sess && sess.language).Done )
             :
             ( API._getWord(sess && sess.language).Remove )
@@ -423,7 +423,7 @@ export default function MatchBody(props){
         </GreenTextButton>
       </div>
       <List style={{ overflow: 'auto', boxSizing: 'border-box' }}>
-        { edittingDisplay?
+        { editingDisplay?
           <ListItem key="Table Head" className={classes.tableHead}>
             <ListItemIcon>
               <div style={{ width: 42 }}></div>
@@ -438,10 +438,10 @@ export default function MatchBody(props){
             <StyledText
               primary={API._getWord(sess && sess.language).View} className={classes.tableView} />
             <StyledText inset primary={ API._getWord(sess && sess.language).Match } className={classes.tableTitle} />
-            { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editting &&
+            { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editing &&
               <StyledText inset primary={ API._getWord(sess && sess.language).Course } className={classes.tableLocation} />
             }
-            { editting &&
+            { editing &&
               <ListItemSecondaryAction>
                 <IconButton>
                   <div style={{ width: 24 }} />
@@ -451,11 +451,11 @@ export default function MatchBody(props){
           </ListItem>
         }
 
-        {data && !data.status && !edittingDisplay && sess &&
+        {data && !data.status && !editingDisplay && sess &&
           data.map( (d, i) =>
             d &&
             <React.Fragment key={i}>
-              { !editting ?
+              { !editing ?
                 <Link className={classes.linkElement}
                   to={
                     sess.typeid === 'admin' ?
@@ -465,12 +465,12 @@ export default function MatchBody(props){
                   <ListComponent data={d} open={props.open} />
                 </Link>
                 :
-                <ListComponent data={d} open={props.open} editting={editting} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
+                <ListComponent data={d} open={props.open} editing={editing} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
               }
               <Divider />
             </React.Fragment>
         )}
-        { dataClassed && edittingDisplay && sess &&
+        { dataClassed && editingDisplay && sess &&
           dataClassed.map( (d, i) =>
             d &&
             <React.Fragment key={i}>

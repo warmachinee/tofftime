@@ -509,14 +509,14 @@ export default function MatchEditor(props){
       setCSRFToken(csrf)
       setWarningObj({
         detail: false,
-        invitation: Boolean(d.formlist),
-        group: Boolean(d.classgroup),
-        schedule: Boolean(d.schedule),
-        player: Boolean(d.classgroup) && Boolean(d.formlist),
-        scorecard: Boolean(d.userscore),
-        playoff: Boolean(d.userscore),
-        reward: Boolean(d.reward),
-        admin: false /*/admin/.test(d.admin)*/,
+        invitation: 'formlist' in d,
+        group: 'classgroup' in d,
+        schedule: 'schedule' in d,
+        player: 'classgroup' in d && 'formlist' in d,
+        scorecard: 'userscore' in d,
+        playoff: 'userscore' in d,
+        reward: 'reward' in d,
+        admin: false,
       })
     })
   }

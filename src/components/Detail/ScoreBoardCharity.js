@@ -124,7 +124,7 @@ export default function ScoreBoardCharity(props){
     max: 0,
     current: 0
   })
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
   const [ userscore, setUserscore ] = React.useState(null)
   const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
@@ -195,7 +195,7 @@ export default function ScoreBoardCharity(props){
 
   function response(){
     const matchid = parseInt(props.computedMatch.params.matchid)
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
       if(messageNew && /success/.test(messageNew.status)){
         const d = messageNew.result
@@ -230,7 +230,7 @@ export default function ScoreBoardCharity(props){
     return (
       <div style={{ margin: '12px auto', display: 'flex', }}>
         <ThemeProvider theme={theme}>
-          { editting ?
+          { editing ?
             <div className={classes.playerLimitChildGrid}>
               <TextField label="Player Limit"
                 autoFocus
@@ -246,7 +246,7 @@ export default function ScoreBoardCharity(props){
             </div>
           }
         </ThemeProvider>
-        <BTN.PrimaryText style={{ marginLeft: 24 }} onClick={()=>setEditting(!editting)}>{ editting ? 'Done' : 'Edit' }</BTN.PrimaryText>
+        <BTN.PrimaryText style={{ marginLeft: 24 }} onClick={()=>setEditing(!editing)}>{ editing ? 'Done' : 'Edit' }</BTN.PrimaryText>
       </div>
     );
   }

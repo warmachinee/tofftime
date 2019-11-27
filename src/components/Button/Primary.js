@@ -15,7 +15,7 @@ const Btn = withStyles(theme => ({
       backgroundColor: COLOR.primary[800],
     },
   },
-}))(Button);
+}))(props => <Button variant="contained" {...props} />);
 
 export default function Primary(props){
   return <Btn {...props} />;

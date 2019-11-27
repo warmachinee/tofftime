@@ -32,7 +32,7 @@ import {
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -110,7 +110,7 @@ export default function MatchTeam(props) {
   const [ period, setPeriod ] = React.useState(0)
   const [ person, setPerson] = React.useState(0)
   const [ autoGen, setAutoGen ] = React.useState(false)
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
   const [ scheduleNumberType, setScheduleNumberType ] = React.useState('person')
 
   function EditNoteComponent(props){
@@ -155,7 +155,7 @@ export default function MatchTeam(props) {
           onChange={e =>setNote(e.target.value)}
           onKeyPress={e =>handleKeyPressEditNote(e)}
           onFocus={e => e.target.select()} />
-        <IconButton onClick={()=>setEditting(false)} style={{ padding: 8, marginTop: 'auto' }}>
+        <IconButton onClick={()=>setEditing(false)} style={{ padding: 8, marginTop: 'auto' }}>
           <CloseIcon fontSize="small" />
         </IconButton>
         <BTN.Primary className={classes.saveButton}
@@ -344,8 +344,8 @@ export default function MatchTeam(props) {
             { matchDetail && matchDetail.team.length !== 0 &&
               <div style={{ marginTop: 16 }}>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  { !editting &&
-                    <BTN.PrimaryText onClick={()=>setEditting(!editting)}>
+                  { !editing &&
+                    <BTN.PrimaryText onClick={()=>setEditing(!editing)}>
                       { API._getWord(sess && sess.language).Edit }
                     </BTN.PrimaryText>
                   }
@@ -354,7 +354,7 @@ export default function MatchTeam(props) {
                   <ListItem style={{ backgroundColor: grey[900] }}>
                     <ListItemText style={{ color: 'white', width: '100%' }}
                       primary={ API._getWord(sess && sess.language).Team } />
-                    { !editting &&
+                    { !editing &&
                       <ListItemText style={{ color: 'white', width: '100%' }}
                         primary={ API._getWord(sess && sess.language).Note } />
                     }
@@ -363,11 +363,11 @@ export default function MatchTeam(props) {
                     matchDetail.team.map( t =>
                       <ListItem key={t.teamno}>
                         <ListItemText
-                          style={{ width: editting ? '20%' : '100%', ...editting && {marginTop: 'auto'} }}
+                          style={{ width: editing ? '20%' : '100%', ...editing && {marginTop: 'auto'} }}
                           primary={t.teamname} />
                         <ListItemText style={{ width: '100%' }} primary={
                           <React.Fragment>
-                            { editting ?
+                            { editing ?
                               <EditNoteComponent data={t} />
                               :
                               ( t.note === '' ? '-' : t.note )
@@ -380,7 +380,7 @@ export default function MatchTeam(props) {
                 </List>
               </div>
             }
-            { !editting &&
+            { !editing &&
               <React.Fragment>
                 { ( period <= 0 || person <= 0 ) ?
                   <Button

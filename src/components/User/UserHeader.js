@@ -123,8 +123,8 @@ export default function UserHeader(props) {
     pageOrganizer, pageData
   } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
-
   const theme = useTheme();
+
   function handleClick(event) {
     setAnchorEl(event.currentTarget);
   }
@@ -154,8 +154,7 @@ export default function UserHeader(props) {
   }
 
   function handleNotifications(){
-    const endpoint = API._getWebURL()
-    const socket = socketIOClient(endpoint)
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`${sess.userid}-noti-server-message`, (messageNew) => {
       if(messageNew){
         handleFetchNotifications()

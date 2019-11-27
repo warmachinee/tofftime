@@ -15,7 +15,7 @@ const Btn = withStyles(theme => ({
       backgroundColor: COLOR.grey[500],
     },
   },
-}))(Button);
+}))(props => <Button variant="contained" {...props} />);
 
 export default function Following(props){
   return <Btn {...props} />;

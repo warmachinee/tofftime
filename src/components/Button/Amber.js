@@ -15,7 +15,7 @@ const Btn = withStyles(theme => ({
       backgroundColor: COLOR.amber[800],
     },
   },
-}))(Button);
+}))(props => <Button variant="contained" {...props} />);
 
 export default function Amber(props){
   return <Btn {...props} />;

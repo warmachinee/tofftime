@@ -9,7 +9,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import * as COLOR from './../../api/palette'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../Utils/Dialog/TemplateDialog'),
   loading: () => null
 });
 
@@ -195,9 +195,9 @@ export default function Profile(props) {
     API, BTN, sess, isSupportWebp, token, setCSRFToken, handleAccountData, accountData, handleSnackBar,
     pageOrganizer, pageData
   } = props
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
   const [ changePasswordState, setChangePasswordState ] = React.useState(false)
-  const [ edittingData, setEdittingData ] = React.useState({
+  const [ editingData, setEditingData ] = React.useState({
     fullname: accountData && accountData.fullname ? accountData.fullname : '',
     lastname: accountData && accountData.lastname ? accountData.lastname : '',
     displayname: accountData && accountData.nickname ? accountData.nickname : '',
@@ -235,8 +235,8 @@ export default function Profile(props) {
     setChangePasswordState(!changePasswordState)
   }
 
-  function toggleEditting(){
-    setEditting(!editting)
+  function toggleEditing(){
+    setEditing(!editing)
   }
 
   function handlePicture(e){
@@ -269,7 +269,7 @@ export default function Profile(props) {
   }
 
   function handlePhoneNumber(num){
-    setEdittingData({ ...edittingData, tel: num.substring(1,4) + num.substring(6,9) + num.substring(12,16)})
+    setEditingData({ ...editingData, tel: num.substring(1,4) + num.substring(6,9) + num.substring(12,16)})
   }
 
   function handleKeyPress(e){
@@ -284,49 +284,49 @@ export default function Profile(props) {
       action: 'editprofile',
     };
 
-    if(accountData.nickname !== edittingData.displayname){
-      Object.assign(sendObj, { displayname: edittingData.displayname });
+    if(accountData.nickname !== editingData.displayname){
+      Object.assign(sendObj, { displayname: editingData.displayname });
     }
 
-    if(accountData.tel !== edittingData.tel){
-      Object.assign(sendObj, { tel: edittingData.tel });
+    if(accountData.tel !== editingData.tel){
+      Object.assign(sendObj, { tel: editingData.tel });
     }
 
-    if(accountData.gender !== edittingData.gender){
-      Object.assign(sendObj, { gender: edittingData.gender });
+    if(accountData.gender !== editingData.gender){
+      Object.assign(sendObj, { gender: editingData.gender });
     }
 
-    if(accountData.fullname !== edittingData.fullname){
-      Object.assign(sendObj, { fullname: edittingData.fullname });
+    if(accountData.fullname !== editingData.fullname){
+      Object.assign(sendObj, { fullname: editingData.fullname });
     }
 
-    if(accountData.lastname !== edittingData.lastname){
-      Object.assign(sendObj, { lastname: edittingData.lastname });
+    if(accountData.lastname !== editingData.lastname){
+      Object.assign(sendObj, { lastname: editingData.lastname });
     }
 
-    if(accountData.privacy !== edittingData.privacy){
-      Object.assign(sendObj, { privacy: edittingData.privacy });
+    if(accountData.privacy !== editingData.privacy){
+      Object.assign(sendObj, { privacy: editingData.privacy });
     }
 
     if(accountData.birthdate){
-      if(API._dateSendToAPI(accountData.birthdate) !== API._dateSendToAPI(edittingData.birthdate)){
-        Object.assign(sendObj, { birthdate: API._dateSendToAPI(edittingData.birthdate) });
+      if(API._dateSendToAPI(accountData.birthdate) !== API._dateSendToAPI(editingData.birthdate)){
+        Object.assign(sendObj, { birthdate: API._dateSendToAPI(editingData.birthdate) });
       }
     }else{
-      Object.assign(sendObj, { birthdate: API._dateSendToAPI(edittingData.birthdate) });
+      Object.assign(sendObj, { birthdate: API._dateSendToAPI(editingData.birthdate) });
     }
 
-    if(accountData.favgolf !== edittingData.favgolf){
-      Object.assign(sendObj, { loftdrive: edittingData.favgolf });
+    if(accountData.favgolf !== editingData.favgolf){
+      Object.assign(sendObj, { loftdrive: editingData.favgolf });
     }
 
-    if(edittingData.password !== edittingData.changePassword){
+    if(editingData.password !== editingData.changePassword){
       setErrorPassword({
         ...errorPassword,
         oldNew: false,
       })
-      if(edittingData.changePassword === edittingData.confirmPassword){
-        Object.assign(sendObj, { originalpass: edittingData.changePassword });
+      if(editingData.changePassword === editingData.confirmPassword){
+        Object.assign(sendObj, { originalpass: editingData.changePassword });
         setErrorPassword({
           oldNew: false,
           changeConfirm: false
@@ -339,7 +339,7 @@ export default function Profile(props) {
       }
     }
 
-    if(edittingData.password === edittingData.changePassword){
+    if(editingData.password === editingData.changePassword){
       setErrorPassword({
         ...errorPassword,
         oldNew: true,
@@ -362,7 +362,7 @@ export default function Profile(props) {
       if(selectedFile){
         handleEditPicture(token? token : resToken.token, '')
       }else{
-        setEditting(false)
+        setEditing(false)
       }
     }
   }
@@ -392,7 +392,7 @@ export default function Profile(props) {
     })
     await handleFetchInfo()
     if(/success/.test(status)){
-      setEditting(false)
+      setEditing(false)
     }
   }
 
@@ -405,7 +405,7 @@ export default function Profile(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleAccountData(d)
-      setEdittingData({
+      setEditingData({
         fullname: d.fullname ? d.fullname : '',
         lastname: d.lastname ? d.lastname : '',
         displayname: d.nickname ? d.nickname : '',
@@ -447,9 +447,9 @@ export default function Profile(props) {
               <IconButton onClick={()=>window.history.back()}>
                 <ChevronLeftIcon fontSize="large"/>
               </IconButton>
-              <BTN.PrimaryText onClick={toggleEditting}>
+              <BTN.PrimaryText onClick={toggleEditing}>
                 {
-                  editting ?
+                  editing ?
                   ( API._getWord(sess && sess.language).Done )
                   :
                   ( API._getWord(sess && sess.language).Edit )
@@ -457,7 +457,7 @@ export default function Profile(props) {
               </BTN.PrimaryText>
             </div>
             <div className={classes.imageGrid}>
-              { editting ?
+              { editing ?
                 <IconButton>
                   <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                   { accountData.photopath ?
@@ -501,15 +501,15 @@ export default function Profile(props) {
                 )
               }
             </div>
-            { editting ?
+            { editing ?
               <List style={{ marginTop: 16 }}>
                 <ListItem>
                   <TextField
                     fullWidth
                     label={ API._getWord(sess && sess.language).First_name }
                     className={classes.margin}
-                    value={edittingData.fullname}
-                    onChange={e => setEdittingData({ ...edittingData, fullname: e.target.value})}
+                    value={editingData.fullname}
+                    onChange={e => setEditingData({ ...editingData, fullname: e.target.value})}
                     onKeyPress={e =>handleKeyPress(e)}
                     onFocus={e => e.target.select()}
                   />
@@ -519,8 +519,8 @@ export default function Profile(props) {
                     fullWidth
                     label={ API._getWord(sess && sess.language).Last_name }
                     className={classes.margin}
-                    value={edittingData.lastname}
-                    onChange={e => setEdittingData({ ...edittingData, lastname: e.target.value})}
+                    value={editingData.lastname}
+                    onChange={e => setEditingData({ ...editingData, lastname: e.target.value})}
                     onKeyPress={e =>handleKeyPress(e)}
                     onFocus={e => e.target.select()}
                   />
@@ -548,15 +548,15 @@ export default function Profile(props) {
               </div>
             }
 
-            { editting &&
+            { editing &&
               <List>
                 <ListItem>
                   <TextField
                     fullWidth
                     label={ API._getWord(sess && sess.language).Nickname }
                     className={classes.margin}
-                    value={edittingData.displayname}
-                    onChange={e => setEdittingData({ ...edittingData, displayname: e.target.value})}
+                    value={editingData.displayname}
+                    onChange={e => setEditingData({ ...editingData, displayname: e.target.value})}
                     onKeyPress={e =>handleKeyPress(e)}
                     onFocus={e => e.target.select()}
                   />
@@ -564,13 +564,13 @@ export default function Profile(props) {
               </List>
             }
 
-            { !editting &&
+            { !editing &&
               <Typography variant="subtitle2" className={classes.email}>
                 { API._getWord(sess && sess.language).email } : {accountData.email}
               </Typography>
             }
 
-            { editting ?
+            { editing ?
               <FormControl component="fieldset" className={classes.margin}
                 style={{
                   width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid',
@@ -580,7 +580,7 @@ export default function Profile(props) {
                 <FormLabel component="legend" style={{ marginLeft: 16 }}>
                   { API._getWord(sess && sess.language).Privacy }
                 </FormLabel>
-                <RadioGroup value={edittingData.privacy} onChange={e => setEdittingData({ ...edittingData, privacy: e.target.value})} row>
+                <RadioGroup value={editingData.privacy} onChange={e => setEditingData({ ...editingData, privacy: e.target.value})} row>
                   <FormControlLabel
                     value={'public'}
                     control={<Radio />}
@@ -621,7 +621,7 @@ export default function Profile(props) {
               </List>
             }
 
-            { editting ?
+            { editing ?
               <List>
                 <ListItem style={{
                     display: 'flex',
@@ -631,8 +631,8 @@ export default function Profile(props) {
                   }}>
                   <Select
                     className={classes.margin}
-                    value={edittingData.gender}
-                    onChange={e => setEdittingData({ ...edittingData, gender: e.target.value})}
+                    value={editingData.gender}
+                    onChange={e => setEditingData({ ...editingData, gender: e.target.value})}
                     input={<OutlinedInput />}
                   >
                     <MenuItem value='-'>
@@ -649,7 +649,7 @@ export default function Profile(props) {
                   <OutlinedInput
                     className={classes.margin}
                     inputComponent={TextMaskCustom}
-                    value={edittingData.tel}
+                    value={editingData.tel}
                     placeholder={ API._getWord(sess && sess.language).Phone_number }
                     onChange={e => handlePhoneNumber(e.target.value)}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -671,7 +671,7 @@ export default function Profile(props) {
               </List>
             }
 
-            { editting ?
+            { editing ?
               <List>
                 <ListItem>
                   <ThemeProvider theme={datePickers}>
@@ -684,8 +684,8 @@ export default function Profile(props) {
                         openTo="year"
                         inputVariant="outlined"
                         format="dd/MM/yyyy"
-                        value={edittingData.birthdate}
-                        onChange={date => setEdittingData({ ...edittingData, birthdate: date})}
+                        value={editingData.birthdate}
+                        onChange={date => setEditingData({ ...editingData, birthdate: date})}
                         onKeyPress={e =>handleKeyPress(e)}
                       />
                     </MuiPickersUtilsProvider>
@@ -709,7 +709,7 @@ export default function Profile(props) {
               </List>
             }
 
-            { editting ?
+            { editing ?
               <List>
                 <ListItem>
                   <TextField
@@ -717,8 +717,8 @@ export default function Profile(props) {
                     variant="outlined"
                     className={classes.margin}
                     label={ API._getWord(sess && sess.language).Golf_favorite_equipment }
-                    value={edittingData.favgolf}
-                    onChange={e => setEdittingData({ ...edittingData, favgolf: e.target.value})}
+                    value={editingData.favgolf}
+                    onChange={e => setEditingData({ ...editingData, favgolf: e.target.value})}
                     onKeyPress={e =>handleKeyPress(e)}
                     onFocus={e => e.target.select()}
                   />
@@ -735,7 +735,7 @@ export default function Profile(props) {
             }
 
             <div style={{ display: 'flex', marginTop: 36, justifyContent: 'flex-end' }}>
-              { editting &&
+              { editing &&
                 <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>
                   { API._getWord(sess && sess.language).Save }
                 </BTN.Primary>
@@ -757,7 +757,7 @@ export default function Profile(props) {
                 variant="outlined"
                 type="password"
                 className={classes.margin}
-                onChange={e => setEdittingData({ ...edittingData, password: e.target.value})}
+                onChange={e => setEditingData({ ...editingData, password: e.target.value})}
                 onKeyPress={e =>handleKeyPress(e)}
                 onFocus={e => e.target.select()}
               />
@@ -769,7 +769,7 @@ export default function Profile(props) {
                 error={errorPassword.oldNew}
                 helperText={errorPassword.oldNew && "New password is same as old password."}
                 className={classes.margin}
-                onChange={e => setEdittingData({ ...edittingData, changePassword: e.target.value})}
+                onChange={e => setEditingData({ ...editingData, changePassword: e.target.value})}
                 onKeyPress={e =>handleKeyPress(e)}
                 onFocus={e => e.target.select()}
               />
@@ -781,7 +781,7 @@ export default function Profile(props) {
                 error={errorPassword.changeConfirm}
                 helperText={errorPassword.changeConfirm && "Confirm password is not same as new password."}
                 className={classes.margin}
-                onChange={e => setEdittingData({ ...edittingData, confirmPassword: e.target.value})}
+                onChange={e => setEditingData({ ...editingData, confirmPassword: e.target.value})}
                 onKeyPress={e =>handleKeyPress(e)}
                 onFocus={e => e.target.select()}
               />

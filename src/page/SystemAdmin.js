@@ -126,6 +126,23 @@ const RouteUser = Loadable.Map({
   loading: () => null
 });
 
+const RouteEntireLog = Loadable.Map({
+  loader: {
+    EntireLog: () => import(/* webpackChunkName: "EntireLog" */'./../components/SystemAdmin/Log/EntireLog'),
+  },
+  render(loaded, props) {
+    let Component = loaded.EntireLog.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )} />
+    )
+  },
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
@@ -222,6 +239,11 @@ export default function SystemAdmin(props) {
               Course
             </StyledButton>
           </Link>
+          <Link to={`/system_admin/log`} className={classes.linkElement}>
+            <StyledButton variant="contained" color="primary" className={classes.button}>
+              Log
+            </StyledButton>
+          </Link>
         </div>
       </React.Fragment>
     )
@@ -244,6 +266,7 @@ export default function SystemAdmin(props) {
           <RouteMatch path={`/system_admin/match`} {...passingProps} />
           <RouteCourse path={`/system_admin/course`} {...passingProps} />
           <RouteUser path={`/system_admin/user`} {...passingProps} />
+          <RouteEntireLog path={`/system_admin/log`} {...passingProps} />
         </React.Fragment>
       }
     </Paper>

@@ -36,7 +36,7 @@ import {
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -198,7 +198,7 @@ export default function MatchClass(props) {
   const [ lists, setLists ] = React.useState([])
   const [ text, setText ] = React.useState('')
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
-  const [ editting, setEditting ] = React.useState(false)
+  const [ editing, setEditing ] = React.useState(false)
   const [ arrEdit, setArrEdit ] = React.useState([])
   const [ arrEditColor, setArrEditColor ] = React.useState([])
   const [ arrEditClassno, setArrEditClassno ] = React.useState([])
@@ -306,7 +306,7 @@ export default function MatchClass(props) {
             variant: 'success',
             autoHideDuration: 2000
           })
-          setEditting(false)
+          setEditing(false)
         }
       }else{
         handleSnackBar({
@@ -316,7 +316,7 @@ export default function MatchClass(props) {
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         if(/success/.test(d.status)){
-          setEditting(false)
+          setEditing(false)
         }
       }
       setCSRFToken(csrf)
@@ -475,8 +475,8 @@ export default function MatchClass(props) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        { !editting &&
-          <GreenTextButton onClick={()=>setEditting(!editting)}>
+        { !editing &&
+          <GreenTextButton onClick={()=>setEditing(!editing)}>
             { API._getWord(sess && sess.language).Edit }
           </GreenTextButton>
         }
@@ -497,7 +497,7 @@ export default function MatchClass(props) {
               }()} />
           </ListItem>
         }
-        { lists && !editting &&
+        { lists && !editing &&
           lists.map( (d, i) =>{
             return d && (
               <ListItem key={i}>
@@ -520,7 +520,7 @@ export default function MatchClass(props) {
             )
           }
         )}
-        { !editting && data &&
+        { !editing && data &&
           <ListItem className={classes.addClass}>
             <ThemeProvider theme={theme}>
               <TextField
@@ -549,7 +549,7 @@ export default function MatchClass(props) {
             </ListItemIcon>
           </ListItem>
         }
-        { lists && data && editting &&
+        { lists && data && editing &&
           arrEdit.map( (d, i) =>{
             return (
               <ListItem key={i}>
@@ -604,9 +604,9 @@ export default function MatchClass(props) {
           }
         )*/}
       </List>
-      { editting && lists && lists.length > 0 && data &&
+      { editing && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenTextButton className={classes.saveButton} onClick={()=>setEditting(false)}>
+          <GreenTextButton className={classes.saveButton} onClick={()=>setEditing(false)}>
             { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
           <GreenButton className={classes.saveButton} onClick={handleSave}>

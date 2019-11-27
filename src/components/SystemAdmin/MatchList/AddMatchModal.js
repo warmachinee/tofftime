@@ -208,7 +208,7 @@ export default function AddMatchModal(props){
                           variant="caption"
                           color="textPrimary"
                         >
-                          {value.date}
+                          {API._dateToString(value.date)}
                         </Typography>
                         <br></br>
                         {value.location}
@@ -224,7 +224,7 @@ export default function AddMatchModal(props){
                           variant="caption"
                           color="textPrimary"
                         >
-                          {value.date}
+                          {API._dateToString(value.date)}
                         </Typography>
                       } />
                   }

@@ -89,7 +89,7 @@ export default function SearchMatchPage(props) {
     if(e){
       setSearchText(e.target.value)
       if(sess){
-        const socket = socketIOClient( API._getWebURL() )
+        const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
         socket.emit('search-client-message', {
           action: "matchpage",
           userid: sess.userid,
@@ -103,7 +103,7 @@ export default function SearchMatchPage(props) {
 
   function responseSearch(){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.on(`${sess.userid}-matchpage-search-server-message`, (messageNew) => {
         setSearchData(messageNew.result.infolist)
       })

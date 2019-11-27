@@ -26,7 +26,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -126,8 +126,8 @@ export default function Announcement(props){
   const [ open, setOpen ] = React.useState(false)
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
   const [ selectedDeleteItem, handleSelectedDeleteItem ] = React.useState(null)
-  const [ editting, setEditting ] = React.useState(false)
-  const [ edittingData, setEdittingData ] = React.useState(null)
+  const [ editing, setEditing ] = React.useState(false)
+  const [ editingData, setEditingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
 
   function handleOpen(action){
@@ -137,13 +137,13 @@ export default function Announcement(props){
 
   function handleSelectAnnounce(d){
     handleOpen('edit')
-    setEdittingData(d)
+    setEditingData(d)
   }
 
   function handleClose(){
     setOpen(!open)
     handleOpen('')
-    setEdittingData(null)
+    setEditingData(null)
   }
 
   function handleConfirmCancel(){
@@ -213,9 +213,9 @@ export default function Announcement(props){
         </RedButton>
         <div style={{ flex: 1 }} />
         <GreenTextButton style={{ padding: '8px 24px' }}
-          variant={ editting? 'text' : 'outlined' }
-          onClick={()=>setEditting(!editting)}>
-          { editting? 'Done' : 'Remove' }
+          variant={ editing? 'text' : 'outlined' }
+          onClick={()=>setEditing(!editing)}>
+          { editing? 'Done' : 'Remove' }
         </GreenTextButton>
       </div>
       <List>
@@ -245,7 +245,7 @@ export default function Announcement(props){
                 </ListItemAvatar>
                 <ListItemText className={classes.listDetail} primary={d.title} />
                 <ListItemIcon>
-                  { editting?
+                  { editing?
                     <IconButton onClick={()=>handleDeleteItem(d)}>
                       <DeleteIcon classes={{ root: classes.greenIcon }} />
                     </IconButton>
@@ -265,7 +265,7 @@ export default function Announcement(props){
           {...props}
           handleClose={handleClose}
           clickAction={clickAction}
-          edittingData={edittingData} />
+          editingData={editingData} />
       </TemplateDialog>
       <TemplateDialog
         maxWidth={400}

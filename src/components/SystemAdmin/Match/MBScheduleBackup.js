@@ -36,7 +36,7 @@ import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -223,7 +223,7 @@ const theme = createMuiTheme({
 export default function MBSchedule(props){
   const classes = useStyles();
   const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
-  const [ edittingTeam, setEdittingTeam ] = React.useState(false);
+  const [ editingTeam, setEditingTeam ] = React.useState(false);
   const [ addState, setAddState ] = React.useState(false);
   const [ teamState, setTeamState ] = React.useState(false);
   const [ formState, setFormState ] = React.useState(false);
@@ -366,8 +366,8 @@ export default function MBSchedule(props){
     setChecked(newChecked);
   };
 
-  function handleDoneEdittingTeam(){
-    setEdittingTeam(!edittingTeam)
+  function handleDoneEditingTeam(){
+    setEditingTeam(!editingTeam)
     setChecked([])
   }
 
@@ -410,7 +410,7 @@ export default function MBSchedule(props){
   }
 
   function handleResponseForm(){
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
       setData(API.sortArrByDate(messageNew, 'createdate', 'fullname'))
     })
@@ -536,13 +536,13 @@ export default function MBSchedule(props){
   }
 
   React.useEffect(()=>{
-    if(edittingTeam){
+    if(editingTeam){
       handleFetchSchedule()
     }else{
       handleFetchForm()
       handleResponseForm()
     }
-  },[ edittingTeam, teamState, formState ])
+  },[ editingTeam, teamState, formState ])
 
   const [ ,updateState ] = React.useState(null)
 
@@ -607,12 +607,12 @@ export default function MBSchedule(props){
           <div
             className={classes.controlsEdit}
             style={{
-              border: edittingTeam && '0 solid',
-              justifyContent: edittingTeam? 'flex-end' : 'space-around',
+              border: editingTeam && '0 solid',
+              justifyContent: editingTeam? 'flex-end' : 'space-around',
             }}>
-            { edittingTeam?
+            { editingTeam?
               <React.Fragment>
-                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEdittingTeam}>
+                <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingTeam}>
                   { API._getWord(sess && sess.language). "เสร็จ" : 'Done' }
                 </GreenTextButton>
                 <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
@@ -620,13 +620,13 @@ export default function MBSchedule(props){
                 </GreenButton>
               </React.Fragment>
               :
-              <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEdittingTeam(!edittingTeam)}>
+              <GreenTextButton fullWidth className={classes.controlsEditButton} onClick={()=>setEditingTeam(!editingTeam)}>
                 { API._getWord(sess && sess.language). "ตางรางเวลาของผู้เล่น" : 'Player Schedule' }
               </GreenTextButton>
             }
           </div>
         </ListItem>
-        { edittingTeam &&
+        { editingTeam &&
           <ListItem style={{ justifyContent: 'flex-end' }}>
             <GreenTextButton
               className={classes.button}
@@ -637,7 +637,7 @@ export default function MBSchedule(props){
           </ListItem>
         }
         <ListItem className={classes.controlsSecondary}>
-          { edittingTeam &&
+          { editingTeam &&
             <React.Fragment>
               <div style={{ display: 'flex' }}>
                 <AccessTimeIcon style={{ color: primary[600], marginRight: 4 }} />
@@ -663,7 +663,7 @@ export default function MBSchedule(props){
               </GreenTextButton>
             </React.Fragment>
           }
-          { !edittingTeam &&
+          { !editingTeam &&
             <div style={{ height: 42 }}></div>
           }
         </ListItem>
@@ -697,10 +697,10 @@ export default function MBSchedule(props){
           </ThemeProvider>
         </ListItem>
         <div style={{ overflow: 'auto', position: 'relative' }}>
-          {/* edittingTeam &&
+          {/* editingTeam &&
             <Typography component="div">
               <Box className={classes.notice} m={1}>
-                { edittingTeam && (
+                { editingTeam && (
                   API._getWord(sess && sess.language). "ค้นหาผู้เล่น" : 'Select team and player to change player team.'
                 )}
               </Box>
@@ -710,7 +710,7 @@ export default function MBSchedule(props){
             style={{
               display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
             }}>
-            <ListItemText inset={edittingTeam} style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
+            <ListItemText inset={editingTeam} style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
                 ( API._getWord(sess && sess.language). "ชื่อ" : 'Full Name' )
@@ -726,12 +726,12 @@ export default function MBSchedule(props){
                 <div style={{ height: 42, width: 42 }}></div>
               </ListItemIcon>*/
             }
-            { window.innerWidth > 600 && edittingTeam &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listTeam}
+            { window.innerWidth > 600 && editingTeam &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: editingTeam ? 20 : 0 }} className={classes.listTeam}
                 primary={ API._getWord(sess && sess.language). "เวลา" : 'Time' } />
             }
-            { window.innerWidth > 450 && !edittingTeam &&
-              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: edittingTeam ? 20 : 0 }} className={classes.listClass}
+            { window.innerWidth > 450 && !editingTeam &&
+              <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: editingTeam ? 20 : 0 }} className={classes.listClass}
                 primary={ API._getWord(sess && sess.language). "สถานะ" : 'Status' } />
             }
           </ListItem>
@@ -744,8 +744,8 @@ export default function MBSchedule(props){
                   <React.Fragment key={value.userid}>
                     <ListItem role={undefined} button
                       onClick={
-                        ()=>edittingTeam? handleToggle(value): handleFormOpen(value)}>
-                      { edittingTeam &&
+                        ()=>editingTeam? handleToggle(value): handleFormOpen(value)}>
+                      { editingTeam &&
                         <ListItemIcon>
                           <GreenCheckbox
                             edge="start"
@@ -774,7 +774,7 @@ export default function MBSchedule(props){
                                 {value.lastname}
                               </Typography>
                             }
-                            { window.innerWidth < 400 && !edittingTeam &&
+                            { window.innerWidth < 400 && !editingTeam &&
                               <React.Fragment>
                                 <br></br>
                                 <Typography
@@ -790,7 +790,7 @@ export default function MBSchedule(props){
                                 </Typography>
                               </React.Fragment>
                             }
-                            { window.innerWidth < 600 && edittingTeam &&
+                            { window.innerWidth < 600 && editingTeam &&
                               ( matchDetail && matchDetail.team ?
                                 ( value.teamno === 0 ?
                                   <React.Fragment>
@@ -817,7 +817,7 @@ export default function MBSchedule(props){
                                 </React.Fragment>
                               )
                             }
-                            { window.innerWidth < 600 && !edittingTeam && value.createdate &&
+                            { window.innerWidth < 600 && !editingTeam && value.createdate &&
                               <Typography variant="caption" display="block">
                                 {API._dateToString(value.createdate)}
                               </Typography>
@@ -828,7 +828,7 @@ export default function MBSchedule(props){
                         <ListItemText className={classes.listText}
                           primary={value.lastname} />
                       }
-                      { window.innerWidth > 600 && edittingTeam &&
+                      { window.innerWidth > 600 && editingTeam &&
                         (
                           matchDetail && matchDetail.team ?
                           ( value.teamno === 0 ?
@@ -847,7 +847,7 @@ export default function MBSchedule(props){
                           <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
                         )
                       }
-                      { window.innerWidth > 400 && !edittingTeam &&
+                      { window.innerWidth > 400 && !editingTeam &&
                         <ListItemText className={classes.listClass}
                           primary={
                             <Typography
@@ -863,7 +863,7 @@ export default function MBSchedule(props){
                             </Typography>
                           }
                           secondary={
-                            window.innerWidth >= 600 && !edittingTeam && value.createdate &&
+                            window.innerWidth >= 600 && !editingTeam && value.createdate &&
                               <Typography variant="caption" display="block" style={{ color: grey[500] }}>
                                 {API._dateToString(value.createdate)}
                               </Typography>

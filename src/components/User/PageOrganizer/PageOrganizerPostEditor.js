@@ -142,7 +142,7 @@ export default function PageOrganizerPostEditor(props) {
   const {
     sess, BTN, token, setCSRFToken, handleSnackBar, isSupportWebp,
     createPostState, setCreatePostState, toggleCreatePost,
-    pageData, clickAction, edittingData, handleCloseEditor
+    pageData, clickAction, editingData, handleCloseEditor
   } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
@@ -293,7 +293,7 @@ export default function PageOrganizerPostEditor(props) {
     const sendObj = {
       action: 'edit',
       pageid: pageData.pageid,
-      postid: edittingData.postid,
+      postid: editingData.postid,
       type: selectedTypePost
     };
 
@@ -354,7 +354,7 @@ export default function PageOrganizerPostEditor(props) {
     const sendObj = {
       action: 'editpost',
       pageid: pageData.pageid,
-      postid: edittingData.postid,
+      postid: editingData.postid,
       photopath: 'true'
     }
     var resToken = token? token : await API._xhrGet('getcsrf')
@@ -381,7 +381,7 @@ export default function PageOrganizerPostEditor(props) {
       'ploadpage', {
         action: 'postdetail',
         pageid: pageData.pageid,
-        postid: edittingData.postid
+        postid: editingData.postid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(d.type === 'post' && d.message){
@@ -409,7 +409,7 @@ export default function PageOrganizerPostEditor(props) {
   }
 
   React.useEffect(()=>{
-    if(clickAction === 'edit' && edittingData){
+    if(clickAction === 'edit' && editingData){
       handleFetchDetail()
     }
   },[ ])

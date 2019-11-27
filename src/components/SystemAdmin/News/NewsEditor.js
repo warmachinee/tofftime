@@ -128,7 +128,7 @@ const theme = createMuiTheme({
 
 export default function NewsEditor(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, handleClose, handleSnackBar, clickAction, edittingData, isSupportWebp } = props
+  const { sess, token, setCSRFToken, handleClose, handleSnackBar, clickAction, editingData, isSupportWebp } = props
   const [ title, setTitle ] = React.useState('')
   const [ subtitle, setSubtitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
@@ -137,7 +137,7 @@ export default function NewsEditor(props) {
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
-  const matchPicture = edittingData? edittingData.picture : null
+  const matchPicture = editingData? editingData.picture : null
 
   function handleKeyPress(e){
     if (e === 'Enter'){
@@ -185,7 +185,7 @@ export default function NewsEditor(props) {
   async function handleEdit(){
     const sendObj = {
       action: 'edit',
-      newsid: edittingData.newsid,
+      newsid: editingData.newsid,
       display: true
     };
 
@@ -237,7 +237,7 @@ export default function NewsEditor(props) {
     formData.append('newsimage', selectedFile)
     const d = await API._fetchPostFile('newsmain',`?_csrf=${token? token : res.token}`, {
       action: 'edit',
-      newsid: edittingData.newsid,
+      newsid: editingData.newsid,
       photopath: true,
       display: true,
     }, formData)
@@ -328,7 +328,7 @@ export default function NewsEditor(props) {
   async function handleFetchDetail(newsid){
     const resToken = token? token : await API._xhrGet('getcsrf')
     const d = await API._xhrGet('loadgeneral',
-    `?_csrf=${token? token : resToken.token}&action=newsdetail&newsid=${edittingData.newsid}`
+    `?_csrf=${token? token : resToken.token}&action=newsdetail&newsid=${editingData.newsid}`
     )
     setCSRFToken(d.token)
     setTitle(d.response.title)
@@ -338,7 +338,7 @@ export default function NewsEditor(props) {
   }
 
   React.useEffect(()=>{
-    if(clickAction === 'edit' && edittingData){
+    if(clickAction === 'edit' && editingData){
       handleFetchDetail()
     }
   },[ ])

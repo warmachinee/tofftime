@@ -37,7 +37,7 @@ import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import { LDCircular } from './../../loading/LDCircular'
 
 const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/TemplateDialog'),
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
 });
 
@@ -351,7 +351,7 @@ export default function MBInvitation(props){
   }
 
   function handleResponseForm(){
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
       setData(API.sortArrByDate(messageNew, 'createdate', 'fullname'))
     })

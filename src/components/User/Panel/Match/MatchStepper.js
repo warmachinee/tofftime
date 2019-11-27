@@ -52,7 +52,7 @@ export default function MatchStepper(props) {
   const [ matchName, setMatchName ] = React.useState('');
   const [ selectedField, setSelectedField ] = React.useState(null);
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
-  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
+  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState( (sess && sess.creatematch) ? sess.creatematch : 'public');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState('1');
   const [ selectedDate, setSelectedDate ] = React.useState(new Date());
   const [ selectedFile, setSelectedFile ] = React.useState(null);

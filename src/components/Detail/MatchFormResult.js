@@ -170,7 +170,7 @@ export default function MatchFormResult(props) {
 
   function handleResponseForm(){
     const matchid = parseInt(props.computedMatch.params.matchid)
-    const socket = socketIOClient( API._getWebURL() )
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
       setData(messageNew)
     })

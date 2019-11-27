@@ -188,7 +188,7 @@ export default function AddAdmin(props){
     if(e){
       setSearchUser(e.target.value)
       if(sess){
-        const socket = socketIOClient( API._getWebURL() )
+        const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
         socket.emit('search-client-message', {
           action: "person",
           userid: sess.userid,
@@ -202,7 +202,7 @@ export default function AddAdmin(props){
 
   function responsePerson(){
     if(sess){
-      const socket = socketIOClient( API._getWebURL() )
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.on(`${sess.userid}-person-search-server-message`, (messageNew) => {
         setData(messageNew.result.infolist)
       })
