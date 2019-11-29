@@ -67,11 +67,10 @@ const useStyles = makeStyles(theme => ({
 
 export default function SelectMatchListItem(props) {
   const classes = useStyles();
-  const { API, BTN, COLOR, token, setCSRFToken, data, isSupportWebp, setSelectedMatch, setSelectMatchState } = props
+  const { API, BTN, COLOR, token, setCSRFToken, data, isSupportWebp, setSelectedMatch } = props
 
   function handleSelectMatch(){
     setSelectedMatch(data)
-    setSelectMatchState(false)
   }
 
   const [ ,updateState ] = React.useState(null)

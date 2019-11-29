@@ -58,7 +58,7 @@ export default function OrganizerPost(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ props.dialog ])
 
   return(
     <div className={classes.root}>

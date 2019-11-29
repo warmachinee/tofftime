@@ -38,7 +38,7 @@ export default function OrganizerAnnounce(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ props.dialog ])
 
   return (
     <div className={classes.root}>

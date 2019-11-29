@@ -1,5 +1,27 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import { withStyles } from '@material-ui/core/styles';
+import { primary } from './../../../api/palette'
+
+import {
+  FormControlLabel,
+  Switch,
+
+} from '@material-ui/core';
+
+const StyledSwitch = withStyles({
+  switchBase: {
+    color: primary[300],
+    '&$checked': {
+      color: primary[500],
+    },
+    '&$checked + $track': {
+      backgroundColor: primary[500],
+    },
+  },
+  checked: {},
+  track: {},
+})(Switch);
 
 const PageOrganizerOverview = Loadable({
   loader: () => import(/* webpackChunkName: "PageOrganizerOverview" */ './PageOrganizerOverview'),
@@ -47,13 +69,14 @@ const LabelText = Loadable({
 });
 
 export default function PageOrganizerBody(props) {
-  const { API, sess, token, setCSRFToken, pageData } = props
+  const { API, sess, token, setCSRFToken, handleSnackBar, pageData } = props
   const [ dialog, setDialog ] = React.useState({
     createMatch: false,
     createPost: false,
     setAdmin: false
   })
-  
+  const [ isCreateAfterDone, setIsCreateAfterDone ] = React.useState(true)
+
   const passingProps = {
     ...props,
     dialog: dialog,
@@ -83,11 +106,21 @@ export default function PageOrganizerBody(props) {
       <PageOrganizerOverview {...passingProps} />
       <TemplateDialog maxWidth="md" open={dialog.createMatch} handleClose={()=>dialogClose('createMatch')}>
         <LabelText text={ API._getWord(sess && sess.language).Create_Match } />
-        <MatchStepper {...passingProps} afterDone={e =>console.log(e)} />
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <FormControlLabel
+            control={
+              <StyledSwitch checked={isCreateAfterDone} onChange={e =>setIsCreateAfterDone(e.target.checked)} />
+            }
+            label={ API._getWord(sess && sess.language)['Add to your page after create.'] }
+          />
+        </div>
+        <MatchStepper {...passingProps} isCreateAfterDone={isCreateAfterDone} />
       </TemplateDialog>
-      <OrganizerAnnounce {...passingProps} />
-      <OrganizerMatchList {...passingProps} />
-      <OrganizerPost {...passingProps} />
+      <div style={{ padding: 12, position: 'relative', boxSizing: 'border-box' }}>
+        <OrganizerAnnounce {...passingProps} />
+        <OrganizerMatchList {...passingProps} />
+        <OrganizerPost {...passingProps} />
+      </div>
       <PageOrganizerSetAdmin
         {...passingProps} />
       <PageOrganizerCreatePost

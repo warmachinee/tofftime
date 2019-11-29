@@ -86,19 +86,13 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-export default function PageOrganizerCreatePost(props) {
+export default function SelectMatch(props) {
   const classes = useStyles();
   const {
     sess, BTN, COLOR, token, setCSRFToken, handleSnackBar,
-    pageOrganizer, pageData, pageList,
-    selectMatchState, setSelectMatchState, setSelectedMatch
+    pageOrganizer, pageData, pageList, selectedMatch, clickAction
   } = props
   const [ data, setData ] = React.useState(null)
-
-  function handleClose(){
-    setSelectMatchState(false)
-    setSelectedMatch(null)
-  }
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -123,60 +117,83 @@ export default function PageOrganizerCreatePost(props) {
   }
 
   React.useEffect(()=>{
-    if(selectMatchState){
-      handleFetch()
-    }
-  },[ selectMatchState ])
+    handleFetch()
+  },[ props.dialog.createMatch ])
 
   return (
-    <TemplateDialog open={selectMatchState} handleClose={handleClose} maxWidth="md">
-      <div className={classes.root}>
-        <LabelText text={ API._getWord(sess && sess.language).Select_match } />
-        <div className={classes.grid}>
-          <BTN.Red style={{ paddingRight: 16 }}>
-            <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
-            { API._getWord(sess && sess.language).Create_Match }
-          </BTN.Red>
-          <List style={{ marginTop: 16 }}>
-            <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
-              <ListItemIcon
-                className={clsx({
-                  [classes.listImageUp]: window.innerWidth >= 500,
-                  [classes.listImageDown]: window.innerWidth < 500
-                })}>
-                <div className={clsx({
-                  [classes.imageUp]: window.innerWidth >= 500,
-                  [classes.imageDown]: window.innerWidth < 500
-                })} />
-              </ListItemIcon>
-              { window.innerWidth >= 600 &&
-                <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
-                  primary={ API._getWord(sess && sess.language).Match_Date } />
-              }
-              <ListItemText style={{ color: 'white', width: 100 }}
-                primary={ API._getWord(sess && sess.language).Match } />
-
-              { window.innerWidth >= 900 &&
-                <ListItemText
-                  style={{ width: 100, color: 'white' }}
-                  primary={ API._getWord(sess && sess.language).Course } />
-              }
-            </ListItem>
-          </List>
-          <Divider />
-          { data ?
-            ( data.length > 0 ?
-              data.map( d => <SelectMatchListItem key={d.matchid} data={d} {...props} />)
+    <div className={classes.root}>
+      <LabelText text={
+          `${API._getWord(sess && sess.language)[selectedMatch ? 'Selected_match' : 'Select_match' ]}`
+        } />
+      <Typography variant="h6" style={{ padding: 16 }}>
+        { clickAction === 'edit' ?
+          ( selectedMatch ?
+            ( selectedMatch.matchname ?
+              selectedMatch.matchname
               :
-              <div style={{
-                  width: '100%', padding: '36px 0', textAlign: 'center',
-                  fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+              (
+                selectedMatch.title?
+                selectedMatch.title
+                :
+                ''
+              )
             )
             :
-            Array.from(new Array(2)).map( (d, i)=> <SelectMatchListItem key={i} {...props} />)
-          }
-        </div>
+            ''
+          )
+          :
+          (
+            selectedMatch?
+            selectedMatch.title
+            :
+            ''
+          )
+        }
+      </Typography>
+      <div className={classes.grid}>
+        <BTN.Red style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createMatch')}>
+          <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
+          { API._getWord(sess && sess.language).Create_Match }
+        </BTN.Red>
+        <List style={{ marginTop: 16 }}>
+          <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
+            <ListItemIcon
+              className={clsx({
+                [classes.listImageUp]: window.innerWidth >= 500,
+                [classes.listImageDown]: window.innerWidth < 500
+              })}>
+              <div className={clsx({
+                [classes.imageUp]: window.innerWidth >= 500,
+                [classes.imageDown]: window.innerWidth < 500
+              })} />
+            </ListItemIcon>
+            { window.innerWidth >= 600 &&
+              <ListItemText style={{ maxWidth: 100, marginRight: 16, width: '100%', color: 'white' }}
+                primary={ API._getWord(sess && sess.language).Match_Date } />
+            }
+            <ListItemText style={{ color: 'white', width: 100 }}
+              primary={ API._getWord(sess && sess.language).Match } />
+
+            { window.innerWidth >= 900 &&
+              <ListItemText
+                style={{ width: 100, color: 'white' }}
+                primary={ API._getWord(sess && sess.language).Course } />
+            }
+          </ListItem>
+        </List>
+        <Divider />
+        { data ?
+          ( data.length > 0 ?
+            data.map( d => <SelectMatchListItem key={d.matchid} data={d} {...props} />)
+            :
+            <div style={{
+                width: '100%', padding: '36px 0', textAlign: 'center',
+                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+          )
+          :
+          Array.from(new Array(2)).map( (d, i)=> <SelectMatchListItem key={i} {...props} />)
+        }
       </div>
-    </TemplateDialog>
+    </div>
   );
 }

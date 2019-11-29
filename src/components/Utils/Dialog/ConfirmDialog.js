@@ -120,10 +120,10 @@ export default function ConfirmDialog(props) {
           }
           <Divider style={{ marginTop: 24, marginBottom: 24 }} />
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <CancelButton onClick={onCancel ? onCancel : onClose} style={{ marginRight: 8, width: 100, padding: '6px 24px', ...cancelStyle }}>
+            <CancelButton onClick={onCancel ? onCancel : onClose} style={{ marginRight: 8, width: 120, padding: '6px 24px', ...cancelStyle }}>
               { cancelText ? cancelText : API._getWord(sess && sess.language).Cancel }
             </CancelButton>
-            <SubmitButton onClick={onSubmit} style={{ width: 100, padding: '6px 24px', ...submitStyle }}>
+            <SubmitButton onClick={onSubmit} style={{ width: 120, padding: '6px 24px', ...submitStyle }}>
               { submitText ? submitText : API._getWord(sess && sess.language).Delete }
             </SubmitButton>
           </div>

@@ -30,6 +30,15 @@ export default function _getWord(lang){
         return 'Match Rules, Regulations and Detail'
     }
   }()
+  Declarative['Add to your page after create.'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'เพิ่มในเพจของคุณหลังจากสร้าง'
+        break;
+      default:
+        return 'Add to your page after create.'
+    }
+  }()
 
   Interrogative['Are you sure you want to Log out?'] = function(){
     switch (lang) {
@@ -1567,6 +1576,15 @@ export default function _getWord(lang){
           return 'Detail'
       }
     }(),
+    Request: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ส่งคำร้อง'
+          break;
+        default:
+          return 'Request'
+      }
+    }(),
     Request_mainpage_BTN: function(){
       switch (lang) {
         case 'TH':
@@ -1763,6 +1781,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Select match'
+      }
+    }(),
+    Selected_match: function(){
+      switch (lang) {
+        case 'TH':
+          return 'การแข่งขันที่เลือก'
+          break;
+        default:
+          return 'Selected match'
       }
     }(),
     Number: function(){

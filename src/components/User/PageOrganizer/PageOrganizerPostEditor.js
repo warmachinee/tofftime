@@ -31,6 +31,11 @@ const RichTextEditor = Loadable({
   loading: () => <LDCircular />
 });
 
+const SelectMatch = Loadable({
+  loader: () => import(/* webpackChunkName: "SelectMatch" */'./SelectMatch'),
+  loading: () => <LDCircular />
+});
+
 const useStyles = makeStyles(theme => ({
   margin: {
     width: '100%',
@@ -89,7 +94,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: '100%'
   },
-  selectMatchButton: {
+  selectedMatchButton: {
     width: '100%',
     marginTop: 24,
     padding: theme.spacing(1.5, 0)
@@ -136,13 +141,13 @@ export default function PageOrganizerPostEditor(props) {
   const classes = useStyles();
   const {
     sess, BTN, token, setCSRFToken, handleSnackBar, isSupportWebp,
-    pageData, clickAction, editingData, handleCloseEditor
+    pageData, clickAction, editingData, handleCloseEditor, selectedTypePost, setSelectedTypePost
   } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
   const [ dataDetail, setDataDetail ] = React.useState(null)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
-  const [ selectedTypePost, setSelectedTypePost ] = React.useState('post')
+  const [ selectedMatch, setSelectedMatch ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
@@ -199,6 +204,12 @@ export default function PageOrganizerPostEditor(props) {
       type: selectedTypePost
     };
 
+    if(selectedTypePost === 'match'){
+      if(selectedMatch){
+        Object.assign(sendObj, { matchid:  selectedMatch.matchid});
+      }
+    }
+
     if(selectedTypePost === 'post'){
       if(title && detail){
         Object.assign(sendObj, { message:  title + '<$$split$$>' + detail });
@@ -227,7 +238,7 @@ export default function PageOrganizerPostEditor(props) {
         if(selectedFile){
           handleFetchPicture(csrf, d)
         }else{
-          //setCreatePostState(false)
+          props.dialogCloseAll()
           handleSnackBar({
             state: true,
             message: d.status,
@@ -265,7 +276,7 @@ export default function PageOrganizerPostEditor(props) {
       autoHideDuration: /success/.test(response.status)? 2000 : 5000
     })
     if(/success/.test(response.status)){
-      //setCreatePostState(false)
+      props.dialogCloseAll()
     }
   }
 
@@ -278,6 +289,12 @@ export default function PageOrganizerPostEditor(props) {
       postid: editingData.postid,
       type: selectedTypePost
     };
+
+    if(selectedTypePost === 'match'){
+      if(selectedMatch){
+        Object.assign(sendObj, { matchid:  selectedMatch.matchid});
+      }
+    }
 
     if(selectedTypePost === 'post'){
       if(title && detail){
@@ -307,7 +324,7 @@ export default function PageOrganizerPostEditor(props) {
         if(selectedFile){
           handleEditPicture()
         }else{
-          //setCreatePostState(false)
+          props.dialogCloseAll()
           handleSnackBar({
             state: true,
             message: d.status,
@@ -346,7 +363,7 @@ export default function PageOrganizerPostEditor(props) {
       autoHideDuration: /success/.test(response.status)? 2000 : 5000
     })
     if(/success/.test(response.status)){
-      //setCreatePostState(false)
+      props.dialogCloseAll()
     }
   }
 
@@ -378,6 +395,10 @@ export default function PageOrganizerPostEditor(props) {
         setDetail(d.messagedetail)
         setDataDetail(d)
       }
+
+      if(d.messagedetail && d.type === 'match'){
+        setSelectedMatch(d.messagedetail)
+      }
     })
   }
 
@@ -391,81 +412,13 @@ export default function PageOrganizerPostEditor(props) {
     <React.Fragment>
       <div style={{ marginTop: 24 }}>
         <ThemeProvider theme={theme}>
-          <TextField
-            autoFocus
-            className={classes.margin}
-            label={ API._getWord(sess && sess.language).Title }
-            value={title}
-            variant="outlined"
-            onChange={(e)=>setTitle(e.target.value)}
-            onKeyPress={e =>handleKeyPress(e)}
-          />
-        </ThemeProvider>
-        { ( selectedFile || tempFile )?
-          <div style={{
-              position: 'relative', marginTop: 16, marginBottom: 24,
-              display: 'flex', flexDirection: 'column', justifyContent: 'center'
-            }}
-            onMouseEnter={()=>handleFileHover(true)}
-            onMouseLeave={()=>handleFileHover(false)}>
-            <Typography variant="caption">{selectedFile && selectedFile.name}</Typography>
-            <img ref={imgRef}
-              style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
-              className={classes.matchImg}
-              src={tempFile} />
-            { imgRef.current &&
-              <div
-                style={{
-                  display: 'flex',
-                  position: 'absolute',
-                  height: imgRef.current.offsetHeight,
-                  width: imgRef.current.offsetWidth,
-                  top: 0, left: 0,
-                }}>
-                <div style={{ flex: 1 }} />
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ flex: 1 }} />
-                  <StyledIconButton className={classes.matchFile}>
-                    <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={e => handlePicture(e)} />
-                    <CloudUpload fontSize="large" style={{ color: primary[400] }} />
-                  </StyledIconButton>
-                  <div style={{ flex: 1 }} />
-                </div>
-                <div style={{ flex: 1 }} />
-              </div>
-            }
-          </div>
-          :
-          <div
-            style={{
-              position: 'relative', marginTop: 16, marginBottom: 24,
-              display: 'flex', flexDirection: 'column', justifyContent: 'center'
-            }}>
-            <Typography variant="caption" style={{ textAlign: 'center' }}>
-              { API._getWord(sess && sess.language).Upload_image }
-            </Typography>
-            <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
-              <div style={{ flex: 1 }} />
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ flex: 1 }} />
-                <StyledIconButton className={classes.matchFile}>
-                  <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={e => handlePicture(e)} />
-                  <CloudUpload fontSize="large" style={{ color: primary[500] }} />
-                </StyledIconButton>
-                <div style={{ flex: 1 }} />
-              </div>
-              <div style={{ flex: 1 }} />
-            </div>
-          </div>
-        }
-        <ThemeProvider theme={theme}>
           <FormControl component="fieldset" className={classes.margin}
             style={{
               width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid',
               padding: '4px 16px 8px 24px',
               borderRadius: 4, boxSizing: 'border-box'
             }}>
-            <FormLabel component="legend" style={{ marginLeft: 16 }}>Type</FormLabel>
+            <FormLabel component="legend" style={{ marginLeft: 16 }}>{ API._getWord(sess && sess.language).Type }</FormLabel>
             <RadioGroup value={selectedTypePost} onChange={handleTypePost} row>
               <FormControlLabel
                 value={'post'}
@@ -479,22 +432,102 @@ export default function PageOrganizerPostEditor(props) {
                 label={ API._getWord(sess && sess.language).Announce }
                 labelPlacement="end"
               />
+              <FormControlLabel
+                value={'match'}
+                control={<GreenRadio />}
+                label={ API._getWord(sess && sess.language).Match }
+                labelPlacement="end"
+              />
             </RadioGroup>
           </FormControl>
-          <div style={{ marginTop: 24 }}>
-            { API._getWord(sess && sess.language).Content }
-          </div>
-          <div>
-            { clickAction === 'edit' ?
-              ( detail ?
-                <RichTextEditor HTMLData={detail} handleGetHTML={e =>handleEditorOnChange(e)} />
+          { selectedTypePost === 'match' ?
+            <SelectMatch {...props} selectedMatch={selectedMatch} setSelectedMatch={setSelectedMatch} clickAction={clickAction} />
+            :
+            <React.Fragment>
+              <TextField
+                autoFocus
+                className={classes.margin}
+                label={ API._getWord(sess && sess.language).Title }
+                value={title}
+                variant="outlined"
+                onChange={(e)=>setTitle(e.target.value)}
+                onKeyPress={e =>handleKeyPress(e)}
+              />
+              { ( selectedFile || tempFile )?
+                <div style={{
+                    position: 'relative', marginTop: 16, marginBottom: 24,
+                    display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                  }}
+                  onMouseEnter={()=>handleFileHover(true)}
+                  onMouseLeave={()=>handleFileHover(false)}>
+                  <Typography variant="caption">{selectedFile && selectedFile.name}</Typography>
+                  <img ref={imgRef}
+                    style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
+                    className={classes.matchImg}
+                    src={tempFile} />
+                  { imgRef.current &&
+                    <div
+                      style={{
+                        display: 'flex',
+                        position: 'absolute',
+                        height: imgRef.current.offsetHeight,
+                        width: imgRef.current.offsetWidth,
+                        top: 0, left: 0,
+                      }}>
+                      <div style={{ flex: 1 }} />
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ flex: 1 }} />
+                        <StyledIconButton className={classes.matchFile}>
+                          <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={e => handlePicture(e)} />
+                          <CloudUpload fontSize="large" style={{ color: primary[400] }} />
+                        </StyledIconButton>
+                        <div style={{ flex: 1 }} />
+                      </div>
+                      <div style={{ flex: 1 }} />
+                    </div>
+                  }
+                </div>
                 :
-                <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
-              )
-              :
-              <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
-            }
-          </div>
+                <div
+                  style={{
+                    position: 'relative', marginTop: 16, marginBottom: 24,
+                    display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                  }}>
+                  <Typography variant="caption" style={{ textAlign: 'center' }}>
+                    { API._getWord(sess && sess.language).Upload_image }
+                  </Typography>
+                  <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
+                    <div style={{ flex: 1 }} />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <div style={{ flex: 1 }} />
+                      <StyledIconButton className={classes.matchFile}>
+                        <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={e => handlePicture(e)} />
+                        <CloudUpload fontSize="large" style={{ color: primary[500] }} />
+                      </StyledIconButton>
+                      <div style={{ flex: 1 }} />
+                    </div>
+                    <div style={{ flex: 1 }} />
+                  </div>
+                </div>
+              }
+              <ThemeProvider theme={theme}>
+                <div style={{ marginTop: 24 }}>
+                  { API._getWord(sess && sess.language).Content }
+                </div>
+                <div>
+                  { clickAction === 'edit' ?
+                    ( detail ?
+                      <RichTextEditor HTMLData={detail} handleGetHTML={e =>handleEditorOnChange(e)} />
+                      :
+                      <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+                    )
+                    :
+                    <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+                  }
+                </div>
+              </ThemeProvider>
+            </React.Fragment>
+          }
         </ThemeProvider>
         <GreenButton variant="contained" color="primary" className={classes.button}
           onClick={clickAction === 'edit'? handleFetchEditPost : handleFetchCreatePost}>

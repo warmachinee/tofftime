@@ -310,7 +310,7 @@ export default function PageOrganizerOverview(props) {
           </Typography>
         }
         onSubmit={handleFetchRemove}
-        submitText="Request" />
+        submitText={ API._getWord(sess && sess.language).Request } />
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}

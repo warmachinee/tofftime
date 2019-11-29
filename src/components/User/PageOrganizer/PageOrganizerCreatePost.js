@@ -27,12 +27,17 @@ const useStyles = makeStyles(theme => ({
 export default function PageOrganizerCreatePost(props) {
   const classes = useStyles();
   const { API, sess, BTN, token, setCSRFToken, handleSnackBar } = props
+  const [ selectedTypePost, setSelectedTypePost ] = React.useState('post')
 
   return (
-    <TemplateDialog open={props.dialog.createPost} handleClose={props.dialogCloseAll} elementId="create-post-dialog">
+    <TemplateDialog maxWidth={selectedTypePost === 'match' ? "md" : "sm"}
+      open={props.dialog.createPost} handleClose={props.dialogCloseAll} elementId="create-post-dialog">
       <div className={classes.root}>
         <LabelText text={ API._getWord(sess && sess.language).Create_post } />
-        <PageOrganizerPostEditor {...props} handleCloseEditor={props.dialogCloseAll} />
+        <PageOrganizerPostEditor {...props}
+          handleCloseEditor={props.dialogCloseAll}
+          selectedTypePost={selectedTypePost}
+          setSelectedTypePost={setSelectedTypePost} />
       </div>
     </TemplateDialog>
   );

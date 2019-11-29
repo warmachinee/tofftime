@@ -268,11 +268,23 @@ export default function MatchStepper(props) {
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         if(/success/.test(d.status)){
-          window.location.replace(`/match/${matchid}`);
+          if(pageOrganizer){
+            if(props.isCreateAfterDone){
+              handleFetchCreatePost(matchid)
+            }
+          }else{
+            window.location.replace(`/match/${matchid}`);
+          }
         }
       })
     }else{
-      window.location.replace(`/match/${matchid}`);
+      if(pageOrganizer){
+        if(props.isCreateAfterDone){
+          handleFetchCreatePost(matchid)
+        }
+      }else{
+        window.location.replace(`/match/${matchid}`);
+      }
       //window.location.replace(`/user/management/match/${d.matchid}#invitation`)
     }
   }
@@ -300,6 +312,44 @@ export default function MatchStepper(props) {
         setDataClassed(arrData)
       }
       setData(d)
+    })
+  }
+
+  async function handleFetchCreatePost(matchid){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const formData = new FormData()
+    const sendObj = {
+      action: 'post',
+      pageid: pageData.pageid,
+      type: 'match',
+      matchid: matchid,
+      message: `Match ${matchid}`
+    };
+
+    await API._xhrPost(
+      token? token : resToken.token,
+      'ppagesection', {
+        ...sendObj
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(/success/.test(d.status)){
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        setTimeout(()=>{
+          props.dialogCloseAll()
+        }, 1000)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+      }
     })
   }
 
