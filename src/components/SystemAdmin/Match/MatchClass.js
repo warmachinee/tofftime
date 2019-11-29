@@ -35,8 +35,8 @@ import {
 
 import { LDCircular } from './../../loading/LDCircular'
 
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
+const ConfirmDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
   loading: () => <LDCircular />
 });
 
@@ -45,62 +45,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: 16,
     width: '100%',
   },
-  confirmTitle: {
-    textAlign: 'center', color: primary[900],
-    fontSize: 20,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 24,
-    },
-  },
-  confirmSubtitle: {
-    fontFamily: 'monospace',
-    color: grey[600],
-    fontWeight: 600,
-  },
-  confirmButton: {
-    padding: theme.spacing(1, 4.5)
-  },
-  paperList: {
-    width: '100%',
-    padding: 8,
-    transition: '.2s',
-    display: 'flex'
-  },
-  dragIconGrid: {
-    borderRight: '2px solid black',
-    marginTop: 4,
-    paddingRight: 8,
-    marginRight: 12
-  },
-  dragIcon: {
-    fontSize: '2rem',
-    color: 'red'
-  },
   deleteIcon: {
     //color: primary[600]
-  },
-  controls: {
-    marginTop: 36,
-    display: 'flex',
-    flexDirection: 'column',
-    [theme.breakpoints.up(400)]: {
-      width: '100%',
-      flexDirection: 'row',
-    },
-  },
-  button: {
-    marginTop: 8,
-    padding: theme.spacing(1.5, 1),
-    [theme.breakpoints.up(400)]: {
-      marginTop: 0,
-      width: '100%',
-      padding: theme.spacing(1),
-    },
-  },
-  classEditText: {
-    [theme.breakpoints.up(400)]: {
-      margin: theme.spacing(0, 56)
-    },
   },
   addClass: {
     flexDirection: 'column',
@@ -614,27 +560,23 @@ export default function MatchClass(props) {
           </GreenButton>
         </div>
       }
-      <TemplateDialog
-        maxWidth={400}
-        open={confirmDeleteState} handleClose={handleConfirmCancel}>
-        <Typography component="div">
-          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
-          </Box>
-          <Box className={classes.confirmSubtitle} m={3}>
-            ( { API._getWord(sess && sess.language).Group } : { selectedDeleteItem && selectedDeleteItem.classname } )
-          </Box>
-        </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Cancel }
-          </GreenTextButton>
-          <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Delete }
-          </RedButton>
-        </div>
-      </TemplateDialog>
+
+      <ConfirmDialog
+        sess={sess}
+        open={confirmDeleteState}
+        onClose={handleConfirmCancel}
+        icon="Delete"
+        iconColor={red[600]}
+        title={API._getWord(sess && sess.language)['Are you sure you want to delete?']}
+        content={
+          selectedDeleteItem &&
+          <Typography variant="body1" align="center">
+            { data.scorematch === 0 ? API._getWord(sess && sess.language).Flight : API._getWord(sess && sess.language).Group } :
+            { data.scorematch === 0 ? API._handleAmateurClass(selectedDeleteItem.classno) : selectedDeleteItem.classname }
+          </Typography>
+        }
+        onSubmit={handleConfirmDelete}
+        submitButton="Red" />
     </div>
   );
 }

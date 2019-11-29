@@ -30,6 +30,11 @@ const TemplateDialog = Loadable({
   loading: () => <LDCircular />
 });
 
+const ConfirmDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
+  loading: () => <LDCircular />
+});
+
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
   loading: () => <LDCircular />
@@ -84,21 +89,6 @@ const useStyles = makeStyles(theme => ({
   },
   greenIcon: {
     color: primary[600]
-  },
-  confirmTitle: {
-    textAlign: 'center', color: primary[900],
-    fontSize: 20,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 24,
-    },
-  },
-  confirmSubtitle: {
-    fontFamily: 'monospace',
-    color: grey[600],
-    fontWeight: 600,
-  },
-  confirmButton: {
-    padding: theme.spacing(1, 4.5)
   },
 
 }))
@@ -302,27 +292,21 @@ export default function PagePost(props){
           <PageOrganizerPostEditor {...props} clickAction={clickAction} editingData={editingData} handleCloseEditor={handleClose} />
         </div>
       </TemplateDialog>
-      <TemplateDialog
-        maxWidth={400}
-        open={confirmDeleteState} handleClose={handleConfirmCancel}>
-        <Typography component="div">
-          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
-          </Box>
-          <Box className={classes.confirmSubtitle} m={3}>
-            ( { API._getWord(sess && sess.language).Post } : { selectedDeleteItem && selectedDeleteItem.message } )
-          </Box>
-        </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Cancel }
-          </GreenTextButton>
-          <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Delete }
-          </RedButton>
-        </div>
-      </TemplateDialog>
+      <ConfirmDialog
+        sess={sess}
+        open={confirmDeleteState}
+        onClose={handleConfirmCancel}
+        icon="Delete"
+        iconColor={red[600]}
+        title={API._getWord(sess && sess.language)['Are you sure you want to delete?']}
+        content={
+          selectedDeleteItem &&
+          <Typography variant="body1" align="center">
+            { API._getWord(sess && sess.language).Post } : { selectedDeleteItem && selectedDeleteItem.message }
+          </Typography>
+        }
+        onSubmit={handleConfirmDelete}
+        submitButton="Red" />
     </div>
   );
 }

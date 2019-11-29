@@ -551,7 +551,7 @@ function CreateMatchBody(props){
         <StyledButton className={classes.button}
           onClick={handleCreate}>{ API._getWord(sess && sess.language).Create }</StyledButton>
       </div>
-      <TemplateDialog open={open} handleClose={handleClose} maxWidth={700}>
+      <TemplateDialog open={open} handleClose={handleClose}>
         <Location
           {...props}
           {...passingFunction}

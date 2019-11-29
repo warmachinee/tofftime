@@ -88,26 +88,22 @@ export default function SearchMatchPage(props) {
   function searchTextOnChange(e){
     if(e){
       setSearchText(e.target.value)
-      if(sess){
-        const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
-        socket.emit('search-client-message', {
-          action: "matchpage",
-          userid: sess.userid,
-          text: e.target.value
-        })
-      }
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+      socket.emit('search-client-message', {
+        action: "matchpage",
+        text: e.target.value,
+        ...(sess && sess.userid) && { userid: sess.userid }
+      })
     }else{
       setSearchText('')
     }
   }
 
   function responseSearch(){
-    if(sess){
-      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
-      socket.on(`${sess.userid}-matchpage-search-server-message`, (messageNew) => {
-        setSearchData(messageNew.result.infolist)
-      })
-    }
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+    socket.on(`${sess && sess.userid ? sess.userid : 'defaultUI'}-matchpage-search-server-message`, (messageNew) => {
+      setSearchData(messageNew.result.infolist)
+    })
   }
 
   React.useEffect(()=>{

@@ -45,11 +45,6 @@ export default function Course(props){
       handleDrawerClose: props.handleDrawerClose,
       notiState: props.notiState,
       toggleNoti: props.toggleNoti,
-      setAdminState: props.setAdminState,
-      toggleSetAdmin: props.toggleSetAdmin,
-      createPostState: props.createPostState,
-      setCreatePostState: props.setCreatePostState,
-      toggleCreatePost: props.toggleCreatePost,
     })
   }
 

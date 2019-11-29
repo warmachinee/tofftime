@@ -897,6 +897,15 @@ export default function _getWord(lang){
           return 'Charity'
       }
     }(),
+    No_match: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีการแข่งขัน'
+          break;
+        default:
+          return 'No match'
+      }
+    }(),
     No_Dummy: function(){
       switch (lang) {
         case 'TH':
@@ -991,6 +1000,24 @@ export default function _getWord(lang){
   }
 
   const Name = {
+    Setting: function(){
+      switch (lang) {
+        case 'TH':
+          return 'การตั้งค่า'
+          break;
+        default:
+          return 'Setting'
+      }
+    }(),
+    Scoreboard: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ตารางคะแนน'
+          break;
+        default:
+          return 'Scoreboard'
+      }
+    }(),
     Form: function(){
       switch (lang) {
         case 'TH':

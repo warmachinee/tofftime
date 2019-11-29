@@ -31,8 +31,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import { LDCircular } from './../../loading/LDCircular'
 
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
+const ConfirmDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
   loading: () => <LDCircular />
 });
 
@@ -81,27 +81,6 @@ const useStyles = makeStyles(theme => ({
       marginTop: 0,
       padding: theme.spacing(1, 4.5),
     },
-  },
-  confirmTitle: {
-    textAlign: 'center', color: primary[900],
-    fontSize: 20,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 24,
-    },
-  },
-  confirmSubtitle: {
-    fontFamily: 'monospace',
-    color: grey[600],
-    fontWeight: 600,
-  },
-  confirmButton: {
-    padding: theme.spacing(1, 4.5)
-  },
-  createIcon: {
-    color: primary[600]
-  },
-  deleteIcon: {
-    color: primary[600]
   },
   listImage: {
     width: 36,
@@ -344,27 +323,21 @@ export default function LocationList(props){
           </Typography>
         }
       </List>
-      <TemplateDialog
-        maxWidth={400}
-        open={open} handleClose={handleClose}>
-        <Typography component="div">
-          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
-          </Box>
-          <Box className={classes.confirmSubtitle} m={3}>
+      <ConfirmDialog
+        sess={sess}
+        open={open}
+        onClose={handleClose}
+        icon="Delete"
+        iconColor={red[600]}
+        title={API._getWord(sess && sess.language)['Are you sure you want to delete?']}
+        content={
+          selectedDeleteItem &&
+          <Typography variant="body1">
             ( { selectedDeleteItem && selectedDeleteItem.fieldname } : { selectedDeleteItem && selectedDeleteItem.fieldid } )
-          </Box>
-        </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenTextButton onClick={handleClose} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Cancel }
-          </GreenTextButton>
-          <RedButton onClick={handleDelete} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Delete }
-          </RedButton>
-        </div>
-      </TemplateDialog>
+          </Typography>
+        }
+        onSubmit={handleDelete}
+        submitButton="Red" />
     </div>
   );
 }
@@ -374,7 +347,7 @@ function ListField(props){
   const {
     API, sess, token, setCSRFToken, isSupportWebp,
     selectedField, setSelectedField, setSelectedFieldVersion,
-    data, handleOpen
+    data
   } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ fieldVersion, setFieldVersion ] = React.useState(null)

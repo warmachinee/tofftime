@@ -15,13 +15,6 @@ import {
   Button,
   Menu,
   MenuItem,
-  MobileStepper,
-  Stepper,
-  Step,
-  Collapse,
-  List,
-  ListItem,
-  ListItemText,
   IconButton,
   Tabs,
   Tab,
@@ -121,33 +114,6 @@ const useStyles = makeStyles(theme => ({
       fontSize: 32,
     },
   },
-  paper: {
-    maxWidth: 900,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    width: '100%',
-    boxSizing: 'border-box',
-    padding: theme.spacing(1, 2),
-    backgroundColor: theme.palette.background.default,
-  },
-  expandButton: {
-    maxWidth: 900,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    width: '100%',
-    boxSizing: 'border-box',
-    backgroundColor: theme.palette.background.default,
-  },
-  expandIcon: {
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  tabRoot: {
-    flexGrow: 1,
-    width: '100%',
-  },
   card: {
     width: 120,
     height: 120,
@@ -178,45 +144,6 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-const StyledTabs = withStyles({
-  root: {
-    //borderBottom: '1px solid #e8e8e8',
-  },
-  indicator: {
-    backgroundColor: primary[600],
-    height: 8
-  },
-  scrollButtons: {
-    color: primary[900],
-    width: 50,
-  },
-  flexContainer: {
-    justifyContent: 'space-between'
-  },
-})(Tabs);
-
-const StyledTab = withStyles(theme => ({
-  root: {
-    textTransform: 'none',
-    fontSize: 14,
-    fontWeight: 500,
-    marginRight: theme.spacing(4),
-    padding: 16,
-    opacity: .5,
-    '&:hover': {
-      color: primary[600],
-      opacity: 1,
-    },
-    '&$selected': {
-      color: primary[600],
-    },
-    '&:focus': {
-      color: primary[600],
-    },
-  },
-  selected: {},
-}))(props => <Tab {...props} />);
-
 const StyledTooltip = withStyles(theme => ({
   tooltip: {
     backgroundColor: primary[50],
@@ -226,58 +153,6 @@ const StyledTooltip = withStyles(theme => ({
     border: `1px solid ${primary[200]}`,
   },
 }))(Tooltip);
-
-function TabContainer(props){
-  const classes = useStyles();
-  const { value, component } = props
-  return (
-    <React.Fragment>
-      {component}
-    </React.Fragment>
-  );
-}
-
-function MatchManagementTabs(props){
-  const classes = useStyles();
-  const { COLOR, BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData } = props
-  const [ value, setValue ] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  }
-
-  return (
-    <div className={classes.tabRoot}>
-      <Paper elevation={3}>
-        <StyledTabs
-          value={value}
-          onChange={handleChange}
-          variant="scrollable"
-          scrollButtons="on"
-        >
-          {IconVariantTest.map( d =>
-            <StyledTab
-              key={d.label}
-              label={d.label}
-              style={{ border: /Player|Invitation|Schedule/.test(d.label) ? `3px solid ${COLOR.red[600]}` : 'none' }}
-              icon={
-                <Badge badgeContent={/Player|Invitation|Schedule/.test(d.label) && <ErrorIcon style={{ color: COLOR.red[600] }} />}>
-                  {d.icon}
-                </Badge>
-              } />
-          )}
-        </StyledTabs>
-      </Paper>
-      {IconVariantTest.map( (d, index) =>
-        value === index &&
-        <TabContainer
-          {...props}
-          key={d.label}
-          value={d.label} />
-      )}
-    </div>
-  );
-}
 
 function SetUpMatchComponent(props){
   const classes = useStyles();

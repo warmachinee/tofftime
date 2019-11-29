@@ -775,7 +775,7 @@ export default function MBSchedule(props){
           }
         </div>
       </List>
-      <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth={500}>
+      <TemplateDialog open={teamState} handleClose={handleTeamClose} maxWidth="xs">
         <MatchTeam
           handleTeamClose={handleTeamClose}
           {...props} />

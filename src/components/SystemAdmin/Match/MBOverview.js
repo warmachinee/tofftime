@@ -42,11 +42,6 @@ const Location = Loadable({
   loading: () => <LDCircular />
 });
 
-const MatchClass = Loadable({
-  loader: () => import(/* webpackChunkName: "MatchClass" */'./MatchClass'),
-  loading: () => <LDCircular />
-});
-
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
@@ -599,44 +594,6 @@ export default function MBOverview(props){
                     {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
                   </GreenTextButton>
                 </FormControl>
-                {/*
-                  <GreenTextButton
-                    disabled={!editing}
-                    className={classes.button}
-                    variant="outlined"
-                    onClick={()=>handleOpen('class')}>
-                    { data?
-                      ( data.class && !data.class.status &&
-                        `${data.class.length}${function(){
-                          switch (data.scorematch) {
-                            case 0:
-                              return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ` Flight${( data.class.length > 1 ? 's' : '' )}`
-                              break;
-                            case 1:
-                              return ( sess && sess.language === 'TH' ) ? " ประเภท" : ` Class${( data.class.length > 1 ? 'es' : '' )}`
-                              break;
-                            default:
-                              return ( sess && sess.language === 'TH' ) ? " ทีม" : ` Team${( data.class.length > 1 ? 's' : '' )}`
-                          }
-                        }()}`
-                      ):
-                      (
-                        `${function(){
-                          switch (data.scorematch) {
-                            case 0:
-                              return ( sess && sess.language === 'TH' ) ? " ไฟล์ท" : ' Flight'
-                              break;
-                            case 1:
-                              return ( sess && sess.language === 'TH' ) ? " ประเภท" : ' Class'
-                              break;
-                            default:
-                              return ( sess && sess.language === 'TH' ) ? " ทีม" : ' Team'
-                          }
-                        }()}`
-                      )
-                    }
-                  </GreenTextButton>*/
-                }
                 <FormControl component="fieldset" className={classes.margin}
                   style={{
                     width: '100%',
@@ -717,7 +674,7 @@ export default function MBOverview(props){
           }
         </React.Fragment>
       }
-      <TemplateDialog open={rulesState} handleClose={handleRulesClose} maxWidth={900}>
+      <TemplateDialog open={rulesState} handleClose={handleRulesClose} maxWidth="md">
         <div>
           <LabelText
             style={{ marginBottom: 24 }}
@@ -741,7 +698,7 @@ export default function MBOverview(props){
         </div>
       </TemplateDialog>
       { modalType && modalType === 'location' &&
-        <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
+        <TemplateDialog open={open} handleClose={handleClose}>
           <Location
             {...props}
             overviewEdit
@@ -750,14 +707,6 @@ export default function MBOverview(props){
             selectedFieldVersion={selectedFieldVersion}
             setSelectedFieldVersion={setSelectedFieldVersion}
             handleOnDoneSelectField={handleClose} />
-        </TemplateDialog>
-      }
-      { modalType && modalType === 'class' &&
-        <TemplateDialog open={open} handleClose={handleClose} maxWidth={500}>
-          <MatchClass
-            {...props}
-            data={data && data.status !== 'class database error' && data}
-            matchid={matchid} setData={setData} />
         </TemplateDialog>
       }
     </div>

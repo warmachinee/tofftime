@@ -26,7 +26,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
     width: '100%',
-    backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 24
   },
@@ -216,7 +215,7 @@ export default function AddMatchModal(props){
                     } />
                   { window.innerWidth >= 650 &&
                     <ListItemText
-                      style={{ textAlign: 'right', paddingRight: 16 }}
+                      style={{ textAlign: 'right', width: 120 }}
                       primary={
                         <Typography
                           style={{ fontStyle: 'oblique' }}

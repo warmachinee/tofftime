@@ -91,7 +91,7 @@ export default function PageOrganizerCreatePost(props) {
   const {
     sess, BTN, COLOR, token, setCSRFToken, handleSnackBar,
     pageOrganizer, pageData, pageList,
-    selectMatchState, setSelectMatchState, setSelectedMatch, toggleCreateMatch
+    selectMatchState, setSelectMatchState, setSelectedMatch
   } = props
   const [ data, setData ] = React.useState(null)
 
@@ -129,11 +129,11 @@ export default function PageOrganizerCreatePost(props) {
   },[ selectMatchState ])
 
   return (
-    <TemplateDialog open={selectMatchState} handleClose={handleClose} maxWidth={900}>
+    <TemplateDialog open={selectMatchState} handleClose={handleClose} maxWidth="md">
       <div className={classes.root}>
         <LabelText text={ API._getWord(sess && sess.language).Select_match } />
         <div className={classes.grid}>
-          <BTN.Red style={{ paddingRight: 16 }} onClick={toggleCreateMatch}>
+          <BTN.Red style={{ paddingRight: 16 }}>
             <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
             { API._getWord(sess && sess.language).Create_Match }
           </BTN.Red>

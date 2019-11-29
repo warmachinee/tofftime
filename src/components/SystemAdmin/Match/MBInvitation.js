@@ -638,18 +638,20 @@ export default function MBInvitation(props){
           handleDummyOpen={handleDummyOpen}
           data={data} />
       </TemplateDialog>
-      <TemplateDialog open={dummyState} handleClose={handleDummyClose} maxWidth={800}>
+      <TemplateDialog open={dummyState} handleClose={handleDummyClose} maxWidth="md">
         <DummyPlayer
           {...props}
           handleClose={handleDummyClose}
           />
       </TemplateDialog>
-      <TemplateDialog open={formState} handleClose={handleFormClose} maxWidth={500}>
-        <MatchFormAction
-          {...props}
-          selectedUser={selectedUser}
-          handleClose={handleFormClose}
-          />
+      <TemplateDialog open={formState} handleClose={handleFormClose} maxWidth="xs">
+        { selectedUser && formState &&
+          <MatchFormAction
+            {...props}
+            selectedUser={selectedUser}
+            handleClose={handleFormClose}
+            />
+        }
       </TemplateDialog>
     </div>
   );

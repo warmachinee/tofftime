@@ -186,7 +186,7 @@ export default function SignIn(props) {
             handleSignUp={handleSignUp} />
         }
       </div>
-      <TemplateDialog open={forgotState} maxWidth={500} handleClose={()=>setForgotState(!forgotState)}>
+      <TemplateDialog open={forgotState} maxWidth="xs" handleClose={()=>setForgotState(!forgotState)}>
         <ForgotPassword setForgotState={setForgotState} {...props} />
       </TemplateDialog>
     </div>

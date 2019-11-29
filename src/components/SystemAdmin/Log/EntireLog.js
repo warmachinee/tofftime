@@ -120,6 +120,7 @@ export default function EntireLog(props){
   function EntireLogComponent(){
     return (
       <div>
+        <GoBack />
         <LabelText text="Entire Log" />
         <div className={classes.cardGrid}>
           <MenuCard

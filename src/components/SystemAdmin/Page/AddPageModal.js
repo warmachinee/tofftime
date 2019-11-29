@@ -225,7 +225,7 @@ export default function AddPageModal(props){
                     } />
                   { window.innerWidth >= 650 &&
                     <ListItemText
-                      style={{ textAlign: 'right', paddingRight: 16 }}
+                      style={{ textAlign: 'right', width: 120 }}
                       primary={
                         <Typography
                           style={{ fontStyle: 'oblique' }}

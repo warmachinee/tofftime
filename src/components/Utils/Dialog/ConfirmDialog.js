@@ -9,6 +9,7 @@ import {
   Dialog,
   IconButton,
   Divider,
+  Avatar,
 
 } from '@material-ui/core';
 
@@ -16,6 +17,8 @@ import {
   Close as CloseIcon,
   Photo,
   Delete as DeleteIcon,
+  Lock as LockIcon,
+  ExitToApp,
 
 } from '@material-ui/icons';
 
@@ -40,8 +43,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 24
   },
   iconBackground: {
-    padding: 12,
-    borderRadius: '50%'
+    padding: 16,
   },
 
 }));
@@ -51,6 +53,8 @@ export default function ConfirmDialog(props) {
   const stylesTheme = useTheme();
   const {
     sess,
+    fullWidth = true,
+    maxWidth = 'xs',
     open,
     onClose,
     onSubmit,
@@ -69,15 +73,20 @@ export default function ConfirmDialog(props) {
 
   } = props
 
-  const IconComp = {
+  const IconComp = typeof(icon) !== 'object' && {
     delete: DeleteIcon,
-    photo: Photo
+    photo: Photo,
+    lock: LockIcon,
+    exittoapp: ExitToApp,
+
   }[icon.toLowerCase() || photo]
   const SubmitButton = BTN[ submitButton ? submitButton : 'Primary']
   const CancelButton = BTN[ cancelButton ? cancelButton : 'PrimaryOutlined']
 
   return (
     <Dialog
+      fullWidth={fullWidth}
+      maxWidth={maxWidth}
       open={open}
       onClose={onClose}>
       <div id={ elementId ? elementId : "confirm-dialog" } className={classes.paper}>
@@ -86,17 +95,23 @@ export default function ConfirmDialog(props) {
         </IconButton>
         <div id={ (elementId ? elementId : "confirm-dialog") + "-children" }>
           <div className={classes.iconGrid} style={{ display: 'flex', justifyContent: 'center' }}>
-            <div className={classes.iconBackground}
-              style={{ backgroundColor: iconColor ? iconColor : COLOR.primary[600] }}>
-              { IconComp ?
-                <IconComp style={{ color: stylesTheme.palette.getContrastText(iconColor ? iconColor : COLOR.primary[600]), fontSize: 48 }} />
-                :
-                <Photo style={{ color: stylesTheme.palette.getContrastText(iconColor ? iconColor : COLOR.primary[600]), fontSize: 48 }} />
-              }
-            </div>
+            { icon && typeof(icon) === 'object' ?
+              <Avatar
+                style={{ width: icon.width ? icon.width : 64, height: icon.height ? icon.height : 64 }}
+                src={icon.src ? icon.src : "https://file.thai-pga.com/system/image/logoX2.png"} />
+              :
+              <Avatar className={classes.iconBackground}
+                style={{ backgroundColor: iconColor ? iconColor : COLOR.primary[600] }}>
+                { IconComp ?
+                  <IconComp style={{ color: stylesTheme.palette.getContrastText(iconColor ? iconColor : COLOR.primary[600]), fontSize: 48 }} />
+                  :
+                  <Photo style={{ color: stylesTheme.palette.getContrastText(iconColor ? iconColor : COLOR.primary[600]), fontSize: 48 }} />
+                }
+              </Avatar>
+            }
           </div>
           <Typography gutterBottom variant="h5" align="center">
-            { title ? title : 'Title' }
+            { title ? title : API._getWord(sess && sess.language).Title }
           </Typography>
           { content &&
             <Typography variant="body1" component="div">
@@ -105,10 +120,10 @@ export default function ConfirmDialog(props) {
           }
           <Divider style={{ marginTop: 24, marginBottom: 24 }} />
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <CancelButton onClick={onCancel ? onCancel : onClose} style={{ marginRight: 8, padding: '6px 24px', ...cancelStyle }}>
+            <CancelButton onClick={onCancel ? onCancel : onClose} style={{ marginRight: 8, width: 100, padding: '6px 24px', ...cancelStyle }}>
               { cancelText ? cancelText : API._getWord(sess && sess.language).Cancel }
             </CancelButton>
-            <SubmitButton onClick={onSubmit} style={{ padding: '6px 24px', ...submitStyle }}>
+            <SubmitButton onClick={onSubmit} style={{ width: 100, padding: '6px 24px', ...submitStyle }}>
               { submitText ? submitText : API._getWord(sess && sess.language).Delete }
             </SubmitButton>
           </div>

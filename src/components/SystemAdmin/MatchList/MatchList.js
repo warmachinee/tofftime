@@ -273,7 +273,7 @@ export default function MatchList(props){
         }
 
       </List>
-      <TemplateDialog maxWidth={700} open={open} handleClose={handleClose}>
+      <TemplateDialog maxWidth="md" open={open} handleClose={handleClose}>
         <AddMatchModal {...props} setData={setData} />
       </TemplateDialog>
     </div>

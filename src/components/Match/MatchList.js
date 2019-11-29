@@ -1,5 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import { Link } from "react-router-dom";
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import { primary } from '../../api/palette'
 
@@ -7,16 +8,10 @@ import {
   Paper,
   Tabs,
   Tab,
+  Typography,
+  Box,
 
 } from '@material-ui/core/';
-
-import PhoneIcon from '@material-ui/icons/Phone';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import PersonPinIcon from '@material-ui/icons/PersonPin';
-import HelpIcon from '@material-ui/icons/Help';
-import ShoppingBasket from '@material-ui/icons/ShoppingBasket';
-import ThumbDown from '@material-ui/icons/ThumbDown';
-import ThumbUp from '@material-ui/icons/ThumbUp';
 
 const MatchCard = Loadable({
   loader: () => import(/* webpackChunkName: "MatchCard" */ './MatchCard'),
@@ -103,16 +98,22 @@ const MATCH_LABEL = [
 
 function TabContainer(props) {
   const classes = useStyles();
-  const { filteredData } = props;
+  const { API, sess, filteredData } = props;
   return (
     <div>
-      { filteredData.length > 0 &&
+      { filteredData.length > 0 ?
         <div className={classes.grid}>
           { filteredData.map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
           { ( filteredData.length === 1 || filteredData.length === 2 ) &&
             Array.from(new Array( 3 - filteredData.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
           }
         </div>
+        :
+        <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+          <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+            { API._getWord(sess && sess.language).No_match }
+          </Box>
+        </Typography>
       }
     </div>
   );
@@ -122,10 +123,19 @@ export default function MatchList(props) {
   const classes = useStyles();
   const { API, sess, token, setCSRFToken } = props
   const [ data, setData ] = React.useState(null)
-  const [ value, setValue ] = React.useState(0);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  function hashToData(){
+    const hash = window.location.hash.substring(1, window.location.hash.length)
+    switch (hash) {
+      case 'amateur':
+        return 1
+        break;
+      case 'charity':
+        return 2
+        break;
+      default:
+        return 0
+    }
   }
 
   async function handleFetch(){
@@ -149,22 +159,26 @@ export default function MatchList(props) {
       <div className={classes.tabRoot}>
         <Paper elevation={3}>
           <StyledTabs
-            value={value}
-            onChange={handleChange}
+            value={hashToData()}
             variant="scrollable"
             scrollButtons="on"
           >
             { MATCH_LABEL.map( type =>
-              <StyledTab key={type.typescore} label={type.label} />
+              <Link to={`${window.location.pathname}#${type.label.toLowerCase()}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}>
+                <StyledTab key={type.typescore} label={type.label} />
+              </Link>
             )}
           </StyledTabs>
         </Paper>
         { data && MATCH_LABEL.map((type, index) =>
-          value === index &&
+          hashToData() === index &&
           <TabContainer
             {...props}
             key={type.typescore}
-            value={value}
+            sess={sess}
+            API={API}
+            value={hashToData()}
             index={type.typescore}
             setData={setData}
             filteredData={data.filter( item =>{ return item.typescore === type.typescore })} />

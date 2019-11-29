@@ -26,11 +26,6 @@ import {
 
 } from '@material-ui/icons';
 
-const SelectMatch = Loadable({
-  loader: () => import(/* webpackChunkName: "SelectMatch" */ './SelectMatch'),
-  loading: () => null
-});
-
 const RichTextEditor = Loadable({
   loader: () => import(/* webpackChunkName: "RichTextEditor" */'./../../Utils/RichTextEditor'),
   loading: () => <LDCircular />
@@ -141,23 +136,16 @@ export default function PageOrganizerPostEditor(props) {
   const classes = useStyles();
   const {
     sess, BTN, token, setCSRFToken, handleSnackBar, isSupportWebp,
-    createPostState, setCreatePostState, toggleCreatePost,
     pageData, clickAction, editingData, handleCloseEditor
   } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
   const [ dataDetail, setDataDetail ] = React.useState(null)
-  const [ selectedMatch, setSelectedMatch ] = React.useState(null);
-  const [ selectMatchState, setSelectMatchState ] = React.useState(false)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ selectedTypePost, setSelectedTypePost ] = React.useState('post')
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
-
-  function toggleSelectMatch(){
-    setSelectMatchState(!selectMatchState)
-  }
 
   function handlePicture(e){
     const file = event.target.files[0]
@@ -211,12 +199,6 @@ export default function PageOrganizerPostEditor(props) {
       type: selectedTypePost
     };
 
-    if(selectedTypePost === 'match'){
-      if(selectedMatch){
-        Object.assign(sendObj, { matchid:  selectedMatch.matchid});
-      }
-    }
-
     if(selectedTypePost === 'post'){
       if(title && detail){
         Object.assign(sendObj, { message:  title + '<$$split$$>' + detail });
@@ -245,7 +227,7 @@ export default function PageOrganizerPostEditor(props) {
         if(selectedFile){
           handleFetchPicture(csrf, d)
         }else{
-          setCreatePostState(false)
+          //setCreatePostState(false)
           handleSnackBar({
             state: true,
             message: d.status,
@@ -283,7 +265,7 @@ export default function PageOrganizerPostEditor(props) {
       autoHideDuration: /success/.test(response.status)? 2000 : 5000
     })
     if(/success/.test(response.status)){
-      setCreatePostState(false)
+      //setCreatePostState(false)
     }
   }
 
@@ -296,12 +278,6 @@ export default function PageOrganizerPostEditor(props) {
       postid: editingData.postid,
       type: selectedTypePost
     };
-
-    if(selectedTypePost === 'match'){
-      if(selectedMatch){
-        Object.assign(sendObj, { matchid:  selectedMatch.matchid});
-      }
-    }
 
     if(selectedTypePost === 'post'){
       if(title && detail){
@@ -331,7 +307,7 @@ export default function PageOrganizerPostEditor(props) {
         if(selectedFile){
           handleEditPicture()
         }else{
-          setCreatePostState(false)
+          //setCreatePostState(false)
           handleSnackBar({
             state: true,
             message: d.status,
@@ -370,7 +346,7 @@ export default function PageOrganizerPostEditor(props) {
       autoHideDuration: /success/.test(response.status)? 2000 : 5000
     })
     if(/success/.test(response.status)){
-      setCreatePostState(false)
+      //setCreatePostState(false)
     }
   }
 
@@ -384,21 +360,18 @@ export default function PageOrganizerPostEditor(props) {
         postid: editingData.postid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
+      setSelectedTypePost(d.type)
+
       if(d.type === 'post' && d.message){
         const messageSplit = d.message.split('<$$split$$>')
-        setTitle(d.messageSplit[0])
-        setDetail(d.messageSplit[1])
+        setTitle(messageSplit[0])
+        setDetail(messageSplit[1])
       }else{
         setTitle(d.message)
       }
-      setSelectedTypePost(d.type)
 
       if(d.photopath){
         setTempFile(API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ))
-      }
-
-      if(d.messagedetail && d.type === 'match'){
-        setSelectedMatch(d.messagedetail)
       }
 
       if(d.messagedetail && d.type === 'announce'){
@@ -453,7 +426,7 @@ export default function PageOrganizerPostEditor(props) {
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <div style={{ flex: 1 }} />
                   <StyledIconButton className={classes.matchFile}>
-                    <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                    <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={e => handlePicture(e)} />
                     <CloudUpload fontSize="large" style={{ color: primary[400] }} />
                   </StyledIconButton>
                   <div style={{ flex: 1 }} />
@@ -476,7 +449,7 @@ export default function PageOrganizerPostEditor(props) {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ flex: 1 }} />
                 <StyledIconButton className={classes.matchFile}>
-                  <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                  <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={e => handlePicture(e)} />
                   <CloudUpload fontSize="large" style={{ color: primary[500] }} />
                 </StyledIconButton>
                 <div style={{ flex: 1 }} />
@@ -506,58 +479,22 @@ export default function PageOrganizerPostEditor(props) {
                 label={ API._getWord(sess && sess.language).Announce }
                 labelPlacement="end"
               />
-              <FormControlLabel
-                value={'match'}
-                control={<GreenRadio />}
-                label={ API._getWord(sess && sess.language).Match }
-                labelPlacement="end"
-              />
             </RadioGroup>
           </FormControl>
-          { selectedTypePost !== 'match' &&
-            <React.Fragment>
-              <div style={{ marginTop: 24 }}>
-                { API._getWord(sess && sess.language).Content }
-              </div>
-              <div>
-                { clickAction === 'edit' ?
-                  ( (dataDetail && dataDetail.messagedetail) ?
-                    <RichTextEditor HTMLData={dataDetail.messagedetail} handleGetHTML={e =>handleEditorOnChange(e)} />
-                    :
-                    <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
-                  )
-                  :
-                  <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
-                }
-              </div>
-            </React.Fragment>
-          }
-          { selectedTypePost === 'match' &&
-            ( clickAction === 'edit' ?
-            <BTN.PrimaryOutlined onClick={toggleSelectMatch} className={classes.selectMatchButton}>
-              { selectedMatch ?
-                ( selectedMatch.matchname ?
-                  selectedMatch.matchname
-                  :
-                  (
-                    selectedMatch.title?
-                    selectedMatch.title : 'Select match'
-                  )
-                )
+          <div style={{ marginTop: 24 }}>
+            { API._getWord(sess && sess.language).Content }
+          </div>
+          <div>
+            { clickAction === 'edit' ?
+              ( detail ?
+                <RichTextEditor HTMLData={detail} handleGetHTML={e =>handleEditorOnChange(e)} />
                 :
-                'Select match'
-              }
-            </BTN.PrimaryOutlined>
+                <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+              )
               :
-              <BTN.PrimaryOutlined onClick={toggleSelectMatch} className={classes.selectMatchButton}>
-                { selectedMatch?
-                  selectedMatch.title
-                  :
-                  API._getWord(sess && sess.language).Select_match
-                }
-              </BTN.PrimaryOutlined>
-            )
-          }
+              <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+            }
+          </div>
         </ThemeProvider>
         <GreenButton variant="contained" color="primary" className={classes.button}
           onClick={clickAction === 'edit'? handleFetchEditPost : handleFetchCreatePost}>
@@ -568,11 +505,6 @@ export default function PageOrganizerPostEditor(props) {
           }
         </GreenButton>
       </div>
-      <SelectMatch
-        {...props}
-        selectMatchState={selectMatchState}
-        setSelectMatchState={setSelectMatchState}
-        setSelectedMatch={setSelectedMatch} />
     </React.Fragment>
   );
 }

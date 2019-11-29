@@ -26,13 +26,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function PageOrganizerCreatePost(props) {
   const classes = useStyles();
-  const { API, sess, BTN, token, setCSRFToken, handleSnackBar, createPostState, toggleCreatePost } = props
+  const { API, sess, BTN, token, setCSRFToken, handleSnackBar } = props
 
   return (
-    <TemplateDialog open={createPostState} handleClose={toggleCreatePost} elementId="create-post-dialog">
+    <TemplateDialog open={props.dialog.createPost} handleClose={props.dialogCloseAll} elementId="create-post-dialog">
       <div className={classes.root}>
         <LabelText text={ API._getWord(sess && sess.language).Create_post } />
-        <PageOrganizerPostEditor {...props} handleCloseEditor={toggleCreatePost} />
+        <PageOrganizerPostEditor {...props} handleCloseEditor={props.dialogCloseAll} />
       </div>
     </TemplateDialog>
   );

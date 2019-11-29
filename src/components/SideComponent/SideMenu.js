@@ -59,8 +59,8 @@ const ListFollow = Loadable({
   loading: () => null
 });
 
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../Utils/Dialog/TemplateDialog'),
+const ConfirmDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../Utils/Dialog/ConfirmDialog'),
   loading: () => null
 });
 
@@ -127,9 +127,6 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up(900)]: {
       display: 'none',
     }
-  },
-  confirmButton: {
-    padding: theme.spacing(1, 4.5)
   },
   userInfo: {
     width: '100%',
@@ -548,23 +545,16 @@ export default function SideMenu(props) {
           </ListItem>
         </List>
       </Drawer>
-      <TemplateDialog maxWidth={400} open={confirmLogout} handleClose={toggleConfirmLogout}>
-        {/*handleLogout*/}
-        <Typography component="div">
-          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { API._getWord(sess && sess.language)['Are you sure you want to Log out?'] }
-          </Box>
-        </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <BTN.PrimaryText fullWidth onClick={toggleConfirmLogout} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Cancel }
-          </BTN.PrimaryText>
-          <BTN.Red fullWidth onClick={handleLogout} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Log_out }
-          </BTN.Red>
-        </div>
-      </TemplateDialog>
+      <ConfirmDialog
+        sess={sess}
+        open={confirmLogout}
+        onClose={toggleConfirmLogout}
+        icon="ExitToApp"
+        iconColor={COLOR.red[600]}
+        title={API._getWord(sess && sess.language)['Are you sure you want to Log out?']}
+        onSubmit={handleLogout}
+        submitButton="Red"
+        submitText={API._getWord(sess && sess.language).Log_out} />
     </React.Fragment>
   );
 }

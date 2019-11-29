@@ -52,17 +52,17 @@ export default function PageOrganizer(props) {
     if(sess && sess.status === 1 && sess.typeid === 'admin'){
       window.location.pathname = '/system_admin'
     }
-  }, [ sess, props.location ])
+  }, [ sess, props.location, editPageRefresh ])
 
-  React.useEffect(()=>{
-    handleFetch()
-  },[ editPageRefresh ])
-
-  return pageData && (
-    <UserPage
-      {...props}
-      pageOrganizer
-      pageData={pageData}
-      handlePageData={handlePageData} />
+  return (
+    <React.Fragment>
+      { pageData &&
+        <UserPage
+          {...props}
+          pageOrganizer
+          pageData={pageData}
+          handlePageData={handlePageData} />
+      }
+    </React.Fragment>
   );
 }

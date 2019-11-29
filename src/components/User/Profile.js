@@ -746,7 +746,7 @@ export default function Profile(props) {
         )
       }
       { !pageOrganizer &&
-        <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth={500}>
+        <TemplateDialog open={changePasswordState} handleClose={toggleChangePassword} maxWidth="xs">
           <LabelText text={ API._getWord(sess && sess.language).Change_password } />
           <div style={{ marginTop: 24, marginBottom: 24 }}>
             <ThemeProvider theme={theme}>

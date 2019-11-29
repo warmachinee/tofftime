@@ -399,7 +399,7 @@ export default function App() {
 
   return (
     <React.Fragment>
-      <div style={{ backgroundColor: '#f5f7f8' }}>
+      <div style={{ backgroundColor: '#f5f7f8', minHeight: window.innerHeight }}>
         { !/\/user|\/organizer/.test(window.location.pathname) &&
           <Header
             {...passingProps}

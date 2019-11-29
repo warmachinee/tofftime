@@ -67,9 +67,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, pageid, handleSnackBar } = props
-  const [ isFollow, setIsFollow ] = React.useState(false)
-  const [ data, setData ] = React.useState(null)
+  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, isFollow, data } = props
 
   async function handleToggleFollow(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -83,29 +81,6 @@ export default function OrganizerOverview(props) {
     })
     await handleFetch()
   }
-
-  async function handleFetch(){
-    const resToken = token? token : await API._xhrGet('getcsrf')
-    await API._xhrPost(
-      token? token : resToken.token,
-      ( sess && sess.status === 1 ) ? 'ploadpage' : 'mloadpage' , {
-        action: 'detail',
-        pageid: pageid,
-    }, function(csrf, d){
-      setCSRFToken(csrf)
-      setData(d[0])
-      document.title = `${d[0].pagename} - T-off Time Organizer`
-      if(d[1].subscribe){
-        setIsFollow(true)
-      }else{
-        setIsFollow(false)
-      }
-    })
-  }
-
-  React.useEffect(()=>{
-    handleFetch()
-  },[ sess ])
 
   return (
     <div className={classes.root}>

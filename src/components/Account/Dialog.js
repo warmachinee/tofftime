@@ -254,7 +254,7 @@ export default function Dialog(props) {
         </Modal>
       </Portal>
       <div ref={container} />
-      <TemplateDialog open={forgotState} maxWidth={500} handleClose={()=>setForgotState(!forgotState)}>
+      <TemplateDialog open={forgotState} maxWidth="xs" handleClose={()=>setForgotState(!forgotState)}>
         <ForgotPassword setForgotState={setForgotState} {...props} />
       </TemplateDialog>
     </div>

@@ -27,6 +27,11 @@ const LabelText = Loadable({
   loading: () => null
 });
 
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
+  loading: () => null
+});
+
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => null
@@ -246,17 +251,17 @@ export default function ErrorDetection(props){
 
   return (
     <div>
+      <GoBack />
       <LabelText text={"Error & Bugs"} />
-      { data && data.length > 0 &&
+      { data && data.filter( s =>{ return s === 1 }).length > 0 &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={()=>setEditing(!editing)}>{ editing ? 'Done' : 'Remove' }</BTN.PrimaryText>
         </div>
       }
       <List>
         {data &&
-          data.length > 0 ?
-          data.map( d =>
-            d.status === 1 &&
+          data.filter( s =>{ return s === 1 }).length > 0 ?
+          data.filter( s =>{ return s === 1 }).map( d =>
             <ListErrorItem key={d.errorid}
               data={d}
               editing={editing}
@@ -272,7 +277,7 @@ export default function ErrorDetection(props){
           </Typography>
         }
       </List>
-      <TemplateDialog maxWidth={900} open={dialog.detail} handleClose={handleCloseAll}
+      <TemplateDialog maxWidth="md" open={dialog.detail} handleClose={handleCloseAll}
         action={selectItem.detail && <BTN.Red onClick={()=>handleOpen(selectItem.detail, 'confirm')}>Delete</BTN.Red>}>
         { selectItem.detail &&
           <div style={{ marginBottom: 24 }}>
@@ -300,6 +305,8 @@ export default function ErrorDetection(props){
         }
       </TemplateDialog>
       <ConfirmDialog
+        sess={sess}
+        maxWidth="xs"
         open={dialog.confirm}
         onClose={()=>dialog.detail ? handleClose('confirm') : handleCloseAll()}
         icon="Delete"

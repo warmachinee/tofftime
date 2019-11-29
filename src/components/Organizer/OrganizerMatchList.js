@@ -3,6 +3,12 @@ import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
+import {
+  Typography,
+  Box,
+
+} from '@material-ui/core/';
+
 import Skeleton from '@material-ui/lab/Skeleton';
 
 const OrganizerMatchCard = Loadable({
@@ -25,12 +31,11 @@ const useStyles = makeStyles(theme => ({
   grid: {
     marginTop: 24,
     padding: theme.spacing(1.5),
-    display: 'flex',
-    flexWrap: 'wrap',
-    WebkitFlexWrap: 'wrap',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     boxSizing: 'border-box',
-    justifyContent: 'space-around'
   },
+
 
 }));
 
@@ -55,20 +60,25 @@ export default function OrganizerMatchList(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ props.createPostState ])
+  },[ ])
 
   return(
     <div className={classes.root}>
       <LabelText text={ API._getWord(sess && sess.language).Match_list } />
-      <div className={classes.grid}>
-        { ( data && data.length > 0 ) ?
-          data.map( d => <OrganizerMatchCard key={d.postid} data={d} {...props} />)
-          :
-          <div style={{
-              width: '100%', padding: '36px 0', textAlign: 'center',
-              fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
-        }
-      </div>
+      { ( data && data.length > 0 ) ?
+        <div className={classes.grid}>
+          { data.map( d => <OrganizerMatchCard key={d.postid} data={d} setData={setData} {...props} />) }
+          { ( data.length === 1 || data.length === 2 ) &&
+            Array.from(new Array( 3 - data.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
+          }
+        </div>
+        :
+        <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+          <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+            { API._getWord(sess && sess.language).No_match }
+          </Box>
+        </Typography>
+      }
     </div>
   );
 }

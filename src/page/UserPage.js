@@ -5,16 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
 
-const Announce = Loadable({
-  loader: () => import(/* webpackChunkName: "Announce" */ './../components/Announce/Announce'),
-  loading: () => null
-});
-
-const OverviewProfile = Loadable({
-  loader: () => import(/* webpackChunkName: "OverviewProfile" */ './../components/User/OverviewProfile'),
-  loading: () => null
-});
-
 const PageOrganizerOverview = Loadable({
   loader: () => import(/* webpackChunkName: "PageOrganizerOverview" */ './../components/User/PageOrganizer/PageOrganizerOverview'),
   loading: () => null
@@ -32,11 +22,6 @@ const UpcomingList = Loadable({
 
 const History = Loadable({
   loader: () => import(/* webpackChunkName: "History" */ './../components/User/History'),
-  loading: () => null
-});
-
-const FriendFollowList = Loadable({
-  loader: () => import(/* webpackChunkName: "FriendFollowList" */ './../components/SideComponent/FriendFollowList'),
   loading: () => null
 });
 
@@ -65,28 +50,8 @@ const CreateMatchDialog = Loadable({
   loading: () => null
 });
 
-const PageOrganizerSetAdmin = Loadable({
-  loader: () => import(/* webpackChunkName: "PageOrganizerSetAdmin" */ './../components/User/PageOrganizer/PageOrganizerSetAdmin'),
-  loading: () => null
-});
-
-const PageOrganizerCreatePost = Loadable({
-  loader: () => import(/* webpackChunkName: "PageOrganizerCreatePost" */ './../components/User/PageOrganizer/PageOrganizerCreatePost'),
-  loading: () => null
-});
-
-const OrganizerAnnounce = Loadable({
-  loader: () => import(/* webpackChunkName: "OrganizerAnnounce" */ './../components/Organizer/OrganizerAnnounce'),
-  loading: () => null
-});
-
-const OrganizerPost = Loadable({
-  loader: () => import(/* webpackChunkName: "OrganizerPost" */ './../components/Organizer/OrganizerPost'),
-  loading: () => null
-});
-
-const OrganizerMatchList = Loadable({
-  loader: () => import(/* webpackChunkName: "OrganizerMatchList" */ './../components/Organizer/OrganizerMatchList'),
+const PageOrganizerBody = Loadable({
+  loader: () => import(/* webpackChunkName: "PageOrganizerBody" */ './../components/User/PageOrganizer/PageOrganizerBody'),
   loading: () => null
 });
 
@@ -179,8 +144,6 @@ export default function UserPage(props) {
   const [ pageList, setPageList ] = React.useState(null)
   const [ addFriendState, setAddFriendState ] = React.useState(false);
   const [ notiState, setNotiState ] = React.useState(false);
-  const [ setAdminState, setSetAdminState ] = React.useState(false);
-  const [ createPostState, setCreatePostState ] = React.useState(false);
   const [ notiData, setNotiData ] = React.useState(null);
 
   const passingProps = {
@@ -214,20 +177,7 @@ export default function UserPage(props) {
     handleAddFriendClose: handleAddFriendClose,
     notiState: notiState,
     toggleNoti: toggleNoti,
-    setAdminState: setAdminState,
-    toggleSetAdmin: toggleSetAdmin,
-    createPostState: createPostState,
-    setCreatePostState: setCreatePostState,
-    toggleCreatePost: toggleCreatePost,
 
-  }
-
-  function toggleSetAdmin(){
-    setSetAdminState(!setAdminState)
-  }
-
-  function toggleCreatePost(){
-    setCreatePostState(!createPostState)
   }
 
   function toggleAddFriend(){
@@ -330,14 +280,6 @@ export default function UserPage(props) {
         notiData={notiData}
         setNotiData={setNotiData} />
 
-      <PageOrganizerSetAdmin
-        {...props}
-        {...dialogProps} />
-
-      <PageOrganizerCreatePost
-        {...props}
-        {...dialogProps} />
-
     </div>
   );
 }
@@ -348,19 +290,14 @@ function UserDashboard(props){
 
   return(
     <React.Fragment>
-      { pageOrganizer &&
+      { pageOrganizer ?
+        <PageOrganizerBody {...props} />
+        :
         <React.Fragment>
-          <PageOrganizerOverview {...props} />
-          <div style={{ padding: 12, position: 'relative', boxSizing: 'border-box' }}>
-            <OrganizerAnnounce {...props} />
-            <OrganizerMatchList {...props} />
-            <OrganizerPost {...props} />
-          </div>
-          <div style={{ height: 4, backgroundColor: COLOR.grey[600], margin: '48px 12px', borderRadius: 4 }} />
+          <Upcoming {...props} />
+          <History {...props} />
         </React.Fragment>
       }
-      <Upcoming {...props} />
-      <History {...props} />
       { sess && sess.status !== 1 && sess.typeid === 'admin' &&
         <Redirect to={`/system_admin`} />
       }

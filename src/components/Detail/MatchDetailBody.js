@@ -135,10 +135,6 @@ function DetailComponent(props){
   const classes = useStyles();
   const { detail, picture, isSupportWebp } = props
 
-  React.useEffect(()=>{
-    console.log(ReactHtmlParser(detail));
-  },[ ])
-
   const [ ,updateState ] = React.useState(null)
 
   function resizeHandler(){
@@ -153,20 +149,18 @@ function DetailComponent(props){
   },[ window.innerWidth ])
 
   return(
-    <React.Fragment>
-      <div className="ql-container ql-snow">
-        <div className={classes.imageGrid}>
-          { picture &&
-            <img align="left" className={classes.image}
-              style={{ height: window.innerWidth * .45, }}
-              src={API._getPictureUrl(picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
-          }
-        </div>
-        <div className="ql-editor">
-          {ReactHtmlParser(detail)}
-        </div>
+    <div className="ql-container ql-snow" style={{ border: 'none' }}>
+      <div className={classes.imageGrid}>
+        { picture &&
+          <img align="left" className={classes.image}
+            style={{ height: window.innerWidth * .45, }}
+            src={API._getPictureUrl(picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+        }
       </div>
-    </React.Fragment>
+      <div className="ql-editor">
+        {ReactHtmlParser(detail)}
+      </div>
+    </div>
   );
 }
 

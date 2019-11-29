@@ -35,8 +35,8 @@ const LabelText = Loadable({
   loading: () => <LDCircular />
 });
 
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
+const ConfirmDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
   loading: () => <LDCircular />
 });
 
@@ -80,10 +80,6 @@ const useStyles = makeStyles(theme => ({
   tableLocation: {
     width: '40%',
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-  },
-  checkbox: {
-    position: 'absolute',
-    left: 8
   },
   margin: {
     width: '100%',
@@ -502,61 +498,45 @@ export default function MatchBody(props){
             </React.Fragment>
         )}
       </List>
-
-      <TemplateDialog
-        maxWidth={400}
-        open={confirmDeleteState} handleClose={handleConfirmCancel}>
-        <Typography component="div">
-          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
-          </Box>
-          <Box className={classes.confirmSubtitle} m={3}>
+      <ConfirmDialog
+        sess={sess}
+        open={confirmDeleteState}
+        onClose={handleConfirmCancel}
+        icon="Delete"
+        iconColor={red[600]}
+        title={API._getWord(sess && sess.language)['Are you sure you want to delete?']}
+        content={
+          removeData &&
+          <Typography variant="body1" align="center">
             { removeData && removeData.title }
-          </Box>
-        </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenTextButton onClick={handleConfirmCancel} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Cancel }
-          </GreenTextButton>
-          <RedButton onClick={handleConfirmDelete} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Delete }
-          </RedButton>
-        </div>
-      </TemplateDialog>
-
-      <TemplateDialog
-        maxWidth={400}
-        open={confirmPasswordState} handleClose={handleConfirmPasswordCancel}>
-        <Typography component="div">
-          <Box className={classes.confirmTitle} fontWeight={600} m={1}>
-            { API._getWord(sess && sess.language)['Fill your password'] }
-          </Box>
-        </Typography>
-        <ThemeProvider theme={theme}>
-          <TextField
-            autoFocus
-            fullWidth
-            style={{ marginTop: 16 }}
-            className={classes.margin}
-            label={ API._getWord(sess && sess.language).Password }
-            variant="outlined"
-            type="password"
-            onChange={(e)=>setConfirmPassword(e.target.value)}
-            onKeyPress={e =>handleKeyPress(e)}
-          />
-        </ThemeProvider>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenTextButton onClick={handleConfirmPasswordCancel} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Cancel }
-          </GreenTextButton>
-          <RedButton onClick={handleFetchRemove} className={classes.confirmButton}>
-            { API._getWord(sess && sess.language).Delete }
-          </RedButton>
-        </div>
-      </TemplateDialog>
-
+          </Typography>
+        }
+        onSubmit={handleConfirmDelete}
+        submitButton="Red" />
+      <ConfirmDialog
+        sess={sess}
+        open={confirmPasswordState}
+        onClose={handleConfirmPasswordCancel}
+        icon="Lock"
+        iconColor={red[600]}
+        title={API._getWord(sess && sess.language)['Fill your password']}
+        content={
+          <ThemeProvider theme={theme}>
+            <TextField
+              autoFocus
+              fullWidth
+              style={{ marginTop: 16 }}
+              className={classes.margin}
+              label={ API._getWord(sess && sess.language).Password }
+              variant="outlined"
+              type="password"
+              onChange={(e)=>setConfirmPassword(e.target.value)}
+              onKeyPress={e =>handleKeyPress(e)}
+            />
+          </ThemeProvider>
+        }
+        onSubmit={handleFetchRemove}
+        submitButton="Red" />
     </div>
   )
 }

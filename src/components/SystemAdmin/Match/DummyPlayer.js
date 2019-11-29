@@ -30,8 +30,8 @@ import {
 
 import { LDCircular } from './../../loading/LDCircular'
 
-const TemplateDialog = Loadable({
-  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
+const ConfirmDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
   loading: () => <LDCircular />
 });
 
@@ -64,21 +64,7 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     margin: theme.spacing(1, 0)
   },
-  confirmDeleteTitle: {
-    textAlign: 'center',
-    fontSize: 20,
-    [theme.breakpoints.up(500)]: {
-      fontSize: 24,
-    },
-  },
-  confirmDeleteSubtitle: {
-    fontFamily: 'monospace',
-    color: grey[600],
-    fontWeight: 600,
-  },
-  confirmDeleteButton: {
-    padding: theme.spacing(1, 4.5)
-  },
+
 }))
 
 const RedButton = withStyles(theme => ({
@@ -279,7 +265,7 @@ export default function DummyPlayer(props){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
         token? token : resToken.token,
-        'mmatchmember', {
+        sess && sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
           action: 'dummy',
           matchid: matchid,
           fullname: fullname,
@@ -307,7 +293,7 @@ export default function DummyPlayer(props){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
         token? token : resToken.token,
-        'mloadmatch', {
+        sess && sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
           action: 'dummy',
           matchid: matchid,
       }, (csrf, d) =>{
@@ -355,7 +341,7 @@ export default function DummyPlayer(props){
           <div style={{ flex: 1 }} />
           <GreenButton
             className={classes.confirmButton}
-            onClick={()=> sess.typeid === 'admin' ? handleCreatePlayer() : handleCreateDummy()}>
+            onClick={handleCreateDummy}>
             {API._getWord(sess && sess.language).Confirm}
           </GreenButton>
         </div>
@@ -399,27 +385,21 @@ export default function DummyPlayer(props){
         }
 
       </List>
-      <TemplateDialog
-        maxWidth={400}
-        open={open} handleClose={handleClose}>
-        <Typography component="div">
-          <Box className={classes.confirmDeleteTitle} fontWeight={600} m={1}>
-            { API._getWord(sess && sess.language)['Are you sure you want to delete?'] }
-          </Box>
-          <Box className={classes.confirmDeleteSubtitle} m={3}>
-            ( { selectedDeleteItem && `${selectedDeleteItem.fullname} ${selectedDeleteItem.lastname}` } )
-          </Box>
-        </Typography>
-        <Divider style={{ marginTop: 16, marginBottom: 16 }} />
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <BTN.PrimaryText onClick={handleClose} className={classes.confirmDeleteButton}>
-            { API._getWord(sess && sess.language).Cancel }
-          </BTN.PrimaryText>
-          <BTN.Red onClick={handleRemoveDummy} className={classes.confirmDeleteButton}>
-            { API._getWord(sess && sess.language).Delete }
-          </BTN.Red>
-        </div>
-      </TemplateDialog>
+      <ConfirmDialog
+        sess={sess}
+        open={open}
+        onClose={handleClose}
+        icon="Delete"
+        iconColor={red[600]}
+        title={API._getWord(sess && sess.language)['Are you sure you want to delete?']}
+        content={
+          selectedDeleteItem &&
+          <Typography variant="body1" align="center">
+            { selectedDeleteItem && `${selectedDeleteItem.fullname} ${selectedDeleteItem.lastname}` }
+          </Typography>
+        }
+        onSubmit={handleRemoveDummy}
+        submitButton="Red" />
     </div>
   );
 }

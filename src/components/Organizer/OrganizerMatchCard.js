@@ -14,6 +14,7 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%',
+    marginLeft: 'auto',
     marginRight: 'auto',
     marginBottom: 24,
     [theme.breakpoints.up(600)]: {
@@ -69,9 +70,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerMatchCard(props) {
   const classes = useStyles();
-  const { API, BTN, data, isSupportWebp, sess } = props
-  const [ paperHover, setPaperHover ] = React.useState(0)
-  const [ joinStatus, setJoinStatus ] = React.useState(false)
+  const { API, BTN, sess, token, setCSRFToken, data, setData, isSupportWebp, pageOrganizer, pageData, pageid } = props
 
   function handleJoinMatch(){
     if(sess && sess.status === 1){
@@ -82,8 +81,8 @@ export default function OrganizerMatchCard(props) {
         userid: sess.userid,
       })
       setTimeout(()=>{
-        setJoinStatus(true)
-      }, 1000)
+        handleFetch()
+      }, 500)
     }else{
       window.location.pathname = '/login'
     }
@@ -91,83 +90,90 @@ export default function OrganizerMatchCard(props) {
 
   function handleGetButton(){
     if(BTN && data && data.messagedetail.matchstatus === 0){
-      switch (true) {
-        case data.messagedetail.permission === 'host' || data.messagedetail.permission === 'admin':
-          return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
-              <BTN.NoStyleLink to={`/user/management/match/${data.messagedetail.matchid}`}>
-                <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
-              </BTN.NoStyleLink>
-            </div>
-          )
-          break;
-        case data.messagedetail.permission === 'none':
-          return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              { joinStatus?
-                <Button disabled>Join</Button>
-                :
-                <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
-              }
-            </div>
-          )
-          break;
-        default:
-          return null
-      }
+      return (
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+          {function() {
+            switch (true) {
+              case data.messagedetail.permission === 'host' || data.messagedetail.permission === 'admin':
+                return (
+                  <BTN.NoStyleLink to={`/user/management/match/${data.messagedetail.matchid}`}>
+                    <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+                  </BTN.NoStyleLink>
+                )
+                break;
+              case data.messagedetail.permission === 'pending':
+                return <Button disabled>Pending</Button>
+                break;
+              case data.messagedetail.permission === 'none':
+                return <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+                break;
+              default:
+                return null
+            }
+          }()}
+        </div>
+      )
     }
+  }
+
+  async function handleFetch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'mloadpage' , {
+        action: 'postlist',
+        pageid: pageOrganizer ? pageData.pageid : pageid,
+        type: 'match'
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+      setData(d)
+    })
   }
 
   return(
     <Paper
       className={classes.root}
-      elevation={ ( data && window.innerWidth >= 600 ) ? paperHover : 1}
-      {...data?
-        {
-          onMouseEnter: ()=>setPaperHover(3),
-          onMouseLeave: ()=>setPaperHover(0),
-        } : null
-      }>
-      { data &&
-        (
-          ( data.messagedetail && data.photopath ) ?
-          <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
-            <img className={classes.image}
-              src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-          </BTN.NoStyleLink>
-          :
-          (
-            ( data.messagedetail && data.messagedetail.photopath ) ?
-            <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
-              <img className={classes.image}
-                src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-            </BTN.NoStyleLink>
-            :
-            <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />
-          )
-        )
+      elevation={1}>
+      { ( data.messagedetail && data.messagedetail.photopath ) ?
+        <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
+          <img className={classes.image}
+            src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+        </BTN.NoStyleLink>
+        :
+        <Skeleton className={classes.image} style={{ margin: 0 }} />
       }
-      { ( data && data.messagedetail )?
+      { ( data && data.messagedetail ) ?
         <Box className={classes.box}>
+          <Typography gutterBottom variant="body2"
+            style={{
+              color: data.messagedetail.scorematch === 1 ? primary[700] : 'inherit',
+              fontWeight: data.messagedetail.scorematch === 1 ? 900 : 400
+            }}>
+            {function(){
+              switch (data.messagedetail.scorematch) {
+                case 0:
+                  return 'Amateur'
+                  break;
+                case 1:
+                  return 'Professional'
+                  break;
+                default:
+                  return 'Charity'
+              }
+            }()}
+          </Typography>
           <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
-            <Typography gutterBottom variant="body1" className={classes.title}>
-              {data.message}
-            </Typography>
-          </BTN.NoStyleLink>
-          <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
-            <Typography gutterBottom display="block" variant="caption" className={classes.location}>
+            <Typography gutterBottom variant="h6" className={classes.title}>
               {data.messagedetail.matchname}
             </Typography>
-          </BTN.NoStyleLink>
-          <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
+            <Typography gutterBottom variant="body2">
+              {API._dateToString(data.messagedetail.matchdate)}
+            </Typography>
             <Typography gutterBottom display="block" variant="caption" className={classes.location}>
               <LocationOnIcon fontSize="small" className={classes.locationIcon} />
-              {data.messagedetail.fieldname + `(${data.messagedetail.fieldversion})`}
+              {data.messagedetail.fieldname}
             </Typography>
           </BTN.NoStyleLink>
-          <Typography variant="caption" color="textSecondary">
-            {/*${data.views + ' views'} • */`${API._dateToString(data.messagedetail.matchdate)}`}
-          </Typography>
         </Box>
         :
         <Box className={classes.box}>

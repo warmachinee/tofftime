@@ -30,7 +30,6 @@ const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
     width: '100%',
-    backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 36,
     maxHeight: '100%'

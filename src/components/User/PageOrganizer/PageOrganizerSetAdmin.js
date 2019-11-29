@@ -47,7 +47,6 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     padding: theme.spacing(1, 2),
     width: '100%',
-    backgroundColor: grey[50],
     cursor: 'pointer',
     marginTop: 24,
     boxSizing: 'border-box'
@@ -195,7 +194,7 @@ function ListMenu(props) {
 
 export default function PageOrganizerSetAdmin(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, handleSnackBar, setAdminState, toggleSetAdmin, pageData } = props
+  const { API, sess, token, setCSRFToken, handleSnackBar, pageData } = props
   const [ open, setOpen ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
 
@@ -221,13 +220,13 @@ export default function PageOrganizerSetAdmin(props) {
   }
 
   React.useEffect(()=>{
-    if(setAdminState || open){
+    if(props.dialog.setAdmin || open){
       handleFetch()
     }
-  },[ setAdminState, open ])
+  },[ props.dialog.setAdmin, open ])
 
   return (
-    <TemplateDialog open={setAdminState} handleClose={toggleSetAdmin} maxWidth={800}>
+    <TemplateDialog open={props.dialog.setAdmin} handleClose={props.dialogCloseAll} maxWidth="md">
       <div className={classes.root}>
         <LabelText text={ API._getWord(sess && sess.language).Set_admin } />
         <div className={classes.grid}>
