@@ -5,18 +5,23 @@ import { Link } from "react-router-dom";
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
 
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import Divider from '@material-ui/core/Divider';
+import {
+  FormControlLabel,
+  Switch,
+  IconButton,
+  Paper,
+  Typography,
+  Box,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  Divider,
+
+} from '@material-ui/core';
 
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ImageIcon from '@material-ui/icons/Image';
@@ -48,6 +53,11 @@ const LabelText = Loadable({
 const PageOrganizerPostEditor = Loadable({
   loader: () => import(/* webpackChunkName: "PageOrganizerPostEditor" */ './PageOrganizerPostEditor'),
   loading: () => <LDCircular />
+});
+
+const MatchStepper = Loadable({
+  loader: () => import(/* webpackChunkName: "MatchStepper" */ './../Panel/Match/MatchStepper'),
+  loading: () => null
 });
 
 const useStyles = makeStyles(theme => ({
@@ -93,6 +103,20 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
+const StyledSwitch = withStyles({
+  switchBase: {
+    color: primary[300],
+    '&$checked': {
+      color: primary[500],
+    },
+    '&$checked + $track': {
+      backgroundColor: primary[500],
+    },
+  },
+  checked: {},
+  track: {},
+})(Switch);
+
 const StyledText = withStyles(theme => ({
   primary: {
     color: 'white',
@@ -129,20 +153,57 @@ export default function PagePost(props){
   const [ editing, setEditing ] = React.useState(false)
   const [ editingData, setEditingData ] = React.useState(null)
   const [ clickAction, setClickAction ] = React.useState('')
+  const [ selectedTypePost, setSelectedTypePost ] = React.useState('post')
+  const [ dialog, setDialog ] = React.useState({
+    createMatch: false,
+    post: false,
+    setAdmin: false
+  })
+  const [ isCreateAfterDone, setIsCreateAfterDone ] = React.useState(true)
+
+  const passingProps = {
+    ...props,
+    dialog: dialog,
+    dialogOpen: dialogOpen,
+    dialogCloseAll: dialogCloseAll,
+    ...(pageData) && { pageid: pageData.pageid  }
+  }
+
+  function dialogOpen(type){
+    setDialog({ ...dialog, [type]: true })
+  }
+
+  function dialogClose(type){
+    setDialog({ ...dialog, [type]: false })
+  }
+
+  function dialogCloseAll(){
+    setDialog({
+      createMatch: false,
+      post: false,
+      setAdmin: false
+    })
+    setClickAction('')
+    setEditingData(null)
+  }
 
   function handleOpen(action){
     setClickAction(action)
-    setOpen(!open)
+    dialogOpen('post')
+    if(action === 'create'){
+      setSelectedTypePost('post')
+    }
   }
 
   function handleSelectPagePost(d){
-    handleOpen('edit')
+    setClickAction('edit')
+    dialogOpen('post')
     setEditingData(d)
   }
 
   function handleClose(){
-    setOpen(!open)
-    handleOpen('')
+    dialogClose('post')
+    setClickAction('')
     setEditingData(null)
   }
 
@@ -205,7 +266,6 @@ export default function PagePost(props){
 
   return(
     <div className={classes.root}>
-      <GoBack />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           { API._getWord(sess && sess.language).Page_post }
@@ -238,7 +298,8 @@ export default function PagePost(props){
       </List>
       <List className={classes.listRoot}>
         { data && !data.status &&
-          API.sortArrByDate(data, 'createdate', 'title').map( d =>{
+          data.length > 0 ? /*API._sortArrByDate(data, 'createdate', 'title')*/
+          data.map( d =>{
             return d &&
             <React.Fragment key={d.postid}>
               <ListItem>
@@ -278,19 +339,38 @@ export default function PagePost(props){
               </ListItem>
               <Divider />
             </React.Fragment>
-        })}
+          })
+          :
+          <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              { API._getWord(sess && sess.language).No_post }
+            </Box>
+          </Typography>
+        }
       </List>
-      <TemplateDialog open={open} handleClose={handleClose}>
-        <div>
-          <LabelText
-            text={
-              clickAction === 'edit' ?
-              ( API._getWord(sess && sess.language).Edit_post )
-              :
-              ( API._getWord(sess && sess.language).Create_post )
-            } />
-          <PageOrganizerPostEditor {...props} clickAction={clickAction} editingData={editingData} handleCloseEditor={handleClose} />
+      <TemplateDialog maxWidth={selectedTypePost === 'match' ? "md" : "sm"}
+        open={dialog.post} handleClose={dialogCloseAll} elementId="create-post-dialog">
+        <div className={classes.root}>
+          <LabelText text={ API._getWord(sess && sess.language)[ clickAction === 'edit' ? 'Edit_post' : 'Create_post'] } />
+          <PageOrganizerPostEditor {...passingProps}
+            clickAction={clickAction}
+            editingData={editingData}
+            handleCloseEditor={dialogCloseAll}
+            selectedTypePost={selectedTypePost}
+            setSelectedTypePost={setSelectedTypePost} />
         </div>
+      </TemplateDialog>
+      <TemplateDialog maxWidth="md" open={dialog.createMatch} handleClose={()=>dialogClose('createMatch')}>
+        <LabelText text={ API._getWord(sess && sess.language).Create_Match } />
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <FormControlLabel
+            control={
+              <StyledSwitch checked={isCreateAfterDone} onChange={e =>setIsCreateAfterDone(e.target.checked)} />
+            }
+            label={ API._getWord(sess && sess.language)['Add to your page after create.'] }
+          />
+        </div>
+        <MatchStepper {...passingProps} isCreateAfterDone={isCreateAfterDone} />
       </TemplateDialog>
       <ConfirmDialog
         sess={sess}

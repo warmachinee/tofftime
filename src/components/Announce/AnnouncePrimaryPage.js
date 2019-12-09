@@ -6,7 +6,7 @@ import { autoPlay } from 'react-swipeable-views-utils';
 import { primary, grey } from './../../api/palette'
 
 import {
-  Paper, Grid, Hidden, IconButton,
+  Paper, Grid, Hidden, IconButton, Typography, Box,
 } from '@material-ui/core';
 
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -117,7 +117,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function AnnouncePrimaryPage(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, data, pageid } = props
+  const { API, sess, BTN, isSupportWebp, data, pageid } = props
   const [ index, setIndex ] = React.useState(0)
 
   function handleChangeIndex(index) {
@@ -178,15 +178,11 @@ export default function AnnouncePrimaryPage(props) {
               </div>
             )
             :
-            <div
-              style={{
-                height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300],
-                display: 'flex', flexDirection: 'column', justifyContent: 'space-around',
-                width: '100%', borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>
-                <div style={{ textAlign: 'center', fontSize: 24, fontWeight: 600 }}>
-                  No data
-                </div>
-            </div>
+            <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_data }
+              </Box>
+            </Typography>
           )
           :
           <div>

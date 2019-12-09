@@ -177,91 +177,25 @@ export default function ErrorDetection(props){
     })
   }
 
-  function tempFetch(){
-    setData([
-      {
-        date: "2019-11-27T05:32:57.000Z",
-        errorid: 754605,
-        file: "https:\/\/thai-pga.com\/OrganizerOverview.js",
-        message: "Uncaught TypeError: Cannot read property 'pagename' of undefined",
-        object: "",
-        stack: "TypeError: Cannot read property 'pagename' of undefined\n    at https:\/\/thai-pga.com\/OrganizerOverview.js:1:3421\n    at XMLHttpRequest.i.onreadystatechange (https:\/\/thai-pga.com\/app.js:1:47798)",
-        status: 1,
-        type: "normal",
-        url: "https:\/\/thai-pga.com\/page\/8"
-      },
-      {
-        date: "2019-11-26T19:14:27.000Z",
-        errorid: 161036,
-        file: "webpack:\/\/\/.\/src\/components\/Organizer\/OrganizerOverview.js?",
-        message: "Uncaught TypeError: Cannot read property 'subscribe' of undefined",
-        object: "",
-        stack: "TypeError: Cannot read property 'subscribe' of undefined\n    at eval (webpack:\/\/\/.\/src\/components\/Organizer\/OrganizerOverview.js?:191:26)\n    at XMLHttpRequest.req.onreadystatechange (webpack:\/\/\/.\/src\/api\/index.js?:601:11)",
-        status: 1,
-        type: "normal",
-        url: "https:\/\/www.thai-pga.com\/page\/8"
-      },
-      {
-        date: "2019-11-27T05:32:53.000Z",
-        errorid: 262321,
-        file: "https:\/\/thai-pga.com\/OrganizerOverview.js",
-        message: "Uncaught TypeError: Cannot read property 'pagename' of undefined",
-        object: "",
-        stack: "TypeError: Cannot read property 'pagename' of undefined\n    at https:\/\/thai-pga.com\/OrganizerOverview.js:1:3421\n    at XMLHttpRequest.i.onreadystatechange (https:\/\/thai-pga.com\/app.js:1:47798)",
-        status: 1,
-        type: "normal",
-        url: "https:\/\/thai-pga.com\/page\/890008"
-      },
-      {
-        date: "2019-11-25T04:42:45.000Z",
-        errorid: 189215,
-        file: "https:\/\/thai-pga.com\/app.js",
-        message: "",
-        object: "",
-        stack: "ReferenceError: asdasdasdasd is not defined\n    at onClick (https:\/\/thai-pga.com\/app.js:6:11971)\n    at Object.m (https:\/\/thai-pga.com\/app.js:22:1023)\n    at k (https:\/\/thai-pga.com\/app.js:22:1166)\n    at https:\/\/thai-pga.com\/app.js:22:1312\n    at S (https:\/\/thai-pga.com\/app.js:22:1398)\n    at O (https:\/\/thai-pga.com\/app.js:22:1847)\n    at P (https:\/\/thai-pga.com\/app.js:22:1659)\n    at _ (https:\/\/thai-pga.com\/app.js:22:2007)\n    at xn (https:\/\/thai-pga.com\/app.js:22:29062)\n    at se (https:\/\/thai-pga.com\/app.js:22:114831)",
-        status: 1,
-        type: "normal",
-        url: "https:\/\/thai-pga.com\/system_admin\/log\/error"
-      },
-      {
-        date: "2019-11-25T04:22:14.000Z",
-        errorid: 370261,
-        file: "M\n    ",
-        message: "ReferenceError: mainasdasd is not defined",
-        object: "",
-        stack: "\n    in M\n    in t\n    in n\n    in t\n    in div\n    in J\n    in t\n    in t\n    in t",
-        status: 1,
-        type: "boundary",
-        url: "https:\/\/thai-pga.com\/user#_=_"
-      },
-    ])
-  }
-
   React.useEffect(()=>{
     if(!(dialog.detail || dialog.confirm)){
-      /*
-      if(/localhost/.test(window.location.href)){
-        tempFetch()
-      }else{
-        handleFetch()
-      }*/
       handleFetch()
     }
   },[ dialog ])
 
   return (
     <div>
-      <GoBack />
+      <GoBack to='/system_admin/log' />
       <LabelText text={"Error & Bugs"} />
-      { data && data.filter( s =>{ return s === 1 }).length > 0 &&
+      { data && data.filter( s =>{ return s.status === 1 }).length > 0 &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <BTN.PrimaryText onClick={()=>setEditing(!editing)}>{ editing ? 'Done' : 'Remove' }</BTN.PrimaryText>
         </div>
       }
       <List>
-        {data &&
-          data.filter( s =>{ return s === 1 }).length > 0 ?
-          data.filter( s =>{ return s === 1 }).map( d =>
+        { data &&
+          data.filter( s =>{ return s.status === 1 }).length > 0 ?
+          data.filter( s =>{ return s.status === 1 }).map( d =>
             <ListErrorItem key={d.errorid}
               data={d}
               editing={editing}

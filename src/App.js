@@ -438,7 +438,7 @@ export default function App() {
             {...passingProps} />
           <RouteScoreDisplay path="/display/:matchid/:userid"
             {...passingProps} />
-          <Route component={NoMatch} />
+          <Route render={()=><NoMatch {...passingProps} />} />
         </Switch>
 
         { sess && sess.status !== 1 && /\/user|\/system_admin|\/organizer/.test(window.location.pathname) &&

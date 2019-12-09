@@ -11,6 +11,7 @@ import {
   ListItemText,
   ListItemIcon,
   Typography,
+  Box,
   Divider,
 
 } from '@material-ui/core'
@@ -156,9 +157,11 @@ export default function UpcomingList(props) {
           ( data.length > 0 ?
             API.sortReverseArrByDate(data, 'matchdate').map( d => <UpcomingListItem key={d.matchid} data={d} {...props} />)
             :
-            <div style={{
-                width: '100%', padding: '36px 0', textAlign: 'center',
-                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+            <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_data }
+              </Box>
+            </Typography>
           )
           :
           Array.from(new Array(2)).map( (d, i)=> <UpcomingListItem key={i} {...props} />)

@@ -43,7 +43,7 @@ function TabContainer(props) {
   const rewardSelected = !reward.status && reward.status !== 'reward not create' && reward.status !== 'need to login admin account' && reward.filter( item =>{
     return (item.classno === matchClass.classno && item)
   })
-
+  
   return (
     <React.Fragment>
       <div style={{ display: 'flex' }}>
@@ -108,9 +108,38 @@ const StyledTab = withStyles(theme => ({
 
 export default function Scoreboard(props) {
   const classes = useStyles();
-  const { sess, data, userscore, matchClass, matchid, token, setCSRFToken, mainClassSelected, setMainClassSelected } = props
+  const { COLOR, sess, data, userscore, matchClass, matchid, token, setCSRFToken, mainClassSelected, setMainClassSelected } = props
   const [ value, setValue ] = React.useState(0);
   const [ reward, setReward ] = React.useState(null)
+  const tabsStyle = makeStyles(theme => ({
+    indicator: {
+      backgroundColor: COLOR[ value !== matchClass.length ? (matchClass[value].color ? matchClass[value].color : 'primary') : 'primary' ][600],
+      height: 4
+    },
+    scrollButtons: {
+      color: COLOR[ value !== matchClass.length ? (matchClass[value].color ? matchClass[value].color : 'primary') : 'primary' ][900],
+      width: 50,
+    }
+
+  }))();
+  const tabStyle = makeStyles(theme => ({
+    root: {
+      textTransform: 'none',
+      fontWeight: 500,
+      marginRight: theme.spacing(4),
+      '&:hover': {
+        color: COLOR[ value !== matchClass.length ? (matchClass[value].color ? matchClass[value].color : 'primary') : 'primary' ][600],
+        opacity: 1,
+      },
+      '&$selected': {
+        color: COLOR[ value !== matchClass.length ? (matchClass[value].color ? matchClass[value].color : 'primary') : 'primary' ][600],
+      },
+      '&:focus': {
+        color: COLOR[ value !== matchClass.length ? (matchClass[value].color ? matchClass[value].color : 'primary') : 'primary' ][600],
+      },
+    },
+
+  }))();
 
   function handleChange(event, newValue) {
     setValue(newValue);
@@ -150,8 +179,8 @@ export default function Scoreboard(props) {
 
   return (
     <div className={classes.root}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        { data && data.scorematch !== 0 &&
+      { data && data.scorematch !== 0 && data.mainclass.length > 1 &&
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <FormControl className={classes.formControl}>
             <InputLabel>Main Group</InputLabel>
             <Select
@@ -165,19 +194,30 @@ export default function Scoreboard(props) {
               )}
             </Select>
           </FormControl>
-        }
-      </div>
-      <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
+        </div>
+      }
+      <Paper elevation={1}
+        style={{ backgroundColor:
+          COLOR[ value !== matchClass.length ? (matchClass[value].color ? matchClass[value].color : 'primary') : 'primary' ][100],
+          padding: '8px 0'
+        }}>
         <StyledTabs
           value={value}
           onChange={handleChange}
           variant="scrollable"
           scrollButtons="on"
+          classes={{
+            indicator: tabsStyle.indicator,
+            scrollButtons: tabsStyle.scrollButtons
+          }}
         >
           { matchClass &&
             matchClass.map( d=>
               d &&
-              <StyledTab key={d.classname} label={
+              <StyledTab
+                key={d.classname}
+                classes={{ root: tabStyle.root, }}
+                label={
                   data.scorematch !== 0 ?
                   d.classname
                   :
@@ -196,14 +236,17 @@ export default function Scoreboard(props) {
             <React.Fragment key={i}>
               {
                 value === i &&
-                <TabContainer {...props} key={d.classname} data={data} userscore={userscore} matchClass={d} reward={reward}></TabContainer>
+                <TabContainer {...props} key={d.classname} value={i} data={data} userscore={userscore} matchClass={d} reward={reward}></TabContainer>
               }
             </React.Fragment>
           );
         })
       }
       { data.scorematch === 0 && matchClass && reward && ( value === matchClass.length ) &&
-        <TabContainer {...props} data={data} userscore={userscore} matchClass={{classno: 0, classname: 'No class'}} reward={reward}></TabContainer>
+        <TabContainer {...props}
+          data={data}
+          value={matchClass.length}
+          userscore={userscore} matchClass={{ classno: 0, classname: 'No class', color: '' }} reward={reward}></TabContainer>
       }
     </div>
   );

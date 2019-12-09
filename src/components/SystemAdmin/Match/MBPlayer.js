@@ -809,7 +809,7 @@ export default function MBPlayer(props){
             }
             { data &&
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Typography variant="caption" align="right"
+                <Typography variant="body1" align="right"
                   style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
                   { ( sess && sess.language === 'TH' ) ?
                     `ผู้เล่น ${data.length} คน`
@@ -817,7 +817,7 @@ export default function MBPlayer(props){
                     `${data.length} player${data.length > 1? 's' : ''}`
                   }
                 </Typography>
-                { matchDetail && matchDetail.scorematch !== 0 &&
+                { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass > 1 &&
                   <FormControl className={classes.formControl}>
                     <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                     <Select
@@ -871,165 +871,172 @@ export default function MBPlayer(props){
                         }
                       }()} />
                 }
-                <ListItemIcon style={{ justifyContent: 'flex-start' }}>
-                  <div style={{ height: 42, width: 42 }}></div>
-                </ListItemIcon>
+                {/*
+                  <ListItemIcon style={{ justifyContent: 'flex-start' }}>
+                    <div style={{ height: 42, width: 42 }}></div>
+                  </ListItemIcon>*/
+                }
               </ListItem>
               <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
 
-                { data && !data.status && matchDetail && matchDetail.mainclass &&
-                  data.length > 0 ?
-                  [
-                    ...searchUser? handleSearch() : data
-                  ].slice(0, dataSliced).map(value => {
+                { ( data && matchDetail && matchDetail.mainclass ) ?
+                  ( !data.status && data.length > 0 ?
+                    [
+                      ...searchUser? handleSearch() : data
+                    ].slice(0, dataSliced).map(value => {
 
-                    return value && (
-                      <React.Fragment key={value.userid}>
-                        <ListItem role={undefined} button={editing || editingClass || editingDisplay}
-                          onClick={()=>
-                            ( editing || editingClass )?
-                            handleToggle(value):
-                            ( editingDisplay && value.classno !== 0?
-                              handleSelectedPlayer(value)
-                              :
-                              console.log()
-                            )
-                          }>
-                          <ListItemIcon>
-                            { ( editing || editingClass )?
-                              <GreenCheckbox
-                                edge="start"
-                                checked={checked.indexOf(value) !== -1}
-                                tabIndex={-1}
-                                disableRipple />
-                              :
-                              (editingDisplay && value.classno !== 0 ?
+                      return value && (
+                        <React.Fragment key={value.userid}>
+                          <ListItem role={undefined} button={editing || editingClass || editingDisplay}
+                            onClick={()=>
+                              ( editing || editingClass )?
+                              handleToggle(value):
+                              ( editingDisplay && value.classno !== 0?
+                                handleSelectedPlayer(value)
+                                :
+                                console.log()
+                              )
+                            }>
+                            <ListItemIcon>
+                              { ( editing || editingClass )?
                                 <GreenCheckbox
                                   edge="start"
-                                  checked={value.display === 1}
+                                  checked={checked.indexOf(value) !== -1}
                                   tabIndex={-1}
                                   disableRipple />
-                              :
-                                <div style={{ height: 42, width: 42 }} />)
-                            }
-                          </ListItemIcon>
-                          <ListItemText className={classes.listText}
-                            primary={
-                              ( window.innerWidth >= 450 && window.innerWidth < 600 )?
-                              <div style={{ display: 'flex' }}>
-                                { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
-                              </div>
-                              : value.firstname}
-                            secondary={
-                              <React.Fragment>
-                                { window.innerWidth < 450 &&
-                                  <Typography
-                                    component="span"
-                                    variant="body1"
-                                    color="textPrimary"
-                                  >
-                                    {value.lastname}
-                                  </Typography>
-                                }
-                                { window.innerWidth < 600 &&
-                                  ( matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
-                                    matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0?
-                                    ( value.classno === 0 ?
+                                :
+                                (editingDisplay && value.classno !== 0 ?
+                                  <GreenCheckbox
+                                    edge="start"
+                                    checked={value.display === 1}
+                                    tabIndex={-1}
+                                    disableRipple />
+                                :
+                                  <div style={{ height: 42, width: 42 }} />)
+                              }
+                            </ListItemIcon>
+                            <ListItemText className={classes.listText}
+                              primary={
+                                ( window.innerWidth >= 450 && window.innerWidth < 600 )?
+                                <div style={{ display: 'flex' }}>
+                                  { value.firstname }<div style={{ width: 20 }}></div>{ value.lastname }
+                                </div>
+                                : value.firstname}
+                              secondary={
+                                <React.Fragment>
+                                  { window.innerWidth < 450 &&
+                                    <Typography
+                                      component="span"
+                                      variant="body1"
+                                      color="textPrimary"
+                                    >
+                                      {value.lastname}
+                                    </Typography>
+                                  }
+                                  { window.innerWidth < 600 &&
+                                    ( matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                                      matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0?
+                                      ( value.classno === 0 ?
+                                        <React.Fragment>
+                                          <br></br>
+                                          {"-"}
+                                        </React.Fragment>
+                                        :
+                                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                                          return d.classno === value.classno
+                                        }).map((d, i) =>
+                                          d &&
+                                          <React.Fragment key={i}>
+                                            <br></br>
+                                            {
+                                              matchDetail.scorematch !== 0 ?
+                                              d.classname
+                                              :
+                                              String.fromCharCode(65 + value.classno - 1)
+                                            }
+
+                                          </React.Fragment>
+                                        )
+                                      )
+                                      :
                                       <React.Fragment>
                                         <br></br>
-                                        {"-"}
+                                        {"No class"}
                                       </React.Fragment>
-                                      :
-                                      matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                                        return d.classno === value.classno
-                                      }).map((d, i) =>
-                                        d &&
-                                        <React.Fragment key={i}>
-                                          <br></br>
-                                          {
-                                            matchDetail.scorematch !== 0 ?
-                                            d.classname
-                                            :
-                                            String.fromCharCode(65 + value.classno - 1)
-                                          }
-
-                                        </React.Fragment>
-                                      )
                                     )
-                                    :
-                                    <React.Fragment>
-                                      <br></br>
-                                      {"No class"}
-                                    </React.Fragment>
-                                  )
-                                }
-                                { value.note &&
-                                  <Typography variant="caption" display="block">
-                                    {value.note}
-                                  </Typography>
-                                }
-                              </React.Fragment>
-                            } />
-                          { window.innerWidth >= 600 &&
-                            <ListItemText className={classes.listText}
-                              primary={value.lastname} />
-                          }
-
-                          { window.innerWidth > 600 &&
-                            ( matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
-                              matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
-                              ( value.classno === 0 ?
-                                <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                                  primary={"-"} />
-                                :
-                                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                                  return d.classno === value.classno
-                                }).map( d =>
-                                  d &&
-                                  <ListItemText key={d.classname + `(${value.userid})`}
-                                    style={{ justifyContent: 'center' }}
-                                    className={classes.listClass}
-                                    primary={
-                                      matchDetail.scorematch !== 0 ?
-                                      d.classname
-                                      :
-                                      String.fromCharCode(65 + d.classno - 1)
-                                    } />
-                                )
-                              )
-                              :
-                              <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                                primary={"No class"} />
-                            )
-                          }
-                          <ListItemIcon style={{ justifyContent: 'flex-end' }}>
-                            {/* editing?
-                              <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
-                                <DeleteIcon classes={{ root: classes.deleteIcon}} />
-                              </IconButton>
-                              :
-                              <div style={{ height: 42, width: 42 }}></div>*/
+                                  }
+                                  { value.note &&
+                                    <Typography variant="caption" display="block">
+                                      {value.note}
+                                    </Typography>
+                                  }
+                                </React.Fragment>
+                              } />
+                            { window.innerWidth >= 600 &&
+                              <ListItemText className={classes.listText}
+                                primary={value.lastname} />
                             }
-                          </ListItemIcon>
-                        </ListItem>
-                        <Divider />
-                      </React.Fragment>
-                    );
-                  })
+
+                            { window.innerWidth > 600 &&
+                              ( matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
+                                ( value.classno === 0 ?
+                                  <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                                    primary={"-"} />
+                                  :
+                                  matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                                    return d.classno === value.classno
+                                  }).map( d =>
+                                    d &&
+                                    <ListItemText key={d.classname + `(${value.userid})`}
+                                      style={{ justifyContent: 'center' }}
+                                      className={classes.listClass}
+                                      primary={
+                                        matchDetail.scorematch !== 0 ?
+                                        d.classname
+                                        :
+                                        String.fromCharCode(65 + d.classno - 1)
+                                      } />
+                                  )
+                                )
+                                :
+                                <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
+                                  primary={"No class"} />
+                              )
+                            }
+                            {/*
+                              <ListItemIcon style={{ justifyContent: 'flex-end' }}>
+                                { editing?
+                                  <IconButton edge="end" onClick={()=>handleRemovePlayer(value)}>
+                                    <DeleteIcon classes={{ root: classes.deleteIcon}} />
+                                  </IconButton>
+                                  :
+                                  <div style={{ height: 42, width: 42 }}></div>
+                                }
+                              </ListItemIcon>*/
+                            }
+                          </ListItem>
+                          <Divider />
+                        </React.Fragment>
+                      );
+                    })
+                    :
+                    <Typography component="div" style={{ width: '100%' }}>
+                      <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                        { API._getWord(sess && sess.language).No_player }
+                      </Box>
+                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                        <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
+                          <BTN.PrimaryOutlined>
+                            <AddIcon style={{ marginRight: 8 }} />
+                            { API._getWord(sess && sess.language).Invite_players }
+                          </BTN.PrimaryOutlined>
+                        </BTN.NoStyleLink>
+                      </div>
+                    </Typography>
+                  )
                   :
-                  <Typography component="div" style={{ width: '100%' }}>
-                    <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                      { API._getWord(sess && sess.language).No_player }
-                    </Box>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                      <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
-                        <BTN.PrimaryOutlined>
-                          <AddIcon style={{ marginRight: 8 }} />
-                          { API._getWord(sess && sess.language).Invite_players }
-                        </BTN.PrimaryOutlined>
-                      </BTN.NoStyleLink>
-                    </div>
-                  </Typography>
+                  <LDCircular />
                 }
               </div>
               <ListItem role={undefined} dense style={{ display: 'flex' }}>

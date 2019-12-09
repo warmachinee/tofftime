@@ -124,11 +124,14 @@ function PlayoffContainer(props){
   function handleUpdatePlayoff(selected){
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.emit('admin-match-client-message', {
-      action: "updateplayoff",
+      action: "showmatchscore",
       matchid: matchid,
       userid: selected.userid,
       mainclass: parseInt(mainClassSelected)
     })
+    setTimeout(()=>{
+      handleFetch()
+    }, 1000)
   }
 
   async function handleSetPlayoff(selected){
@@ -152,7 +155,6 @@ function PlayoffContainer(props){
         })
         try {
           handleUpdatePlayoff(selected)
-          handleFetch()
         }catch(err) { console.log(err.message) }
       })
     }
@@ -364,7 +366,7 @@ export default function MBPlayoff(props){
             <Box className={classes.notice} m={1}>
               { API._getWord(sess && sess.language).Select_Group }
             </Box>
-            { matchDetail && matchDetail.scorematch !== 0 &&
+            { matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass > 1 &&
               <FormControl className={classes.formControl}>
                 <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                 <Select

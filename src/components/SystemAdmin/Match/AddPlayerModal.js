@@ -151,7 +151,6 @@ export default function AddPlayerModal(props){
 
   function handleInviteUser(d){
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )//[0] : hostid , [1] : targetuserid
-
     socket.emit('match-request-client-message', {
       action: "invite",
       matchid: matchid,

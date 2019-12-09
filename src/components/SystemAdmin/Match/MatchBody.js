@@ -30,14 +30,19 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import { LDCircular } from './../../loading/LDCircular'
 
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
+  loading: () => null
+});
+
 const LabelText = Loadable({
   loader: () => import(/* webpackChunkName: "LabelText" */'./../../Utils/LabelText'),
-  loading: () => <LDCircular />
+  loading: () => null
 });
 
 const ConfirmDialog = Loadable({
   loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
-  loading: () => <LDCircular />
+  loading: () => null
 });
 
 const useStyles = makeStyles(theme => ({
@@ -65,10 +70,6 @@ const useStyles = makeStyles(theme => ({
   tableView: {
     width: 75,
     textAlign: 'right'
-  },
-  tableDateText: {
-    fontStyle: 'oblique',
-    fontFamily: 'monospace'
   },
   tableTitle: {
     width: '100%',
@@ -170,31 +171,59 @@ function ListComponent(props){
   return (
     <ListItem button>
       { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&
-        <ListItemText className={classes.tableDate} classes={{ primary: classes.tableDateText }}
-          primary={API._dateToString(data.date)} />
+        <ListItemText className={classes.tableDate}
+          primary={
+            <Typography
+              style={{ fontStyle: 'oblique' }}
+              component="span"
+              variant="caption"
+              color="textPrimary"
+            >
+              {API._dateToString(data.date)}
+            </Typography>
+          } />
       }
       <ListItemText primary={API._shotnessNumber(data.views)} className={classes.tableView} />
       <ListItemText inset className={classes.tableTitle}
         primary={data.title}
         secondary={
-          ( ( props.open ? window.innerWidth < 1040 : window.innerWidth < 800 ) || editing ) &&
-          (
-            ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 )?
-            data.location
-            :
-            <React.Fragment>
-              <Typography
-                style={{ fontStyle: 'oblique' }}
-                component="span"
-                variant="caption"
-                color="textPrimary"
-              >
-                {API._dateToString(data.date)}
-              </Typography>
-              <br></br>
-              {data.location}
-            </React.Fragment>
-          )
+          <React.Fragment>
+            <Typography component="span" variant="body2" style={{ fontWeight: 600 }}>
+              { function(){
+                  switch (data.scorematch) {
+                    case 0:
+                      return 'Amateur'
+                      break;
+                    case 1:
+                      return 'Professional'
+                      break;
+                    default:
+                      return 'Charity'
+                  }
+                }()
+              }
+            </Typography>
+            { ( ( props.open ? window.innerWidth < 1040 : window.innerWidth < 800 ) || editing ) &&
+              (
+                ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 )?
+                data.location
+                :
+                <React.Fragment>
+                  <br></br>
+                  <Typography
+                    style={{ fontStyle: 'oblique' }}
+                    component="span"
+                    variant="caption"
+                    color="textPrimary"
+                  >
+                    {API._dateToString(data.date)}
+                  </Typography>
+                  <br></br>
+                  {data.location}
+                </React.Fragment>
+              )
+            }
+          </React.Fragment>
         } />
       { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editing &&
         <ListItemText inset primary={data.location} className={classes.tableLocation} />
@@ -388,6 +417,9 @@ export default function MatchBody(props){
 
   return(
     <div className={classes.root}>
+      { sess && sess.typeid === 'admin' &&
+        <GoBack to='/system_admin/' />
+      }
       <LabelText text={ API._getWord(sess && sess.language).Match } />
       { sess && sess.typeid !== 'admin' &&
         <div style={{ marginTop: 24, boxSizing: 'border-box' }}>
@@ -447,28 +479,42 @@ export default function MatchBody(props){
           </ListItem>
         }
 
-        {data && !data.status && !editingDisplay && sess &&
-          data.map( (d, i) =>
-            d &&
-            <React.Fragment key={i}>
-              { !editing ?
-                <Link className={classes.linkElement}
-                  to={
-                    sess.typeid === 'admin' ?
-                    `/system_admin/match/${d.matchid}` :
-                    `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${d.matchid}`
-                  }>
-                  <ListComponent data={d} open={props.open} />
-                </Link>
-                :
-                <ListComponent data={d} open={props.open} editing={editing} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
-              }
-              <Divider />
-            </React.Fragment>
-        )}
+        { !editingDisplay &&
+          (
+            ( data && !data.status && sess ) ?
+            (
+              data.length > 0 ?
+              API._sortArrByDate(data, 'createdate', 'title').map( (d, i) =>
+                d &&
+                <React.Fragment key={i}>
+                  { !editing ?
+                    <Link className={classes.linkElement}
+                      to={
+                        sess.typeid === 'admin' ?
+                        `/system_admin/match/${d.matchid}` :
+                        `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${d.matchid}`
+                      }>
+                      <ListComponent data={d} open={props.open} />
+                    </Link>
+                    :
+                    <ListComponent data={d} open={props.open} editing={editing} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
+                  }
+                  <Divider />
+                </React.Fragment>
+              )
+              :
+              <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { API._getWord(sess && sess.language).No_data }
+                </Box>
+              </Typography>
+            )
+            :
+            <LDCircular />
+          )
+        }
         { dataClassed && editingDisplay && sess &&
-          dataClassed.map( (d, i) =>
-            d &&
+          API._sortArrByDate(dataClassed, 'createdate', 'title').map( (d, i) =>
             <React.Fragment key={i}>
               <ListItem key={d.matchid} style={{ ...d.display !== 1 && { opacity: .5 }}} button onClick={()=>handleSetDisplay(d)}>
                 <ListItemIcon>

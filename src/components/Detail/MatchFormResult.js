@@ -70,9 +70,14 @@ const useStyles = makeStyles(theme => ({
     height: 48,
   },
   listPicture: {
-    width: '20%',
+    width: '10%',
     marginRight: 16,
     justifyContent: 'center'
+  },
+  listIndex: {
+    width: 75,
+    marginRight: 16,
+    textAlign: 'right'
   },
   listTime: {
     width: '60%',
@@ -246,13 +251,24 @@ export default function MatchFormResult(props) {
               </Typography>
             </Button>
           </div>
-          <List disablePadding style={{ marginTop: 16 }}>
+          { data &&
+            <Typography variant="body1" align="right"
+              style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
+              { ( sess && sess.language === 'TH' ) ?
+                `ผู้เล่น ${data.length} คน`
+                :
+                `${data.length} player${data.length > 1? 's' : ''}`
+              }
+            </Typography>
+          }
+          <List disablePadding>
             <ListItem style={{ backgroundColor: COLOR.grey[900] }}>
+              <ListItemText className={classes.listIndex} style={{ color: 'white' }} primary="#" />
               <ListItemIcon className={classes.listPicture}>
                 <div className={classes.avatarImage} />
               </ListItemIcon>
               <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ API._getWord(sess && sess.language).First_Name } />
+                primary={ API._getWord(sess && sess.language).First_name } />
               <ListItemText className={classes.listLastname} style={{ color: 'white' }}
                 primary={ API._getWord(sess && sess.language).Last_name } />
               <ListItemText className={classes.listStatus} style={{ color: 'white' }}
@@ -260,74 +276,78 @@ export default function MatchFormResult(props) {
             </ListItem>
           </List>
           <List disablePadding>
-            { data &&
-              data.length > 0 ?
-              data.map( (d, i) =>
-                <React.Fragment key={i}>
-                  <ListItem style={{
-                      backgroundColor: d.status === 2 ? 'inherit' : COLOR.grey[200]
-                    }}>
-                    <ListItemIcon className={classes.listPicture}>
-                      { d.photopath ?
-                        <Avatar className={classes.avatarImage}
-                          src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-                        :
-                        <AccountCircle classes={{ root: classes.avatar }} />
-                      }
-                    </ListItemIcon>
-                    <ListItemText
-                      className={classes.listName}
-                      primary={
-                        <Typography className={classes.name} variant="body2" component="div" style={{ display: 'flex' }}>
-                          {d.fullname}
-                          { (window.innerWidth >= 500 && window.innerWidth < 700) ? <div style={{ width: 16 }} /> : '' }
-                          { (window.innerWidth >= 500 && window.innerWidth < 700) ? d.lastname : '' }
-                        </Typography>
-                      }
-                      secondary={
-                        window.innerWidth < 500 &&
-                        <React.Fragment>
-                          <Typography className={classes.name} variant="body2" component="span" color="textPrimary">
-                            {d.lastname}
+            { data ?
+              ( data.length > 0 ?
+                data.map( (d, i) =>
+                  <React.Fragment key={i}>
+                    <ListItem style={{
+                        backgroundColor: d.status === 2 ? 'inherit' : COLOR.grey[200]
+                      }}>
+                      <ListItemText className={classes.listIndex} primary={i + 1} />
+                      <ListItemIcon className={classes.listPicture}>
+                        { d.photopath ?
+                          <Avatar className={classes.avatarImage}
+                            src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          :
+                          <AccountCircle classes={{ root: classes.avatar }} />
+                        }
+                      </ListItemIcon>
+                      <ListItemText
+                        className={classes.listName}
+                        primary={
+                          <Typography className={classes.name} variant="body2" component="div" style={{ display: 'flex' }}>
+                            {d.fullname}
+                            { (window.innerWidth >= 500 && window.innerWidth < 700) ? <div style={{ width: 16 }} /> : '' }
+                            { (window.innerWidth >= 500 && window.innerWidth < 700) ? d.lastname : '' }
                           </Typography>
-                          <br></br>
-                          <Typography
-                            variant="caption"
-                            style={{ color: getStatus(d.status).color }}>
-                            {getStatus(d.status).text}
-                          </Typography>
-                          <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
-                            {API._dateToString(d.createdate)}
-                          </Typography>
-                        </React.Fragment>
-                      } />
-                    <ListItemText
-                      className={classes.listLastname}
-                      primary={
-                        <React.Fragment>
-                          <Typography className={classes.name} variant="body2">
-                            {d.lastname}
-                          </Typography>
-                        </React.Fragment>
-                      } />
-                    <ListItemText className={classes.listStatus}
-                      primary={ window.innerWidth >= 500 && getStatus(d.status).component}
-                      secondary={
-                        window.innerWidth >= 500 && d.createdate &&
-                          <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
-                            {API._dateToString(d.createdate)}
-                          </Typography>
-                      } />
-                  </ListItem>
-                  <Divider />
-                </React.Fragment>
+                        }
+                        secondary={
+                          window.innerWidth < 500 &&
+                          <React.Fragment>
+                            <Typography className={classes.name} variant="body2" component="span" color="textPrimary">
+                              {d.lastname}
+                            </Typography>
+                            <br></br>
+                            <Typography
+                              variant="caption"
+                              style={{ color: getStatus(d.status).color }}>
+                              {getStatus(d.status).text}
+                            </Typography>
+                            <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
+                              {API._dateToString(d.createdate)}
+                            </Typography>
+                          </React.Fragment>
+                        } />
+                      <ListItemText
+                        className={classes.listLastname}
+                        primary={
+                          <React.Fragment>
+                            <Typography className={classes.name} variant="body2">
+                              {d.lastname}
+                            </Typography>
+                          </React.Fragment>
+                        } />
+                      <ListItemText className={classes.listStatus}
+                        primary={ window.innerWidth >= 500 && getStatus(d.status).component}
+                        secondary={
+                          window.innerWidth >= 500 && d.createdate &&
+                            <Typography variant="caption" display="block" style={{ color: COLOR.grey[500] }}>
+                              {API._dateToString(d.createdate)}
+                            </Typography>
+                        } />
+                    </ListItem>
+                    <Divider />
+                  </React.Fragment>
+                )
+                :
+                <Typography component="div" style={{ width: '100%' }}>
+                  <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                    { API._getWord(sess && sess.language).No_player }
+                  </Box>
+                </Typography>
               )
               :
-              <Typography component="div" style={{ width: '100%' }}>
-                <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { API._getWord(sess && sess.language).No_player }
-                </Box>
-              </Typography>
+              <LDCircular />
             }
           </List>
         </div>

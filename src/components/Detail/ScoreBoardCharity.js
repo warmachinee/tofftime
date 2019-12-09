@@ -40,7 +40,6 @@ const GoBack = Loadable({
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
-    maxWidth: 1200,
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
@@ -168,6 +167,12 @@ export default function ScoreBoardCharity(props){
     return sum
   }
 
+  function handleKeyPressSetLimit(e){
+    if(e.key === 'Enter'){
+      setEditing(false)
+    }
+  }
+
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -228,25 +233,48 @@ export default function ScoreBoardCharity(props){
   function playerLimitComponent(){
 
     return (
-      <div style={{ margin: '12px auto', display: 'flex', }}>
-        <ThemeProvider theme={theme}>
-          { editing ?
-            <div className={classes.playerLimitChildGrid}>
-              <TextField label="Player Limit"
-                autoFocus
-                value={!isNaN(playerLimit.current) ? playerLimit.current : ''}
-                type="number"
-                onChange={e =>handlePlayerLimit(e.target.value)}
-                onFocus={e => e.target.select()} />
-            </div>
-            :
-            <div className={classes.playerLimitChildGrid}>
-              <Typography className={classes.playerLimitLabel}>Player Limit</Typography>
-              <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>{playerLimit.current}</Typography>
-            </div>
-          }
-        </ThemeProvider>
-        <BTN.PrimaryText style={{ marginLeft: 24 }} onClick={()=>setEditing(!editing)}>{ editing ? 'Done' : 'Edit' }</BTN.PrimaryText>
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        <div style={{ margin: '12px auto', display: 'flex' }}>
+          <ThemeProvider theme={theme}>
+            { editing ?
+              <div className={classes.playerLimitChildGrid}>
+                <TextField label="Player Limit"
+                  autoFocus
+                  value={!isNaN(playerLimit.current) ? playerLimit.current : ''}
+                  type="number"
+                  onChange={e =>handlePlayerLimit(e.target.value)}
+                  onFocus={e => e.target.select()}
+                  onKeyPress={e =>handleKeyPressSetLimit(e)} />
+              </div>
+              :
+              <div className={classes.playerLimitChildGrid}>
+                <Typography className={classes.playerLimitLabel}>
+                  { API._getWord(sess && sess.language).Limitation_player }
+                </Typography>
+                <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>{playerLimit.current}</Typography>
+              </div>
+            }
+          </ThemeProvider>
+          <BTN.PrimaryText style={{ marginLeft: 24 }} onClick={()=>setEditing(!editing)}>
+            { API._getWord(sess && sess.language)[editing ? 'Done' : 'Edit'] }
+          </BTN.PrimaryText>
+        </div>
+        <div style={{ flex: 1 }} />
+        { data && data.scorematch !== 0 &&
+          <FormControl className={classes.formControl}>
+            <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
+            <Select
+              value={mainClassSelected}
+              onChange={e => setMainClassSelected(e.target.value)}>
+              { data &&
+                data.mainclass.map( d =>
+                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                    {d.mainclass}
+                  </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+        }
       </div>
     );
   }
@@ -303,7 +331,7 @@ export default function ScoreBoardCharity(props){
             userscore.filter( item =>{ return item.classno === data.classno }).slice(0, playerLimit.current).map((d, index) =>
             <React.Fragment key={d.userid}>
               <ListItem className={classes.listPlayer}>
-                <ListItemText className={classes.listRank} classes={{ primary: classes.listText }} primary={index} />
+                <ListItemText className={classes.listRank} classes={{ primary: classes.listText }} primary={index + 1} />
                 <ListItemText className={classes.listPlayerName} style={{ display: 'flex', flexDirection: 'column' }} classes={{ primary: classes.listText }}
                   primary={<Typography variant="subtitle1">{d.firstname}&nbsp;&nbsp;{d.lastname}</Typography>}
                   secondary={<Typography variant="caption" color="textSecondary">{`OUT = ${d.out}, IN = ${d.in}`}</Typography>} />
@@ -338,38 +366,10 @@ export default function ScoreBoardCharity(props){
 
   const [ ,updateState ] = React.useState(null)
 
-  function resizeHandler(){
-    updateState({})
-  }
-
-  React.useEffect(()=>{
-    window.addEventListener('resize', resizeHandler)
-    return ()=>{
-      window.removeEventListener('resize', resizeHandler)
-    }
-  },[ window.innerWidth ])
-
   return (
     <Paper className={classes.root}>
       <GoBack />
       { data && userscore && playerLimitComponent() }
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        { data && data.scorematch !== 0 &&
-          <FormControl className={classes.formControl}>
-            <InputLabel>Main Group</InputLabel>
-            <Select
-              value={mainClassSelected}
-              onChange={e => setMainClassSelected(e.target.value)}>
-              { data &&
-                data.mainclass.map( d =>
-                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                    {d.mainclass}
-                  </MenuItem>
-              )}
-            </Select>
-          </FormControl>
-        }
-      </div>
       { data && userListComponent() }
     </Paper>
   );

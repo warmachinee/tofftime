@@ -44,6 +44,11 @@ const LabelText = Loadable({
   loading: () => <LDCircular />
 });
 
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
+  loading: () => <LDCircular />
+});
+
 const TemplateDialog = Loadable({
   loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
   loading: () => <LDCircular />
@@ -53,6 +58,7 @@ const ConfirmDialog = Loadable({
   loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
   loading: () => <LDCircular />
 });
+
 const theme = createMuiTheme({
   palette: {
     primary: COLOR.primary,
@@ -213,6 +219,9 @@ export default function CourseBody(props){
 
   return(
     <div className={classes.root}>
+      { sess && sess.typeid === 'admin' &&
+        <GoBack to='/system_admin/' />
+      }
       <LabelText text={ API._getWord(sess && sess.language).Course } />
       <List>
         <ListItem style={{ marginTop: 24, cursor: 'auto' }}>
@@ -275,6 +284,12 @@ export default function CourseBody(props){
                 (item.fieldname.search(searchField) !== -1) ||
                 (item.fieldname.toLowerCase().search(searchField.toLowerCase()) !== -1)
               )
+            }).length > 0 ?
+          data.filter((item)=>{
+              return (
+                (item.fieldname.search(searchField) !== -1) ||
+                (item.fieldname.toLowerCase().search(searchField.toLowerCase()) !== -1)
+              )
             }).map( d =>
             <React.Fragment key={d.fieldid}>
               <ListItem className={classes.list}>
@@ -314,6 +329,12 @@ export default function CourseBody(props){
               <Divider />
             </React.Fragment>
           )
+          :
+          <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+            <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              { API._getWord(sess && sess.language).No_data }
+            </Box>
+          </Typography>
         }
       </List>
       <TemplateDialog open={editing} handleClose={handleEditingClose}>

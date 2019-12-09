@@ -28,6 +28,8 @@ import {
   ExpandMore as ExpandMoreIcon,
   LocationOn,
   Close as CloseIcon,
+  Share as ShareIcon,
+  VideogameAsset,
 
 } from '@material-ui/icons';
 
@@ -45,7 +47,7 @@ const GoBack = Loadable({
 
 const LabelText = Loadable({
   loader: () => import(/* webpackChunkName: "LabelText" */'./../Utils/LabelText'),
-  loading: () => <LDCircular />
+  loading: () => null
 });
 
 const CourseScorecard = Loadable({
@@ -133,7 +135,7 @@ const useStyles = makeStyles(theme => ({
 
 function DetailComponent(props){
   const classes = useStyles();
-  const { detail, picture, isSupportWebp } = props
+  const { matchid, detail, picture, isSupportWebp } = props
 
   const [ ,updateState ] = React.useState(null)
 
@@ -212,7 +214,13 @@ export default function MatchDetailBody(props) {
       switch (true) {
         case data.permission === 'host' || data.permission === 'admin':
           return (
-            <BTN.NoStyleLink to={`/user/management/match/${matchid}`}>
+            <BTN.NoStyleLink
+              to={
+                userscore && userscore.length > 0 ?
+                `/user/management/match/${matchid}`
+                :
+                `/user/management/match/${matchid}#invitation`
+              }>
               <BTN.Primary style={{ padding: '4px 16px' }}>
                 { API._getWord(sess && sess.language).Edit }
               </BTN.Primary>
@@ -270,129 +278,236 @@ export default function MatchDetailBody(props) {
   return (
     <Paper className={classes.root}>
       <GoBack />
-      { data &&
-        <div className={classes.content}>
-          <Tooltip title={data?data.title:'Match Title'} placement="top-start">
-            <Typography variant="h4">
-              {data?data.title:'Match Title'}
-            </Typography>
-          </Tooltip>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-            <Typography gutterBottom variant="body2"
-              style={{
-                color: data.scorematch === 1 ? primary[700] : 'inherit',
-                fontWeight: data.scorematch === 1 ? 900 : 600
-              }}>
-              { function(){
-                  switch (data.scorematch) {
-                    case 0:
-                      return 'Amateur'
-                      break;
-                    case 1:
-                      return 'Professional'
-                      break;
-                    default:
-                      return 'Charity'
-                  }
-                }()
-              }
-            </Typography>
-            {handleGetButton()}
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
-            <Typography variant="h6">
-              {data?API._dateToString(data.date):'date'}
-            </Typography>
-            <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
-            <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
-              <LocationOn style={{ color: primary[600], marginRight: 4 }} />
-              <Typography variant="h6">
-                {data?data.location:'Course'}
+      { data ?
+        (
+          !/wrong/.test(data.status) ?
+          <div className={classes.content}>
+            <Tooltip title={data?data.title:'Match Title'} placement="top-start">
+              <Typography variant="h4">
+                {data?data.title:'Match Title'}
               </Typography>
-            </Button>
-          </div>
-          <div style={{ display: 'flex', marginBottom: 24 }}>
-            <BTN.PrimaryOutlined onClick={handleScorecardOpen}>
-              { API._getWord(sess && sess.language).Scorecard }
-            </BTN.PrimaryOutlined>
-            { matchid &&
-              <BTN.NoStyleLink to={`/matchform/${matchid}`}>
-                <BTN.PrimaryOutlined>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
-              </BTN.NoStyleLink>
-            }
-            { data.team &&
-              ( data.team.length === 0 ?
-                <BTN.PrimaryText disabled>
-                  { API._getWord(sess && sess.language).Schedule }
-                </BTN.PrimaryText>
-                :
-                <BTN.NoStyleLink to={`/schedule/${matchid}`}>
-                  <BTN.PrimaryOutlined>
-                    { API._getWord(sess && sess.language).Schedule }
-                  </BTN.PrimaryOutlined>
-                </BTN.NoStyleLink>
-              )
-            }
-            <div style={{ flex: 1 }} />
-            { BTN && data.scorematch === 2 &&
-              <BTN.PrimaryOutlined onClick={handleClick}>
-                { API._getWord(sess && sess.language).Mini_Game }
-              </BTN.PrimaryOutlined>
-            }
-          </div>
-          <DetailComponent detail={data.message} picture={data.picture} isSupportWebp={isSupportWebp} />
-          <div style={{ marginTop: 16 }}>
-            { data.scorematch === 0 && data.mainclass && data.mainclass.length > 0 &&
-              data.mainclass[parseInt(mainClassSelected) - 1].values.map( (d, i) =>{
-                if(i === data.mainclass[parseInt(mainClassSelected) - 1].values.length - 1 ){
-                  return(
-                    <div style={{ display: 'flex' }} key={d.classno}>
-                      <Typography style={{ fontWeight: 600, marginRight: 12 }} variant="body1">
-                        Flight {API._handleAmateurClass(d.classno)}
-                      </Typography>
-                      <Typography>
-                        handicap {d.classname} - up
-                      </Typography>
-                    </div>
-                  )
-                }else{
-                  return (
-                    <div style={{ display: 'flex' }} key={d.classno}>
-                      <Typography style={{ fontWeight: 600, marginRight: 12 }} variant="body1">
-                        Flight {API._handleAmateurClass(d.classno)}
-                      </Typography>
-                      <Typography>
-                        handicap {d.classname} - {parseInt(data.mainclass[parseInt(mainClassSelected) - 1].values[i + 1].classname) - 1}
-                      </Typography>
-                    </div>
+            </Tooltip>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+              <Typography gutterBottom variant="body2"
+                style={{
+                  color: data.scorematch === 1 ? primary[700] : 'inherit',
+                  fontWeight: data.scorematch === 1 ? 900 : 600
+                }}>
+                { function(){
+                    switch (data.scorematch) {
+                      case 0:
+                        return 'Amateur'
+                        break;
+                      case 1:
+                        return 'Professional'
+                        break;
+                      default:
+                        return 'Charity'
+                    }
+                  }()
+                }
+              </Typography>
+              {handleGetButton()}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
+              <Typography variant="h6">
+                {data?API._dateToString(data.date):'date'}
+              </Typography>
+              <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+              <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
+                <LocationOn style={{ color: primary[600], marginRight: 4 }} />
+                <Typography variant="h6">
+                  {data?data.location:'Course'}
+                </Typography>
+              </Button>
+            </div>
+            <div style={{ display: 'flex', marginBottom: 24, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+              <div style={{ marginTop: 'auto', marginBottom: 6 }}>
+                <BTN.PrimaryOutlined onClick={handleScorecardOpen} style={{ marginRight: 8 }}>
+                  { API._getWord(sess && sess.language).Scorecard }
+                </BTN.PrimaryOutlined>
+                { matchid &&
+                  <BTN.NoStyleLink to={`/matchform/${matchid}`}>
+                    <BTN.PrimaryOutlined style={{ marginRight: 8 }}>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
+                  </BTN.NoStyleLink>
+                }
+                { data.team &&
+                  ( (data.status === 0 && data.team.length > 0) ?
+                    <BTN.NoStyleLink to={`/schedule/${matchid}`}>
+                      <BTN.PrimaryOutlined style={{ marginRight: 8 }}>
+                        { API._getWord(sess && sess.language).Schedule }
+                      </BTN.PrimaryOutlined>
+                    </BTN.NoStyleLink>
+                    :
+                    <BTN.PrimaryOutlined disabled style={{ marginRight: 8 }}>
+                      { API._getWord(sess && sess.language).Schedule }
+                    </BTN.PrimaryOutlined>
                   )
                 }
-              })
+              </div>
+              <div>
+                <a href={`/session/share?url=/match/${matchid}`}
+                  target='_blank'
+                  style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <IconButton>
+                    <ShareIcon style={{ color: primary[600] }} />
+                  </IconButton>
+                  {/*
+                    <BTN.PrimaryOutlined
+                      startIcon={<ShareIcon style={{ color: primary[600] }} />}>
+                      {API._getWord(sess && sess.language).Share}
+                    </BTN.PrimaryOutlined>*/
+                  }
+                </a>
+                { BTN && data.scorematch === 2 && sess.status === 1 &&
+                  <IconButton onClick={handleClick}>
+                    <VideogameAsset fontSize="large" style={{ color: primary[600] }} />
+                  </IconButton>
+                  /*
+                  <BTN.PrimaryOutlined onClick={handleClick}
+                    startIcon={<VideogameAsset fontSize="large" style={{ color: primary[600] }} />}>
+                    { API._getWord(sess && sess.language).Mini_Game }
+                  </BTN.PrimaryOutlined>*/
+                }
+              </div>
+            </div>
+            <DetailComponent matchid={matchid} detail={data.message} picture={data.picture} isSupportWebp={isSupportWebp} />
+            { data ?
+              ( data.mainclass && data.mainclass.length > 0 && userscore && userscore.length > 0 ?
+                <React.Fragment>
+                  <ListItem button onClick={expandHandler}
+                    style={{
+                      marginTop: 16,
+                      boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
+                    }}>
+                    <ListItemText primary={ API._getWord(sess && sess.language).Scoreboard } />
+                    <IconButton
+                      disableRipple
+                      className={classes.expandIcon}
+                      style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
+                      onClick={expandHandler}
+                      aria-expanded={expanded}
+                      aria-label="Show more"
+                    >
+                      <ExpandMoreIcon />
+                    </IconButton>
+                  </ListItem>
+                  <Collapse in={expanded} timeout="auto" unmountOnExit>
+                    <Scoreboard {...props} matchClass={data.mainclass[parseInt(mainClassSelected) - 1].values} />
+                  </Collapse>
+                </React.Fragment>
+                :
+                ( (data.permission === 'host' || data.permission === 'admin') &&
+                <Typography component="div" style={{ width: '100%' }}>
+                  {function(){
+                    switch (true) {
+                      case data.mainclass && data.mainclass.length === 0 && userscore && userscore.length > 0:
+                        return (
+                          <React.Fragment>
+                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                              {function(){
+                                switch (data.scorematch) {
+                                  case 0:
+                                    return API._getWord(sess && sess.language).No_flight
+                                    break;
+                                  default:
+                                    return API._getWord(sess && sess.language).No_group
+                                }
+                              }()}
+                            </Box>
+                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#group`}>
+                                <BTN.PrimaryOutlined>
+                                  {function(){
+                                    switch (data.scorematch) {
+                                      case 0:
+                                        return API._getWord(sess && sess.language).Create_flight
+                                        break;
+                                      default:
+                                        return API._getWord(sess && sess.language).Create_group
+                                    }
+                                  }()}
+                                </BTN.PrimaryOutlined>
+                              </BTN.NoStyleLink>
+                            </div>
+                          </React.Fragment>
+                        );
+                        break;
+                      case data.mainclass && data.mainclass.length > 0 && userscore && userscore.length === 0:
+                        return (
+                          <React.Fragment>
+                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                              { API._getWord(sess && sess.language).No_player }
+                            </Box>
+                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#invitation`}>
+                                <BTN.PrimaryOutlined>
+                                  { API._getWord(sess && sess.language).Invite_players }
+                                </BTN.PrimaryOutlined>
+                              </BTN.NoStyleLink>
+                            </div>
+                          </React.Fragment>
+                        );
+                        break;
+                      case data.mainclass && data.mainclass.length === 0 && userscore && userscore.length === 0:
+                        return (
+                          <React.Fragment>
+                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                              {`${API._getWord(sess && sess.language).No_player} ${
+                                sess && sess.language === 'TH' ? 'และ' : 'and'
+                              } ${function(){
+                                switch (data.scorematch) {
+                                  case 0:
+                                    return API._getWord(sess && sess.language).No_flight
+                                    break;
+                                  default:
+                                    return API._getWord(sess && sess.language).No_group
+                                }
+                              }()}`}
+                            </Box>
+                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#invitation`}>
+                                <BTN.PrimaryOutlined>
+                                  { API._getWord(sess && sess.language).Invite_players }
+                                </BTN.PrimaryOutlined>
+                              </BTN.NoStyleLink>
+                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#group`}>
+                                <BTN.PrimaryOutlined>
+                                  { API._getWord(sess && sess.language).Create_group }
+                                </BTN.PrimaryOutlined>
+                              </BTN.NoStyleLink>
+                            </div>
+                          </React.Fragment>
+                        );
+                        break;
+                      default:
+                        return null
+                    }
+                  }()}
+                </Typography>
+                )
+              )
+              :
+              <LDCircular />
             }
           </div>
-          <ListItem button onClick={expandHandler}
-            style={{
-              marginTop: 16,
-              boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
-            }}>
-            <ListItemText primary={ API._getWord(sess && sess.language).Scoreboard } />
-            <IconButton
-              disableRipple
-              className={classes.expandIcon}
-              style={{ transform: expanded?'rotate(180deg)':'rotate(0deg)' }}
-              onClick={expandHandler}
-              aria-expanded={expanded}
-              aria-label="Show more"
-            >
-              <ExpandMoreIcon />
-            </IconButton>
-          </ListItem>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            { data.mainclass && data.mainclass.length > 0 && userscore && userscore.length > 0 &&
-              <Scoreboard {...props} matchClass={data.mainclass[parseInt(mainClassSelected) - 1].values} />
-            }
-          </Collapse>
-        </div>
+          :
+          <div>
+            <h3 style={{ textAlign: 'center', fontSize: 28 , marginTop: 72 }}>
+              { API._getWord(sess && sess.language).No_match }
+              <code>{' ' + matchid}</code>
+            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+              <Link to='/'
+                style={{
+                  textAlign: 'center', fontSize: 24, margin: '24px 0',
+                  color: '#1e88e5'
+                }}>{ API._getWord(sess && sess.language).Go_to_home }</Link>
+            </div>
+          </div>
+        )
+        :
+        <LDCircular />
       }
       <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
         <LabelText text="Golf Scorecard" />
@@ -409,17 +524,17 @@ export default function MatchDetailBody(props) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        { matchid && BTN &&
+        { matchid &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/scoreboard`}>
             <MenuItem onClick={handleClose}>Scoreboard</MenuItem>
           </Link>
         }
-        { matchid && BTN &&
+        { matchid &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/mah`}>
             <MenuItem onClick={handleClose}>Mah</MenuItem>
           </Link>
         }
-        { matchid && BTN &&
+        { matchid &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/jao`}>
             <MenuItem onClick={handleClose}>Jao</MenuItem>
           </Link>

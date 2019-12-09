@@ -62,7 +62,7 @@ const theme = createMuiTheme({
 
 export default function ListPredictScore(props){
   const classes = useStyles();
-  const { API, BTN, COLOR, token, setCSRFToken, handleSnackBar, data, matchid, gameType, handleMiniGame } = props
+  const { API, BTN, COLOR, sess, token, setCSRFToken, handleSnackBar, data, matchid, gameType, handleMiniGame } = props
   const [ predictScore, setPredictScore ] = React.useState(data.predictscore)
 
   function handleKeyPressSetPredictScore(e){
@@ -103,14 +103,14 @@ export default function ListPredictScore(props){
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.basepriceChildGrid}>
-        <TextField label="Predict Score"
+        <TextField label={ API._getWord(sess && sess.language).Predict_Score }
           value={predictScore || 0}
           type="number"
           onChange={e =>setPredictScore(e.target.value)}
           onKeyPress={e =>handleKeyPressSetPredictScore(e)}
           onFocus={e => e.target.select()} />
         <BTN.Primary className={classes.saveButton}
-          onClick={handleFetchSetPredict}>Save</BTN.Primary>
+          onClick={handleFetchSetPredict}>{ API._getWord(sess && sess.language).Save }</BTN.Primary>
       </div>
     </ThemeProvider>
   );

@@ -214,7 +214,7 @@ export default function LocationList(props){
       socket.emit('search-client-message', {
         action: "field",
         userid: sess.userid,
-        text: ' '
+        text: ''
       })
     }
   }

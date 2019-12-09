@@ -1,5 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import { Link } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 
 import {
@@ -120,7 +121,11 @@ export default function Schedule(props) {
         matchid: parseInt(props.computedMatch.params.matchid)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      setData(d.userscore)
+      if(/wrong/.test(d.status)){
+        setData(d)
+      }else{
+        setData(d.userscore)
+      }
     })
   }
 
@@ -174,133 +179,153 @@ export default function Schedule(props) {
   return (
     <Paper className={classes.root}>
       <GoBack />
-      { matchDetail &&
-        <div className={classes.content}>
-          <Typography gutterBottom variant="h4">
-            { API._getWord(sess && sess.language).Schedule }
-          </Typography>
-          <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
-          <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
-            <Typography variant="h6">
-              {API._dateToString(matchDetail.date)}
-            </Typography>
-            <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
-            <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
-              <LocationOn style={{ color: COLOR.primary[600], marginRight: 4 }} />
-              <Typography variant="h6">
-                {matchDetail.location}
-              </Typography>
-            </Button>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            { data &&
-              <SchedulePDF {...props} data={data} matchDetail={matchDetail} />
-            }
-          </div>
-          <List disablePadding style={{ marginTop: 16 }}>
-            <ListItem style={{ backgroundColor: COLOR.grey[900], paddingTop: 12, paddingBottom: 12 }}>
-              <ListItemText className={classes.listTeam} style={{ color: 'white' }}
-                primary={ API._getWord(sess && sess.language).Team } />
-              <ListItemText className={classes.listTime} style={{ color: 'white' }}
-                primary={ API._getWord(sess && sess.language).Time } />
-              <ListItemText className={classes.listName} style={{ color: 'white' }}
-                primary={ API._getWord(sess && sess.language).First_name } />
-              <ListItemText className={classes.listLastname} style={{ color: 'white' }}
-                primary={ API._getWord(sess && sess.language).Last_name } />
-              { window.innerWidth >= 600 &&
-                <ListItemText className={classes.listNote} style={{ color: 'white' }}
-                  primary={ API._getWord(sess && sess.language).Note } />
-              }
-            </ListItem>
-          </List>
-          <List disablePadding>
-            { data &&
-              data.filter( item =>{
-                return item.teamno !== 0
-              }).length > 0 ?
-              data.filter( item =>{
-                return item.teamno !== 0
-              }).map( (d, i) =>
-                <React.Fragment key={i}>
-                  <ListItem style={{
-                      backgroundColor: d.teamno % 2 === 1 ? 'inherit' : COLOR.grey[200]
-                    }}>
-                    <ListItemText className={classes.listTeam} primary={ d.teamno !== 0 ? d.teamno : '-'} />
-                    <ListItemText
-                      className={classes.listTime}
-                      primary={
-                      d.teamno === 0 ?
-                      '-'
-                      :
-                      matchDetail.team.filter( item =>{
-                        return item.teamno === d.teamno
-                      }).map( md => md.teamname )
-                    }
-                    secondary={
-                      window.innerWidth < 600 &&
-                      <React.Fragment>
-                        {
-                          d.teamno === 0 ?
-                          '-'
-                          :
-                          matchDetail.team.filter( item =>{
-                            return item.teamno === d.teamno
-                          }).map( md => md.note )
-                        }
-                      </React.Fragment>
-                    } />
-                    <ListItemText
-                      className={classes.listName}
-                      primary={
-                        <Typography className={classes.name} variant="body2" component="div" style={{ display: 'flex' }}>
-                          {d.fullname}
-                          <div style={{ width: 16 }} />
-                          { (window.innerWidth >= 600 && window.innerWidth < 800) ? d.lastname : ''}
-                        </Typography>
-                      }
-                      secondary={
-                        <React.Fragment>
-                          { window.innerWidth < 600 &&
-                            <Typography className={classes.name} variant="body2">
-                              {d.lastname}
-                            </Typography>
-                          }
-                        </React.Fragment>
-                      } />
-                    <ListItemText
-                      className={classes.listLastname}
-                      primary={
-                        <React.Fragment>
-                          <Typography className={classes.name} variant="body2">
-                            {d.lastname}
-                          </Typography>
-                        </React.Fragment>
-                      } />
+      { ( props.computedMatch && data && matchDetail ) ?
+        ( !/wrong/.test(data.status) ?
+          <React.Fragment>
+            { matchDetail &&
+              <div className={classes.content}>
+                <Typography gutterBottom variant="h4">
+                  { API._getWord(sess && sess.language).Schedule }
+                </Typography>
+                <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
+                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
+                  <Typography variant="h6">
+                    {API._dateToString(matchDetail.date)}
+                  </Typography>
+                  <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+                  <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
+                    <LocationOn style={{ color: COLOR.primary[600], marginRight: 4 }} />
+                    <Typography variant="h6">
+                      {matchDetail.location}
+                    </Typography>
+                  </Button>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  { data &&
+                    <SchedulePDF {...props} data={data} matchDetail={matchDetail} />
+                  }
+                </div>
+                <List disablePadding style={{ marginTop: 16 }}>
+                  <ListItem style={{ backgroundColor: COLOR.grey[900], paddingTop: 12, paddingBottom: 12 }}>
+                    <ListItemText className={classes.listTeam} style={{ color: 'white' }}
+                      primary={ API._getWord(sess && sess.language).Team } />
+                    <ListItemText className={classes.listTime} style={{ color: 'white' }}
+                      primary={ API._getWord(sess && sess.language).Time } />
+                    <ListItemText className={classes.listName} style={{ color: 'white' }}
+                      primary={ API._getWord(sess && sess.language).First_name } />
+                    <ListItemText className={classes.listLastname} style={{ color: 'white' }}
+                      primary={ API._getWord(sess && sess.language).Last_name } />
                     { window.innerWidth >= 600 &&
-                      <ListItemText
-                        className={classes.listNote}
-                        primary={
-                        d.teamno === 0 ?
-                        '-'
-                        :
-                        matchDetail.team.filter( item =>{
-                          return item.teamno === d.teamno
-                        }).map( md => md.note )
-                      } />
+                      <ListItemText className={classes.listNote} style={{ color: 'white' }}
+                        primary={ API._getWord(sess && sess.language).Note } />
                     }
                   </ListItem>
-                  <Divider />
-                </React.Fragment>
-              )
-              :
-              <Typography component="div" style={{ width: '100%' }}>
-                <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { API._getWord(sess && sess.language).No_player }
-                </Box>
-              </Typography>
+                </List>
+                <List disablePadding>
+                  { data ?
+                    ( data.filter( item =>{ return item.teamno !== 0 }).length > 0 ?
+                      data.filter( item =>{ return item.teamno !== 0 }).map( (d, i) =>
+                        <React.Fragment key={i}>
+                          <ListItem style={{
+                              backgroundColor: d.teamno % 2 === 1 ? 'inherit' : COLOR.grey[200]
+                            }}>
+                            <ListItemText className={classes.listTeam} primary={ d.teamno !== 0 ? d.teamno : '-'} />
+                            <ListItemText
+                              className={classes.listTime}
+                              primary={
+                              d.teamno === 0 ?
+                              '-'
+                              :
+                              matchDetail.team.filter( item =>{
+                                return item.teamno === d.teamno
+                              }).map( md => md.teamname )
+                            }
+                            secondary={
+                              window.innerWidth < 600 &&
+                              <React.Fragment>
+                                {
+                                  d.teamno === 0 ?
+                                  '-'
+                                  :
+                                  matchDetail.team.filter( item =>{
+                                    return item.teamno === d.teamno
+                                  }).map( md => md.note )
+                                }
+                              </React.Fragment>
+                            } />
+                            <ListItemText
+                              className={classes.listName}
+                              primary={
+                                <Typography className={classes.name} variant="body2" component="div" style={{ display: 'flex' }}>
+                                  {d.fullname}
+                                  <div style={{ width: 16 }} />
+                                  { (window.innerWidth >= 600 && window.innerWidth < 800) ? d.lastname : ''}
+                                </Typography>
+                              }
+                              secondary={
+                                <React.Fragment>
+                                  { window.innerWidth < 600 &&
+                                    <Typography className={classes.name} variant="body2">
+                                      {d.lastname}
+                                    </Typography>
+                                  }
+                                </React.Fragment>
+                              } />
+                            <ListItemText
+                              className={classes.listLastname}
+                              primary={
+                                <React.Fragment>
+                                  <Typography className={classes.name} variant="body2">
+                                    {d.lastname}
+                                  </Typography>
+                                </React.Fragment>
+                              } />
+                            { window.innerWidth >= 600 &&
+                              <ListItemText
+                                className={classes.listNote}
+                                primary={
+                                d.teamno === 0 ?
+                                '-'
+                                :
+                                matchDetail.team.filter( item =>{
+                                  return item.teamno === d.teamno
+                                }).map( md => md.note )
+                              } />
+                            }
+                          </ListItem>
+                          <Divider />
+                        </React.Fragment>
+                      )
+                      :
+                      <Typography component="div" style={{ width: '100%' }}>
+                        <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                          { API._getWord(sess && sess.language).No_player }
+                        </Box>
+                      </Typography>
+                    )
+                    :
+                    <LDCircular />
+                  }
+                </List>
+              </div>
             }
-          </List>
-        </div>
+          </React.Fragment>
+          :
+          <div>
+            <h3 style={{ textAlign: 'center', fontSize: 28 , marginTop: 72 }}>
+              { API._getWord(sess && sess.language)['This match is over'] }
+            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+              <Link to='/'
+                style={{
+                  textAlign: 'center', fontSize: 24, margin: '24px 0',
+                  color: '#1e88e5'
+                }}>{ API._getWord(sess && sess.language).Go_to_home }</Link>
+            </div>
+          </div>
+        )
+        :
+        <LDCircular />
       }
       <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
         <LabelText text="Golf Scorecard" />

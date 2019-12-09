@@ -587,6 +587,11 @@ export default function CourseEditor(props){
             }}
             onMouseEnter={()=>handleFileHover(true)}
             onMouseLeave={()=>handleFileHover(false)}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
+                { API._getWord(sess && sess.language).Upload_image }
+              </Typography>
+            </div>
             <img ref={imgRef}
               style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
               className={classes.matchImg}
@@ -619,6 +624,11 @@ export default function CourseEditor(props){
               position: 'relative', marginTop: 16, marginBottom: 24,
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
+                { API._getWord(sess && sess.language).Upload_image }
+              </Typography>
+            </div>
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>

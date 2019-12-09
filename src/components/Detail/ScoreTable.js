@@ -149,10 +149,7 @@ function ScoreRow(props){
             }
             <div className={classes.tableCell} style={tableCell}>{row.out + row.in}</div>
             { data.scorematch !== 1 &&
-              <React.Fragment>
-                <div className={classes.tableCell} style={tableCell}>{row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par}</div>
-                <div className={classes.tableCell} style={tableCell}>{row.hc}</div>
-              </React.Fragment>
+              <div className={classes.tableCell} style={tableCell}>{row.hc}</div>
             }
           </React.Fragment>
         }
@@ -268,7 +265,7 @@ function ScoreRow(props){
 
 export default function ScoreTable(props) {
   const classes = useStyles();
-  const { API, sess, data, userscore, matchClass, sortBy } = props
+  const { API, COLOR, sess, data, userscore, matchClass, sortBy, value } = props
   const inputEl = React.useRef(null);
   const [ op, setOp ] = React.useState(true)
   const [ widthEl, setWidthEl ] = React.useState(0)
@@ -304,6 +301,42 @@ export default function ScoreTable(props) {
     }
   }
 
+  function TableBodyComponent(){
+    return (
+      <TableBody>
+        <TableRow>
+          <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
+            { API._getWord(sess && sess.language).Rank }
+          </StyledTableRank>
+          <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
+            { API._getWord(sess && sess.language).Player_name }
+          </StyledTableHead>
+          { (wd >= 450) &&
+            <React.Fragment>
+              { (wd >= 850) &&
+                <React.Fragment>
+                  <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
+                  <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
+                </React.Fragment>
+              }
+              <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
+              { data.scorematch !== 1 &&
+                <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
+              }
+            </React.Fragment>
+          }
+          <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
+            {
+              data.scorematch === 1 ?
+              'PAR' :
+              ( sortBy === 'net' ? 'NET' : 'SF' )
+            }
+          </StyledTableCell>
+        </TableRow>
+      </TableBody>
+    );
+  }
+
   React.useEffect(()=>{
     let tempIn = 0
     let tempOut = 0
@@ -319,6 +352,7 @@ export default function ScoreTable(props) {
       in: tempIn,
       gross: tempOut + tempIn
     })
+
   },[ ])
 
   React.useEffect(()=>{
@@ -335,44 +369,10 @@ export default function ScoreTable(props) {
           ref={inputEl}
           position="relative"
           style={{
-            backgroundColor: secondary[900],
+            backgroundColor: COLOR[ matchClass.color ? matchClass.color : 'secondary' ][900],
           }}>
           <Table className={classes.table}>
-            <TableBody>
-              <TableRow>
-                <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
-                  { API._getWord(sess && sess.language).Rank }
-                </StyledTableRank>
-                <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { API._getWord(sess && sess.language).Player_name }
-                </StyledTableHead>
-                { (wd >= 450) &&
-                  <React.Fragment>
-                    { (wd >= 850) &&
-                      <React.Fragment>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
-                      </React.Fragment>
-                    }
-                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
-
-                    { data.scorematch !== 1 &&
-                      <React.Fragment>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">PAR</StyledTableCell>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
-                      </React.Fragment>
-                    }
-                  </React.Fragment>
-                }
-                <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
-                  {
-                    data.scorematch === 1 ?
-                    'PAR' :
-                    ( sortBy === 'net' ? 'NET' : 'SF' )
-                  }
-                </StyledTableCell>
-              </TableRow>
-            </TableBody>
+            <TableBodyComponent />
           </Table>
         </AppBar>
       </Grow>
@@ -382,7 +382,7 @@ export default function ScoreTable(props) {
           style={{
             position: 'fixed',
             top: window.innerWidth > 600 ? 64: 56,
-            backgroundColor: secondary[900],
+            backgroundColor: COLOR[ matchClass.color ? matchClass.color : 'secondary' ][900],
           }}>
           <Table
             className={classes.table}
@@ -390,40 +390,7 @@ export default function ScoreTable(props) {
               width: widthEl,
               margin: 'auto',
             }}>
-            <TableBody>
-              <TableRow>
-                <StyledTableRank style={{...style.rank, color: 'white' }} align="center">
-                  { API._getWord(sess && sess.language).Rank }
-                </StyledTableRank>
-                <StyledTableHead style={{ color: 'white' }} component="th" scope="row">
-                  { API._getWord(sess && sess.language).Player_name }
-                </StyledTableHead>
-                { (wd >= 450) &&
-                  <React.Fragment>
-                    { (wd >= 850) &&
-                      <React.Fragment>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">OUT</StyledTableCell>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">IN</StyledTableCell>
-                      </React.Fragment>
-                    }
-                    <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
-                    { data.scorematch !== 1 &&
-                      <React.Fragment>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">PAR</StyledTableCell>
-                        <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
-                      </React.Fragment>
-                    }
-                  </React.Fragment>
-                }
-                <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
-                  {
-                    data.scorematch === 1 ?
-                    'PAR' :
-                    ( sortBy === 'net' ? 'NET' : 'SF' )
-                  }
-                </StyledTableCell>
-              </TableRow>
-            </TableBody>
+            <TableBodyComponent />
           </Table>
         </AppBar>
       </Zoom>

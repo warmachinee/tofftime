@@ -26,6 +26,11 @@ const LabelText = Loadable({
   loading: () => null
 });
 
+const GoBack = Loadable({
+  loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
+  loading: () => null
+});
+
 const RouteErrorDetection = Loadable.Map({
   loader: {
     ErrorDetection: () => import(/* webpackChunkName: "ErrorDetection" */'./ErrorDetection'),
@@ -120,7 +125,7 @@ export default function EntireLog(props){
   function EntireLogComponent(){
     return (
       <div>
-        <GoBack />
+        <GoBack to='/system_admin/' />
         <LabelText text="Entire Log" />
         <div className={classes.cardGrid}>
           <MenuCard

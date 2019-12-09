@@ -525,6 +525,11 @@ export default function MBOverview(props){
                 <div style={{ position: 'relative', marginTop: 16 }}
                   onMouseEnter={()=>handleFileHover(true)}
                   onMouseLeave={()=>handleFileHover(false)}>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Typography variant="caption" style={{ textAlign: 'center' }}>
+                      { API._getWord(sess && sess.language).Upload_image }
+                    </Typography>
+                  </div>
                   <img ref={imgRef}
                     style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
                     className={classes.matchImg}
@@ -558,6 +563,11 @@ export default function MBOverview(props){
                 </div>
                 :
                 <div style={{ position: 'relative', marginTop: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Typography variant="caption" style={{ textAlign: 'center' }}>
+                      { API._getWord(sess && sess.language).Upload_image }
+                    </Typography>
+                  </div>
                   <div className={classes.matchImgTemp}
                     style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
                     <div style={{ flex: 1 }} />
@@ -674,27 +684,25 @@ export default function MBOverview(props){
           }
         </React.Fragment>
       }
-      <TemplateDialog open={rulesState} handleClose={handleRulesClose} maxWidth="md">
-        <div>
-          <LabelText
-            style={{ marginBottom: 24 }}
-            text={ API._getWord(sess && sess.language)['Match Rules, Regulations and Detail'] } />
-          { (data && data.message) ?
-            <RichTextEditor HTMLData={data.message} handleGetHTML={e =>handleEditorOnChange(e)} />
-            :
-            <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
-          }
-          <div style={{ marginTop: 24, display: 'flex', }}>
-            <div style={{ flex: 3 }} />
-            <GreenTextButton className={classes.button}
-              onClick={handleRulesCancel}>
-              { API._getWord(sess && sess.language).Cancel }
-            </GreenTextButton>
-            <GreenButton className={classes.button}
-              onClick={handleRulesSave}>
-              { API._getWord(sess && sess.language).Save }
-            </GreenButton>
-          </div>
+      <TemplateDialog open={rulesState} handleClose={handleRulesClose} maxWidth="md"
+        title={
+          <LabelText text={ API._getWord(sess && sess.language)['Match Rules, Regulations and Detail'] } />
+        }>
+        { (data && data.message) ?
+          <RichTextEditor HTMLData={data.message} handleGetHTML={e =>handleEditorOnChange(e)} />
+          :
+          <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+        }
+        <div style={{ marginTop: 24, display: 'flex', }}>
+          <div style={{ flex: 3 }} />
+          <GreenTextButton className={classes.button}
+            onClick={handleRulesCancel}>
+            { API._getWord(sess && sess.language).Cancel }
+          </GreenTextButton>
+          <GreenButton className={classes.button}
+            onClick={handleRulesSave}>
+            { API._getWord(sess && sess.language).Save }
+          </GreenButton>
         </div>
       </TemplateDialog>
       { modalType && modalType === 'location' &&

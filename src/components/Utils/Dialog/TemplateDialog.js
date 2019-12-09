@@ -39,22 +39,16 @@ const useStyles = makeStyles(theme => ({
 export default function TemplateDialog(props) {
   const classes = useStyles();
   const {
-    open, scroll = 'paper', maxWidth = 'sm', fullWidth = true,
+    open, scroll = 'paper', maxWidth = 'sm', maxHeight = 'calc(100% - 64px)', fullWidth = true,
     handleClose, getRef, fullScreen, titleDivider, elementId
   } = props
 
-  const [ ,updateState ] = React.useState(null)
+  const dialogStyle = makeStyles(theme => ({
+    paperScrollPaper: {
+      maxHeight: maxHeight,
+    },
 
-  function resizeHandler(){
-    updateState({})
-  }
-
-  React.useEffect(()=>{
-    window.addEventListener('resize', resizeHandler)
-    return ()=>{
-      window.removeEventListener('resize', resizeHandler)
-    }
-  },[ window.innerWidth ])
+  }))()
 
   return (
     <Dialog
@@ -63,7 +57,8 @@ export default function TemplateDialog(props) {
       fullScreen={fullScreen}
       open={open}
       onClose={handleClose}
-      scroll={scroll}>
+      scroll={scroll}
+      classes={{ paperScrollPaper: dialogStyle.paperScrollPaper }}>
       <DialogTitle disableTypography>
         <IconButton className={classes.close} onClick={handleClose}>
           <CloseIcon classes={{ root: classes.closeIcon }} />

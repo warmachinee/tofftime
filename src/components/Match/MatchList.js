@@ -123,6 +123,7 @@ export default function MatchList(props) {
   const classes = useStyles();
   const { API, sess, token, setCSRFToken } = props
   const [ data, setData ] = React.useState(null)
+  const [ value, setValue ] = React.useState(hashToData())
 
   function hashToData(){
     const hash = window.location.hash.substring(1, window.location.hash.length)
@@ -137,6 +138,24 @@ export default function MatchList(props) {
         return 0
     }
   }
+
+  function dataToHash(value){
+    switch (value) {
+      case 1:
+        return 'amateur'
+        break;
+      case 2:
+        return 'charity'
+        break;
+      default:
+        return 'professional'
+    }
+  }
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    window.location.hash = dataToHash(newValue)
+  };
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -159,26 +178,31 @@ export default function MatchList(props) {
       <div className={classes.tabRoot}>
         <Paper elevation={3}>
           <StyledTabs
-            value={hashToData()}
+            value={value}
             variant="scrollable"
             scrollButtons="on"
+            onChange={handleChange}
           >
-            { MATCH_LABEL.map( type =>
-              <Link to={`${window.location.pathname}#${type.label.toLowerCase()}`}
+            {/*
+              <Link key={type.typescore}
+                to={`${window.location.pathname}#${type.label.toLowerCase()}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}>
-                <StyledTab key={type.typescore} label={type.label} />
-              </Link>
+                <StyledTab label={type.label} />
+              </Link>*/
+            }
+            { MATCH_LABEL.map( type =>
+              <StyledTab key={type.typescore} label={type.label} />
             )}
           </StyledTabs>
         </Paper>
         { data && MATCH_LABEL.map((type, index) =>
-          hashToData() === index &&
+          value === index &&
           <TabContainer
             {...props}
             key={type.typescore}
             sess={sess}
             API={API}
-            value={hashToData()}
+            value={value}
             index={type.typescore}
             setData={setData}
             filteredData={data.filter( item =>{ return item.typescore === type.typescore })} />

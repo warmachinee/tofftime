@@ -59,6 +59,7 @@ export default function Organizer(props) {
         }
       }else{
         setData('No page')
+        document.title = `No page`
       }
     })
   }
@@ -79,22 +80,27 @@ export default function Organizer(props) {
         ( data !== 'No page' ?
           <React.Fragment>
             <OrganizerAnnounce {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
-            <OrganizerOverview {...props} isFollow={isFollow} data={data} />
+            <OrganizerOverview {...props}
+              isFollow={isFollow}
+              setIsFollow={setIsFollow}
+              data={data}
+              setData={setData}
+              pageid={parseInt(props.computedMatch.params.pageid)} />
             <OrganizerMatchList {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
             <OrganizerPost {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
           </React.Fragment>
           :
           <div>
             <h3 style={{ textAlign: 'center', fontSize: 28 , marginTop: 72 }}>
-              No page
-              <code>{parseInt(props.computedMatch.params.pageid)}</code>
+              { API._getWord(sess && sess.language).No_page }
+              <code>{' ' + parseInt(props.computedMatch.params.pageid)}</code>
             </h3>
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
               <Link to='/'
                 style={{
                   textAlign: 'center', fontSize: 24, margin: '24px 0',
                   color: '#1e88e5'
-                }}>Go to home</Link>
+                }}>{ API._getWord(sess && sess.language).Go_to_home }</Link>
             </div>
           </div>
         )

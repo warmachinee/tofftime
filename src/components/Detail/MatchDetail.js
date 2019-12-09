@@ -59,15 +59,16 @@ export default function MatchDetail(props){
         mainclass: parseInt(mainClassSelected)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      if(d.status === 'wrong params'){
+      setData(d)
+      if(/wrong/.test(d.status)){
         handleSnackBar({
           state: true,
           message: d.status,
           variant: 'error',
           autoHideDuration: 5000
         })
+        document.title = `No match`
       }else{
-        setData(d)
         setUserscore(d.userscore)
         setRawUserscore(d)
         if(d.scorematch !== 1){
@@ -98,7 +99,6 @@ export default function MatchDetail(props){
         }
         setUserscore(d.userscore)
         setRawUserscore(d)
-        document.title = `${d.title} - T-off Time`
       }
     })
   }

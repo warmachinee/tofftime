@@ -42,9 +42,6 @@ const useStyles = makeStyles(theme => ({
   iconGrid: {
     marginBottom: 24
   },
-  iconBackground: {
-    padding: 16,
-  },
 
 }));
 
@@ -100,8 +97,11 @@ export default function ConfirmDialog(props) {
                 style={{ width: icon.width ? icon.width : 64, height: icon.height ? icon.height : 64 }}
                 src={icon.src ? icon.src : "https://file.thai-pga.com/system/image/logoX2.png"} />
               :
-              <Avatar className={classes.iconBackground}
-                style={{ backgroundColor: iconColor ? iconColor : COLOR.primary[600] }}>
+              <Avatar
+                style={{
+                  width: 64, height: 64,
+                  backgroundColor: iconColor ? iconColor : COLOR.primary[600]
+                }}>
                 { IconComp ?
                   <IconComp style={{ color: stylesTheme.palette.getContrastText(iconColor ? iconColor : COLOR.primary[600]), fontSize: 48 }} />
                   :

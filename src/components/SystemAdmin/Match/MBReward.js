@@ -551,7 +551,7 @@ export default function MBReward(props){
         :
         <div className={classes.root}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            { matchDetail && matchDetail.scorematch !== 0 &&
+            { matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass > 1 &&
               <FormControl className={classes.formControl}>
                 <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                 <Select

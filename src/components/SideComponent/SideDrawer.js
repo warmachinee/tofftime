@@ -107,7 +107,7 @@ export default function SideDrawer(props) {
           <React.Fragment>
             <div className={classes.userInfo}>
               <BTN.NoStyleLink to={`/user`/*${sess.userid}*/}>
-                <div style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
                   { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
                       onClick={drawerClose}
@@ -143,19 +143,19 @@ export default function SideDrawer(props) {
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ API._getWord(sess && sess.language).Match } />
+                <ListItemText primary="Match" />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('news')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ API._getWord(sess && sess.language).News } />
+                <ListItemText primary="News" />
               </ListItem>
               <ListItem button onClick={()=>handleScroll('organizer')}>
                 <ListItemIcon>
                   <div style={{ width: 24 }} />
                 </ListItemIcon>
-                <ListItemText primary={ API._getWord(sess && sess.language).Organizer } />
+                <ListItemText primary="Organizer" />
               </ListItem>
               <Divider />
             </React.Fragment>

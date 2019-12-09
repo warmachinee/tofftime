@@ -477,7 +477,7 @@ export default function MBSchedule(props){
             <a href={`/schedule/${matchid}`}
               target='_blank'
               style={{ textDecoration: 'none', color: 'inherit' }}>
-              <GreenTextButton className={classes.controlsEditButton}>
+              <GreenTextButton variant="outlined" className={classes.controlsEditButton}>
                 {/*<ClassIcon className={classes.controlsEditButtonIcon} />*/}
                 { API._getWord(sess && sess.language).Schedule }
               </GreenTextButton>
@@ -622,116 +622,120 @@ export default function MBSchedule(props){
             </ListItem>
           }
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
-            { data && !data.status &&
-              data.length > 0 ?
-              [
-                ...searchUser? handleSearch() : data
-              ].slice(0, dataSliced).map(value => {
-                return value && (
-                  <React.Fragment key={value.userid}>
-                    <ListItem role={undefined} button
-                      onClick={()=>handleToggle(value)}>
-                      <ListItemIcon>
-                        {selectedTeam !== 0 ?
-                          <GreenCheckbox
-                            edge="start"
-                            checked={checked.indexOf(value) !== -1}
-                            tabIndex={-1}
-                            disableRipple />
-                          :
-                          <div style={{ width: 42 }} />
-                        }
-                      </ListItemIcon>
+            { ( data && !data.status ) ?
+              (
+                data.length > 0 ?
+                [
+                  ...searchUser? handleSearch() : data
+                ].slice(0, dataSliced).map(value => {
+                  return value && (
+                    <React.Fragment key={value.userid}>
+                      <ListItem role={undefined} button
+                        onClick={()=>handleToggle(value)}>
+                        <ListItemIcon>
+                          {selectedTeam !== 0 ?
+                            <GreenCheckbox
+                              edge="start"
+                              checked={checked.indexOf(value) !== -1}
+                              tabIndex={-1}
+                              disableRipple />
+                            :
+                            <div style={{ width: 42 }} />
+                          }
+                        </ListItemIcon>
 
-                      <ListItemText className={classes.listText}
-                        primary={
-                          ( window.innerWidth >= 450 && window.innerWidth < 600 )?
-                          <div style={{ display: 'flex' }}>
-                            { value.fullname }<div style={{ width: 20 }}></div>{ value.lastname }
-                          </div>
-                          : value.fullname }
-                        secondary={
-                          <React.Fragment>
-                            { window.innerWidth < 450 &&
-                              <Typography
-                                component="span"
-                                variant="body1"
-                                color="textPrimary"
-                              >
-                                {value.lastname}
-                              </Typography>
-                            }
-                            { window.innerWidth < 600 &&
-                              ( matchDetail && matchDetail.team ?
-                                ( value.teamno === 0 ?
+                        <ListItemText className={classes.listText}
+                          primary={
+                            ( window.innerWidth >= 450 && window.innerWidth < 600 )?
+                            <div style={{ display: 'flex' }}>
+                              { value.fullname }<div style={{ width: 20 }}></div>{ value.lastname }
+                            </div>
+                            : value.fullname }
+                          secondary={
+                            <React.Fragment>
+                              { window.innerWidth < 450 &&
+                                <Typography
+                                  component="span"
+                                  variant="body1"
+                                  color="textPrimary"
+                                >
+                                  {value.lastname}
+                                </Typography>
+                              }
+                              { window.innerWidth < 600 &&
+                                ( matchDetail && matchDetail.team ?
+                                  ( value.teamno === 0 ?
+                                    <React.Fragment>
+                                      <br></br>
+                                      {"-"}
+                                    </React.Fragment>
+                                    :
+                                    matchDetail.team.filter( d =>{
+                                      return d.teamno === value.teamno
+                                    }).map((d, i) =>
+                                      d &&
+                                      <React.Fragment key={i}>
+                                        <br></br>
+                                        {d.teamname}
+                                        <br></br>
+                                        {d.note}
+                                      </React.Fragment>
+                                    )
+                                  )
+                                  :
                                   <React.Fragment>
                                     <br></br>
                                     {"-"}
                                   </React.Fragment>
-                                  :
-                                  matchDetail.team.filter( d =>{
-                                    return d.teamno === value.teamno
-                                  }).map((d, i) =>
-                                    d &&
-                                    <React.Fragment key={i}>
-                                      <br></br>
-                                      {d.teamname}
-                                      <br></br>
-                                      {d.note}
-                                    </React.Fragment>
-                                  )
                                 )
-                                :
-                                <React.Fragment>
-                                  <br></br>
-                                  {"-"}
-                                </React.Fragment>
+                              }
+                            </React.Fragment>
+                          } />
+                        { window.innerWidth >= 600 &&
+                          <ListItemText className={classes.listText}
+                            primary={value.lastname} />
+                        }
+                        { window.innerWidth > 600 &&
+                          (
+                            matchDetail && matchDetail.team ?
+                            ( value.teamno === 0 ?
+                              <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
+                              :
+                              matchDetail.team.filter( d =>{
+                                return d.teamno === value.teamno
+                              }).map( d =>
+                                d &&
+                                <ListItemText key={d.teamname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listTeam}
+                                  primary={d.teamname}
+                                  secondary={d.note} />
                               )
-                            }
-                          </React.Fragment>
-                        } />
-                      { window.innerWidth >= 600 &&
-                        <ListItemText className={classes.listText}
-                          primary={value.lastname} />
-                      }
-                      { window.innerWidth > 600 &&
-                        (
-                          matchDetail && matchDetail.team ?
-                          ( value.teamno === 0 ?
-                            <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
-                            :
-                            matchDetail.team.filter( d =>{
-                              return d.teamno === value.teamno
-                            }).map( d =>
-                              d &&
-                              <ListItemText key={d.teamname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listTeam}
-                                primary={d.teamname}
-                                secondary={d.note} />
                             )
+                            :
+                            <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
                           )
-                          :
-                          <ListItemText style={{ justifyContent: 'center' }} className={classes.listTeam} primary={"-"} />
-                        )
-                      }
-                    </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                );
-              })
+                        }
+                      </ListItem>
+                      <Divider />
+                    </React.Fragment>
+                  );
+                })
+                :
+                <Typography component="div" style={{ width: '100%' }}>
+                  <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                    { API._getWord(sess && sess.language).No_player }
+                  </Box>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                    <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
+                      <BTN.PrimaryOutlined>
+                        <AddIcon style={{ marginRight: 8 }} />
+                        { API._getWord(sess && sess.language).Invite_players }
+                      </BTN.PrimaryOutlined>
+                    </BTN.NoStyleLink>
+                  </div>
+                </Typography>
+              )
               :
-              <Typography component="div" style={{ width: '100%' }}>
-                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { API._getWord(sess && sess.language).No_player }
-                </Box>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                  <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
-                    <BTN.PrimaryOutlined>
-                      <AddIcon style={{ marginRight: 8 }} />
-                      { API._getWord(sess && sess.language).Invite_players }
-                    </BTN.PrimaryOutlined>
-                  </BTN.NoStyleLink>
-                </div>
-              </Typography>
+              <LDCircular />
             }
           </div>
           <ListItem role={undefined} dense style={{ display: 'flex' }}>

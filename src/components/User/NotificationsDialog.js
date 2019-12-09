@@ -40,7 +40,7 @@ const NotiOverview = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: 36
+    
   },
   avatar: {
     fontSize: 64
@@ -57,9 +57,9 @@ export default function NotificationsDialog(props) {
   const { API, sess, notiState, toggleNoti, notiData } = props
 
   return (
-    <TemplateDialog open={notiState} handleClose={toggleNoti} fullScreen>
+    <TemplateDialog maxWidth="sm" maxHeight="100%" open={notiState} handleClose={toggleNoti}
+      title={<LabelText text={ API._getWord(sess && sess.language).Notifications } />}>
       <div className={classes.root}>
-        <LabelText text={ API._getWord(sess && sess.language).Notifications } />
         <List>
           { notiData &&
             notiData.map( d => <ListNotiItem key={d.createdate} {...props} data={d} />)

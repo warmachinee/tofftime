@@ -67,7 +67,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, isFollow, data } = props
+  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, isFollow, setIsFollow, data, setData, pageid } = props
 
   async function handleToggleFollow(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -80,6 +80,29 @@ export default function OrganizerOverview(props) {
       setCSRFToken(csrf)
     })
     await handleFetch()
+  }
+
+  async function handleFetch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      ( sess && sess.status === 1 ) ? 'ploadpage' : 'mloadpage' , {
+        action: 'detail',
+        pageid: parseInt(props.computedMatch.params.pageid),
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+      if(d.length > 1){
+        setData(d[0])
+        document.title = `${d[0].pagename} - T-off Time Organizer`
+        if(d[1].subscribe){
+          setIsFollow(true)
+        }else{
+          setIsFollow(false)
+        }
+      }else{
+        setData('No page')
+      }
+    })
   }
 
   return (

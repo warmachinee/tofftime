@@ -191,7 +191,7 @@ export default function MatchList(props){
 
   return(
     <div className={classes.root}>
-      <GoBack />
+      <GoBack to='/system_admin/' />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Match List
@@ -224,7 +224,7 @@ export default function MatchList(props){
           </ListItemIcon>
         </ListItem>
         { data &&
-          API.sortArrByDateStr(data, 'date', 'title').map( d =>
+          API._sortArrByDate(data, 'date', 'title').map( d =>
             d &&
             <React.Fragment key={d.matchid}>
               <ListItem>

@@ -6,6 +6,7 @@ import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
+import { LDCircular } from './../../loading/LDCircular'
 
 import {
   Button,
@@ -312,7 +313,7 @@ function MBScoreEditorContainer(props){
           </Box>
           { data &&
             <React.Fragment>
-              <Typography variant="caption" align="right"
+              <Typography variant="body1" align="right"
                 style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
                 { ( sess && sess.language === 'TH' ) ?
                   `ผู้เล่น ${data.length} คน`
@@ -320,7 +321,7 @@ function MBScoreEditorContainer(props){
                   `${data.length} player${data.length > 1? 's' : ''}`
                 }
               </Typography>
-              {/* matchDetail && matchDetail.scorematch !== 0 &&
+              {/* matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass > 1 &&
                 <FormControl className={classes.formControl}>
                   <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                   <Select
@@ -368,7 +369,7 @@ function MBScoreEditorContainer(props){
           </ListItem>
         </List>
         <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .4 }}>
-          { data && !data.status && matchDetail &&
+          { data && !data.status && matchDetail ?
             [
               ...searchUser? handleSearch() : data
             ].slice(0, dataSliced).map( value =>
@@ -449,51 +450,55 @@ function MBScoreEditorContainer(props){
                 <Divider />
               </React.Fragment>
             )
+            :
+            <LDCircular />
           }
         </List>
-        <List disablePadding>
-          <ListItem role={undefined} dense style={{ display: 'flex' }}>
-            { data && data.length > 10 && !searchUser &&
-              <React.Fragment>
-                <Button fullWidth onClick={handleMore}>
-                  { dataSliced >= data.length ? (
-                    API._getWord(sess && sess.language).Collapse
-                  ):(
-                    API._getWord(sess && sess.language).More
-                  ) }
-                </Button>
-                { data && dataSliced < data.length &&
-                  <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
-                }
-              </React.Fragment>
-            }
-            { data && handleSearch().length > 10 && searchUser &&
-              <React.Fragment>
-                <Button fullWidth onClick={handleMore}>
-                  { dataSliced >= handleSearch().length ? (
-                    API._getWord(sess && sess.language).Collapse
-                  ):(
-                    API._getWord(sess && sess.language).More
-                  ) }
-                </Button>
-                { data && dataSliced < handleSearch().length &&
-                  <Button fullWidth onClick={handleMoreAll}>
-                    { API._getWord(sess && sess.language).Show_all }
+        { data && !data.status && matchDetail &&
+          <List disablePadding>
+            <ListItem role={undefined} dense style={{ display: 'flex' }}>
+              { data && data.length > 10 && !searchUser &&
+                <React.Fragment>
+                  <Button fullWidth onClick={handleMore}>
+                    { dataSliced >= data.length ? (
+                      API._getWord(sess && sess.language).Collapse
+                    ):(
+                      API._getWord(sess && sess.language).More
+                    ) }
                   </Button>
-                }
-              </React.Fragment>
-            }
-          </ListItem>
-          { searchUser && handleSearch().length === 0 &&
-            <ListItem>
-              <Typography component="div" style={{ width: '100%' }}>
-                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { API._getWord(sess && sess.language).No_Result }
-                </Box>
-              </Typography>
+                  { data && dataSliced < data.length &&
+                    <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
+                  }
+                </React.Fragment>
+              }
+              { data && handleSearch().length > 10 && searchUser &&
+                <React.Fragment>
+                  <Button fullWidth onClick={handleMore}>
+                    { dataSliced >= handleSearch().length ? (
+                      API._getWord(sess && sess.language).Collapse
+                    ):(
+                      API._getWord(sess && sess.language).More
+                    ) }
+                  </Button>
+                  { data && dataSliced < handleSearch().length &&
+                    <Button fullWidth onClick={handleMoreAll}>
+                      { API._getWord(sess && sess.language).Show_all }
+                    </Button>
+                  }
+                </React.Fragment>
+              }
             </ListItem>
-          }
-        </List>
+            { searchUser && handleSearch().length === 0 &&
+              <ListItem>
+                <Typography component="div" style={{ width: '100%' }}>
+                  <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                    { API._getWord(sess && sess.language).No_Result }
+                  </Box>
+                </Typography>
+              </ListItem>
+            }
+          </List>
+        }
       </Collapse>
     </div>
   );
@@ -599,7 +604,7 @@ export default function MBScoreEditor(props){
 
   function handleKeyPress(e){
     if(e.key === 'Enter'){
-      handleUpdateScore()
+      handleFetchUpdateScore()
     }
   }
 
@@ -626,17 +631,40 @@ export default function MBScoreEditor(props){
   function handleUpdateScore(){
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.emit('admin-match-client-message', {
-      action: "scorebysystemadmin",
+      action: "showmatchscore",
       matchid: matchid,
       userid: selected.userid,
-      userscore: arrScore,
       mainclass: parseInt(mainClassSelected)
+    })
+  }
+
+  async function handleFetchUpdateScore(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
+        action: 'updatescore',
+        matchid: matchid,
+        userid: selected.userid,
+        userscore: arrScore,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ? 'success' : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+      if(/success/.test(d.status)){
+        handleUpdateScore()
+      }
     })
   }
 
   function handleReset(){
     setArrScore([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
     setSelected(null)
+    setExpanded(true)
   }
 
   function responseUpdateScore(){
@@ -774,124 +802,128 @@ export default function MBScoreEditor(props){
         setExpanded={setExpanded}
         mainClassSelected={mainClassSelected}
         setMainClassSelected={setMainClassSelected} />
-      <ThemeProvider theme={theme}>
-        <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          <Typography variant="h5" className={classes.scorcardLabel}>
-            {`${ API._getWord(sess && sess.language).Scorecard_MBSE } ${selected ? ` | ${selected.firstname} ${selected.lastname}` : ''}`}
-          </Typography>
-          {/*
-            <Typography variant="body1" className={classes.scorcardPlayer}>
-              {selected && `${selected.firstname} ${selected.lastname}`}
-              {
-                (${
-                  matchDetail &&
-                  matchDetail.mainclass &&
-                  matchDetail.mainclass.length > 0 &&
-                  matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                    return d.classno === selected.classno
-                  }).map((d, i) =>{
-                    return (
-                      matchDetail.scorematch !== 0 ?
-                      d.classname
-                      :
-                      String.fromCharCode(65 + value.classno - 1)
-                    )
-                  })
-                })
+      { selected !== null &&
+        <React.Fragment>
+          <ThemeProvider theme={theme}>
+            <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+              <Typography variant="h5" className={classes.scorcardLabel}>
+                {`${ API._getWord(sess && sess.language).Scorecard_MBSE } ${selected ? ` | ${selected.firstname} ${selected.lastname}` : ''}`}
+              </Typography>
+              {/*
+                <Typography variant="body1" className={classes.scorcardPlayer}>
+                  {selected && `${selected.firstname} ${selected.lastname}`}
+                  {
+                    (${
+                      matchDetail &&
+                      matchDetail.mainclass &&
+                      matchDetail.mainclass.length > 0 &&
+                      matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
+                        return d.classno === selected.classno
+                      }).map((d, i) =>{
+                        return (
+                          matchDetail.scorematch !== 0 ?
+                          d.classname
+                          :
+                          String.fromCharCode(65 + value.classno - 1)
+                        )
+                      })
+                    })
+                  }
+                </Typography>*/
               }
-            </Typography>*/
-          }
-        </div>
-        {/*
-          <Typography variant="caption" className={classes.scorcardMainClass} color="textSecondary">
-            {`{ API._getWord(sess && sess.language).Main_group } ${mainClassSelected}`}
+            </div>
+            {/*
+              <Typography variant="caption" className={classes.scorcardMainClass} color="textSecondary">
+                {`{ API._getWord(sess && sess.language).Main_group } ${mainClassSelected}`}
+              </Typography>
+              */
+            }
+            <div style={{
+                overflow: 'auto', marginTop: 24, marginBottom: 24,
+                width: gridWidth,
+              }}>
+              <div className={classes.textfieldGrid}>
+                {tempArr.slice(0, 9).map( d =>
+                  <TextField
+                    disabled={selected === null}
+                    key={d}
+                    className={classes.textfield}
+                    label={d + 1}
+                    value={arrScore[d] || 0}
+                    onChange={e =>handleChange(e.target.value, d)}
+                    onFocus={e => handleFocus(e)}
+                    onKeyPress={e =>handleKeyPress(e)}
+                    variant="outlined"
+                    type="number"
+                  />
+                )}
+              </div>
+              <div className={classes.textfieldGrid}>
+                {tempArr.slice(9, 18).map( d =>
+                  <TextField
+                    disabled={selected === null}
+                    key={d}
+                    className={classes.textfield}
+                    label={d + 1}
+                    value={arrScore[d] || 0}
+                    onChange={e =>handleChange(e.target.value, d)}
+                    onFocus={e => handleFocus(e)}
+                    onKeyPress={e =>handleKeyPress(e)}
+                    variant="outlined"
+                    type="number"
+                  />
+                )}
+              </div>
+            </div>
+          </ThemeProvider>
+          <Typography component="div" style={{ display: 'flex' }}>
+            <Box className={classes.text} m={1}>
+              OUT = {API._handleHoleSum(arrScore, 'out')}
+            </Box>
+            <Box className={classes.text} m={1}>
+              IN = {API._handleHoleSum(arrScore, 'in')}
+            </Box>
+            <div style={{ flex: 1 }} />
+            <Box className={classes.textHighlight} m={1}>
+              Total = {API._handleHoleSum(arrScore, 'out') + API._handleHoleSum(arrScore, 'in')}
+            </Box>
           </Typography>
-          */
-        }
-        <div style={{
-            overflow: 'auto', marginTop: 24, marginBottom: 24,
-            width: gridWidth,
-          }}>
-          <div className={classes.textfieldGrid}>
-            {tempArr.slice(0, 9).map( d =>
-              <TextField
+          <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
+          { matchDetail && matchDetail.scorematch === 2 && selected &&
+            <ThemeProvider theme={theme}>
+              <div className={classes.predictScoreChildGrid}>
+                <TextField label={ API._getWord(sess && sess.language).Predict_Score }
+                  type="number"
+                  value={predictScore}
+                  onChange={e =>handleSetPredictScore(e.target.value)}
+                  onKeyPress={e =>handleKeyPressSetPredictScore(e)}
+                  onFocus={e => e.target.select()} />
+                <BTN.Primary className={classes.saveButton}
+                  onClick={handleFetchSetPredict}>Save</BTN.Primary>
+              </div>
+            </ThemeProvider>
+          }
+          <div className={classes.controls}>
+            <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
+              { API._getWord(sess && sess.language).Reset }
+            </Button>
+            { selected?
+              <GreenButton
                 disabled={selected === null}
-                key={d}
-                className={classes.textfield}
-                label={d + 1}
-                value={arrScore[d] || 0}
-                onChange={e =>handleChange(e.target.value, d)}
-                onFocus={e => handleFocus(e)}
-                onKeyPress={e =>handleKeyPress(e)}
-                variant="outlined"
-                type="number"
-              />
-            )}
+                variant="contained" color="primary"
+                className={classes.button} onClick={handleFetchUpdateScore}>
+                { API._getWord(sess && sess.language).Save }
+              </GreenButton>
+              :
+              <Button
+                disabled
+                variant="contained" color="primary"
+                className={classes.button}>{ API._getWord(sess && sess.language).Save }</Button>
+            }
           </div>
-          <div className={classes.textfieldGrid}>
-            {tempArr.slice(9, 18).map( d =>
-              <TextField
-                disabled={selected === null}
-                key={d}
-                className={classes.textfield}
-                label={d + 1}
-                value={arrScore[d] || 0}
-                onChange={e =>handleChange(e.target.value, d)}
-                onFocus={e => handleFocus(e)}
-                onKeyPress={e =>handleKeyPress(e)}
-                variant="outlined"
-                type="number"
-              />
-            )}
-          </div>
-        </div>
-      </ThemeProvider>
-      <Typography component="div" style={{ display: 'flex' }}>
-        <Box className={classes.text} m={1}>
-          OUT = {API._handleHoleSum(arrScore, 'out')}
-        </Box>
-        <Box className={classes.text} m={1}>
-          IN = {API._handleHoleSum(arrScore, 'in')}
-        </Box>
-        <div style={{ flex: 1 }} />
-        <Box className={classes.textHighlight} m={1}>
-          Total = {API._handleHoleSum(arrScore, 'out') + API._handleHoleSum(arrScore, 'in')}
-        </Box>
-      </Typography>
-      <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
-      { matchDetail && matchDetail.scorematch === 2 && selected &&
-        <ThemeProvider theme={theme}>
-          <div className={classes.predictScoreChildGrid}>
-            <TextField label={ API._getWord(sess && sess.language).Predict_Score }
-              type="number"
-              value={predictScore}
-              onChange={e =>handleSetPredictScore(e.target.value)}
-              onKeyPress={e =>handleKeyPressSetPredictScore(e)}
-              onFocus={e => e.target.select()} />
-            <BTN.Primary className={classes.saveButton}
-              onClick={handleFetchSetPredict}>Save</BTN.Primary>
-          </div>
-        </ThemeProvider>
+        </React.Fragment>
       }
-      <div className={classes.controls}>
-        <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
-          { API._getWord(sess && sess.language).Reset }
-        </Button>
-        { selected?
-          <GreenButton
-            disabled={selected === null}
-            variant="contained" color="primary"
-            className={classes.button} onClick={handleUpdateScore}>
-            { API._getWord(sess && sess.language).Save }
-          </GreenButton>
-          :
-          <Button
-            disabled
-            variant="contained" color="primary"
-            className={classes.button}>{ API._getWord(sess && sess.language).Save }</Button>
-        }
-      </div>
     </div>
   );
 }

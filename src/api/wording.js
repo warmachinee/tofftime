@@ -61,7 +61,7 @@ export default function _getWord(lang){
   Interrogative['No Result? Create one.'] = function(){
     switch (lang) {
       case 'TH':
-        return 'ไม่มีผลลัพท์ ? สร้างผู้เล่นใหม'
+        return 'ไม่มีผลลัพธ์ ? สร้างผู้เล่นใหม'
         break;
       default:
         return 'No Result? Create one.'
@@ -221,6 +221,24 @@ export default function _getWord(lang){
         return 'Please fill Match name.'
     }
   }()
+  Imperative['Click to show the control panel.'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'คลิกเพื่อแสดงแผงควบคุม'
+        break;
+      default:
+        return 'Click to show the control panel.'
+    }
+  }()
+  Imperative['Search Match or Page'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'ค้นหาการแข่งขันหรือเพจ'
+        break;
+      default:
+        return 'Search Match or Page'
+    }
+  }()
 
   const Notifications = {
     Friend_request: function(){
@@ -306,6 +324,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Add friend'
+      }
+    }(),
+    Share: function(){
+      switch (lang) {
+        case 'TH':
+          return 'แชร์'
+          break;
+        default:
+          return 'Share'
       }
     }(),
     Edit: function(){
@@ -531,6 +558,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Create group'
+      }
+    }(),
+    Create_flight: function(){
+      switch (lang) {
+        case 'TH':
+          return 'สร้างไฟล์ท'
+          break;
+        default:
+          return 'Create flight'
       }
     }(),
     Decline: function(){
@@ -794,8 +830,26 @@ export default function _getWord(lang){
           return 'Change password'
       }
     }(),
+    Go_to_home: function(){
+      switch (lang) {
+        case 'TH':
+          return 'กลับไปหน้าแรก'
+          break;
+        default:
+          return 'Go back to the main page'
+      }
+    }(),
 
   }
+  Action['Go back to match'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'กลับไปที่การแข่งขัน'
+        break;
+      default:
+        return 'Go back to match'
+    }
+  }()
 
   const Status = {
     Incomplete: function(){
@@ -915,6 +969,15 @@ export default function _getWord(lang){
           return 'No match'
       }
     }(),
+    No_page: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีเพจ'
+          break;
+        default:
+          return 'No page'
+      }
+    }(),
     No_Dummy: function(){
       switch (lang) {
         case 'TH':
@@ -930,7 +993,7 @@ export default function _getWord(lang){
           return 'ไม่มีผู้เล่น'
           break;
         default:
-          return 'No player.'
+          return 'No player'
       }
     }(),
     No_course: function(){
@@ -939,7 +1002,7 @@ export default function _getWord(lang){
           return 'ไม่มีสนาม'
           break;
         default:
-          return 'No course.'
+          return 'No course'
       }
     }(),
     No_flight: function(){
@@ -972,10 +1035,10 @@ export default function _getWord(lang){
     No_Result: function(){
       switch (lang) {
         case 'TH':
-          return 'ไม่มีผลลัพท์'
+          return 'ไม่มีผลลัพธ์'
           break;
         default:
-          return 'No Result'
+          return 'No results'
       }
     }(),
     No_playoff_player: function(){
@@ -1002,13 +1065,112 @@ export default function _getWord(lang){
           return 'ยังไม่มีตารางเวลา'
           break;
         default:
-          return 'No schedule yet.'
+          return 'No schedule yet'
+      }
+    }(),
+    No_post: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีโพสต์'
+          break;
+        default:
+          return 'No post'
+      }
+    }(),
+    No_data: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีข้อมูล'
+          break;
+        default:
+          return 'No data'
+      }
+    }(),
+    No_match_for: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีหน้าที่่ตรงกับ'
+          break;
+        default:
+          return 'No match for'
       }
     }(),
 
   }
+  Status['This match is over'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'การแข่งขันนี้จบแล้ว'
+        break;
+      default:
+        return 'This match is over'
+    }
+  }()
 
   const Name = {
+    Result: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ผลลัพธ์'
+          break;
+        default:
+          return 'Result'
+      }
+    }(),
+    Example: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ตัวอย่าง'
+          break;
+        default:
+          return 'Example'
+      }
+    }(),
+    Main_player: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ผู้เล่นหลัก'
+          break;
+        default:
+          return 'Main player'
+      }
+    }(),
+    Hole: function(){
+      switch (lang) {
+        case 'TH':
+          return 'หลุม'
+          break;
+        default:
+          return 'Hole'
+      }
+    }(),
+    Minimum_price: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ราคาขั้นต่ำ'
+          break;
+        default:
+          return 'Minimum price'
+      }
+    }(),
+    Control_panel: function(){
+      switch (lang) {
+        case 'TH':
+          return 'แผงควบคุม'
+          break;
+        default:
+          return 'Control panel'
+      }
+    }(),
+    Limitation_player: function(){
+      switch (lang) {
+        case 'TH':
+          return 'การจำกัด ( จำนวนผู้เล่น )'
+          break;
+        default:
+          return 'Limitation ( number of player )'
+      }
+    }(),
     Setting: function(){
       switch (lang) {
         case 'TH':
@@ -1033,7 +1195,7 @@ export default function _getWord(lang){
           return 'รายชื่อผู้สมัคร'
           break;
         default:
-          return 'Form'
+          return 'Registration player'
       }
     }(),
     Schedule: function(){
@@ -1826,6 +1988,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Page name'
+      }
+    }(),
+    Group_name: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ชื่อกลุ่ม'
+          break;
+        default:
+          return 'Group name'
       }
     }(),
     Nickname: function(){

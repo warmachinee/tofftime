@@ -118,7 +118,7 @@ export default function SelectMatch(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ props.dialog.createMatch ])
+  },[ props.dialog ])
 
   return (
     <div className={classes.root}>
@@ -186,9 +186,11 @@ export default function SelectMatch(props) {
           ( data.length > 0 ?
             data.map( d => <SelectMatchListItem key={d.matchid} data={d} {...props} />)
             :
-            <div style={{
-                width: '100%', padding: '36px 0', textAlign: 'center',
-                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+            <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_data }
+              </Box>
+            </Typography>
           )
           :
           Array.from(new Array(2)).map( (d, i)=> <SelectMatchListItem key={i} {...props} />)

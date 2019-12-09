@@ -200,7 +200,7 @@ export default function PageList(props){
 
   return(
     <div className={classes.root}>
-      <GoBack />
+      <GoBack to='/system_admin/' />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Page List

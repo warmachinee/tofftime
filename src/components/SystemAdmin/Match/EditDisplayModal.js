@@ -138,6 +138,7 @@ export default function EditDisplayModal(props){
           action: 'user',
           matchid: matchid,
           userid: d,
+          type: 'score'
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         handleSnackBar({

@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     width: '100%',
     boxSizing: 'border-box',
-    maxWidth: 1200,
+    maxWidth: 600,
     marginLeft: 'auto',
     marginRight: 'auto'
   },
@@ -191,7 +191,7 @@ export default function CreatePage(props) {
         autoHideDuration: /success/.test(response.status)? 2000 : 5000
       })
       if(/success/.test(response.status)){
-        //
+        window.location.replace(`/organizer/${d.pageid}`);
       }
     }else{
       setCSRFToken(csrf)
@@ -202,7 +202,7 @@ export default function CreatePage(props) {
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
       if(/success/.test(d.status)){
-        //
+        window.location.replace(`/organizer/${d.pageid}`);
       }
     }
   }
@@ -210,12 +210,12 @@ export default function CreatePage(props) {
   return (
     <div className={classes.root}>
       <LabelText text={ API._getWord(sess && sess.language).Create_Organizer } />
-      <div style={{ marginTop: 24, maxWidth: 900, marginLeft: 'auto', marginRight: 'auto' }}>
+      <div style={{ marginTop: 24, maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus
             className={classes.margin}
-            label={ API._getWord(sess && sess.language).Page_name }
+            label={ API._getWord(sess && sess.language).Group_name }
             variant="outlined"
             onChange={(e)=>setPageName(e.target.value)}
             onKeyPress={e =>handleKeyPress(e)}
@@ -228,9 +228,11 @@ export default function CreatePage(props) {
             }}
             onMouseEnter={()=>handleFileHover(true)}
             onMouseLeave={()=>handleFileHover(false)}>
-            {/*
-              <Typography variant="caption">{selectedFile.name}</Typography>*/
-            }
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
+                { API._getWord(sess && sess.language).Upload_image }
+              </Typography>
+            </div>
             <img ref={imgRef}
               style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
               className={classes.matchImg}
@@ -263,11 +265,11 @@ export default function CreatePage(props) {
               position: 'relative', marginTop: 16, marginBottom: 24,
               display: 'flex', flexDirection: 'column', justifyContent: 'center'
             }}>
-            { /*
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <Typography variant="caption" style={{ textAlign: 'center' }}>
                 { API._getWord(sess && sess.language).Upload_image }
-              </Typography>*/
-            }
+              </Typography>
+            </div>
             <div className={classes.matchImgTemp} style={{ maxHeight: 280, height: window.innerWidth * .45 }}>
               <div style={{ flex: 1 }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>

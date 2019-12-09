@@ -11,6 +11,7 @@ import {
   ListItemText,
   ListItemIcon,
   Typography,
+  Box,
   Divider,
   Paper,
   InputLabel,
@@ -56,7 +57,7 @@ const useStyles = makeStyles(theme => ({
   },
   gridChild: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     width: '100%',
     padding: '0 12px',
     boxSizing: 'border-box',
@@ -276,25 +277,25 @@ export default function History(props) {
       <div className={classes.grid}>
         <div
           className={clsx(classes.gridChild,{
-            [classes.gridFlexDirectionDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
-            [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+            [classes.gridFlexDirectionDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
+            [classes.gridFlexDirectionUp]: !( open ? window.innerWidth < 700 : window.innerWidth < 460 )
           })}>
           { /*
             <Paper
               style={{ boxSizing: 'border-box' }}
               className={clsx(
                 {
-                  [classes.controlPaperDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
-                  [classes.controlPaperUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+                  [classes.controlPaperDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
+                  [classes.controlPaperUp]: !( open ? window.innerWidth < 700 : window.innerWidth < 460 )
                 },
                 {
-                  [classes.settingStatDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
-                  [classes.settingStatUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+                  [classes.settingStatDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
+                  [classes.settingStatUp]: !( open ? window.innerWidth < 700 : window.innerWidth < 460 )
                 }
               )}>
               <FormControl className={clsx({
-                [classes.formControlDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
-                [classes.formControlUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+                [classes.formControlDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
+                [classes.formControlUp]: !( open ? window.innerWidth < 700 : window.innerWidth < 460 )
               })}>
                 <InputLabel>{ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' }</InputLabel>
                 <Select
@@ -322,19 +323,16 @@ export default function History(props) {
               </FormControl>
             </Paper>*/
           }
-          { !pageOrganizer &&
-            <Statistics {...props} checked={checked} setChecked={setChecked} />
-          }
           <Paper
             style={{ boxSizing: 'border-box', marginTop: 'auto', marginBottom: 12 }}
             className={clsx({
-              [classes.controlPaperDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
-              [classes.controlPaperUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+              [classes.controlPaperDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
+              [classes.controlPaperUp]: !( open ? window.innerWidth < 700 : window.innerWidth < 460 )
             })}>
             <form autoComplete="off">
               <FormControl className={clsx({
-                [classes.formControlDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
-                [classes.formControlUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+                [classes.formControlDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
+                [classes.formControlUp]: !( open ? window.innerWidth < 700 : window.innerWidth < 460 )
               })}>
                 <InputLabel>{ (sess && sess.language === 'TH')? 'ประเภท' : 'Type' }</InputLabel>
                 <Select
@@ -383,25 +381,29 @@ export default function History(props) {
             </ListItemIcon>
           </ListItem>
         </List>
-        <Divider />
+        { !pageOrganizer &&
+          <Statistics {...props} checked={checked} setChecked={setChecked} />
+        }
         { data ?
           (
-            (
-              API.sortArrByDate(data, 'matchdate').filter( item =>{
+            (/*API._sortArrByDate(data, 'matchdate')*/
+              data.filter( item =>{
                 return checked.some( d =>{ return item.type === d })
               }).filter( item =>{
                 return (statType === 'total') ? ( true ) : ( parseInt(statType) === item.scorematch )
               }).length > 0
             ) ?
-            API.sortArrByDate(data, 'matchdate').filter( item =>{
+            data.filter( item =>{
               return checked.some( d =>{ return item.type === d })
             }).filter( item =>{
               return (statType === 'total') ? ( true ) : ( parseInt(statType) === item.scorematch )
             }).map( d => <HistoryList key={d.matchid} data={d} {...props} />)
             :
-            <div style={{
-                width: '100%', padding: '36px 0', textAlign: 'center',
-                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+            <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_data }
+              </Box>
+            </Typography>
           )
           :
           Array.from(new Array(2)).map( (d, i)=> <HistoryList key={i} {...props} />)

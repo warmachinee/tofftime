@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from "clsx";
 import Loadable from 'react-loadable';
 import socketIOClient from 'socket.io-client'
 import { Scrollbars } from "react-custom-scrollbars";
@@ -68,9 +69,8 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginRight: theme.spacing(1),
     color: COLOR.grey[900],
-    display: 'none',
-    [theme.breakpoints.up(450)]: {
-      display: 'block'
+    [theme.breakpoints.down(450)]: {
+      display: 'none',
     },
   },
   loginBtn: {
@@ -128,6 +128,26 @@ const useStyles = makeStyles(theme => ({
   avatarImage: {
     width: 32,
     height: 32,
+  },
+  moreThan700: {
+    [theme.breakpoints.down(700)]: {
+      display: 'none',
+    },
+  },
+  lessThan700: {
+    [theme.breakpoints.up(700)]: {
+      display: 'none',
+    },
+  },
+  moreThan500: {
+    [theme.breakpoints.down(500)]: {
+      display: 'none',
+    },
+  },
+  lessThan500: {
+    [theme.breakpoints.up(500)]: {
+      display: 'none',
+    },
   },
 
 }));
@@ -188,19 +208,6 @@ export default function Header(props) {
     }
   }
 
-  const [ ,updateState ] = React.useState(null)
-
-  function resizeHandler(){
-    updateState({})
-  }
-
-  React.useEffect(()=>{
-    window.addEventListener('resize', resizeHandler)
-    return ()=>{
-      window.removeEventListener('resize', resizeHandler)
-    }
-  },[ window.innerWidth ])
-
   return (
     <React.Fragment>
       <CssBaseline />
@@ -216,13 +223,12 @@ export default function Header(props) {
               <SearchMatchPage {...props} searchState={searchState} setSearchState={setSearchState} />
               :
               <React.Fragment>
-                { window.innerWidth < 600 &&
-                  <IconButton
-                    onClick={drawerOpen}>
-                    <MenuIcon />
-                  </IconButton>
-                }
-                <Link to="/" style={{ textDecoration: 'none' }}>
+                <IconButton
+                  className={classes.lessThan700}
+                  onClick={drawerOpen}>
+                  <MenuIcon />
+                </IconButton>
+                <Link to="/" style={{ textDecoration: 'none' }} className={classes.moreThan500}>
                   <IconButton
                     edge="start"
                     className={classes.logo}
@@ -230,29 +236,30 @@ export default function Header(props) {
                     <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
                   </IconButton>
                 </Link>
-                { window.innerWidth < 600 && <div className={classes.grow} /> }
-                <Typography className={classes.title} variant="h6" noWrap>
+                <Typography className={clsx(classes.moreThan500, classes.title)} variant="h6" noWrap>
                   { 'T-off Time' }
                 </Typography>
-                { window.location.pathname === '/' && window.innerWidth >= 600 &&
+                { window.location.pathname === '/' &&
                   <React.Fragment>
-                    <div style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }}></div>
-                    <Button size="small" onClick={()=>API._handleScrolllTo('match')}>
+                    <div className={classes.moreThan700} style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }} />
+                    <Button className={classes.moreThan700} size="small" onClick={()=>API._handleScrolllTo('match')}>
                       Match
                     </Button>
-                    <Button size="small" onClick={()=>API._handleScrolllTo('news')}>
+                    <Button className={classes.moreThan700} size="small" onClick={()=>API._handleScrolllTo('news')}>
                       News
                     </Button>
-                    <Button size="small" onClick={()=>API._handleScrolllTo('organizer')}>
+                    <Button className={classes.moreThan700} size="small" onClick={()=>API._handleScrolllTo('organizer')}>
                       Organizer
                     </Button>
                   </React.Fragment>
                 }
-                <div className={classes.grow} />
+                <div className={clsx(classes.moreThan500, classes.grow)} />
+
                 <Button variant="text" style={{ marginRight: 8 }} onClick={()=>setSearchState(!searchState)}>
                   <SearchIcon style={{ marginRight: 4 }} />
                   Search
                 </Button>
+                <div className={clsx(classes.lessThan500, classes.grow)} />
                 { ( sess && sess.status === 1 ) &&
                   <React.Fragment>
                     {
@@ -265,25 +272,35 @@ export default function Header(props) {
                         </IconButton>
                       </div>*/
                     }
-                    { ( accountData && sess.typeid !== 'admin' ) ?
-                      <Link to={`/user` /*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <IconButton
-                          style={{ padding: 8 }}>
-                          { accountData.photopath ?
-                            <Avatar className={classes.avatarImage}
-                              src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-                            :
-                            <AccountIcon classes={{ root: classes.avatar }} />
-                          }
-                        </IconButton>
-                      </Link>
+                    { accountData ?
+                      ( sess.typeid === 'admin' ?
+                        <Link to={`/system_admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <IconButton
+                            style={{ padding: 8 }}>
+                            <SupervisedUserCircleIcon classes={{ root: classes.avatar }} />
+                          </IconButton>
+                        </Link>
+                        :
+                        <Link to={`/user`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <IconButton
+                            style={{ padding: 8 }}>
+                            { accountData.photopath ?
+                              <Avatar className={classes.avatarImage}
+                                src={
+                                  API._getPictureUrl(accountData.photopath) +
+                                  ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+                                } />
+                              :
+                              <AccountIcon classes={{ root: classes.avatar }} />
+                            }
+                          </IconButton>
+                        </Link>
+                      )
                       :
-                      <Link to={`/system_admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <IconButton
-                          style={{ padding: 8 }}>
-                          <SupervisedUserCircleIcon classes={{ root: classes.avatar }} />
-                        </IconButton>
-                      </Link>
+                      <IconButton
+                        style={{ padding: 8 }}>
+                        <AccountIcon classes={{ root: classes.avatar }} />
+                      </IconButton>
                     }
                     <IconButton
                       style={{ padding: 8 }}
@@ -310,9 +327,9 @@ export default function Header(props) {
           open={Boolean(anchorEl)}
           onClose={menuCloseHandler}
         >
-          { sess && sess.status === 1 && sess.typeid !== 'admin' && window.innerWidth >= 600 &&
+          { sess && sess.status === 1 && sess.typeid !== 'admin' &&
             !( window.location.pathname === '/' ) &&
-            <Link to={`/`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link to={`/`} style={{ textDecoration: 'none', color: 'inherit' }} className={classes.moreThan700}>
               <MenuItem onClick={menuCloseHandler}>
                 { API._getWord(sess && sess.language).Home }
               </MenuItem>
@@ -330,7 +347,7 @@ export default function Header(props) {
 
           { sess && sess.status === 1 && sess.typeid !== 'admin' &&
             !/\/user/.test(window.location.pathname) &&
-            <Link to={`/user`/*${sess.userid}*/} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link to={`/user`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MenuItem onClick={menuCloseHandler}>
                 { API._getWord(sess && sess.language).User }
               </MenuItem>
@@ -343,9 +360,6 @@ export default function Header(props) {
             </MenuItem>
           }
 
-          {/* ( sess && sess.status === 1 ) && window.innerWidth < 600 &&
-            <MenuItem onClick={handleClickNoti}>Notifications</MenuItem>*/
-          }
           <div></div>
         </Menu>
       </Portal>

@@ -355,6 +355,11 @@ export default function NewsEditor(props) {
           <div style={{ position: 'relative', marginTop: 16, marginBottom: 8, border: `1px solid ${grey[400]}` }}
             onMouseEnter={()=>handleFileHover(true)}
             onMouseLeave={()=>handleFileHover(false)}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
+                { API._getWord(sess && sess.language).Upload_image }
+              </Typography>
+            </div>
             <img ref={imgRef}
               style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * .45 }}
               className={classes.matchImg}
@@ -388,6 +393,11 @@ export default function NewsEditor(props) {
           </div>
           :
           <div style={{ position: 'relative', marginTop: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Typography variant="caption" style={{ textAlign: 'center' }}>
+                { API._getWord(sess && sess.language).Upload_image }
+              </Typography>
+            </div>
             <div className={classes.matchImgTemp}
               style={{ height: window.innerWidth * .45 , maxHeight: 280 }}>
               <div style={{ flex: 1 }} />

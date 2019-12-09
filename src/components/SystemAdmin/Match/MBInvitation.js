@@ -353,7 +353,8 @@ export default function MBInvitation(props){
   function handleResponseForm(){
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`${matchid}-form-server-message`, (messageNew) => {
-      setData(API.sortArrByDate(messageNew, 'createdate', 'fullname'))
+      //API._sortArrByDate(messageNew, 'createdate', 'fullname')
+      setData(messageNew)
     })
   }
 
@@ -396,7 +397,8 @@ export default function MBInvitation(props){
           matchid: matchid
       }, (csrf, d) =>{
         setCSRFToken(csrf)
-        setData(API.sortArrByDate(d.resultform, 'createdate', 'fullname'))
+        //API._sortArrByDate(d.resultform, 'createdate', 'fullname')
+        setData(d.resultform)
       })
       await handleFetchMatchDetail()
     }
@@ -495,99 +497,102 @@ export default function MBInvitation(props){
             }
           </ListItem>
           <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
-            { data && !data.status &&
-              data.length > 0?
-              [
-                ...searchUser? handleSearch() : data
-              ].slice(0, dataSliced).map(value => {
-                return value && (
-                  <React.Fragment key={value.userid}>
-                    <ListItem role={undefined} button
-                      onClick={()=>handleFormOpen(value)}>
-                      <ListItemText className={classes.listText}
-                        primary={
-                          ( window.innerWidth >= 450 && window.innerWidth < 600 )?
-                          <div style={{ display: 'flex' }}>
-                            { value.fullname }<div style={{ width: 20 }}></div>{ value.lastname }
-                          </div>
-                          : value.fullname }
-                        secondary={
-                          <React.Fragment>
-                            { window.innerWidth < 450 &&
-                              <Typography
-                                component="span"
-                                variant="body1"
-                                color="textPrimary"
-                              >
-                                {value.lastname}
-                              </Typography>
-                            }
-                            { window.innerWidth < 400 &&
-                              <React.Fragment>
-                                <br></br>
+            { data ?
+              ( !data.status && data.length > 0?
+                [
+                  ...searchUser? handleSearch() : data
+                ].slice(0, dataSliced).map(value => {
+                  return value && (
+                    <React.Fragment key={value.userid}>
+                      <ListItem role={undefined} button
+                        onClick={()=>handleFormOpen(value)}>
+                        <ListItemText className={classes.listText}
+                          primary={
+                            ( window.innerWidth >= 450 && window.innerWidth < 600 )?
+                            <div style={{ display: 'flex' }}>
+                              { value.fullname }<div style={{ width: 20 }}></div>{ value.lastname }
+                            </div>
+                            : value.fullname }
+                          secondary={
+                            <React.Fragment>
+                              { window.innerWidth < 450 &&
                                 <Typography
                                   component="span"
-                                  variant="caption"
-                                  style={{
-                                    color:
-                                    value.status === 0? red[500] :
-                                    value.status === 1? amber[800] : green[500]
-                                  }}
+                                  variant="body1"
+                                  color="textPrimary"
                                 >
-                                  {getStatus(value.status).text}
+                                  {value.lastname}
                                 </Typography>
-                              </React.Fragment>
-                            }
-                            { window.innerWidth < 600 && value.createdate &&
-                              <Typography variant="caption" display="block">
-                                {API._dateToString(value.createdate)}
-                              </Typography>
-                            }
-                          </React.Fragment>
-                        } />
-                      { window.innerWidth >= 600 &&
-                        <ListItemText className={classes.listText}
-                          primary={value.lastname} />
-                      }
-                      { window.innerWidth > 400 &&
-                        <ListItemText className={classes.listClass}
-                          primary={
-                            <Typography
-                              component="span"
-                              variant="subtitle2"
-                              style={{
-                                color:
-                                value.status === 0? red[500] :
-                                value.status === 1? amber[800] : green[500]
-                              }}
-                            >
-                              {getStatus(value.status).text}
-                            </Typography>
-                          }
-                          secondary={
-                            window.innerWidth >= 600 && value.createdate &&
-                              <Typography variant="caption" display="block" style={{ color: grey[500] }}>
-                                {API._dateToString(value.createdate)}
-                              </Typography>
+                              }
+                              { window.innerWidth < 400 &&
+                                <React.Fragment>
+                                  <br></br>
+                                  <Typography
+                                    component="span"
+                                    variant="caption"
+                                    style={{
+                                      color:
+                                      value.status === 0? red[500] :
+                                      value.status === 1? amber[800] : green[500]
+                                    }}
+                                  >
+                                    {getStatus(value.status).text}
+                                  </Typography>
+                                </React.Fragment>
+                              }
+                              { window.innerWidth < 600 && value.createdate &&
+                                <Typography variant="caption" display="block">
+                                  {API._dateToString(value.createdate)}
+                                </Typography>
+                              }
+                            </React.Fragment>
                           } />
-                      }
-                    </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                );
-              })
+                        { window.innerWidth >= 600 &&
+                          <ListItemText className={classes.listText}
+                            primary={value.lastname} />
+                        }
+                        { window.innerWidth > 400 &&
+                          <ListItemText className={classes.listClass}
+                            primary={
+                              <Typography
+                                component="span"
+                                variant="subtitle2"
+                                style={{
+                                  color:
+                                  value.status === 0? red[500] :
+                                  value.status === 1? amber[800] : green[500]
+                                }}
+                              >
+                                {getStatus(value.status).text}
+                              </Typography>
+                            }
+                            secondary={
+                              window.innerWidth >= 600 && value.createdate &&
+                                <Typography variant="caption" display="block" style={{ color: grey[500] }}>
+                                  {API._dateToString(value.createdate)}
+                                </Typography>
+                            } />
+                        }
+                      </ListItem>
+                      <Divider />
+                    </React.Fragment>
+                  );
+                })
+                :
+                <Typography component="div" style={{ width: '100%' }}>
+                  <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                    { API._getWord(sess && sess.language)['Invite players to a match.'] }
+                  </Box>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                    <BTN.PrimaryOutlined onClick={handleAddOpen}>
+                      <AddIcon style={{ marginRight: 8 }} />
+                      { API._getWord(sess && sess.language).Invite_players }
+                    </BTN.PrimaryOutlined>
+                  </div>
+                </Typography>
+              )
               :
-              <Typography component="div" style={{ width: '100%' }}>
-                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { API._getWord(sess && sess.language)['Invite players to a match.'] }
-                </Box>
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                  <BTN.PrimaryOutlined onClick={handleAddOpen}>
-                    <AddIcon style={{ marginRight: 8 }} />
-                    { API._getWord(sess && sess.language).Invite_players }
-                  </BTN.PrimaryOutlined>
-                </div>
-              </Typography>
+              <LDCircular />
             }
           </div>
           <ListItem role={undefined} dense style={{ display: 'flex' }}>

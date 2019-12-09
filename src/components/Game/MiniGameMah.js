@@ -177,7 +177,7 @@ const theme = createMuiTheme({
 
 export default function MiniGameMah(props){
   const classes = useStyles();
-  const { API, BTN, COLOR, token, setCSRFToken, handleSnackBar, } = props
+  const { API, BTN, COLOR, sess, token, setCSRFToken, handleSnackBar, } = props
   const hole = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 ]
   const [ matchid, setMatchid ] = React.useState(null)
   const [ componentType, setComponentType ] = React.useState('Mini Game Mah')
@@ -444,7 +444,8 @@ export default function MiniGameMah(props){
               marginTop: 16,
               boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
             }}>
-            <ListItemText primary="Panel" />
+            <ListItemText
+              primary={API._getWord(sess && sess.language)[expanded ? 'Control_panel' : 'Click to show the control panel.']} />
             <IconButton
               disableRipple
               className={classes.expandIcon}
@@ -459,7 +460,9 @@ export default function MiniGameMah(props){
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <Paper style={{ padding: '12px', marginBottom: 24 }}>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditing(!editing)}>{ editing? 'Done' : 'Edit' }</BTN.PrimaryText>
+                <BTN.PrimaryText style={{ margin: 12 }} onClick={()=>setEditing(!editing)}>
+                  { API._getWord(sess && sess.language)[editing ? 'Done' : 'Edit'] }
+                </BTN.PrimaryText>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
                 <div style={{ marginTop: 12 }}>
@@ -467,18 +470,20 @@ export default function MiniGameMah(props){
                     <ThemeProvider theme={theme}>
                       { editing ?
                         <div className={classes.basepriceChildGrid}>
-                          <TextField label="Base Price"
+                          <TextField label={ API._getWord(sess && sess.language).Minimum_price }
                             type="number"
                             value={basePrize || ''}
                             onChange={e =>setBasePrize(e.target.value)}
                             onKeyPress={e =>handleKeyPressBaseprice(e)}
                             onFocus={e => e.target.select()} />
                           <BTN.Primary className={classes.saveButton}
-                            onClick={handleSetBaseprice}>Save</BTN.Primary>
+                            onClick={handleSetBaseprice}>{ API._getWord(sess && sess.language).Save }</BTN.Primary>
                         </div>
                         :
                         <div className={classes.basepriceChildGrid}>
-                          <Typography className={classes.basepriceLabel}>Base Price</Typography>
+                          <Typography className={classes.basepriceLabel}>
+                            { API._getWord(sess && sess.language).Minimum_price }
+                          </Typography>
                           <Typography style={{ padding: '6px 8px', marginLeft: 12 }}>{basePrize}</Typography>
                         </div>
                       }
@@ -497,7 +502,7 @@ export default function MiniGameMah(props){
                             onKeyPress={e =>handleKeyPressUnderOver(e, 'under')}
                             onFocus={e => e.target.select()} />
                           <BTN.Amber className={classes.saveButton}
-                            onClick={()=>handleSetUnderOver('under')}>Save</BTN.Amber>
+                            onClick={()=>handleSetUnderOver('under')}>{ API._getWord(sess && sess.language).Save }</BTN.Amber>
                         </div>
                         :
                         <div className={classes.underoverChildGrid}>
@@ -519,7 +524,7 @@ export default function MiniGameMah(props){
                             onKeyPress={e =>handleKeyPressUnderOver(e, 'over')}
                             onFocus={e => e.target.select()} />
                           <BTN.Green className={classes.saveButton}
-                            onClick={()=>handleSetUnderOver('over')}>Save</BTN.Green>
+                            onClick={()=>handleSetUnderOver('over')}>{ API._getWord(sess && sess.language).Save }</BTN.Green>
                         </div>
                         :
                         <div className={classes.underoverChildGrid}>
@@ -546,7 +551,7 @@ export default function MiniGameMah(props){
                               disableRipple
                               checked={ parseInt(betHole.find( bh =>{ return parseInt(bh) === d + 1 })) === d + 1} />
                             <Typography className={classes.checkboxLabel}>
-                              {`Hole ${d + 1}`}
+                              {`${API._getWord(sess && sess.language).Hole} ${d + 1}`}
                             </Typography>
                           </ListItem>
                         )}
@@ -561,9 +566,10 @@ export default function MiniGameMah(props){
             <List disablePadding>
               <ListItem style={{ backgroundColor: COLOR.grey[900], position: 'sticky', top: 0 }}>
                 { editing && gameType === 'jao' &&
-                  <ListItemText style={{ color: 'white', width: 120 }} primary="Main player" />
+                  <ListItemText style={{ color: 'white', width: 120 }} primary={ API._getWord(sess && sess.language).Main_player } />
                 }
-                <ListItemText style={{ color: 'white' }} className={classes.listPlayerName} primary="Player" />
+                <ListItemText style={{ color: 'white' }} className={classes.listPlayerName}
+                  primary={ API._getWord(sess && sess.language).Player } />
                 { !editing &&
                   <React.Fragment>
                     { window.innerWidth >= 600 &&

@@ -320,6 +320,11 @@ export default function CreateMatchBody(props){
                     <div style={{ position: 'relative', marginTop: 16 }}
                       onMouseEnter={()=>handleFileHover(true)}
                       onMouseLeave={()=>handleFileHover(false)}>
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography variant="caption" style={{ textAlign: 'center' }}>
+                          { API._getWord(sess && sess.language).Upload_image }
+                        </Typography>
+                      </div>
                       <img ref={imgRef}
                         style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
                         className={classes.matchImg} src={tempFile} />
@@ -347,6 +352,11 @@ export default function CreateMatchBody(props){
                     </div>
                     :
                     <div style={{ position: 'relative', marginTop: 16 }}>
+                      <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography variant="caption" style={{ textAlign: 'center' }}>
+                          { API._getWord(sess && sess.language).Upload_image }
+                        </Typography>
+                      </div>
                       <div className={classes.matchImgTemp}
                         style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ),  }}>
                         <div style={{ flex: 1 }} />

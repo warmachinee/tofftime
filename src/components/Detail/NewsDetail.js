@@ -66,42 +66,7 @@ export default function NewsDetail(props){
   return(
     <Paper className={classes.root}>
       <GoBack />
-      {
-        /*splitStr.length > 1 ?
-        (
-          <div>
-            <Typography variant="h2">
-              {data && data.message ? data.message : ''}
-            </Typography>
-            <Typography variant="h5">
-              {data && data.submessage ? data.submessage : ''}
-            </Typography>
-            { data && data.photopath &&
-              <img className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-            }
-            <DetailComponent newsdetail={data && data.messagedetail ? data.messagedetail : ''} />
-          </div>
-        )
-        :
-        (
-          data &&
-          data.map( d =>
-            <div key={d.title}>
-              <Typography variant="h2">
-                {d.title}
-              </Typography>
-              <Typography variant="h5">
-                {d.subtitle}
-              </Typography>
-              {
-                d.picture &&
-                  <img className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-              }
-              <DetailComponent newsdetail={d.newsdetail} />
-            </div>
-          )
-        )*/
-        data &&
+      { data &&
         <div className={classes.content}>
           <Typography gutterBottom variant="h3">
             {data.title}
@@ -113,7 +78,7 @@ export default function NewsDetail(props){
           <Typography variant="h5">
             {data.subtitle}
           </Typography>
-          <DetailComponent newsdetail={data.newsdetail} />
+          <DetailComponent detail={data.newsdetail} />
         </div>
       }
     </Paper>
@@ -121,12 +86,12 @@ export default function NewsDetail(props){
 }
 
 function DetailComponent(props){
-  const { newsdetail } = props
+  const { detail } = props
 
   return(
     <div className="ql-container ql-snow">
       <div className="ql-editor">
-        {ReactHtmlParser(newsdetail)}
+        {ReactHtmlParser(detail)}
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
 import {
-  Button,
+  Button, Typography, Box
 } from '@material-ui/core'
 
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -83,9 +83,11 @@ export default function Upcoming(props) {
           ( data.length > 0 ?
             API.sortReverseArrByDate(data, 'matchdate').slice(0, 10).map( d => <MatchCard key={d.matchid} data={d} setData={setData} {...props} />)
             :
-            <div style={{
-                width: '100%', padding: '36px 0', textAlign: 'center',
-                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
+            <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_data }
+              </Box>
+            </Typography>
           )
           :
           Array.from(new Array(2)).map((d, i) => <MatchCard key={i} />)

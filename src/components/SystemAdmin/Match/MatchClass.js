@@ -454,7 +454,7 @@ export default function MatchClass(props) {
                 }
                 { data.scorematch === 0 &&
                   <ListItemText
-                    style={{ width: 48, flex: 'none' }}
+                    style={{ width: 100, flex: 'none' }}
                     primary={
                       <Typography variant="h6">{API._handleAmateurClass(d.classno)}</Typography>
                     } />

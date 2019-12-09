@@ -155,10 +155,12 @@ export default function CourseScorecard(props){
           </TableRow>
         </TableBody>
       </Table>
-      <div className={classes.sumGrid}>
-        <Typography variant="h6" style={{ fontWeight: 400 }}>{`OUT = ${scoreOUT}, IN = ${scoreIN}`}</Typography>
-        <Typography variant="h6" style={{ fontWeight: 400 }}>{`Gross = ${scoreGross}`}</Typography>
-      </div>
+      {/*
+        <div className={classes.sumGrid}>
+          <Typography variant="h6" style={{ fontWeight: 400 }}>{`OUT = ${scoreOUT}, IN = ${scoreIN}`}</Typography>
+          <Typography variant="h6" style={{ fontWeight: 400 }}>{`Gross = ${scoreGross}`}</Typography>
+        </div>*/
+      }
     </Paper>
   );
 }

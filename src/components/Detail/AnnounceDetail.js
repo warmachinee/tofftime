@@ -74,7 +74,7 @@ export default function AnnounceDetail(props){
           { data.picture &&
             <img className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
-          <DetailComponent announcedetail={data.announcedetail} />
+          <DetailComponent detail={data.announcedetail} />
         </div>
       }
     </Paper>
@@ -82,12 +82,12 @@ export default function AnnounceDetail(props){
 }
 
 function DetailComponent(props){
-  const { announcedetail } = props
+  const { detail } = props
 
   return(
     <div className="ql-container ql-snow">
       <div className="ql-editor">
-        {ReactHtmlParser(announcedetail)}
+        {ReactHtmlParser(detail)}
       </div>
     </div>
   );

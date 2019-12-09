@@ -75,7 +75,7 @@ export default function Announce(props) {
           :
           data
         } />
-      { data && window.innerWidth > 500 && data.secondary.length > 0 &&
+      { data && window.innerWidth > 500 && data.secondary && data.secondary.length > 0 &&
         <AnnounceSecondary {...props} data={ data ? data.secondary : null} />
       }
     </div>

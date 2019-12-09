@@ -63,20 +63,21 @@ export default function OrganizerPost(props) {
   return(
     <div className={classes.root}>
       <LabelText text={ API._getWord(sess && sess.language).Post } />
-      <div className={classes.grid}>
-        { data?
-          ( data.length > 0 ?
+      { data && data.length > 0 ?
+        <div className={classes.grid}>
+          { data?
             data.map( d => <OrganizerPostCard key={d.postid} {...props} data={d} pageid={pageid} /> )
             :
-            <div style={{
-                width: '100%', padding: '36px 0', textAlign: 'center',
-                fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No data</div>
-          )
-          :
-          Array.from(new Array(3)).map((d, i) => <OrganizerPostCard key={i} loading/>)
-        }
-      </div>
-
+            Array.from(new Array(3)).map((d, i) => <OrganizerPostCard key={i} loading/>)
+          }
+        </div>
+        :
+        <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+          <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+            { API._getWord(sess && sess.language).No_data }
+          </Box>
+        </Typography>
+      }
     </div>
   );
 }

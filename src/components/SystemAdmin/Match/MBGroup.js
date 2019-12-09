@@ -16,6 +16,7 @@ import {
   Tabs,
   Typography,
   Box,
+  Divider,
 
 } from '@material-ui/core';
 
@@ -45,7 +46,6 @@ const useStyles = makeStyles(theme => ({
   },
   tabRoot: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
     display: 'flex',
   },
   tabs: {
@@ -239,8 +239,32 @@ export default function MBGroup(props){
               { API._getWord(sess && sess.language).Create_group }
             </BTN.PrimaryOutlined>
           </div>
+          <Divider style={{ marginTop: 72, marginBottom: 48 }} />
+          <Typography gutterBottom variant="h6" style={{ fontWeight: 600, textDecoration: 'underline' }}>
+            { API._getWord(sess && sess.language).Example }
+          </Typography>
+          { data && data.scorematch === 0 ?
+            <React.Fragment>
+              <img style={{ width: '100%' }}
+                src={`https://file.thai-pga.com/system/image/MBGroup0${sess && sess.language === 'TH' ? 'TH' : ''}.jpg`} />
+              <Typography gutterBottom variant="h6" style={{ fontWeight: 600, textDecoration: 'underline' }}>
+                { API._getWord(sess && sess.language).Result }
+              </Typography>
+              <img
+                src={`https://file.thai-pga.com/system/image/MBGroup0_result.jpg`} />
+            </React.Fragment>
+            :
+            <React.Fragment>
+              <img style={{ width: '100%' }}
+                src={`https://file.thai-pga.com/system/image/MBGroup1${sess && sess.language === 'TH' ? 'TH' : ''}.jpg`} />
+              <img style={{ width: '100%' }}
+                src={`https://file.thai-pga.com/system/image/MBGroup2${sess && sess.language === 'TH' ? 'TH' : ''}.jpg`} />
+            </React.Fragment>
+          }
+
         </Typography>
       }
+
     </div>
   );
 }

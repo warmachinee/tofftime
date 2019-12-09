@@ -88,7 +88,7 @@ export default function OrganizerPostDetail(props){
             <img className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
           }
           <DetailComponent
-            messagedetail={
+            detail={
               data.type === 'announce' ?
               ( data.messagedetail && data.messagedetail )
               :
@@ -101,11 +101,13 @@ export default function OrganizerPostDetail(props){
 }
 
 function DetailComponent(props){
-  const { messagedetail } = props
+  const { detail } = props
 
   return(
-    <div>
-      {ReactHtmlParser(messagedetail)}
+    <div className="ql-container ql-snow">
+      <div className="ql-editor">
+        {ReactHtmlParser(detail)}
+      </div>
     </div>
   );
 }

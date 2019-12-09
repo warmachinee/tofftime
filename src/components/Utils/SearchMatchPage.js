@@ -15,6 +15,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  Divider,
 
 } from '@material-ui/core';
 
@@ -83,7 +84,7 @@ export default function SearchMatchPage(props) {
   const classes = useStyles();
   const { API, sess, isSupportWebp, searchState, setSearchState } = props
   const [ searchText, setSearchText ] = React.useState('')
-  const [ searchData, setSearchData ] = React.useState([])
+  const [ searchData, setSearchData ] = React.useState(null)
 
   function searchTextOnChange(e){
     if(e){
@@ -110,6 +111,12 @@ export default function SearchMatchPage(props) {
     responseSearch()
   },[ ])
 
+  React.useEffect(() => {
+    if (!searchState) {
+      setSearchState(null);
+    }
+  }, [ searchState ]);
+
   return (
     <React.Fragment>
       <IconButton disabled style={{ color: 'rgba(0, 0, 0, 0.54)' }}>
@@ -118,59 +125,60 @@ export default function SearchMatchPage(props) {
       <Autocomplete
         disableCloseOnSelect
         disableOpenOnFocus
-        freeSolo={searchData.length !== 0}
+        freeSolo={searchData && searchData.length !== 0}
         classes={{
           paper: classes.paper,
           option: classes.option,
           popup: classes.popup,
         }}
-        options={searchData}
+        options={searchData !== null ? searchData : []}
         getOptionLabel={option => option.matchname}
-        noOptionsText="No results"
-        renderOption={option => (
-          <List disablePadding style={{ width: '100%' }}>
-            <Link to={`/${option.type}/${option.id}`} style={{ textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)' }}>
-              <ListItem onClick={()=>setSearchState(false)}>
-                <ListItemIcon>
-                  { option.photopath ?
-                    <Avatar className={classes.avatarImageSearch}
-                      src={API._getPictureUrl(option.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-                    :
-                    <AccountIcon classes={{ root: classes.avatarSearch }} />
-                  }
-                </ListItemIcon>
-                <ListItemText
-                  className={classes.searchLabel}
-                  primary={<Typography variant="body1" style={{ marginBottom: 8 }}>{option.matchname}</Typography>}
-                  secondary={
-                    <React.Fragment>
-                      <span style={{ marginRight: 8 }}>
-                        {function(){
-                          switch (option.type) {
-                            case 'match':
-                              return <FontAwesomeIcon icon={faTrophy} style={{ fontSize: 12 }} />
-                              break;
-                            case 'page':
-                              return <FlagIcon style={{ fontSize: 16 }} />
-                              break;
-                            default:
-                              return <span style={{ width: 16 }} />
-                          }
-                        }()}
-                      </span>
-                      <Typography variant="caption" color="textSecondary" style={{ textTransform: 'capitalize' }}>{option.type}</Typography>
-                    </React.Fragment>
-                  } />
-                {/*
-                  <IconButton>
-                    <MoreIcon />
-                  </IconButton>*/
-                }
-              </ListItem>
-            </Link>
-          </List>
-        )}
-        style={{ width: '100%', /*onBlur={()=>setSearchState(false)}*/ }}
+        noOptionsText={ API._getWord(sess && sess.language).No_Result }
+        loading={searchData === null}
+        renderOption={option => {
+
+          return (
+            <List disablePadding style={{ width: '100%' }}>
+              <Link to={`/${option.type}/${option.id}`} style={{ textDecoration: 'none', color: 'rgba(0, 0, 0, 0.87)' }}>
+                <ListItem onClick={()=>setSearchState(false)}>
+                  <ListItemIcon>
+                    { option.photopath ?
+                      <Avatar className={classes.avatarImageSearch}
+                        src={API._getPictureUrl(option.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                      :
+                      <AccountIcon classes={{ root: classes.avatarSearch }} />
+                    }
+                  </ListItemIcon>
+                  <ListItemText
+                    className={classes.searchLabel}
+                    primary={<Typography variant="body1" style={{ marginBottom: 4 }}>{option.matchname}</Typography>}
+                    secondary={
+                      <React.Fragment>
+                        <span style={{ marginRight: 8 }}>
+                          {function(){
+                            switch (option.type) {
+                              case 'match':
+                                return <FontAwesomeIcon icon={faTrophy} style={{ fontSize: 12 }} />
+                                break;
+                              case 'page':
+                                return <FlagIcon style={{ fontSize: 12 }} />
+                                break;
+                              default:
+                                return <span style={{ width: 16 }} />
+                            }
+                          }()}
+                        </span>
+                        <Typography variant="caption" color="textSecondary" style={{ textTransform: 'capitalize' }}>{option.type}</Typography>
+                      </React.Fragment>
+                    } />
+                </ListItem>
+              </Link>
+              {searchData && searchData.length > 1 && <Divider />}
+            </List>
+          );
+        }}
+        style={{ width: '100%', }}
+        onBlur={()=>setSearchState(false)}
         renderInput={params => (
           <InputBase
             fullWidth
@@ -178,7 +186,7 @@ export default function SearchMatchPage(props) {
             inputProps={params.inputProps}
             onChange={e =>searchTextOnChange(e)}
             autoFocus={searchState}
-            placeholder="Search Match or Page"
+            placeholder={ API._getWord(sess && sess.language)['Search Match or Page'] }
             />
         )} />
       <div className={classes.grow} />

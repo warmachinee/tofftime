@@ -30,7 +30,7 @@ export default function CreateMatchDialog(props) {
         padding: '8px 16px',
         width: '100%',
         boxSizing: 'border-box',
-        maxWidth: 1200,
+        maxWidth: 900,
         marginLeft: 'auto',
         marginRight: 'auto'
       }}>

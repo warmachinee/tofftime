@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import { primary } from './../../api/palette'
 
@@ -20,17 +21,24 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
-export default function GoBack(){
+export default function GoBack(props){
   const classes = useStyles();
-
   return (
     <React.Fragment>
-      { window.history.length > 1 ?
-        <IconButton className={classes.back} onClick={()=>window.history.back()}>
-          <ArrowBackIcon classes={{ root: classes.backIcon }} />
-        </IconButton>
+      { props.to ?
+        <Link to={props.to} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <IconButton className={classes.back}>
+            <ArrowBackIcon classes={{ root: classes.backIcon }} />
+          </IconButton>
+        </Link>
         :
-        <div style={{ height: 36 }} />
+        ( window.history.length > 1 ?
+          <IconButton className={classes.back} onClick={()=>window.history.back()}>
+            <ArrowBackIcon classes={{ root: classes.backIcon }} />
+          </IconButton>
+          :
+          <div style={{ height: 36 }} />
+        )
       }
     </React.Fragment>
   );

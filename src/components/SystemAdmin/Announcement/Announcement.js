@@ -189,7 +189,7 @@ export default function Announcement(props){
 
   return(
     <div className={classes.root}>
-      <GoBack />
+      <GoBack to='/system_admin/' />
       <Typography component="div">
         <Box className={classes.title} fontWeight={600} m={1}>
           Announce
@@ -217,8 +217,8 @@ export default function Announcement(props){
         </ListItem>
       </List>
       <List className={classes.listRoot}>
-        { data && !data.status &&
-          API.sortArrByDate(data, 'createdate', 'title').map( d =>{
+        { data && !data.status && /*API._sortArrByDate(data, 'createdate', 'title')*/
+          data.map( d =>{
             return d &&
             <React.Fragment key={d.announceid}>
               <ListItem>

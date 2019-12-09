@@ -174,23 +174,7 @@ function _fetchPostFile(url, extendURL, obj, formData){
  * Sort object array handler function
  */
 
-function sortArrByDate(data, primary, secondary){
-  if(data){
-    var obj = data
-    obj.sort( (a, b) =>{
-      const da = new Date(a[primary])
-      const db = new Date(b[primary])
-      if (da < db) return 1;
-      if (da > db) return -1;
-      if(secondary) return a[secondary].localeCompare(b[secondary]);
-    })
-    return obj
-  }else{
-    return null
-  }
-}
-
-function sortArrByDateStr(data, primary, secondary){
+function _sortArrByDate(data, primary, secondary){
   if(data){
     var obj = data
     obj.sort( (a, b) =>{
@@ -474,7 +458,7 @@ function _handleScrolllTo(element){
 function _handleAmateurClass(classno){
   var asciiNumber = parseInt(classno)
   if(!isNaN(asciiNumber)){
-    var res = String.fromCharCode(asciiNumber + 64)
+    var res = `Flight ${String.fromCharCode(asciiNumber + 64)}`
     return res
   }
 }
@@ -510,8 +494,7 @@ export {
   _xhrGet,
   _xhrPost,
 
-  sortArrByDate,
-  sortArrByDateStr,
+  _sortArrByDate,
   sortReverseArrByDate,
 
   _getPostTime,

@@ -50,7 +50,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     boxSizing: 'border-box',
     margin: 'auto',
-    padding: 12
+    padding: 12,
+    justifyContent: 'center',
   },
   rootUp: {
     width: '100%',
@@ -58,7 +59,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'row',
     boxSizing: 'border-box',
     margin: 'auto',
-    padding: 12
+    padding: 12,
+    justifyContent: 'center',
   },
   paper: {
     boxSizing: 'border-box',
@@ -207,29 +209,16 @@ export default function Statistics(props) {
     }
   },[ accountData, checked ])
 
-  const [ ,updateState ] = React.useState(null)
-
-  function resizeHandler(){
-    updateState({})
-  }
-
-  React.useEffect(()=>{
-    window.addEventListener('resize', resizeHandler)
-    return ()=>{
-      window.removeEventListener('resize', resizeHandler)
-    }
-  },[ window.innerWidth ])
-
   return (
     <React.Fragment>
       <div
         className={clsx({
-          [classes.rootDown]: open ? window.innerWidth < 990 : window.innerWidth < 750 ,
-          [classes.rootUp]: !( open ? window.innerWidth < 990 : window.innerWidth < 750 )
+          [classes.rootDown]: open ? window.innerWidth < 750 : window.innerWidth < 475 ,
+          [classes.rootUp]: !( open ? window.innerWidth < 750 : window.innerWidth < 475 )
         })}>
         <Paper className={classes.paper}
           style={{
-            ...!( open ? window.innerWidth >= 990 : window.innerWidth >= 750 )?
+            ...!( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
             { marginLeft: 'auto', marginRight: 'auto' } : null,
             marginTop: 'auto'
           }}>
@@ -249,9 +238,9 @@ export default function Statistics(props) {
         </Paper>
         <Paper className={classes.paper}
           style={{
-            ...( open ? window.innerWidth >= 990 : window.innerWidth >= 750 )?
+            ...( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
             { marginLeft: 24 } : { marginTop: 16 },
-            ...!( open ? window.innerWidth >= 990 : window.innerWidth >= 750 )?
+            ...!( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
             { marginLeft: 'auto', marginRight: 'auto' } : null,
           }}>
           <div className={classes.statLabel}>

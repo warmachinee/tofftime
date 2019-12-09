@@ -145,7 +145,6 @@ export default function PageOrganizerPostEditor(props) {
   } = props
   const [ title, setTitle ] = React.useState('')
   const [ detail, setDetail ] = React.useState('')
-  const [ dataDetail, setDataDetail ] = React.useState(null)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ selectedMatch, setSelectedMatch ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
@@ -393,11 +392,15 @@ export default function PageOrganizerPostEditor(props) {
 
       if(d.messagedetail && d.type === 'announce'){
         setDetail(d.messagedetail)
-        setDataDetail(d)
       }
 
       if(d.messagedetail && d.type === 'match'){
-        setSelectedMatch(d.messagedetail)
+        setSelectedMatch(d.messagedetail[0])
+      }
+
+      if(d.type !== 'match'){
+        setSelectedTypePost('match')
+        setSelectedTypePost(d.type)
       }
     })
   }
@@ -516,11 +519,7 @@ export default function PageOrganizerPostEditor(props) {
                 </div>
                 <div>
                   { clickAction === 'edit' ?
-                    ( detail ?
-                      <RichTextEditor HTMLData={detail} handleGetHTML={e =>handleEditorOnChange(e)} />
-                      :
-                      <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
-                    )
+                    <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} {...detail && { HTMLData: detail }} />
                     :
                     <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
                   }

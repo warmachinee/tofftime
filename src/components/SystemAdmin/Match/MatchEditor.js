@@ -40,6 +40,7 @@ import {
   Help as HelpIcon,
   ArrowForwardIos,
   ArrowBackIos,
+  Share as ShareIcon,
 
 } from '@material-ui/icons';
 
@@ -92,6 +93,11 @@ const MBMatchAdmin = Loadable({
 
 const GoBack = Loadable({
   loader: () => import(/* webpackChunkName: "GoBack" */'./../../Utils/GoBack'),
+  loading: () => <LDCircular />
+});
+
+const ConfirmDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "ConfirmDialog" */'./../../Utils/Dialog/ConfirmDialog'),
   loading: () => <LDCircular />
 });
 
@@ -335,6 +341,10 @@ export default function MatchEditor(props){
   const [ warningObj, setWarningObj ] = React.useState(null)
   const [ helpState, setHelpState ] = React.useState(false)
   const [ mainRequest, setMainRequest ] = React.useState(false)
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
+  const [ dialog, setDialog ] = React.useState({
+    request: false
+  })
   const isSetup = warningObj && !(
     warningObj.detail ||
     warningObj.invitation ||
@@ -350,8 +360,50 @@ export default function MatchEditor(props){
     warningObj: warningObj
   }
 
+  const shareClick = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const shareClose = () => {
+    setAnchorEl(null);
+  };
+
+  function dialogOpen(type){
+    setDialog({ ...dialog, [type]: true })
+  }
+
+  function dialogClose(type){
+    setDialog({ ...dialog, [type]: false })
+  }
+
+  function dialogCloseAll(){
+    setDialog({
+      request: false
+    })
+  }
+
   function handleClickHelpState(){
     setHelpState(!helpState)
+  }
+
+  function handleCopyLink(){
+    const str = `${API._getWebURL()}/match/${param}`
+    const el = <textarea value={str}></textarea>;
+    el.select();
+    document.execCommand('copy');
+    console.log(str, el);
+    handleSnackBar({
+      state: true,
+      message: 'Copied link',
+      variant: 'success',
+      autoHideDuration: 2000
+    })
+    shareClose()
+  }
+
+  function handleShareFacebook(){
+    console.log('Share facebook', ` ${API._getWebURL()}/match/${param}`);
+    shareClose()
   }
 
   async function handleRequestMain(){
@@ -370,6 +422,7 @@ export default function MatchEditor(props){
         variant: /success/.test(d.status) ? 'success' : 'error',
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
+      dialogCloseAll()
     })
   }
 
@@ -598,12 +651,12 @@ export default function MatchEditor(props){
 
   function requestMainPageComponent(){
     return (
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 24 }}>
+      <div>
         { (mainRequest === 'pending') ?
           <Button disabled>{API._getWord(sess && sess.language).Pending}</Button>
           :
           <BTN.Primary
-            style={{ textTransform: 'none' }} onClick={handleRequestMain}>
+            style={{ textTransform: 'none' }} onClick={()=>dialogOpen('request')}>
             {API._getWord(sess && sess.language).Request_mainpage_BTN}
           </BTN.Primary>
         }
@@ -653,7 +706,10 @@ export default function MatchEditor(props){
       { param && data &&
         <div className={classes.root}>
           <div style={{ position: 'relative' }}>
-            <GoBack />
+            <GoBack to={
+                sess && sess.typeid === 'admin' ?
+                '/system_admin/match' : `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`
+              } />
             { hashParam !== '' &&
               <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'absolute', top: 14 }}>
                 <Link to={
@@ -680,24 +736,31 @@ export default function MatchEditor(props){
           </Typography>
           { hashParam === ''?
             <React.Fragment>
-              { param && data &&
-                function(){
-                  switch (mainRequest) {
-                    case 'complete':
-                      return false
-                      break;
-                    case 'pending':
-                      return true
-                      break;
-                    case 'reject':
-                      return false
-                      break;
-                    default:
-                      return true
-                  }
-                }() &&
-                requestMainPageComponent()
-              }
+              <div style={{ display: 'flex', marginTop: 24 }}>
+                { param && data &&
+                  function(){
+                    switch (mainRequest) {
+                      case 'complete':
+                        return false
+                        break;
+                      case 'pending':
+                        return true
+                        break;
+                      case 'reject':
+                        return false
+                        break;
+                      default:
+                        return true
+                    }
+                  }() &&
+                  requestMainPageComponent()
+                }
+                <div style={{ flex: 1 }} />
+                <BTN.PrimaryOutlined style={{ padding: '8px 12px' }} onClick={shareClick}>
+                  <ShareIcon style={{ color: primary[600], marginRight: 8 }} />
+                  {API._getWord(sess && sess.language).Share}
+                </BTN.PrimaryOutlined>
+              </div>
               <LabelText text={API._getWord(sess && sess.language).Match_Setup} />
               <SetUpMatchComponent warning={warningObj} sess={sess} />
               <Divider style={{ margin: '16px auto', width: '80%' }} />
@@ -745,7 +808,33 @@ export default function MatchEditor(props){
               {getComponent().component}
             </div>
           }
-
+          <ConfirmDialog
+            sess={sess}
+            open={dialog.request}
+            onClose={dialogCloseAll}
+            icon={{ width: 96, height: 96 }}
+            iconColor={primary[600]}
+            title={API._getWord(sess && sess.language)['Send a request to show this Match on the Toff-time page.']}
+            content={
+              data &&
+              <Typography variant="h6" align="center">{data.title}</Typography>
+            }
+            onSubmit={handleRequestMain}
+            submitText={ API._getWord(sess && sess.language).Request } />
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={shareClose}
+          >
+            {/*<MenuItem onClick={handleCopyLink}>Copy link</MenuItem>*/}
+            <a href={`/session/share?url=/match/${param}`}
+              target='_blank'
+              style={{ textDecoration: 'none', color: 'inherit' }}>
+              <MenuItem onClick={handleShareFacebook}>Facebook</MenuItem>
+            </a>
+          </Menu>
         </div>
       }
     </React.Fragment>
