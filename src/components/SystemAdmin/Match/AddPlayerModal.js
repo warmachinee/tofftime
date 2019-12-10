@@ -149,12 +149,39 @@ export default function AddPlayerModal(props){
   const [ fullname, setFullname ] = React.useState('')
   const [ lastname, setLastname ] = React.useState('')
 
-  function handleInviteUser(d){
-    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )//[0] : hostid , [1] : targetuserid
-    socket.emit('match-request-client-message', {
-      action: "invite",
-      matchid: matchid,
-      userid: [ sess.userid, d.userid ],
+  function toggleShowAction(userto, userfrom, requestaction){
+    if(sess && sess.status === 1){
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+      socket.emit('match-request-client-message', {
+        action: 'showaction',
+        matchid: matchid,
+        userto: userto,
+        userfrom: userfrom,
+        requestaction: requestaction
+      })
+    }
+  }
+
+  async function handleInviteUser(d){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'matchgate', {
+        action: 'request',
+        subaction: 'invite',
+        matchid: matchid,
+        usertarget: d.userid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+      if(/success/.test(d.status)){
+        toggleShowAction(d.to, d.from, 'invite')
+      }
     })
   }
 
@@ -302,6 +329,7 @@ export default function AddPlayerModal(props){
             </Typography>
             <div style={{ flex: 1 }} />
             <GreenButton
+              variant="contained"
               className={classes.confirmButton}
               onClick={()=> sess.typeid === 'admin' ? handleCreatePlayer() : handleCreateDummyPlayer()}>
               Confirm

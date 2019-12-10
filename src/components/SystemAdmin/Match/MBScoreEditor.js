@@ -321,7 +321,7 @@ function MBScoreEditorContainer(props){
                   `${data.length} player${data.length > 1? 's' : ''}`
                 }
               </Typography>
-              {/* matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass > 1 &&
+              {/* matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass.length > 1 &&
                 <FormControl className={classes.formControl}>
                   <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                   <Select
@@ -330,7 +330,7 @@ function MBScoreEditorContainer(props){
                     { matchDetail &&
                       matchDetail.mainclass.map( d =>
                         <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                          {d.mainclass}
+                          {d.mainclassname}
                         </MenuItem>
                     )}
                   </Select>

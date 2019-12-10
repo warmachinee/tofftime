@@ -1,5 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { primary, grey, red } from './../../../api/palette'
@@ -17,6 +18,12 @@ import {
   Typography,
   Box,
   Divider,
+  TextField,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  RadioGroup,
+  Radio,
 
 } from '@material-ui/core';
 
@@ -28,6 +35,11 @@ import {
 } from '@material-ui/icons';
 
 import { LDCircular } from './../../loading/LDCircular'
+
+const TemplateDialog = Loadable({
+  loader: () => import(/* webpackChunkName: "TemplateDialog" */'./../../Utils/Dialog/TemplateDialog'),
+  loading: () => <LDCircular />
+});
 
 const MatchClass = Loadable({
   loader: () => import(/* webpackChunkName: "MatchClass" */'./MatchClass'),
@@ -96,8 +108,17 @@ const useStyles = makeStyles(theme => ({
       marginTop: 0,
     },
   },
+  formControl: {
+    margin: theme.spacing(1, 0),
+  },
 
 }))
+
+const theme = createMuiTheme({
+  palette: {
+    primary: primary,
+  },
+});
 
 function TabPanel(props) {
   const classes = useStyles();
@@ -121,22 +142,83 @@ function TabPanel(props) {
 export default function MBGroup(props){
   const classes = useStyles();
   const { BTN, API, sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
+  const [ dialog, setDialog ] = React.useState({
+    create: false,
+  });
   const [ value, setValue ] = React.useState(0);
-
+  const [ mainclassName, setMainclassName ] = React.useState('');
+  const [ errorMainclassName, setErrorMainclassName ] = React.useState(false);
+  const [ mainclassType, setMainclassType ] = React.useState('group');
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  function dialogOpen(type){
+    setDialog({ ...dialog, [type]: true })
+  }
+
+  function dialogClose(type){
+    setDialog({ ...dialog, [type]: false })
+  }
+
+  function handleKeyPress(e){
+    if (e === 'Enter'){
+      checkMainclassName()
+    }
+  }
+
+  function checkMainclassName(){
+    if(mainclassName === ''){
+      setErrorMainclassName(true)
+    }else{
+      setErrorMainclassName(false)
+      handleFetchCreate()
+    }
+  }
+
+  function toggleRealtime(mainclass){
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+    socket.emit('admin-match-client-message', {
+      action: "showmatchscore",
+      matchid: matchid,
+      userid: sess.userid,
+      mainclass: mainclass
+    })
+  }
+
+  function getObjFromScorematch(){
+    switch (data.scorematch) {
+      case 1:
+        return {
+          type: 'group',
+          mainclassname: mainclassName
+        }
+        break;
+      case 2:
+        return {
+          type: mainclassType,
+          mainclassname: mainclassName
+        }
+        break;
+      default:
+        return {}
+    }
+  }
+
   async function handleFetchCreate(){
     if(data && data.mainclass){
       const resToken = token? token : await API._xhrGet('getcsrf')
+      const sendObj = {
+        action: 'classadd',
+        matchid: matchid,
+        classname: data.scorematch === 0 || mainclassType === 'flight' ? 1 : 'Subgroup Number 1',
+        mainclass: data.mainclass.length + 1
+      }
+      Object.assign(sendObj, getObjFromScorematch());
       await API._xhrPost(
         token? token : resToken.token,
         sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
-          action: 'classadd',
-          matchid: matchid,
-          classname: data.scorematch == 0 ? 1 : 'Subgroup Number 1',
-          mainclass: data.mainclass.length + 1
+          ...sendObj
       }, (csrf, d) =>{
         handleSnackBar({
           state: true,
@@ -145,7 +227,13 @@ export default function MBGroup(props){
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         setCSRFToken(csrf)
+        if(/success/.test(d.status)){
+          toggleRealtime(data.mainclass.length + 1)
+        }
         handleFetch()
+        dialogClose('create')
+        setMainclassType('group')
+        setMainclassName('')
       })
     }
   }
@@ -189,10 +277,11 @@ export default function MBGroup(props){
         { data && ( data.scorematch === 0 ? !( data.mainclass && data.mainclass.length > 0 ) : true ) &&
           <ListItem disableGutters className={classes.addClass}>
             <ListItemIcon className={classes.addClassButtonGrid}>
-              <BTN.Red className={classes.addClassButton} variant="outlined" onClick={handleFetchCreate}>
+              <BTN.Primary className={classes.addClassButton}
+                onClick={()=>data.scorematch === 0 ? handleFetchCreate() : dialogOpen('create')}>
                 <AddCircle style={{ marginRight: 8 }} />
                 { API._getWord(sess && sess.language).Create }
-              </BTN.Red>
+              </BTN.Primary>
             </ListItemIcon>
           </ListItem>
         }
@@ -217,7 +306,7 @@ export default function MBGroup(props){
                   data && data.scorematch === 0 ?
                   ( API._getWord(sess && sess.language).Flight )
                   :
-                  `${( API._getWord(sess && sess.language).Main_group )} ${d.mainclass}`
+                  d.mainclassname
                 } />
             )}
           </Tabs>
@@ -234,7 +323,7 @@ export default function MBGroup(props){
             { API._getWord(sess && sess.language)['Create the match group.'] }
           </Box>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-            <BTN.PrimaryOutlined onClick={handleFetchCreate}>
+            <BTN.PrimaryOutlined onClick={()=>data.scorematch === 0 ? handleFetchCreate() : dialogOpen('create')}>
               <AddIcon style={{ marginRight: 8 }} />
               { API._getWord(sess && sess.language).Create_group }
             </BTN.PrimaryOutlined>
@@ -264,7 +353,40 @@ export default function MBGroup(props){
 
         </Typography>
       }
-
+      <TemplateDialog maxWidth="xs" open={dialog.create} handleClose={()=>dialogClose('create')}>
+        <div style={{ marginTop: 24 }}>
+          <ThemeProvider theme={theme}>
+            <TextField
+              fullWidth
+              autoFocus={dialog.create}
+              error={errorMainclassName}
+              helperText={errorMainclassName && API._getWord(sess && sess.language)['Please fill Main group name.']}
+              label={ API._getWord(sess && sess.language).Main_group_name }
+              variant="outlined"
+              onChange={e =>setMainclassName(e.target.value)}
+              onKeyPress={e =>handleKeyPress(e.key)}
+            />
+          </ThemeProvider>
+          { data && data.scorematch === 2 &&
+            <div style={{ marginTop: 16 }}>
+              <FormControl component="fieldset" className={classes.formControl}>
+                <FormLabel component="legend">
+                  { API._getWord(sess && sess.language).Main_group_type }
+                </FormLabel>
+                <RadioGroup style={{ flexDirection: 'row' }} value={mainclassType} onChange={e => setMainclassType(event.target.value)}>
+                  <FormControlLabel value="group" control={<Radio />}
+                    label={ API._getWord(sess && sess.language).Group } />
+                  <FormControlLabel value="flight" control={<Radio />}
+                    label={ API._getWord(sess && sess.language).Flight } />
+                </RadioGroup>
+              </FormControl>
+            </div>
+          }
+        </div>
+        <BTN.Primary style={{ width: '100%', marginTop: 16 }} size="large" onClick={checkMainclassName}>
+          Create
+        </BTN.Primary>
+      </TemplateDialog>
     </div>
   );
 }

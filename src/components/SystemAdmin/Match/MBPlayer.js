@@ -422,48 +422,64 @@ export default function MBPlayer(props){
     }
   }
 
+  async function handleRemovePlayerByAdmin(userid){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
+        action: 'remove',
+        matchid: matchid,
+        userid: userid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: d.status === 'remove member success' ? 'success' : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+      setChecked([])
+      try {
+        setTimeout(()=>{ handleFetchDefault() }, 500)
+      }catch(err) { console.log(err.message) }
+    })
+  }
+
+  async function handleRemovePlayerByUser(userid){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'matchgate', {
+        action: 'confirm',
+        subaction: 'reject',
+        matchid: matchid,
+        usertarget: userid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setChecked([])
+      try {
+        setTimeout(()=>{ handleFetchDefault() }, 500)
+      }catch(err) { console.log(err.message) }
+    })
+  }
+
   async function handleRemovePlayer(d){
     let userid = []
+    /*
     if( typeof(d.userid) === 'number' ){
       userid.push(d.userid)
     }else{
       for(var i = 0;i < checked.length;i++){
         userid.push(checked[i].userid)
       }
+    }*/
+    for(var i = 0;i < checked.length;i++){
+      userid.push(checked[i].userid)
     }
     if(sess.typeid === 'admin' && matchid){
-      const resToken = token? token : await API._xhrGet('getcsrf')
-      await API._xhrPost(
-        token? token : resToken.token,
-        sess.typeid === 'admin' ? 'matchmember' : 'mmatchmember', {
-          action: 'remove',
-          matchid: matchid,
-          userid: userid
-      }, (csrf, d) =>{
-        setCSRFToken(csrf)
-        handleSnackBar({
-          state: true,
-          message: d.status,
-          variant: d.status === 'remove member success' ? 'success' : 'error',
-          autoHideDuration: /success/.test(d.status)? 2000 : 5000
-        })
-        setChecked([])
-        try {
-          setTimeout(()=>{ handleFetchDefault() }, 500)
-        }catch(err) { console.log(err.message) }
-      })
+      handleRemovePlayerByAdmin(userid)
     }else{
-      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
-      socket.emit('match-request-client-message', {
-        action: "confirm",
-        matchid: matchid,
-        userid: [ sess.userid, userid],
-        confirmaction: 'reject',
-      })
-      setChecked([])
-      try {
-        setTimeout(()=>{ handleFetchDefault() }, 500)
-      }catch(err) { console.log(err.message) }
+      handleRemovePlayerByUser(userid)
     }
   }
 
@@ -629,20 +645,25 @@ export default function MBPlayer(props){
                     editingClass?
                     <React.Fragment>
                       {
-                        matchDetail.scorematch !== 0?
+                        ( matchDetail.scorematch === 0 ||
+                          (
+                            matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                            matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                          )
+                        ) ?
                         <React.Fragment>
                           <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
                             { API._getWord(sess && sess.language).Done }
                           </GreenTextButton>
-                          <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
-                            { API._getWord(sess && sess.language).Save }
-                          </GreenButton>
                         </React.Fragment>
                         :
                         <React.Fragment>
                           <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
                             { API._getWord(sess && sess.language).Done }
                           </GreenTextButton>
+                          <GreenButton variant="contained" className={classes.controlsEditButton2} onClick={handleSave}>
+                            { API._getWord(sess && sess.language).Save }
+                          </GreenButton>
                         </React.Fragment>
                       }
                     </React.Fragment>
@@ -655,8 +676,14 @@ export default function MBPlayer(props){
                         }}
                         className={classes.controlsEditButtonIcon} />
                       {function(){
-                        switch (matchDetail.scorematch) {
-                          case 0:
+                        switch (true) {
+                          case (
+                            matchDetail.scorematch === 0 ||
+                            (
+                              matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                              matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                            )
+                          ):
                             return API._getWord(sess && sess.language).Flight
                             break;
                           default:
@@ -690,22 +717,34 @@ export default function MBPlayer(props){
             <ListItem disableGutters className={classes.controlsSecondary}>
               { editingClass && matchDetail &&
                 function(){
-                  switch (matchDetail.scorematch) {
-                    case 0:
+                  switch (true) {
+                    case (
+                      matchDetail.scorematch === 0 ||
+                      (
+                        matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                      )
+                    ):
                       return (
                         <React.Fragment>
                           <GreenTextButton variant="outlined" className={classes.controlsEditButton2}
                             onClick={()=>handleUpdateFlight('clear')}>
                             { API._getWord(sess && sess.language).Clear }
                           </GreenTextButton>
-                          <GreenButton className={classes.controlsEditButton2}
+                          <GreenButton variant="contained" className={classes.controlsEditButton2}
                             onClick={()=>handleUpdateFlight('update')}>
                             { API._getWord(sess && sess.language).Update }
                           </GreenButton>
                         </React.Fragment>
                       );
                       break;
-                    case 1:
+                    case (
+                      matchDetail.scorematch === 1 ||
+                      (
+                        matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'group'
+                      )
+                    ):
                       return (
                         <React.Fragment>
                           <div style={{ display: 'flex' }}>
@@ -817,7 +856,7 @@ export default function MBPlayer(props){
                     `${data.length} player${data.length > 1? 's' : ''}`
                   }
                 </Typography>
-                { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass > 1 &&
+                { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass.length > 1 &&
                   <FormControl className={classes.formControl}>
                     <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                     <Select
@@ -826,7 +865,7 @@ export default function MBPlayer(props){
                       { matchDetail &&
                         matchDetail.mainclass.map( d =>
                           <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                            {d.mainclass}
+                            {d.mainclassname}
                           </MenuItem>
                       )}
                     </Select>
@@ -862,8 +901,14 @@ export default function MBPlayer(props){
                   <ListItemText style={{ color: 'white', margin: '8px 0', marginRight: 20, width: '30%', textAlign: 'left', }}
                     primary={
                       function(){
-                        switch (matchDetail.scorematch) {
-                          case 0:
+                        switch (true) {
+                          case (
+                            matchDetail.scorematch === 0 ||
+                            (
+                              matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                              matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                            )
+                          ):
                             return API._getWord(sess && sess.language).Flight
                             break;
                           default:
@@ -949,10 +994,16 @@ export default function MBPlayer(props){
                                           <React.Fragment key={i}>
                                             <br></br>
                                             {
-                                              matchDetail.scorematch !== 0 ?
-                                              d.classname
-                                              :
+                                              (
+                                                matchDetail.scorematch === 0 ||
+                                                (
+                                                  matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                                                  matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                                                )
+                                              ) ?
                                               String.fromCharCode(65 + value.classno - 1)
+                                              :
+                                              d.classname
                                             }
 
                                           </React.Fragment>
@@ -992,10 +1043,16 @@ export default function MBPlayer(props){
                                       style={{ justifyContent: 'center' }}
                                       className={classes.listClass}
                                       primary={
-                                        matchDetail.scorematch !== 0 ?
-                                        d.classname
-                                        :
+                                        (
+                                          matchDetail.scorematch === 0 ||
+                                          (
+                                            matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                                            matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                                          )
+                                        ) ?
                                         String.fromCharCode(65 + d.classno - 1)
+                                        :
+                                        d.classname
                                       } />
                                   )
                                 )

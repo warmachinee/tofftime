@@ -6,17 +6,22 @@ import { ThemeProvider } from '@material-ui/styles';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/pickers";
 import { primary, grey } from './../../../../api/palette'
 
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Input from '@material-ui/core/Input';
+import {
+  IconButton,
+  Typography,
+  Box,
+  Button,
+  TextField,
+  Radio,
+  RadioGroup,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormControl,
+  FormLabel,
+  Input,
+
+} from '@material-ui/core';
 
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
@@ -169,6 +174,15 @@ const GreenRadio = withStyles({
   checked: {},
 })(props => <Radio color="default" {...props} />);
 
+const GreenCheckbox = withStyles({
+  root: {
+    color: primary[400],
+    '&$checked': {
+      color: primary[600],
+    },
+  },
+})(props => <Checkbox color="default" {...props} />);
+
 const theme = createMuiTheme({
   palette: {
     primary: primary,
@@ -201,10 +215,10 @@ const datePickers = createMuiTheme({
 export default function CreateMatchBody(props){
   const classes = useStyles();
   const {
-    API, sess, setData, setDataClassed, token, setCSRFToken, handleSnackBar, activeStep,
+    API, BTN, sess, setData, setDataClassed, token, setCSRFToken, handleSnackBar, activeStep,
     matchName, matchClass, selectedField, selectedPrivacy, selectedMatchType, selectedDate, selectedFile, tempFile,
     setMatchName, setSelectedField, handleEditorOnChange, handlePrivacy, handleMatchType, handleDateChange, handlePicture,
-
+    specialRewardData, setSpecialRewardData, checkSpecialRewardData
   } = props
   const imgRef = React.useRef(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
@@ -308,12 +322,52 @@ export default function CreateMatchBody(props){
               );
             case 1:
               return (
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <ThemeProvider theme={theme}>
+                    <FormControl component="fieldset" className={classes.formControl}>
+                      <FormLabel component="legend">{ API._getWord(sess && sess.language).Special_reward }</FormLabel>
+                      <FormGroup>
+                        <FormControlLabel
+                          control={
+                            <GreenCheckbox
+                              fontSize="large"
+                              checked={specialRewardData.lowgross}
+                              onChange={e =>checkSpecialRewardData('lowgross', e)}
+                              value="Low gross" />
+                          }
+                          label={ API._getWord(sess && sess.language).Lowgross }
+                        />
+                        <FormControlLabel
+                          control={
+                            <GreenCheckbox
+                              checked={specialRewardData.lownet}
+                              onChange={e =>checkSpecialRewardData('lownet', e)}
+                              value="Low net" />
+                          }
+                          label={ API._getWord(sess && sess.language).Lownet }
+                        />
+                        <FormControlLabel
+                          control={
+                            <GreenCheckbox
+                              checked={specialRewardData.booby}
+                              onChange={e =>checkSpecialRewardData('booby', e)}
+                              value="Booby" />
+                          }
+                          label={ API._getWord(sess && sess.language).Booby }
+                        />
+                      </FormGroup>
+                    </FormControl>
+                  </ThemeProvider>
+                </div>
+              )
+            case 2:
+              return (
                 <Location
                   {...props}
                   selectedField={selectedField}
                   setSelectedField={setSelectedField} />
               )
-            case 2:
+            case 3:
               return (
                 <div>
                   { selectedFile && tempFile?
@@ -374,7 +428,7 @@ export default function CreateMatchBody(props){
                   }
                 </div>
               );
-            case 3:
+            case 4:
               return (
                 <React.Fragment>
                   <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />

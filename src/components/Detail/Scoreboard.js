@@ -38,35 +38,45 @@ const useStyles = makeStyles(theme => ({
 
 function TabContainer(props) {
   const classes = useStyles()
-  const { sess, data, userscore, matchClass, matchid, reward, sortBy, setSortBy } = props
+  const { sess, data, userscore, matchClass, matchid, reward, sortBy, setSortBy, scoringMethod, setScoringMethod } = props
 
-  const rewardSelected = !reward.status && reward.status !== 'reward not create' && reward.status !== 'need to login admin account' && reward.filter( item =>{
-    return (item.classno === matchClass.classno && item)
-  })
-  
   return (
     <React.Fragment>
-      <div style={{ display: 'flex' }}>
-        {
-          !reward.status &&
-          <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={rewardSelected} sess={sess} sortBy={sortBy} />
-        }
-        <PrintPDF data={data} userscore={userscore} matchClass={matchClass} sess={sess} sortBy={sortBy} />
-        <div style={{ flex: 1 }} />
-        { data && data.scorematch !== 1 &&
-          <div>
-            <FormControl className={classes.formControl}>
-              <InputLabel>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
-              <Select
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value)}
-              >
-                <MenuItem value={'net'}>Net</MenuItem>
-                <MenuItem value={'sf'}>SF</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-        }
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ marginTop: 'auto', marginBottom: 4 }}>
+          <RewardPDF data={data} matchClass={matchClass} matchid={matchid} reward={reward} sess={sess} sortBy={sortBy} />
+          <PrintPDF data={data} userscore={userscore} matchClass={matchClass} sess={sess} sortBy={sortBy} />
+        </div>
+        <div>
+          { data && data.scorematch !== 1 &&
+            <React.Fragment>
+              { data.scorematch === 2 &&
+                <FormControl className={classes.formControl}>
+                  <InputLabel>{ API._getWord(sess && sess.language).Method }</InputLabel>
+                  <Select
+                    value={scoringMethod}
+                    onChange={e => setScoringMethod(e.target.value)}
+                  >
+                    <MenuItem value={'flight'}>{'36System'}</MenuItem>
+                    <MenuItem value={'stroke'}>Stroke play</MenuItem>
+                  </Select>
+                </FormControl>
+              }
+              { scoringMethod === 'flight' &&
+                <FormControl className={classes.formControl}>
+                  <InputLabel>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
+                  <Select
+                    value={sortBy}
+                    onChange={e => setSortBy(e.target.value)}
+                  >
+                    <MenuItem value={'net'}>Net</MenuItem>
+                    <MenuItem value={'sf'}>SF</MenuItem>
+                  </Select>
+                </FormControl>
+              }
+            </React.Fragment>
+          }
+        </div>
       </div>
       <ScoreTable {...props} data={data} userscore={userscore} matchClass={matchClass} />
     </React.Fragment>
@@ -175,7 +185,7 @@ export default function Scoreboard(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ ])
+  },[ mainClassSelected ])
 
   return (
     <div className={classes.root}>
@@ -189,7 +199,7 @@ export default function Scoreboard(props) {
               { data &&
                 data.mainclass.map( d =>
                   <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                    {d.mainclass}
+                    {d.mainclassname}
                   </MenuItem>
               )}
             </Select>
@@ -218,14 +228,14 @@ export default function Scoreboard(props) {
                 key={d.classname}
                 classes={{ root: tabStyle.root, }}
                 label={
-                  data.scorematch !== 0 ?
-                  d.classname
-                  :
+                  ( data.scorematch === 0 || data.mainclass[parseInt(mainClassSelected) - 1].type === 'flight' ) ?
                   API._handleAmateurClass(d.classno)
+                  :
+                  d.classname
                 } />
             )
           }
-          { data.scorematch === 0 &&
+          { ( data.scorematch === 0 || data.mainclass[parseInt(mainClassSelected) - 1].type === 'flight' ) &&
             <StyledTab label={ API._getWord(sess && sess.language).Other } />
           }
         </StyledTabs>
@@ -242,7 +252,7 @@ export default function Scoreboard(props) {
           );
         })
       }
-      { data.scorematch === 0 && matchClass && reward && ( value === matchClass.length ) &&
+      { ( data.scorematch === 0 || data.mainclass[parseInt(mainClassSelected) - 1].type === 'flight' ) && matchClass && reward && ( value === matchClass.length ) &&
         <TabContainer {...props}
           data={data}
           value={matchClass.length}

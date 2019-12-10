@@ -40,7 +40,7 @@ const NotiOverview = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
-    
+
   },
   avatar: {
     fontSize: 64
@@ -107,7 +107,7 @@ function ListNotiItem(props) {
       case type === 'match' && action === 'accept':
         return API._getWord(sess && sess.language).Joined_match
         break;
-      case type === 'match' && action === 'acceptfrominvite':
+      case type === 'match' && action === 'acceptfromhost':
         return API._getWord(sess && sess.language).Joined_match
         break;
       default:
@@ -141,12 +141,12 @@ function ListNotiItem(props) {
           <React.Fragment>
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'accept', 'host')}>
+              onClick={()=>handleFetchAction(data.fromdetail.userid, 'accept', 'host')}>
               { API._getWord(sess && sess.language).Accept }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'host')}>
+              onClick={()=>handleFetchAction(data.fromdetail.userid, 'reject', 'host')}>
               { API._getWord(sess && sess.language).Reject }
             </BTN.PrimaryText>
           </React.Fragment>
@@ -157,12 +157,12 @@ function ListNotiItem(props) {
           <React.Fragment>
             <BTN.Primary
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'acceptfrominvite', 'target')}>
+              onClick={()=>handleFetchAction(data.fromdetail.userid, 'accept', 'target')}>
               { API._getWord(sess && sess.language).Join }
             </BTN.Primary>
             <BTN.PrimaryText
               style={{ padding: '4px 12px', marginTop: 16 }}
-              onClick={()=>handleJoinMatch(data.fromdetail.userid, 'reject', 'target')}>
+              onClick={()=>handleFetchAction(data.fromdetail.userid, 'reject', 'target')}>
               { API._getWord(sess && sess.language).Reject }
             </BTN.PrimaryText>
           </React.Fragment>
@@ -171,7 +171,7 @@ function ListNotiItem(props) {
       case data.type === 'match' && data.action === 'accept':
         return null
         break;
-      case data.type === 'match' && data.action === 'acceptfrominvite':
+      case data.type === 'match' && data.action === 'acceptfromhost':
         return null
         break;
       default:
@@ -179,18 +179,19 @@ function ListNotiItem(props) {
     }
   }
 
-  function handleJoinMatch(userid, action, side){
-    if(sess){
+  function toggleShowAction(userto, userfrom, requestaction){
+    if(sess && sess.status === 1){
       const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('match-request-client-message', {
-        action: 'confirm',
+        action: 'showaction',
         matchid: data.typeid,
-        userid: side === 'host' ? [ sess.userid, userid ] : [ userid, sess.userid ],
-        confirmaction: action
+        userto: userto,
+        userfrom: userfrom,
+        requestaction: requestaction
       })
       setTimeout(()=>{
         handleFetchNotifications()
-      },1000)
+      }, 1000)
     }
   }
 
@@ -209,6 +210,40 @@ function ListNotiItem(props) {
     }
   }
 
+  async function handleFetchAction(userid, subaction, side){
+    const sendObj = {
+      action: 'confirm',
+      subaction: subaction,
+      matchid: data.typeid,
+    }
+    if(side === 'host'){
+      Object.assign(sendObj, { usertarget: subaction === 'reject'? [userid] : userid });
+    }
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'matchgate', {
+        ...sendObj
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(/success/.test(d.status)){
+        if(subaction === 'accept'){
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? d.status : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+          toggleShowAction(d.to, d.from, side === 'host' ? 'acceptfromhost' : 'accept' )
+        }else{
+          setTimeout(()=>{
+            handleFetchNotifications()
+          },1000)
+        }
+      }
+    })
+  }
+
   async function handleFetchNotifications(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -221,7 +256,7 @@ function ListNotiItem(props) {
     })
   }
 
-  return data && (
+  return data ? (
     <React.Fragment>
       <ListItem>
         <ListItemIcon>
@@ -249,6 +284,14 @@ function ListNotiItem(props) {
               <Typography variant="subtitle2" color="textSecondary">
                 {getNotiLabel(data.action, data.type)}
               </Typography>
+              { data.type === 'match' &&
+                <React.Fragment>
+                  <Typography variant="caption" color="textSecondary">
+                    {data.typedetail && data.typedetail.matchname}
+                  </Typography>
+                  <br></br>
+                </React.Fragment>
+              }
               <Typography variant="caption" color="textSecondary">
                 {API._getPostTime(data.createdate)}
               </Typography>
@@ -278,5 +321,5 @@ function ListNotiItem(props) {
         anchorEl={anchorEl}
         handleClose={handleClose} />
     </React.Fragment>
-  );
+  ) : null;
 }

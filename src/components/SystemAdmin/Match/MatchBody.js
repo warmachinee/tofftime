@@ -169,7 +169,7 @@ function ListComponent(props){
 
 
   return (
-    <ListItem button>
+    <ListItem button={!editing}>
       { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&
         <ListItemText className={classes.tableDate}
           primary={
@@ -202,6 +202,7 @@ function ListComponent(props){
                   }
                 }()
               }
+              { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&<br></br>}
             </Typography>
             { ( ( props.open ? window.innerWidth < 1040 : window.innerWidth < 800 ) || editing ) &&
               (

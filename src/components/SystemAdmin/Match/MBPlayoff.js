@@ -366,7 +366,7 @@ export default function MBPlayoff(props){
             <Box className={classes.notice} m={1}>
               { API._getWord(sess && sess.language).Select_Group }
             </Box>
-            { matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass > 1 &&
+            { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass.length > 1 &&
               <FormControl className={classes.formControl}>
                 <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                 <Select
@@ -375,83 +375,101 @@ export default function MBPlayoff(props){
                   { matchDetail &&
                     matchDetail.mainclass.map( d =>
                       <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                        {d.mainclass}
+                        {d.mainclassname}
                       </MenuItem>
                   )}
                 </Select>
               </FormControl>
             }
           </Typography>
-          <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
-            <StyledTabs
-              value={value}
-              onChange={handleChange}
-              variant="scrollable"
-              scrollButtons="on"
-            >
-              { matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
-                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d =>
-                  d && <StyledTab key={d.classname}
-                  label={ matchDetail.scorematch !== 0 ? d.classname : API._handleAmateurClass(d.classno) } />
-              )}
-            </StyledTabs>
-          </Paper>
-          <div className={classes.list}>
-            <List>
-              { data && !data.status &&
-                matchDetail && matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
-                matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>{
-                  const filtered = c && data.filter( item =>{
-                    return ( item && item.classno === c.classno )
-                  })
-                  return (
-                    <React.Fragment key={i}>
-                      { value === i && filtered &&
-                        <React.Fragment>
-                          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-                            <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
-                              { API._getWord(sess && sess.language).Clear }
-                            </GreenTextButton>
-                          </div>
-                          <ListItem className={classes.listItem}>
-                            <ListItemText style={{ color: 'white' }} className={classes.listText}
-                              primary={ API._getWord(sess && sess.language).First_name } />
-                            <ListItemText style={{ color: 'white' }} className={classes.listText}
-                              primary={ API._getWord(sess && sess.language).Last_name } />
-                            <ListItemIcon className={classes.listStatus}>
-                              <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>
-                                { API._getWord(sess && sess.language).Playoff }
+          { data && /no playoff/.test(data.status) ?
+            <Typography component="div" style={{ width: '100%' }}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_playoff }
+              </Box>
+            </Typography>
+            :
+            <React.Fragment>
+              <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
+                <StyledTabs
+                  value={value}
+                  onChange={handleChange}
+                  variant="scrollable"
+                  scrollButtons="on"
+                >
+                  { matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                    matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d =>
+                      d && <StyledTab key={d.classname}
+                      label={
+                        (
+                          matchDetail.scorematch === 0 ||
+                          (
+                            matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                            matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                          )
+                        ) ? API._handleAmateurClass(d.classno) : d.classname
+                      } />
+                  )}
+                </StyledTabs>
+              </Paper>
+              <div className={classes.list}>
+                <List>
+                  { data && !data.status &&
+                    matchDetail && matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                    matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>{
+                      const filtered = c && data.filter( item =>{
+                        return ( item && item.classno === c.classno )
+                      })
+                      return (
+                        <React.Fragment key={i}>
+                          { value === i && filtered &&
+                            <React.Fragment>
+                              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                                <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
+                                  { API._getWord(sess && sess.language).Clear }
+                                </GreenTextButton>
                               </div>
-                            </ListItemIcon>
-                          </ListItem>
-                          { filtered.length > 1 &&
-                            filtered.map( d =>
-                              <PlayoffContainer
-                                key={d.userid}
-                                {...props}
-                                data={d}
-                                setData={setData}
-                                setMatchDetail={setMatchDetail}
-                                mainClassSelected={mainClassSelected} />
-                            )
-                          }
-                          { filtered.length <= 1 &&
-                            <ListItem>
-                              <Typography component="div" style={{ width: '100%' }}>
-                                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                                  { API._getWord(sess && sess.language).No_playoff_player }
-                                </Box>
-                              </Typography>
-                            </ListItem>
+                              <ListItem className={classes.listItem}>
+                                <ListItemText style={{ color: 'white' }} className={classes.listText}
+                                  primary={ API._getWord(sess && sess.language).First_name } />
+                                <ListItemText style={{ color: 'white' }} className={classes.listText}
+                                  primary={ API._getWord(sess && sess.language).Last_name } />
+                                <ListItemIcon className={classes.listStatus}>
+                                  <div style={{ color: 'white', textAlign: 'center', fontSize: 16, fontWeight: 400, lineHeight: 1.5, letterScpacing: '0.00938em' }}>
+                                    { API._getWord(sess && sess.language).Playoff }
+                                  </div>
+                                </ListItemIcon>
+                              </ListItem>
+                              { filtered.length > 1 &&
+                                filtered.map( d =>
+                                  <PlayoffContainer
+                                    key={d.userid}
+                                    {...props}
+                                    data={d}
+                                    setData={setData}
+                                    setMatchDetail={setMatchDetail}
+                                    mainClassSelected={mainClassSelected} />
+                                )
+                              }
+                              { filtered.length <= 1 &&
+                                <ListItem>
+                                  <Typography component="div" style={{ width: '100%' }}>
+                                    <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                                      { API._getWord(sess && sess.language).No_playoff_player }
+                                    </Box>
+                                  </Typography>
+                                </ListItem>
+                              }
+                            </React.Fragment>
                           }
                         </React.Fragment>
-                      }
-                    </React.Fragment>
-                  );
-                })
-              }
-            </List>
-          </div>
+                      );
+                    })
+                  }
+                </List>
+              </div>
+            </React.Fragment>
+          }
         </div>
       }
     </React.Fragment>

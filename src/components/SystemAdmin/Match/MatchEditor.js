@@ -514,7 +514,8 @@ export default function MatchEditor(props){
             autoHideDuration: 10000,
           })
           setTimeout(()=>{
-            window.location.pathname = '/user'
+            //window.location.pathname = '/user'
+            console.log(d);
           }, 11000)
         }
       }

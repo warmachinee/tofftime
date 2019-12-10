@@ -70,15 +70,17 @@ const useStyles = makeStyles(theme => ({
 
 export default function MatchCard(props) {
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, data, setData, isSupportWebp } = props
+  const { API, BTN, sess, token, setCSRFToken, handleSnackBar, data, setData, isSupportWebp } = props
 
-  function handleJoinMatch(){
+  function toggleShowAction(userto, userfrom, requestaction){
     if(sess && sess.status === 1){
       const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('match-request-client-message', {
-        action: 'join',
+        action: 'showaction',
         matchid: data.matchid,
-        userid: sess.userid,
+        userto: userto,
+        userfrom: userfrom,
+        requestaction: requestaction
       })
       setTimeout(()=>{
         handleFetch()
@@ -114,6 +116,28 @@ export default function MatchCard(props) {
         </div>
       )
     }
+  }
+
+  async function handleJoinMatch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'matchgate', {
+        action: 'request',
+        subaction: 'join',
+        matchid: data.matchid,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+      if(/success/.test(d.status)){
+        toggleShowAction(d.to, d.from, 'join')
+      }
+    })
   }
 
   async function handleFetch(){

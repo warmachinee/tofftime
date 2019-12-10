@@ -358,6 +358,7 @@ export default function App() {
         file: errMsg.file,
         object: '',
     }, (csrf, d) =>{
+      setCSRFToken(csrf)
       //console.log(d);
     })
   }

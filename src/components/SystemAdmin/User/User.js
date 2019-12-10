@@ -397,7 +397,7 @@ export default function User(props){
                 </Box>
               </Typography>
               <div style={{ flex: 1 }} />
-              <GreenButton className={classes.confirmButton} onClick={handleCreatePlayer}>Confirm</GreenButton>
+              <GreenButton variant="contained" className={classes.confirmButton} onClick={handleCreatePlayer}>Confirm</GreenButton>
           </div>
           </div>
         </div>
@@ -614,7 +614,7 @@ export default function User(props){
               </Box>
             </Typography>
             <div style={{ flex: 1 }} />
-            <GreenButton className={classes.confirmButton} onClick={handleEditUser}>Save</GreenButton>
+            <GreenButton variant="contained" className={classes.confirmButton} onClick={handleEditUser}>Save</GreenButton>
         </div>
         </div>
       </TemplateDialog>

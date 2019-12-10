@@ -48,6 +48,7 @@ export default function MatchDetail(props){
   const [ userscore, setUserscore ] = React.useState(null)
   const [ sortBy, setSortBy ] = React.useState('net')
   const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
+  const [ scoringMethod, setScoringMethod ] = React.useState('flight')
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -109,17 +110,23 @@ export default function MatchDetail(props){
 
   React.useEffect(()=>{
     handleFetch()
-  },[ mainClassSelected ])
+  },[ window.location.href, mainClassSelected ])
 
   React.useEffect(()=>{
-    if(rawUserscore){
-      if(rawUserscore.scorematch === 2){
-        setUserscore( sortBy === 'sf' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)
-      }else{
-        setUserscore( sortBy === 'net' ? rawUserscore.userscoreSortBySF : rawUserscore.userscore)
+    if(rawUserscore){//usersolo
+      if(rawUserscore.scorematch !== 1){
+        if(scoringMethod === 'flight'){
+          if(rawUserscore.scorematch === 2){
+            setUserscore( sortBy === 'sf' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)
+          }else{
+            setUserscore( sortBy === 'net' ? rawUserscore.userscoreSortBySF : rawUserscore.userscore)
+          }
+        }else{
+          setUserscore(rawUserscore.usersolo)
+        }
       }
     }
-  },[ sortBy ])
+  },[ scoringMethod, sortBy ])
 
   return(
     <Switch>
@@ -134,6 +141,8 @@ export default function MatchDetail(props){
         setRawUserscore={setRawUserscore}
         sortBy={sortBy}
         setSortBy={setSortBy}
+        scoringMethod={scoringMethod}
+        setScoringMethod={setScoringMethod}
         mainClassSelected={mainClassSelected}
         setMainClassSelected={setMainClassSelected}
         matchid={parseInt(props.computedMatch.params.matchid)} />

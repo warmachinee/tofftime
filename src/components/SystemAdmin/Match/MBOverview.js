@@ -7,16 +7,21 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from "@material-ui/picker
 import * as API from './../../../api'
 import { primary, grey } from './../../../api/palette'
 
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
+import {
+  IconButton,
+  Typography,
+  Box,
+  Button,
+  TextField,
+  Radio,
+  RadioGroup,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormControl,
+  FormLabel,
+
+} from '@material-ui/core';
 
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
@@ -192,6 +197,15 @@ const GreenRadio = withStyles({
   checked: {},
 })(props => <Radio color="default" {...props} />);
 
+const GreenCheckbox = withStyles({
+  root: {
+    color: primary[400],
+    '&$checked': {
+      color: primary[600],
+    },
+  },
+})(props => <Checkbox color="default" {...props} />);
+
 const theme = createMuiTheme({
   palette: {
     primary: primary,
@@ -231,14 +245,22 @@ export default function MBOverview(props){
   const [ fileHover, handleFileHover ] = React.useState(false);
 
   const [ selectedMatchName, setSelectedMatchName ] = React.useState('');
-  const [ selectedField, setSelectedField ] = React.useState(null);
+  const [ selectedField, setSelectedField ] = React.useState({
+    fieldid: 1,
+    fieldname: 'Course name'
+  });
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
-  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState(null);
+  const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState(null);
-  const [ selectedDate, setSelectedDate ] = React.useState(null);
+  const [ selectedDate, setSelectedDate ] = React.useState(new Date());
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ rulesData, setRulesData ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
+  const [ specialRewardData, setSpecialRewardData ] = React.useState({
+    lownet: false,
+    lowgross: false,
+    booby: false
+  })
 
   const handleOpen = (d) => {
     setOpen(true);
@@ -249,43 +271,40 @@ export default function MBOverview(props){
     setOpen(false);
   };
 
+  function setInitialData(d){
+    setData(d)
+    setSelectedMatchName(d.title)
+    setSelectedDate(new Date(d.date))
+    setSelectedField({
+      fieldid: d.locationid,
+      fieldname: d.location
+    })
+    setSelectedPrivacy('public')
+    setSpecialRewardData({
+      lownet: d.lownet !== 0,
+      lowgross: d.lowgross !== 0,
+      booby: d.booby !== 0
+    })
+  }
+
+  function checkSpecialRewardData(type, event){
+    setSpecialRewardData({ ...specialRewardData, [type]: event.target.checked })
+  }
+
   function isEditDetail(){
-    let oldMatchName, oldPrivacy, oldDate, oldFile;
-    if(data){
-      oldMatchName = data.title ? data.title : ''
-      oldPrivacy = data.privacy ? data.privacy : 'public'
-      oldDate = new Date(data.date) ? new Date(data.date) : null
-      oldFile = selectedFile && tempFile
+    if(
+      data.title !== selectedMatchName ||
+      API._dateToString(new Date(data.date)) !== API._dateToString(new Date(selectedDate)) ||
+      data.locationid !== selectedField.fieldid ||
+      data.privacy !== selectedPrivacy ||
+      ( data.lownet !== 0 ) !== specialRewardData.lownet ||
+      ( data.lowgross !== 0 ) !== specialRewardData.lowgross ||
+      ( data.booby !== 0 ) !== specialRewardData.booby ||
+      selectedFile
+    ){
+      return true
     }
-    const newPrivacy = selectedPrivacy ? selectedPrivacy : oldPrivacy
-    const newDate = selectedDate ? selectedDate : oldDate
-    //console.log('selectedField ', selectedField);
-    switch (true) {
-      case Boolean(selectedMatchName):
-        if(oldMatchName !== selectedMatchName){
-          return true
-        }
-      case Boolean(newPrivacy):
-        if(oldPrivacy !== newPrivacy){
-          return true
-        }
-      case Boolean(selectedField):
-        if(selectedField){
-          return true
-        }
-      case Boolean(selectedDate):
-        if(oldDate !== selectedDate){
-          return true
-        }
-      case Boolean(selectedFile):
-        //console.log('selectedFile ', oldFile);
-        if(oldFile){
-          return true
-        }
-      default:
-        //console.log('default ', false);
-        return false
-    }
+    return false
   }
 
   function handleRulesOpen(){
@@ -381,6 +400,30 @@ export default function MBOverview(props){
       matchid: parseInt(matchid)
     };
 
+    if(specialRewardData.lowgross !== ( data.lowgross !== 0)){
+      if(specialRewardData.lowgross){
+        Object.assign(sendObj, { lowgross: 'set' });
+      }else{
+        Object.assign(sendObj, { lowgross: 'unset' });
+      }
+    }
+
+    if(specialRewardData.lownet !== ( data.lownet !== 0)){
+      if(specialRewardData.lownet){
+        Object.assign(sendObj, { lownet: 'set' });
+      }else{
+        Object.assign(sendObj, { lownet: 'unset' });
+      }
+    }
+
+    if(specialRewardData.booby !== ( data.booby !== 0)){
+      if(specialRewardData.booby){
+        Object.assign(sendObj, { booby: 'set' });
+      }else{
+        Object.assign(sendObj, { booby: 'unset' });
+      }
+    }
+
     if(selectedDate){
       Object.assign(sendObj, { matchdate: API._dateSendToAPI(selectedDate) });
     }
@@ -473,7 +516,7 @@ export default function MBOverview(props){
           d.status !== 'wrong action' ||
           d.status !== 'wrong params'
         ){
-          setData(d)
+          setInitialData(d)
         }else{
           handleSnackBar({
             state: true,
@@ -492,7 +535,7 @@ export default function MBOverview(props){
 
   return (
     <div className={classes.root}>
-      { data && data.status !== 'wrong params' &&
+      { ( data && data.status !== 'wrong params' ) ?
         <React.Fragment>
           <div className={classes.grid}>
             <div className={classes.gridChild1}>
@@ -500,9 +543,7 @@ export default function MBOverview(props){
                 <TextField
                   className={classes.textMatchname}
                   label={ API._getWord(sess && sess.language).Match_name }
-                  value={ data && ( selectedMatchName ? selectedMatchName : data.title ) || (
-                    API._getWord(sess && sess.language).Match_name
-                  ) }
+                  value={selectedMatchName}
                   onChange={e =>setSelectedMatchName(e.target.value)}
                 />
               </ThemeProvider>
@@ -515,7 +556,7 @@ export default function MBOverview(props){
                       label={ API._getWord(sess && sess.language).Match_Date }
                       inputVariant="outlined"
                       format="dd/MM/yyyy"
-                      value={ data?( selectedDate ? selectedDate : new Date(data.date) ):new Date() }
+                      value={selectedDate}
                       onChange={date => handleDateChange(date)}
                     />
                   </MuiPickersUtilsProvider>
@@ -598,9 +639,7 @@ export default function MBOverview(props){
                     className={classes.button}
                     style={{ textTransform: 'none', marginTop: 0 }}
                     onClick={()=>handleOpen('location')}>
-                    { data?( selectedField? selectedField.fieldname : data.location ) : (
-                      API._getWord(sess && sess.language).Course
-                    ) }
+                    {selectedField.fieldname}
                     {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
                   </GreenTextButton>
                 </FormControl>
@@ -614,9 +653,7 @@ export default function MBOverview(props){
                     { API._getWord(sess && sess.language).Privacy }
                   </FormLabel>
                   <RadioGroup
-                    value={
-                      data?( selectedPrivacy? selectedPrivacy : data.privacy ):'public'
-                    }
+                    value={selectedPrivacy}
                     onChange={handlePrivacy} row>
                     <FormControlLabel
                       value={'public'}
@@ -637,6 +674,46 @@ export default function MBOverview(props){
                       labelPlacement="end"
                     />
                   </RadioGroup>
+                </FormControl>
+                <FormControl component="fieldset" className={classes.margin}
+                  style={{
+                    width: '100%',
+                    border: '1px rgba(0, 0, 0, 0.23) solid',
+                    padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box'
+                  }}>
+                  <FormLabel component="legend" style={{ marginLeft: 16, fontSize: 12 }}>
+                    { API._getWord(sess && sess.language).Special_reward }
+                  </FormLabel>
+                  <FormGroup>
+                    <FormControlLabel
+                      control={
+                        <GreenCheckbox
+                          fontSize="large"
+                          checked={specialRewardData.lowgross}
+                          onChange={e =>checkSpecialRewardData('lowgross', e)}
+                          value="Low gross" />
+                      }
+                      label={ API._getWord(sess && sess.language).Lowgross }
+                    />
+                    <FormControlLabel
+                      control={
+                        <GreenCheckbox
+                          checked={specialRewardData.lownet}
+                          onChange={e =>checkSpecialRewardData('lownet', e)}
+                          value="Low net" />
+                      }
+                      label={ API._getWord(sess && sess.language).Lownet }
+                    />
+                    <FormControlLabel
+                      control={
+                        <GreenCheckbox
+                          checked={specialRewardData.booby}
+                          onChange={e =>checkSpecialRewardData('booby', e)}
+                          value="Booby" />
+                      }
+                      label={ API._getWord(sess && sess.language).Booby }
+                    />
+                  </FormGroup>
                 </FormControl>
                 { /*
                   <FormControl component="fieldset" className={classes.margin}
@@ -676,13 +753,15 @@ export default function MBOverview(props){
           { isEditDetail() &&
             <div className={classes.buttonControl}>
               <div style={{ flex: 2 }}></div>
-              <GreenButton className={classes.button}
+              <GreenButton variant="contained" className={classes.button}
                 onClick={handleEditMatch}>
                 { API._getWord(sess && sess.language).Save }
               </GreenButton>
             </div>
           }
         </React.Fragment>
+        :
+        <LDCircular />
       }
       <TemplateDialog open={rulesState} handleClose={handleRulesClose} maxWidth="md"
         title={
@@ -699,7 +778,7 @@ export default function MBOverview(props){
             onClick={handleRulesCancel}>
             { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
-          <GreenButton className={classes.button}
+          <GreenButton variant="contained" className={classes.button}
             onClick={handleRulesSave}>
             { API._getWord(sess && sess.language).Save }
           </GreenButton>

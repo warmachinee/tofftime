@@ -419,6 +419,10 @@ export default function CourseEditor(props){
       usertarget: editingField.hostid
     };
 
+    if(selectedCourseVersion){
+      Object.assign(sendObj, { fieldversion: selectedCourseVersion });
+    }
+
     if(location){
       Object.assign(sendObj, { fieldname: location });
     }
@@ -562,7 +566,7 @@ export default function CourseEditor(props){
           variant="outlined"
         />
         {/*
-          <GreenButton className={classes.matchFile}>
+          <GreenButton variant="contained" className={classes.matchFile}>
             <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
             <CloudUploadIcon className={classes.cloudUploadIcon} color="inherit"/>
             { window.innerWidth < 400 && 'Upload' }

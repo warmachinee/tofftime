@@ -214,6 +214,7 @@ export default function EditDisplayModal(props){
           </Button>
           :
           <GreenButton
+            variant="contained"
             className={classes.button}
             onClick={handleSave}>{ API._getWord(sess && sess.language).Save }</GreenButton>
         }

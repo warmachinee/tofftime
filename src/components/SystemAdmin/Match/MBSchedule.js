@@ -551,7 +551,7 @@ export default function MBSchedule(props){
           </div>
           <div style={{ flex: 1 }} />
           { checked.length > 0 && selectedTeam !== 0 &&
-            <GreenButton className={classes.controlsEditButton2} onClick={handleSave}>
+            <GreenButton variant="contained" className={classes.controlsEditButton2} onClick={handleSave}>
               { API._getWord(sess && sess.language).Save }
             </GreenButton>
           }

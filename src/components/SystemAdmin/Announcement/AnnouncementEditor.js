@@ -425,6 +425,7 @@ export default function AnnouncementEditor(props) {
           <div style={{ display: 'flex', marginTop: 24 }}>
             <GreenTextButton fullWidth className={classes.button} onClick={handleCancel}>Cancel</GreenTextButton>
             <GreenButton
+              variant="contained"
               fullWidth
               className={classes.button}
               onClick={clickAction === 'edit'? handleEdit : handleCreate}>

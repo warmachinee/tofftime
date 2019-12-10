@@ -36,6 +36,7 @@ const urlLink = {
   loadgeneral: _getWebURL() + '/main/loadgeneral',
   loadmatchsystem: _getWebURL() + '/main/loadmatchsystem',
   mloadpage: _getWebURL() + '/main/loadpage',
+  matchgate: _getWebURL() + '/main/matchgate',
   //--------------------Account--------------------
   login: _getWebURL() + '/users/login',
   facebooklogin: _getWebURL() + '/session/auth/facebook',

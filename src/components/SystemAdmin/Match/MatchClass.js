@@ -1,5 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import socketIOClient from 'socket.io-client'
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
@@ -140,10 +141,14 @@ const colorsPicker = [
 
 export default function MatchClass(props) {
   const classes = useStyles();
-  const { COLOR, sess, token, setCSRFToken, data, matchid, setData, handleSnackBar, matchClass } = props
+  const { BTN, COLOR, sess, token, setCSRFToken, data, matchid, setData, handleSnackBar, matchClass } = props
   const [ lists, setLists ] = React.useState([])
   const [ text, setText ] = React.useState('')
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
+  const [ dialog, setDialog ] = React.useState({
+    deleteMainclass: false
+  })
+  const [ mainGroupName, setMainGroupName ] = React.useState('')
   const [ editing, setEditing ] = React.useState(false)
   const [ arrEdit, setArrEdit ] = React.useState([])
   const [ arrEditColor, setArrEditColor ] = React.useState([])
@@ -151,6 +156,14 @@ export default function MatchClass(props) {
   const [ selectedDeleteItem, handleSelectedDeleteItem ] = React.useState(null)
   const [ draggedItem, handleDraggedItem ] = React.useState(null)
   const [ dropItem, handleDropItem ] = React.useState(null)
+
+  function dialogOpen(type){
+    setDialog({ ...dialog, [type]: true })
+  }
+
+  function dialogClose(type){
+    setDialog({ ...dialog, [type]: false })
+  }
 
   function handleConfirmCancel(){
     handleSelectedDeleteItem(null)
@@ -187,21 +200,53 @@ export default function MatchClass(props) {
     handleFetchEdit()
   }
 
+  function getObjFromScorematch(){
+    switch (data.scorematch) {
+      case 1:
+        return {
+          type: 'group',
+          mainclass: matchClass.mainclass
+        }
+        break;
+      case 2:
+        return {
+          type: matchClass.type,
+          mainclass: matchClass.mainclass
+        }
+        break;
+      default:
+        return {}
+    }
+  }
+
   function handleEditClass(data, event, index){
     const newClassname = [...arrEdit]
     newClassname[index] = event.target.value
     setArrEdit(newClassname)
   }
 
+  function toggleRealtime(mainclass){
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+    socket.emit('admin-match-client-message', {
+      action: "showmatchscore",
+      matchid: matchid,
+      userid: sess.userid,
+      mainclass: mainclass
+    })
+  }
+
   async function handleFetchAdd(){
     const resToken = token? token : await API._xhrGet('getcsrf')
+    const sendObj = {
+      action: 'classadd',
+      matchid: matchid,
+      classname: text,
+    }
+    Object.assign(sendObj, getObjFromScorematch());
     await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
-        action: 'classadd',
-        matchid: matchid,
-        classname: text,
-        mainclass: matchClass.mainclass,
+        ...sendObj
     }, (csrf, d) =>{
       handleSnackBar({
         state: true,
@@ -212,6 +257,7 @@ export default function MatchClass(props) {
       setCSRFToken(csrf)
       if(/success/.test(d.status)){
         setText('')
+        toggleRealtime(matchClass.mainclass)
       }
       try {
         handleFetch()
@@ -221,16 +267,21 @@ export default function MatchClass(props) {
 
   async function handleFetchEdit(){
     const resToken = token? token : await API._xhrGet('getcsrf')
+    const sendObj = {
+      action: 'classedit',
+      matchid: matchid,
+      classname: arrEdit,
+      classno: arrEditClassno,
+      mainclass: matchClass.mainclass,
+      mainclassname: mainGroupName
+    }
+    Object.assign(sendObj, getObjFromScorematch());
     await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
-        action: 'classedit',
-        matchid: matchid,
-        classname: arrEdit,
-        classno: arrEditClassno,
-        mainclass: matchClass.mainclass,
+        ...sendObj
     }, (csrf, d) =>{
-      if(data.scorematch === 0){
+      if(data.scorematch === 0 || matchClass.type === 'flight'){
         var statusRes = []
         d.forEach( e =>{
           if(e.status !== 'success'){
@@ -263,6 +314,7 @@ export default function MatchClass(props) {
         })
         if(/success/.test(d.status)){
           setEditing(false)
+          toggleRealtime(matchClass.mainclass)
         }
       }
       setCSRFToken(csrf)
@@ -294,6 +346,34 @@ export default function MatchClass(props) {
         if(/success/.test(d.status)){
           handleSelectedDeleteItem(null)
           handleConfirmDeleteState(false)
+          toggleRealtime(matchClass.mainclass)
+        }
+      }catch(err) { console.log(err.message) }
+    })
+  }
+
+  async function handleDeleteMainclass(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+        action: 'classremove',
+        matchid: matchid,
+        classno: 0,
+        mainclass: matchClass.mainclass,
+    }, (csrf, d) =>{
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+      setCSRFToken(csrf)
+      try {
+        handleFetch()
+        if(/success/.test(d.status)){
+          dialogClose('deleteMainclass')
+          toggleRealtime(matchClass.mainclass)
         }
       }catch(err) { console.log(err.message) }
     })
@@ -338,15 +418,13 @@ export default function MatchClass(props) {
         setArrEdit(classname)
         setArrEditClassno(classno)
         setLists(matchClass.values)
-        if(data.scorematch !== 0){
-          let classColor = []
-          for(var j = 0;j < matchClass.values.length;j++){
-            classColor.push(matchClass.values[j].color)
-          }
-          setArrEditColor(classColor)
+        setMainGroupName(matchClass.mainclassname)
+        let classColor = []
+        for(var j = 0;j < matchClass.values.length;j++){
+          classColor.push(matchClass.values[j].color)
         }
+        setArrEditColor(classColor)
       }
-
     }
   },[ data ])
 
@@ -421,7 +499,12 @@ export default function MatchClass(props) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        { !editing &&
+        { editing ?
+          <BTN.Red onClick={()=>dialogOpen('deleteMainclass')}
+            startIcon={<DeleteIcon color="inherit" />}>
+            { API._getWord(sess && sess.language).Remove }
+          </BTN.Red>
+          :
           <GreenTextButton onClick={()=>setEditing(!editing)}>
             { API._getWord(sess && sess.language).Edit }
           </GreenTextButton>
@@ -433,8 +516,8 @@ export default function MatchClass(props) {
             <ListItemText
               style={{ textAlign: 'center', fontSize: 20, fontWeight: 600, color: primary[900] }}
               primary={function(){
-                switch (data.scorematch) {
-                  case 0:
+                switch (true) {
+                  case data.scorematch === 0 || matchClass.type === 'flight':
                     return API._getWord(sess && sess.language).No_flight
                     break;
                   default:
@@ -445,21 +528,21 @@ export default function MatchClass(props) {
         }
         { lists && !editing &&
           lists.map( (d, i) =>{
-            return d && (
+            return (
               <ListItem key={i}>
                 { data.scorematch !== 0 &&
                   <ListItemIcon>
                     <ListColorSelector disabled index={i} />
                   </ListItemIcon>
                 }
-                { data.scorematch === 0 &&
+                { ( data.scorematch === 0 || matchClass.type === 'flight' ) &&
                   <ListItemText
                     style={{ width: 100, flex: 'none' }}
                     primary={
                       <Typography variant="h6">{API._handleAmateurClass(d.classno)}</Typography>
                     } />
                 }
-                <ListItemText primary={ data.scorematch === 0 ? (
+                <ListItemText primary={ ( data.scorematch === 0 || matchClass.type === 'flight' ) ? (
                     arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
                   ) : d.classname } />
               </ListItem>
@@ -473,10 +556,10 @@ export default function MatchClass(props) {
                 fullWidth
                 autoFocus
                 value={text || ''}
-                type={ data.scorematch === 0? 'number' : 'text' }
+                type={ ( data.scorematch === 0 || matchClass.type === 'flight' )? 'number' : 'text' }
                 helperText={function(){
-                  switch (data.scorematch) {
-                    case 0:
+                  switch (true) {
+                    case data.scorematch === 0 || matchClass.type === 'flight':
                       return API._getWord(sess && sess.language)['Please input number (HC).']
                       break;
                     default:
@@ -496,66 +579,68 @@ export default function MatchClass(props) {
           </ListItem>
         }
         { lists && data && editing &&
-          arrEdit.map( (d, i) =>{
-            return (
-              <ListItem key={i}>
-                { data.scorematch !== 0 &&
-                  <ListColorSelector index={i} />
-                }
-                <ThemeProvider theme={theme}>
+          <React.Fragment>
+            { data.scorematch !== 0 &&
+              <ThemeProvider theme={theme}>
+                <div style={{ margin: 16, marginTop: 0 }}>
                   <TextField
                     fullWidth
-                    style={{ marginRight: 16 }}
-                    autoFocus={i==0}
-                    value={arrEdit[i] || ''}
-                    onChange={e =>handleEditClass(d, e, i)}
-                    onKeyPress={e => ( e.key === 'Enter' )? handleSave() : console.log() }
-                  />
-                </ThemeProvider>
-                { data.scorematch === 0 &&
-                  <div style={{ display: 'flex', width: '100%' }}>
-                    <div style={{ marginTop: 'auto', marginBottom: 8, textAlign: 'center', width: 64 }}> {
-                        API._getWord(sess && sess.language).to
-                      } </div>
-                    <TextField
-                      disabled
-                      fullWidth
-                      value={ ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 }
-                    />
-                  </div>
-                }
-                <ListItemSecondaryAction>
-                  <IconButton onClick={()=>handleDeleteItem(lists[i])}>
-                    <DeleteIcon classes={{ root: classes.deleteIcon }} />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            )
-          }
-        )}
-        {/* lists && classAction === 'delete' &&
-          lists.map( (d, i) =>{
-            return d && (
-              <ListItem key={i}>
-                <ListItemText primary={ data.scorematch === 0? (
-                    arrEdit[i] + '  -  ' + ( ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 )
-                  ) : d.classname } />
-                <ListItemSecondaryAction>
-                  <IconButton onClick={()=>handleDeleteItem(d)}>
-                    <DeleteIcon classes={{ root: classes.deleteIcon }} />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            )
-          }
-        )*/}
+                    variant="outlined"
+                    label={ API._getWord(sess && sess.language).Main_group_name }
+                    value={mainGroupName}
+                    onChange={e =>setMainGroupName(e.target.value)}
+                    onKeyPress={e => ( e.key === 'Enter' )? handleSave() : console.log() } />
+                </div>
+              </ThemeProvider>
+            }
+            <div>
+              {arrEdit.map( (d, i) =>{
+                  return (
+                    <ListItem key={i}>
+                      { data.scorematch !== 0 &&
+                        <ListColorSelector index={i} />
+                      }
+                      <ThemeProvider theme={theme}>
+                        <TextField
+                          fullWidth
+                          style={{ marginRight: 16 }}
+                          autoFocus={i==0}
+                          value={arrEdit[i] || ''}
+                          onChange={e =>handleEditClass(d, e, i)}
+                          onKeyPress={e => ( e.key === 'Enter' )? handleSave() : console.log() }
+                        />
+                      </ThemeProvider>
+                      { ( data.scorematch === 0 || matchClass.type === 'flight' ) &&
+                        <div style={{ display: 'flex', width: '100%' }}>
+                          <div style={{ marginTop: 'auto', marginBottom: 8, textAlign: 'center', width: 64 }}> {
+                              API._getWord(sess && sess.language).to
+                            } </div>
+                          <TextField
+                            disabled
+                            fullWidth
+                            value={ ( i + 1 >= arrEdit.length )? 'Up' : arrEdit[i + 1] - 1 }
+                          />
+                        </div>
+                      }
+                      <ListItemSecondaryAction>
+                        <IconButton onClick={()=>handleDeleteItem(lists[i])}>
+                          <DeleteIcon classes={{ root: classes.deleteIcon }} />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  )
+                })
+              }
+            </div>
+          </React.Fragment>
+        }
       </List>
       { editing && lists && lists.length > 0 && data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <GreenTextButton className={classes.saveButton} onClick={()=>setEditing(false)}>
             { API._getWord(sess && sess.language).Cancel }
           </GreenTextButton>
-          <GreenButton className={classes.saveButton} onClick={handleSave}>
+          <GreenButton variant="contained" className={classes.saveButton} onClick={handleSave}>
             { API._getWord(sess && sess.language).Save }
           </GreenButton>
         </div>
@@ -571,11 +656,26 @@ export default function MatchClass(props) {
         content={
           selectedDeleteItem &&
           <Typography variant="body1" align="center">
-            { data.scorematch === 0 ? API._getWord(sess && sess.language).Flight : API._getWord(sess && sess.language).Group } :
-            { data.scorematch === 0 ? API._handleAmateurClass(selectedDeleteItem.classno) : selectedDeleteItem.classname }
+            { ( data.scorematch === 0 || matchClass.type === 'flight' ) ? '' : API._getWord(sess && sess.language).Group } :
+            { ( data.scorematch === 0 || matchClass.type === 'flight' ) ? API._handleAmateurClass(selectedDeleteItem.classno) : selectedDeleteItem.classname }
           </Typography>
         }
         onSubmit={handleConfirmDelete}
+        submitButton="Red" />
+      <ConfirmDialog
+        sess={sess}
+        open={dialog.deleteMainclass}
+        onClose={()=>dialogClose('deleteMainclass')}
+        icon="Delete"
+        iconColor={red[600]}
+        title={API._getWord(sess && sess.language)['Are you sure you want to delete?']}
+        content={
+          matchClass &&
+          <Typography variant="body1" align="center">
+            {matchClass.mainclassname}
+          </Typography>
+        }
+        onSubmit={handleDeleteMainclass}
         submitButton="Red" />
     </div>
   );

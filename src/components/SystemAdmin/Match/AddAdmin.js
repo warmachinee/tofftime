@@ -386,7 +386,7 @@ export default function AddAdmin(props){
               </Box>
             </Typography>
             <div style={{ flex: 1 }} />
-            <GreenButton className={classes.confirmButton} onClick={handleCreatePlayer}>Confirm</GreenButton>
+            <GreenButton variant="contained" className={classes.confirmButton} onClick={handleCreatePlayer}>Confirm</GreenButton>
           </div>
         </div>
       </Collapse>

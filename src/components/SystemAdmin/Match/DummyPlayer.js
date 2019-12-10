@@ -191,7 +191,7 @@ function ListDummy(props){
         <React.Fragment>
           { ( editing || !removeState ) &&
             <ListItemIcon>
-              <GreenButton onClick={handleEditDummy}>Save</GreenButton>
+              <GreenButton variant="contained" onClick={handleEditDummy}>Save</GreenButton>
             </ListItemIcon>
           }
           { ( !editing || removeState ) &&
@@ -340,6 +340,7 @@ export default function DummyPlayer(props){
           </Typography>
           <div style={{ flex: 1 }} />
           <GreenButton
+            variant="contained"
             className={classes.confirmButton}
             onClick={handleCreateDummy}>
             {API._getWord(sess && sess.language).Confirm}

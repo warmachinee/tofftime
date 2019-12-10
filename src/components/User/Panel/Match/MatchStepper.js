@@ -35,6 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 const labelSteps = [
   'Math detail',
+  'Set up special reward',
   'Course',
   'Add Picture',
   'Match Rules, Regulations and Detail'
@@ -59,6 +60,12 @@ export default function MatchStepper(props) {
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ pageState, setPageState ] = React.useState('select')
   const [ rulesData, setRulesData ] = React.useState(null);
+  const [ isCreateDisable, setIsCreateDisable ] = React.useState(false)
+  const [ specialRewardData, setSpecialRewardData ] = React.useState({
+    lownet: false,
+    lowgross: false,
+    booby: false
+  })
 
   const passingFunction = {
     matchName: matchName,
@@ -78,7 +85,11 @@ export default function MatchStepper(props) {
     setSelectedFieldVersion: setSelectedFieldVersion,
     pageState: pageState,
     setPageState: setPageState,
-    handleEditorOnChange: handleEditorOnChange
+    handleEditorOnChange: handleEditorOnChange,
+    specialRewardData: specialRewardData,
+    setSpecialRewardData: setSpecialRewardData,
+    checkSpecialRewardData: checkSpecialRewardData,
+
   }
 
   function getLabel(label){
@@ -86,6 +97,9 @@ export default function MatchStepper(props) {
       switch (true) {
         case label === 'Math detail':
           return 'รายละเอียดการแข่งขัน'
+          break;
+        case label === 'Set up special reward':
+          return 'ตั้งค่ารางวัลพิเศษ'
           break;
         case label === 'Course':
           return 'เลือกสนาม'
@@ -99,6 +113,10 @@ export default function MatchStepper(props) {
     }else{
       return label
     }
+  }
+
+  function checkSpecialRewardData(type, event){
+    setSpecialRewardData({ ...specialRewardData, [type]: event.target.checked })
   }
 
   function handleNext() {
@@ -175,6 +193,7 @@ export default function MatchStepper(props) {
   }
 
   async function handleCreate(){
+    setIsCreateDisable(true)
     const sendObj = {
       action: 'create',
       matchname: matchName,
@@ -182,6 +201,18 @@ export default function MatchStepper(props) {
       scorematch: parseInt(selectedMatchType),
       privacy: selectedPrivacy,
       matchdate: API._dateSendToAPI(selectedDate),
+    }
+
+    if(specialRewardData.lowgross){
+      Object.assign(sendObj, { lowgross: 'set' });
+    }
+
+    if(specialRewardData.lownet){
+      Object.assign(sendObj, { lownet: 'set' });
+    }
+
+    if(specialRewardData.booby){
+      Object.assign(sendObj, { booby: 'set' });
     }
 
     if(selectedFieldVersion !== 1){
@@ -362,7 +393,7 @@ export default function MatchStepper(props) {
         activeStep={activeStep}
         nextButton={
           activeStep === maxSteps - 1 ?
-          <BTN.Primary size="small" onClick={handleCreate}>
+          <BTN.Primary disabled={isCreateDisable} size="small" onClick={handleCreate}>
             { API._getWord(sess && sess.language).Create }
           </BTN.Primary>
           :
@@ -372,7 +403,7 @@ export default function MatchStepper(props) {
                 case 0:
                   return matchName === ''
                   break;
-                case 1:
+                case 2:
                   return selectedField === null
                   break;
                 default:
@@ -385,13 +416,10 @@ export default function MatchStepper(props) {
           </BTN.PrimaryText>
         }
         backButton={
-          activeStep > 0 ?
-          <BTN.PrimaryText size="small" onClick={handleBack}>
+          <BTN.PrimaryText disabled={activeStep === 0} size="small" onClick={handleBack}>
             {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
             { API._getWord(sess && sess.language).Back }
           </BTN.PrimaryText>
-          :
-          <div style={{ width: 24 }} />
         }
       />
 

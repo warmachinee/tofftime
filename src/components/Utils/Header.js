@@ -272,7 +272,7 @@ export default function Header(props) {
                         </IconButton>
                       </div>*/
                     }
-                    { accountData ?
+                    { sess ?
                       ( sess.typeid === 'admin' ?
                         <Link to={`/system_admin`} style={{ textDecoration: 'none', color: 'inherit' }}>
                           <IconButton
@@ -284,7 +284,7 @@ export default function Header(props) {
                         <Link to={`/user`} style={{ textDecoration: 'none', color: 'inherit' }}>
                           <IconButton
                             style={{ padding: 8 }}>
-                            { accountData.photopath ?
+                            { accountData && accountData.photopath ?
                               <Avatar className={classes.avatarImage}
                                 src={
                                   API._getPictureUrl(accountData.photopath) +

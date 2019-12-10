@@ -96,15 +96,45 @@ export default function MatchTeam(props) {
   const classes = useStyles();
   const { sess, token, setCSRFToken, matchid, handleSnackBar, isSupportWebp, selectedUser, handleClose } = props
 
-  function handleUpdateForm(action){
-    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
-    socket.emit('match-request-client-message', {
-      action: "confirm",
-      matchid: matchid,
-      userid: [ sess.userid, selectedUser.userid],
-      confirmaction: action,
+  function toggleShowAction(userto, userfrom, requestaction){
+    if(sess && sess.status === 1){
+      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+      socket.emit('match-request-client-message', {
+        action: 'showaction',
+        matchid: matchid,
+        userto: userto,
+        userfrom: userfrom,
+        requestaction: requestaction
+      })
+      handleClose()
+    }
+  }
+
+  async function handleUpdateForm(subaction){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'matchgate', {
+        action: 'confirm',
+        subaction: subaction,
+        matchid: matchid,
+        usertarget: subaction === 'reject' ? [selectedUser.userid] : selectedUser.userid
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(subaction === 'accept'){
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        if(/success/.test(d.status)){
+          toggleShowAction(d.to, d.from, 'acceptfromhost')
+        }
+      }else{
+        handleClose()
+      }
     })
-    handleClose()
   }
 
   return (

@@ -193,13 +193,15 @@ export default function MatchDetailBody(props) {
     setAnchorEl(null);
   };
 
-  function handleJoinMatch(){
+  function toggleShowAction(userto, userfrom, requestaction){
     if(sess && sess.status === 1){
       const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('match-request-client-message', {
-        action: 'join',
+        action: 'showaction',
         matchid: matchid,
-        userid: sess.userid,
+        userto: userto,
+        userfrom: userfrom,
+        requestaction: requestaction
       })
       setTimeout(()=>{
         handleFetch()
@@ -247,6 +249,28 @@ export default function MatchDetailBody(props) {
 
   function expandHandler(){
     setExpanded(!expanded)
+  }
+
+  async function handleJoinMatch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'matchgate', {
+        action: 'request',
+        subaction: 'join',
+        matchid: matchid,
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: /success/.test(d.status) ? d.status : 'error',
+        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+      })
+      if(/success/.test(d.status)){
+        toggleShowAction(d.to, d.from, 'join')
+      }
+    })
   }
 
   async function handleFetch(){
@@ -372,8 +396,42 @@ export default function MatchDetailBody(props) {
               </div>
             </div>
             <DetailComponent matchid={matchid} detail={data.message} picture={data.picture} isSupportWebp={isSupportWebp} />
+            { data.reward &&
+              <div>
+                { data.lowgross === 1 && data.reward.lowgross &&
+                  <div style={{ display: 'flex' }}>
+                    <Typography variant="body1" style={{ width: 120, padding: '5px 15px', border: `1px solid ${primary[600]}`, borderRadius: 4, marginRight: 8 }}>
+                      Low gross
+                    </Typography>
+                    <Typography variant="body1">
+                      {`${data.reward.lowgross.fullname} ${data.reward.lowgross.lastname}`}
+                    </Typography>
+                  </div>
+                }
+                { data.lownet === 1 && data.reward.lownet &&
+                  <div style={{ display: 'flex' }}>
+                    <Typography variant="body1" style={{ width: 120, padding: '5px 15px', border: `1px solid ${primary[600]}`, borderRadius: 4, marginRight: 8 }}>
+                      Low net
+                    </Typography>
+                    <Typography>
+                      {`${data.reward.lownet.fullname} ${data.reward.lownet.lastname}`}
+                    </Typography>
+                  </div>
+                }
+                { data.booby === 1 && data.reward.booby &&
+                  <div style={{ display: 'flex' }}>
+                    <Typography variant="body1" style={{ width: 120, padding: '5px 15px', border: `1px solid ${primary[600]}`, borderRadius: 4, marginRight: 8 }}>
+                      The last secondary
+                    </Typography>
+                    <Typography>
+                      {`${data.reward.booby.fullname} ${data.reward.booby.lastname}`} 
+                    </Typography>
+                  </div>
+                }
+              </div>
+            }
             { data ?
-              ( data.mainclass && data.mainclass.length > 0 && userscore && userscore.length > 0 ?
+              ( data.mainclass && data.mainclass.length > 0 ?
                 <React.Fragment>
                   <ListItem button onClick={expandHandler}
                     style={{
@@ -399,91 +457,54 @@ export default function MatchDetailBody(props) {
                 :
                 ( (data.permission === 'host' || data.permission === 'admin') &&
                 <Typography component="div" style={{ width: '100%' }}>
-                  {function(){
-                    switch (true) {
-                      case data.mainclass && data.mainclass.length === 0 && userscore && userscore.length > 0:
-                        return (
-                          <React.Fragment>
-                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                              {function(){
-                                switch (data.scorematch) {
-                                  case 0:
-                                    return API._getWord(sess && sess.language).No_flight
-                                    break;
-                                  default:
-                                    return API._getWord(sess && sess.language).No_group
-                                }
-                              }()}
-                            </Box>
-                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#group`}>
-                                <BTN.PrimaryOutlined>
-                                  {function(){
-                                    switch (data.scorematch) {
-                                      case 0:
-                                        return API._getWord(sess && sess.language).Create_flight
-                                        break;
-                                      default:
-                                        return API._getWord(sess && sess.language).Create_group
-                                    }
-                                  }()}
-                                </BTN.PrimaryOutlined>
-                              </BTN.NoStyleLink>
-                            </div>
-                          </React.Fragment>
-                        );
-                        break;
-                      case data.mainclass && data.mainclass.length > 0 && userscore && userscore.length === 0:
-                        return (
-                          <React.Fragment>
-                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                              { API._getWord(sess && sess.language).No_player }
-                            </Box>
-                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#invitation`}>
-                                <BTN.PrimaryOutlined>
-                                  { API._getWord(sess && sess.language).Invite_players }
-                                </BTN.PrimaryOutlined>
-                              </BTN.NoStyleLink>
-                            </div>
-                          </React.Fragment>
-                        );
-                        break;
-                      case data.mainclass && data.mainclass.length === 0 && userscore && userscore.length === 0:
-                        return (
-                          <React.Fragment>
-                            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                              {`${API._getWord(sess && sess.language).No_player} ${
-                                sess && sess.language === 'TH' ? 'และ' : 'and'
-                              } ${function(){
-                                switch (data.scorematch) {
-                                  case 0:
-                                    return API._getWord(sess && sess.language).No_flight
-                                    break;
-                                  default:
-                                    return API._getWord(sess && sess.language).No_group
-                                }
-                              }()}`}
-                            </Box>
-                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#invitation`}>
-                                <BTN.PrimaryOutlined>
-                                  { API._getWord(sess && sess.language).Invite_players }
-                                </BTN.PrimaryOutlined>
-                              </BTN.NoStyleLink>
-                              <BTN.NoStyleLink to={`/user/management/match/${matchid}#group`}>
-                                <BTN.PrimaryOutlined>
-                                  { API._getWord(sess && sess.language).Create_group }
-                                </BTN.PrimaryOutlined>
-                              </BTN.NoStyleLink>
-                            </div>
-                          </React.Fragment>
-                        );
-                        break;
-                      default:
-                        return null
-                    }
-                  }()}
+                  <React.Fragment>
+                    <Box style={{ textAlign: 'center', color: primary[900], whiteSpace: 'pre-wrap' }} fontWeight={500} fontSize={24} m={1}>
+                      {`${
+                        !data.member ? ( API._getWord(sess && sess.language).No_player + ',' ) : ''
+                      }\n${
+                        ( data.mainclass && data.mainclass.length === 0 ) ?
+                        function(){
+                          switch (true) {
+                            case (
+                              data.scorematch === 0 ||
+                              ( data.mainclass && data.mainclass.length > 0 &&
+                                data.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                              )
+                            ):
+                              return API._getWord(sess && sess.language).No_flight + ','
+                              break;
+                            default:
+                              return API._getWord(sess && sess.language).No_group + ','
+                          }
+                        }() : ''
+                      }\n${
+                        ( userscore && userscore.length === 0 ) ? API._getWord(sess && sess.language)['No groups were chosen for the players.'] : ''
+                      }`}
+                    </Box>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                      { !data.member &&
+                        <BTN.NoStyleLink to={`/user/management/match/${matchid}#invitation`}>
+                          <BTN.PrimaryOutlined>
+                            { API._getWord(sess && sess.language).Invite_players }
+                          </BTN.PrimaryOutlined>
+                        </BTN.NoStyleLink>
+                      }
+                      { data.mainclass && data.mainclass.length === 0 &&
+                        <BTN.NoStyleLink to={`/user/management/match/${matchid}#group`}>
+                          <BTN.PrimaryOutlined>
+                            { API._getWord(sess && sess.language).Create_group }
+                          </BTN.PrimaryOutlined>
+                        </BTN.NoStyleLink>
+                      }
+                      { userscore && userscore.length === 0 &&
+                        <BTN.NoStyleLink to={`/user/management/match/${matchid}#player`}>
+                          <BTN.PrimaryOutlined>
+                            { API._getWord(sess && sess.language).Edit_player_group }
+                          </BTN.PrimaryOutlined>
+                        </BTN.NoStyleLink>
+                      }
+                    </div>
+                  </React.Fragment>
                 </Typography>
                 )
               )

@@ -330,7 +330,7 @@ export default function MatchTeam(props) {
               onKeyPress={e =>handleKeyPress(e.key)}
               onChange={e => handlePersonChange(parseInt(e.target.value))}
               onFocus={e => e.target.select()}
-              type="number"/>
+              type="number" />
             { matchDetail && matchDetail.team.length !== 0 &&
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <FormControl component="fieldset">
@@ -396,6 +396,7 @@ export default function MatchTeam(props) {
                   </Button>
                   :
                   <GreenButton
+                    variant="contained"
                     fullWidth
                     className={classes.createButton}
                     onClick={handleSchedule}>

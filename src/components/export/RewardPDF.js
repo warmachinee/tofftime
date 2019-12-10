@@ -21,15 +21,23 @@ pdfMake.fonts = {
 import Button from '@material-ui/core/Button';
 
 export default function RewardPDF(props){
-  const { data, matchClass, reward, rewardStatus, sess, sortBy } = props
+  const { data, matchClass, reward, sess, sortBy } = props
+  const rewardSelected = !('status' in reward) && reward.filter( item =>{
+    return ( item.classno === matchClass.classno )
+  })
+
   return(
     <React.Fragment>
-      { (reward.length !== 0 && !reward.status) ?
-        <Button onClick={()=>handleDownload(matchClass, reward, data, sortBy, sess)} color="primary">
+      {/* !('status' in reward) ?
+        <Button disabled={!(rewardSelected.length > 0)} onClick={()=>handleDownload(matchClass, rewardSelected, data, sortBy, sess)} color="primary">
           { API._getWord(sess && sess.language).Reward }
-        </Button>:
+        </Button>
+        :
         <Button disabled color="primary">{reward.status}</Button>
-      }
+      */}
+      <Button disabled={!(rewardSelected.length > 0)} onClick={()=>handleDownload(matchClass, rewardSelected, data, sortBy, sess)} color="primary">
+        { API._getWord(sess && sess.language).Reward }
+      </Button>
     </React.Fragment>
   );
 }

@@ -17,6 +17,8 @@ import Grow from '@material-ui/core/Grow';
 import Collapse from '@material-ui/core/Collapse';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 const ScoreTableChip = Loadable({
   loader: () => import(/* webpackChunkName: "ScoreTableChip" */'./ScoreTableChip'),
@@ -112,7 +114,7 @@ const StyledTableCell = withStyles(theme => ({
 function ScoreRow(props){
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false)
-  const { sess, BTN, row, data, index, fieldData, sortBy } = props
+  const { sess, BTN, row, data, index, fieldData, sortBy, scoringMethod, mainClassSelected } = props
   const wd = window.innerWidth
 
   const tableCell = {
@@ -148,13 +150,13 @@ function ScoreRow(props){
               </React.Fragment>
             }
             <div className={classes.tableCell} style={tableCell}>{row.out + row.in}</div>
-            { data.scorematch !== 1 &&
+            { data.scorematch !== 1 && scoringMethod === 'flight' &&
               <div className={classes.tableCell} style={tableCell}>{row.hc}</div>
             }
           </React.Fragment>
         }
         <div className={classes.tableCell} style={tableCell}>
-          { data.scorematch === 1 ?
+          { ( data.scorematch === 1 || scoringMethod === 'stroke' ) ?
             (
               row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par
             )
@@ -265,7 +267,7 @@ function ScoreRow(props){
 
 export default function ScoreTable(props) {
   const classes = useStyles();
-  const { API, COLOR, sess, data, userscore, matchClass, sortBy, value } = props
+  const { API, COLOR, sess, data, userscore, matchClass, sortBy, scoringMethod, value } = props
   const inputEl = React.useRef(null);
   const [ op, setOp ] = React.useState(true)
   const [ widthEl, setWidthEl ] = React.useState(0)
@@ -320,14 +322,13 @@ export default function ScoreTable(props) {
                 </React.Fragment>
               }
               <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">TOT</StyledTableCell>
-              { data.scorematch !== 1 &&
+              { data.scorematch !== 1 && scoringMethod === 'flight' &&
                 <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">HC</StyledTableCell>
               }
             </React.Fragment>
           }
           <StyledTableCell style={{ ...style.cell, color: 'white'}} align="center">
-            {
-              data.scorematch === 1 ?
+            { ( data.scorematch === 1 || scoringMethod === 'stroke' ) ?
               'PAR' :
               ( sortBy === 'net' ? 'NET' : 'SF' )
             }
@@ -395,11 +396,22 @@ export default function ScoreTable(props) {
         </AppBar>
       </Zoom>
       <Paper className={classes.root}>
-        { userscore && userscore.filter( d =>{
-          return ( d.classno === matchClass.classno )
-        }).map( ( row, i ) => (
-          <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i} />
-        ))}
+        { userscore &&
+          userscore.filter( d =>{
+            return ( d.classno === matchClass.classno )
+          }).length > 0 ?
+          userscore.filter( d =>{
+            return ( d.classno === matchClass.classno )
+          }).map( ( row, i ) => (
+            <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i} />
+          ))
+          :
+          <Typography component="div" style={{ width: '100%', paddingTop: 24, paddingBottom: 24  }}>
+            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+              { API._getWord(sess && sess.language).No_player }
+            </Box>
+          </Typography>
+        }
       </Paper>
     </div>
   );

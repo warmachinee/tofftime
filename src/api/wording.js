@@ -221,6 +221,15 @@ export default function _getWord(lang){
         return 'Please fill Match name.'
     }
   }()
+  Imperative['Please fill Main group name.'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'กรุณาใส่ชื่อกลุ่มหลัก'
+        break;
+      default:
+        return 'Please fill Main group name.'
+    }
+  }()
   Imperative['Click to show the control panel.'] = function(){
     switch (lang) {
       case 'TH':
@@ -257,6 +266,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Joined match'
+      }
+    }(),
+    You_joined_match: function(){
+      switch (lang) {
+        case 'TH':
+          return 'คุณเข้าร่วมการแข่งขัน'
+          break;
+        default:
+          return 'You joined match'
       }
     }(),
 
@@ -396,6 +414,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Edit post'
+      }
+    }(),
+    Edit_player_group: function(){
+      switch (lang) {
+        case 'TH':
+          return 'แก้ไขกลุ่มของผู้เล่น'
+          break;
+        default:
+          return 'Edit group'
       }
     }(),
     Join: function(){
@@ -1041,6 +1068,15 @@ export default function _getWord(lang){
           return 'No results'
       }
     }(),
+    No_playoff: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีเพลย์ออฟ์'
+          break;
+        default:
+          return 'No playoff'
+      }
+    }(),
     No_playoff_player: function(){
       switch (lang) {
         case 'TH':
@@ -1106,8 +1142,71 @@ export default function _getWord(lang){
         return 'This match is over'
     }
   }()
+  Status['No groups were chosen for the players.'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'ไม่ได้เลือกกลุ่มให้ผู้เล่น'
+        break;
+      default:
+        return 'No groups were chosen for the players.'
+    }
+  }()
 
   const Name = {
+    Method: function(){
+      switch (lang) {
+        case 'TH':
+          return 'วิธีคํานวณ'
+          break;
+        default:
+          return 'Method'
+      }
+    }(),
+    Set_special_reward: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ตั้งค่ารางวัลพิเศษ'
+          break;
+        default:
+          return 'Set up special reward'
+      }
+    }(),
+    Special_reward: function(){
+      switch (lang) {
+        case 'TH':
+          return 'รางวัลพิเศษ'
+          break;
+        default:
+          return 'Special reward'
+      }
+    }(),
+    Lowgross: function(){
+      switch (lang) {
+        case 'TH':
+          return 'Gross ต่ำสุด'
+          break;
+        default:
+          return 'Low gross'
+      }
+    }(),
+    Lownet: function(){
+      switch (lang) {
+        case 'TH':
+          return 'Net ต่ำสุด'
+          break;
+        default:
+          return 'Low net'
+      }
+    }(),
+    Booby: function(){
+      switch (lang) {
+        case 'TH':
+          return 'บู้บี้'
+          break;
+        default:
+          return 'The last secondary'
+      }
+    }(),
     Result: function(){
       switch (lang) {
         case 'TH':
@@ -1835,6 +1934,24 @@ export default function _getWord(lang){
           break;
         default:
           return 'Main group'
+      }
+    }(),
+    Main_group_name: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ชื่อกลุ่มหลัก'
+          break;
+        default:
+          return 'Main group name'
+      }
+    }(),
+    Main_group_type: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ประเภทของกลุ่มหลัก'
+          break;
+        default:
+          return 'Main group type'
       }
     }(),
     Role: function(){

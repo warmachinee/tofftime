@@ -314,7 +314,7 @@ function RewardContainer(props){
                     }}
                     />
                 </ThemeProvider>
-                <GreenButton style={{ height: 36 }} onClick={handleSave}>
+                <GreenButton variant="contained" style={{ height: 36 }} onClick={handleSave}>
                   { API._getWord(sess && sess.language).Save }
                 </GreenButton>
               </div>
@@ -423,7 +423,7 @@ export default function MBReward(props){
 
   async function handleReset(){
     let classno = []
-    if(matchDetail.mainclass.values.length > 0){
+    if(matchDetail && matchDetail.mainclass && matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0){
       classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
     }
     if(matchid){
@@ -551,7 +551,7 @@ export default function MBReward(props){
         :
         <div className={classes.root}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            { matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass > 1 &&
+            { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass.length > 1 &&
               <FormControl className={classes.formControl}>
                 <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
                 <Select
@@ -560,7 +560,7 @@ export default function MBReward(props){
                   { matchDetail &&
                     matchDetail.mainclass.map( d =>
                       <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                        {d.mainclass}
+                        {d.mainclassname}
                       </MenuItem>
                   )}
                 </Select>
@@ -577,7 +577,15 @@ export default function MBReward(props){
               { matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
                 matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d=>
                   d &&
-                  <StyledTab key={d.classname} label={ matchDetail.scorematch !== 0? d.classname : API._handleAmateurClass(d.classno) } />
+                  <StyledTab key={d.classname} label={
+                    (
+                      matchDetail.scorematch === 0 ||
+                      (
+                        matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                      )
+                    )? API._handleAmateurClass(d.classno) : d.classname
+                    } />
                 )
               }
             </StyledTabs>
@@ -603,12 +611,12 @@ export default function MBReward(props){
                       type="number"
                     />
                   </ThemeProvider>
-                <GreenButton className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
+                <GreenButton variant="contained" className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
                   { API._getWord(sess && sess.language).Save }
                 </GreenButton>
                 </React.Fragment>
               }
-              { data && /not create/.test(data.status) &&
+              { data && !/not create/.test(data.status) &&
                 <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
                   { API._getWord(sess && sess.language).Reset }
                 </GreenTextButton>

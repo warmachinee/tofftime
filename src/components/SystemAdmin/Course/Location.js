@@ -108,6 +108,7 @@ export default function Location(props) {
         <div>
           <div style={{ display: 'flex', marginBottom: 24 }}>
             <GreenButton
+              variant="contained"
               className={classes.createButton}
               onClick={()=>setPageState('create')}>
               <CreateIcon className={classes.createIcon} color="inherit"/>
