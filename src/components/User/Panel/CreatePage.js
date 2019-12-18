@@ -29,7 +29,7 @@ const LabelText = Loadable({
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
-    padding: theme.spacing(1, 2),
+    padding: theme.spacing(0, 2),
     width: '100%',
     boxSizing: 'border-box',
     maxWidth: 600,
@@ -209,11 +209,11 @@ export default function CreatePage(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text={ API._getWord(sess && sess.language).Create_Organizer } />
+      <LabelText text={ API._getWord(sess && sess.language).Create_Organizer } paddingTop={0} />
       <div style={{ marginTop: 24, maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
         <ThemeProvider theme={theme}>
           <TextField
-            autoFocus
+            autoFocus={API._isDesktopBrowser()}
             className={classes.margin}
             label={ API._getWord(sess && sess.language).Group_name }
             variant="outlined"
@@ -274,7 +274,7 @@ export default function CreatePage(props) {
               <div style={{ flex: 1 }} />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ flex: 1 }} />
-                <StyledIconButton className={classes.matchFile}>
+                <StyledIconButton disabled={pageName === ''} className={classes.matchFile}>
                   <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
                   <CloudUpload fontSize="large" style={{ color: primary[500] }} />
                 </StyledIconButton>
@@ -285,7 +285,7 @@ export default function CreatePage(props) {
           </div>
         }
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <GreenButton variant="contained" color="primary" className={classes.button}
+          <GreenButton variant="contained" color="primary" className={classes.button} disabled={pageName === ''}
             onClick={handleCreatePage}>
             { API._getWord(sess && sess.language).Create }
           </GreenButton>

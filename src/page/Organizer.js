@@ -30,6 +30,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 1200,
     width: '100%',
     margin: 'auto',
+    minHeight: window.innerHeight * .7
   },
 
 }));
@@ -39,6 +40,8 @@ export default function Organizer(props) {
   const { API, sess, token, setCSRFToken, handleSnackBar, BTN } = props
   const [ isFollow, setIsFollow ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
+  const [ isMatchNotEmpty, setIsMatchNotEmpty ] = React.useState(null)
+  const [ isPostNotEmpty, setIsPostNotEmpty ] = React.useState(null)
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -86,8 +89,27 @@ export default function Organizer(props) {
               data={data}
               setData={setData}
               pageid={parseInt(props.computedMatch.params.pageid)} />
-            <OrganizerMatchList {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
-            <OrganizerPost {...props} pageid={parseInt(props.computedMatch.params.pageid)} />
+            { isMatchNotEmpty !== null && isPostNotEmpty !== null &&
+              !(isMatchNotEmpty || isPostNotEmpty) &&
+              <div style={{ padding: '36px 16px', marginTop: 16, marginBottom: 16, border: `2px solid #757575` }}>
+                <h4 style={{ textAlign: 'center', fontSize: 28, color: '#757575' }}>
+                  { API._getWord(sess && sess.language)['Follow the group to get the latest update'] }
+                </h4>
+                {/*
+                  <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                    <Link to='/'
+                      style={{
+                        textAlign: 'center', fontSize: 24, margin: '24px 0',
+                        color: '#1e88e5'
+                      }}>{ API._getWord(sess && sess.language).Go_to_home }</Link>
+                  </div>*/
+                }
+              </div>
+            }
+            <OrganizerMatchList {...props} pageid={parseInt(props.computedMatch.params.pageid)}
+              isMatchNotEmpty={isMatchNotEmpty} setIsMatchNotEmpty={setIsMatchNotEmpty} />
+            <OrganizerPost {...props} pageid={parseInt(props.computedMatch.params.pageid)}
+              isPostNotEmpty={isPostNotEmpty} setIsPostNotEmpty={setIsPostNotEmpty} />
           </React.Fragment>
           :
           <div>

@@ -140,7 +140,7 @@ function RewardContainer(props){
   const classes = useStyles();
   const { sess, token, setCSRFToken,
     matchid, handleSnackBar,
-    data, setData, setMatchDetail, editing, mainClassSelected
+    data, setData, setMatchDetail, editing, mainClassSelected, isAvailableEditing
   } = props
   const [ editingData, setEditingData ] = React.useState(data.prize)
 
@@ -329,7 +329,7 @@ function RewardContainer(props){
 
 export default function MBReward(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isSetup, pageOrganizer, pageData } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isSetup, pageOrganizer, pageData, isAvailableEditing } = props
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
@@ -533,40 +533,44 @@ export default function MBReward(props){
   return(
     <React.Fragment>
       { !isSetup ?
-        <div style={{ display: 'flex', marginTop: 24 }}>
-          <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
-            { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
-          </Typography>
-          <BTN.NoStyleLink
-            to={
-              sess.typeid === 'admin' ?
-              `/system_admin/match/${matchid}` :
-              `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
-              }>
-            <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
-              { API._getWord(sess && sess.language).Back }
-            </BTN.RedOutlined>
-          </BTN.NoStyleLink>
-        </div>
+        ( isAvailableEditing &&
+          <div style={{ display: 'flex', marginTop: 24 }}>
+            <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
+              { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
+            </Typography>
+            <BTN.NoStyleLink
+              to={
+                sess.typeid === 'admin' ?
+                `/system_admin/match/${matchid}` :
+                `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
+                }>
+              <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
+                { API._getWord(sess && sess.language).Back }
+              </BTN.RedOutlined>
+            </BTN.NoStyleLink>
+          </div>
+        )
         :
         <div className={classes.root}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass.length > 1 &&
-              <FormControl className={classes.formControl}>
-                <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
-                <Select
-                  value={mainClassSelected}
-                  onChange={e => setMainClassSelected(e.target.value)}>
-                  { matchDetail &&
-                    matchDetail.mainclass.map( d =>
-                      <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                        {d.mainclassname}
-                      </MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            }
-          </div>
+          { isAvailableEditing &&
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass.length > 1 &&
+                <FormControl className={classes.formControl}>
+                  <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
+                  <Select
+                    value={mainClassSelected}
+                    onChange={e => setMainClassSelected(e.target.value)}>
+                    { matchDetail &&
+                      matchDetail.mainclass.map( (d, i) =>
+                        <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                          {d.mainclassname} ({d.type})
+                        </MenuItem>
+                    )}
+                  </Select>
+                </FormControl>
+              }
+            </div>
+          }
           <Paper elevation={1} style={{ backgroundColor: primary[100], padding: '8px 0' }}>
             <StyledTabs
               value={value}
@@ -591,60 +595,64 @@ export default function MBReward(props){
             </StyledTabs>
           </Paper>
           <div className={classes.list}>
-            <div style={{ display: 'flex', height: 56, marginBottom: 16, marginTop: 16 }}>
-              { data && data.status &&
-                <RedButton className={classes.buttonMargin}
-                  style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
-                  onClick={handleCreate}>
-                  { API._getWord(sess && sess.language).Create }
-                </RedButton>
-              }
-              { editing &&
-                <React.Fragment>
-                  <ThemeProvider theme={theme}>
-                    <TextField
-                      onChange={e =>handleRewardChange(e.target.value)}
-                      onFocus={e => e.target.select()}
-                      onKeyPress={e =>handleRewardKeyPress(e)}
-                      label={ API._getWord(sess && sess.language).Number }
-                      helperText={ API._getWord(sess && sess.language)['The number of the player who will get a reward.'] }
-                      type="number"
-                    />
-                  </ThemeProvider>
-                <GreenButton variant="contained" className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
-                  { API._getWord(sess && sess.language).Save }
-                </GreenButton>
-                </React.Fragment>
-              }
-              { data && !/not create/.test(data.status) &&
-                <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
-                  { API._getWord(sess && sess.language).Reset }
-                </GreenTextButton>
-              }
-              <div style={{ flex: 1 }} />
-              { window.innerWidth >= 500 && editing &&
-                <GreenTextButton
-                  className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-                  onClick={()=>setEditing(false)}>
-                  { API._getWord(sess && sess.language).Done }
-                </GreenTextButton>
-              }
-              { !editing &&
-                <GreenButton
-                  className={classes.buttonMargin} color='primary' onClick={()=>setEditing(!editing)}>
-                  { API._getWord(sess && sess.language).Edit }
-                </GreenButton>
-              }
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              { window.innerWidth < 500 && editing &&
-                <GreenTextButton
-                  className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
-                  onClick={()=>setEditing(false)}>
-                  { API._getWord(sess && sess.language).Done }
-                </GreenTextButton>
-              }
-            </div>
+            { isAvailableEditing &&
+              <React.Fragment>
+                <div style={{ display: 'flex', height: 56, marginBottom: 16, marginTop: 16 }}>
+                  { data && data.status &&
+                    <RedButton className={classes.buttonMargin}
+                      style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
+                      onClick={handleCreate}>
+                      { API._getWord(sess && sess.language).Create }
+                    </RedButton>
+                  }
+                  { editing &&
+                    <React.Fragment>
+                      <ThemeProvider theme={theme}>
+                        <TextField
+                          onChange={e =>handleRewardChange(e.target.value)}
+                          onFocus={e => e.target.select()}
+                          onKeyPress={e =>handleRewardKeyPress(e)}
+                          label={ API._getWord(sess && sess.language).Number }
+                          helperText={ API._getWord(sess && sess.language)['The number of the player who will get a reward.'] }
+                          type="number"
+                        />
+                      </ThemeProvider>
+                    <GreenButton variant="contained" className={classes.buttonMargin} style={{ marginLeft: 8 }} color='primary' onClick={handleEdit}>
+                      { API._getWord(sess && sess.language).Save }
+                    </GreenButton>
+                    </React.Fragment>
+                  }
+                  { data && !/not create/.test(data.status) &&
+                    <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
+                      { API._getWord(sess && sess.language).Reset }
+                    </GreenTextButton>
+                  }
+                  <div style={{ flex: 1 }} />
+                  { window.innerWidth >= 500 && editing &&
+                    <GreenTextButton
+                      className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
+                      onClick={()=>setEditing(false)}>
+                      { API._getWord(sess && sess.language).Done }
+                    </GreenTextButton>
+                  }
+                  { !editing &&
+                    <GreenButton
+                      className={classes.buttonMargin} color='primary' onClick={()=>setEditing(!editing)}>
+                      { API._getWord(sess && sess.language).Edit }
+                    </GreenButton>
+                  }
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  { window.innerWidth < 500 && editing &&
+                    <GreenTextButton
+                      className={classes.buttonMargin} variant="outlined" style={{ marginLeft: 8 }} color='primary'
+                      onClick={()=>setEditing(false)}>
+                      { API._getWord(sess && sess.language).Done }
+                    </GreenTextButton>
+                  }
+                </div>
+              </React.Fragment>
+            }
             <List>
               <ListItem
                 style={{ display: 'flex', backgroundColor: 'black', borderRadius: 4 }}
@@ -666,7 +674,7 @@ export default function MBReward(props){
                 }
               </ListItem>
             </List>
-            <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .5 }}>
+            <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .5, }}>
               { data && !data.status && matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
                 (
                   matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( (c, i) =>
@@ -707,7 +715,7 @@ export default function MBReward(props){
                     <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                       {getRewardStatus(data.status)}
                     </Box>
-                    { data.status === 'reward not create' &&
+                    { isAvailableEditing && data.status === 'reward not create' &&
                       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
                         <BTN.PrimaryOutlined onClick={handleCreate}>
                           <AddIcon style={{ marginRight: 8 }} />

@@ -30,10 +30,13 @@ const useStyles = makeStyles(theme => ({
   },
   grid: {
     marginTop: 24,
-    padding: theme.spacing(1.5),
+    padding: theme.spacing(0, 1.5, 1.5, 1.5),
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     boxSizing: 'border-box',
+    [theme.breakpoints.down(400)]: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    },
   },
 
 
@@ -41,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function OrganizerMatchList(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, pageid, pageOrganizer, pageData } = props
+  const { API, sess, token, setCSRFToken, pageid, pageOrganizer, pageData, setIsMatchNotEmpty } = props
   const [ data, setData ] = React.useState(null)
 
   async function handleFetch(){
@@ -55,6 +58,13 @@ export default function OrganizerMatchList(props) {
     }, function(csrf, d){
       setCSRFToken(csrf)
       setData(d)
+      if(setIsMatchNotEmpty){
+        if(d.length > 0){
+          setIsMatchNotEmpty(true)
+        }else{
+          setIsMatchNotEmpty(false)
+        }
+      }
     })
   }
 
@@ -64,20 +74,24 @@ export default function OrganizerMatchList(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text={ API._getWord(sess && sess.language).Match_list } />
       { ( data && data.length > 0 ) ?
-        <div className={classes.grid}>
-          { data.map( d => <OrganizerMatchCard key={d.postid} data={d} setData={setData} {...props} />) }
-          { ( data.length === 1 || data.length === 2 ) &&
-            Array.from(new Array( 3 - data.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
-          }
-        </div>
+        <React.Fragment>
+          <LabelText text={ API._getWord(sess && sess.language).Upcoming } paddingTop={0} />
+          <div className={classes.grid}>
+            { data.map( d => <OrganizerMatchCard key={d.postid} data={d} setData={setData} {...props} />) }
+            { ( data.length === 1 || data.length === 2 ) &&
+              Array.from(new Array( 3 - data.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
+            }
+          </div>
+        </React.Fragment>
         :
+        /*
         <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
           <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
             { API._getWord(sess && sess.language).No_match }
           </Box>
-        </Typography>
+        </Typography>*/
+        null
       }
     </div>
   );

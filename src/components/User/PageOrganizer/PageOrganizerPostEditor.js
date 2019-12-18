@@ -200,31 +200,27 @@ export default function PageOrganizerPostEditor(props) {
     const sendObj = {
       action: 'post',
       pageid: pageData.pageid,
-      type: selectedTypePost
+      type: selectedTypePost,
     };
+
+    if(selectedTypePost === 'announce'){
+      Object.assign(sendObj, { announcedetail:  detail ? detail : '<p></p>' });
+      if(title){
+        Object.assign(sendObj, { message:  title});
+      }
+    }
+
+    if(selectedTypePost === 'post'){
+      if(title){
+        Object.assign(sendObj, { message:  title + '<$$split$$>' + (detail ? detail : '<p></p>') });
+      }
+    }
 
     if(selectedTypePost === 'match'){
       if(selectedMatch){
         Object.assign(sendObj, { matchid:  selectedMatch.matchid});
       }
-    }
-
-    if(selectedTypePost === 'post'){
-      if(title && detail){
-        Object.assign(sendObj, { message:  title + '<$$split$$>' + detail });
-      }
-    }
-
-    if(selectedTypePost === 'announce'){
-      if(detail){
-        Object.assign(sendObj, { announcedetail:  detail });
-      }
-    }
-
-    if(selectedTypePost !== 'post'){
-      if(title){
-        Object.assign(sendObj, { message:  title});
-      }
+      Object.assign(sendObj, { message:  `Match ${selectedMatch.matchid}`});
     }
 
     await API._xhrPost(
@@ -293,21 +289,17 @@ export default function PageOrganizerPostEditor(props) {
       if(selectedMatch){
         Object.assign(sendObj, { matchid:  selectedMatch.matchid});
       }
+      Object.assign(sendObj, { message:  `Match ${selectedMatch.matchid}`});
     }
 
     if(selectedTypePost === 'post'){
-      if(title && detail){
-        Object.assign(sendObj, { message:  title + '<$$split$$>' + detail });
+      if(title){
+        Object.assign(sendObj, { message:  title + '<$$split$$>' + (detail ? detail : '<p></p>') });
       }
     }
 
     if(selectedTypePost === 'announce'){
-      if(detail){
-        Object.assign(sendObj, { announcedetail:  detail });
-      }
-    }
-
-    if(selectedTypePost !== 'post'){
+      Object.assign(sendObj, { announcedetail:  detail ? detail : '<p></p>' });
       if(title){
         Object.assign(sendObj, { message:  title});
       }
@@ -413,7 +405,7 @@ export default function PageOrganizerPostEditor(props) {
 
   return (
     <React.Fragment>
-      <div style={{ marginTop: 24 }}>
+      <div>
         <ThemeProvider theme={theme}>
           <FormControl component="fieldset" className={classes.margin}
             style={{
@@ -448,7 +440,7 @@ export default function PageOrganizerPostEditor(props) {
             :
             <React.Fragment>
               <TextField
-                autoFocus
+                autoFocus={API._isDesktopBrowser()}
                 className={classes.margin}
                 label={ API._getWord(sess && sess.language).Title }
                 value={title}
@@ -529,6 +521,18 @@ export default function PageOrganizerPostEditor(props) {
           }
         </ThemeProvider>
         <GreenButton variant="contained" color="primary" className={classes.button}
+          disabled={function(){
+            switch (selectedTypePost) {
+              case 'match':
+                return ( selectedMatch === null )
+                break;
+              case 'announce':
+                return ( title === '' || selectedFile === null )
+                break;
+              default:
+                return ( title === '' )
+            }
+          }()}
           onClick={clickAction === 'edit'? handleFetchEditPost : handleFetchCreatePost}>
           { clickAction === 'edit'?
             ( API._getWord(sess && sess.language).Save )

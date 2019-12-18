@@ -78,7 +78,7 @@ export default function ListFollow(props) {
           { data &&
             data.map( d =>
               <BTN.NoStyleLink to={`/page/${d.pageid}`} key={d.pageid}>
-                <ListItem button>
+                <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
                   <Tooltip title={d.pagename} placement="right">
                     <ListItemIcon>
                       { d.logo ?

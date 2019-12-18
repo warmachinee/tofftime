@@ -23,7 +23,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: 36
+    //marginTop: 36
   },
   formControl: {
     margin: theme.spacing(1),
@@ -322,8 +322,15 @@ export default function CourseEditor(props){
     const resToken = token? token : await API._xhrGet('getcsrf')
     const sendObj = {
       action: sess.typeid === 'admin' ? 'create' : 'createcustom',
-      fieldtype: pageOrganizer ? pageData.pageid : 0,
     };
+
+    if(pageOrganizer){
+      if(pageData){
+        Object.assign(sendObj, { fieldtype: pageData.pageid });
+      }
+    }else{
+      Object.assign(sendObj, { fieldtype: 0, });
+    }
 
     if(sess.typeid === 'admin'){
       Object.assign(sendObj, { custom: !official ? 0 : 1 });
@@ -370,6 +377,13 @@ export default function CourseEditor(props){
           if(selectedFile){
             handleEditPicture(d.fieldid)
           }else{
+            if(props.setSelectedField){
+              props.setSelectedField({
+                ...d,
+                fieldname: location
+              })
+              props.setSelectedFieldVersion(1)
+            }
             afterSuccess()
           }
         }
@@ -408,6 +422,13 @@ export default function CourseEditor(props){
     const res = await API._xhrGet('getcsrf')
     setCSRFToken(res.token)
     afterSuccess()
+    if(props.setSelectedField){
+      props.setSelectedField({
+        ...d,
+        fieldname: location
+      })
+      props.setSelectedFieldVersion(1)
+    }
   }
 
   async function handleEdit(){

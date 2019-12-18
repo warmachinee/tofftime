@@ -110,7 +110,7 @@ export default function AddFriend(props) {
       <LabelText text={ API._getWord(sess && sess.language).Search } />
       <ThemeProvider theme={theme}>
         <TextField
-          autoFocus
+          autoFocus={API._isDesktopBrowser()}
           className={classes.searchBox}
           style={{ marginTop: 24 }}
           variant="outlined"

@@ -23,12 +23,38 @@ const OrganizerList = Loadable({
   loading: () => null
 });
 
+function Banner1(props){
+
+  return (
+    <a
+      href="mailto:support@tofftime.com"
+      style={{ textDecoration: 'none' }}
+      target="_blank">
+      <div
+        id="main-banner"
+        style={{ maxWidth: 1200, maxHeight: 268, marginTop: 16, marginBottom: 16, marginLeft: 'auto', marginRight: 'auto', textDecoration: 'none' }}>
+        <img
+          style={{
+            width: '100%',
+            color: 'black',
+            backgroundColor: props.COLOR.grey[300],
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+          }}
+          src="https://thai-pga.com/system/ads/ads.png" />
+      </div>
+    </a>
+  );
+}
+
 function MainPage(props) {
   const { sess } = props
 
   return (
     <React.Fragment>
       <Announce {...props} />
+      <Banner1 {...props} />
       <MatchList {...props} />
       <OrganizerList {...props} />
       <News {...props} />

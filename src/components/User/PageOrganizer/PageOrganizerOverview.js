@@ -48,8 +48,8 @@ const useStyles = makeStyles(theme => ({
   },
   moreButton: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 0,
+    right: 0,
     zIndex: 2
   },
   imageGrid: {
@@ -59,11 +59,18 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer'
   },
   avatar: {
-    fontSize: 120
+    fontSize: 120,
+    [theme.breakpoints.down(500)]: {
+      fontSize: 60,
+    },
   },
   avatarImage: {
     width: 120,
     height: 120,
+    [theme.breakpoints.down(500)]: {
+      width: 60,
+      height: 60,
+    },
   },
   pageDetailGrid: {
     display: 'flex',
@@ -236,12 +243,14 @@ export default function PageOrganizerOverview(props) {
               </div>
             </div>
           </div>
-          <Divider style={{ marginTop: 16, marginBottom: 16 }} />
+          <Divider />
           <div style={{ padding: 16 }}>
-            <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createMatch')}>
-              <AddCircle style={{ marginRight: 8 }} />
-              { API._getWord(sess && sess.language).Create_Match }
-            </BTN.PrimaryOutlined>
+            {/*
+              <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createMatch')}>
+                <AddCircle style={{ marginRight: 8 }} />
+                { API._getWord(sess && sess.language).Create_Match }
+              </BTN.PrimaryOutlined>*/
+            }
             <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createPost')}>
               <AddCircle style={{ marginRight: 8 }} />
               { API._getWord(sess && sess.language).Post }
@@ -274,7 +283,7 @@ export default function PageOrganizerOverview(props) {
         content={
           <ThemeProvider theme={theme}>
             <TextField
-              autoFocus
+              autoFocus={API._isDesktopBrowser()}
               fullWidth
               style={{ marginTop: 16 }}
               className={classes.margin}
@@ -317,7 +326,7 @@ export default function PageOrganizerOverview(props) {
         onClose={handleClose}
       >
         <MenuItem onClick={()=>confirmOpen('request')}>{ API._getWord(sess && sess.language).Request_mainpage_BTN }</MenuItem>
-        <MenuItem onClick={()=>props.dialogOpen('setAdmin')}>{ API._getWord(sess && sess.language).Set_admin }</MenuItem>
+        <MenuItem onClick={()=>props.dialogOpen('setAdmin')}>{ API._getWord(sess && sess.language).Group_admin }</MenuItem>
         { pageData &&
           <BTN.NoStyleLink to={`/organizer/${pageData.pageid}/profile/`}>
             <MenuItem onClick={handleClose}>{ API._getWord(sess && sess.language).Setting }</MenuItem>

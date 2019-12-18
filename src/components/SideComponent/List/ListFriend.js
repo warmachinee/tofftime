@@ -69,6 +69,14 @@ export default function ListFriend(props) {
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
 
+  function handleClickAddFriend(){
+    toggleAddFriend()
+    /*
+    if(window.innerWidth <= 600){
+      props.setOpen(false)
+    }*/
+  }
+
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -91,7 +99,7 @@ export default function ListFriend(props) {
       <Divider />
       <List>
         <ListItem button
-          onClick={()=>( data && data.length > 0 ) ? handleExpand('friend') : toggleAddFriend()}>
+          onClick={()=>( data && data.length > 0 ) ? handleExpand('friend') : handleClickAddFriend()}>
           { ( data && data.length > 0 ) ?
             <ListItemIcon>
               { expanded.friend ? <ExpandLess /> : <ExpandMore /> }
@@ -117,7 +125,7 @@ export default function ListFriend(props) {
         <List component="div" disablePadding>
           { data && data.length > 0 &&
             <ListItem button
-              onClick={()=>toggleAddFriend()}>
+              onClick={()=>handleClickAddFriend()}>
               <Tooltip title={ API._getWord(sess && sess.language).Search_Friend } placement="right">
                 <ListItemIcon>
                   <Search />

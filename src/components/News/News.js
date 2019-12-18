@@ -26,12 +26,13 @@ const useStyles = makeStyles(theme => ({
     margin: 'auto',
   },
   grid: {
-    padding: theme.spacing(1.5),
+    marginTop: 24,
+    padding: theme.spacing(0, 1.5, 1.5, 1.5),
     display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     boxSizing: 'border-box',
-    gridTemplateColumns: 'auto',
-    [theme.breakpoints.up(1000)]: {
-      gridTemplateColumns: 'auto auto',
+    [theme.breakpoints.down(400)]: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
     },
   },
 
@@ -59,17 +60,18 @@ export default function News(props) {
 
   return(
     <div id="el_news" className={classes.root}>
-      { data && data.length > 0 &&
+      { ( data && data.length > 0 ) ?
         <React.Fragment>
           <LabelText text={'News'} />
           <div className={classes.grid}>
-            { data?
-              data.map( d => <NewsCard key={d.newsid} {...props} data={d} /> )
-              :
-              Array.from(new Array(3)).map((d, i) => <NewsCard key={i} loading/>)
+            { data.map( d => <NewsCard key={d.newsid} {...props} data={d} /> ) }
+            { ( data.length === 1 || data.length === 2 ) &&
+              Array.from(new Array( 3 - data.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
             }
           </div>
         </React.Fragment>
+        :
+        null
       }
     </div>
   );

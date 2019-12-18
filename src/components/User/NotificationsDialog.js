@@ -54,10 +54,11 @@ const useStyles = makeStyles(theme => ({
 
 export default function NotificationsDialog(props) {
   const classes = useStyles();
-  const { API, sess, notiState, toggleNoti, notiData } = props
+  const { COLOR, API, sess, notiState, toggleNoti, notiData } = props
 
   return (
     <TemplateDialog maxWidth="sm" maxHeight="100%" open={notiState} handleClose={toggleNoti}
+      fullScreen={window.innerWidth <= 600}
       title={<LabelText text={ API._getWord(sess && sess.language).Notifications } />}>
       <div className={classes.root}>
         <List>
@@ -65,11 +66,17 @@ export default function NotificationsDialog(props) {
             notiData.map( d => <ListNotiItem key={d.createdate} {...props} data={d} />)
           }
           { notiData && notiData.length === 0 &&
-            <ListItem style={{ marginTop: 24 }}>
-              <div style={{
-                  width: '100%', padding: '36px 0', textAlign: 'center',
-                  fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No notification</div>
-            </ListItem>
+            /*
+              <ListItem style={{ marginTop: 24 }}>
+                <div style={{
+                    width: '100%', padding: '36px 0', textAlign: 'center',
+                    fontSize: 24, fontWeight: 600, borderRadius: 4, border: '1px solid', boxSizing: 'border-box' }}>No notification</div>
+              </ListItem>*/
+            <Typography component="div" style={{ width: '100%' }}>
+              <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24}>
+                { API._getWord(sess && sess.language).No_notifications }
+              </Box>
+            </Typography>
           }
         </List>
       </div>

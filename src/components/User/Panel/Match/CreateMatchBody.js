@@ -233,7 +233,7 @@ export default function CreateMatchBody(props){
                 <React.Fragment>
                   <ThemeProvider theme={theme}>
                     <TextField
-                      autoFocus={activeStep === 0}
+                      autoFocus={API._isDesktopBrowser() && activeStep === 0}
                       variant="outlined"
                       className={classes.margin}
                       label={ API._getWord(sess && sess.language).Match_name }
@@ -320,7 +320,7 @@ export default function CreateMatchBody(props){
                   </div>
                 </React.Fragment>
               );
-            case 1:
+            case (selectedMatchType === '1' ? 99 : 1):
               return (
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                   <ThemeProvider theme={theme}>
@@ -360,14 +360,14 @@ export default function CreateMatchBody(props){
                   </ThemeProvider>
                 </div>
               )
-            case 2:
+            case (selectedMatchType === '1' ? 1 : 2):
               return (
                 <Location
                   {...props}
                   selectedField={selectedField}
                   setSelectedField={setSelectedField} />
               )
-            case 3:
+            case (selectedMatchType === '1' ? 2 : 3):
               return (
                 <div>
                   { selectedFile && tempFile?
@@ -428,7 +428,7 @@ export default function CreateMatchBody(props){
                   }
                 </div>
               );
-            case 4:
+            case (selectedMatchType === '1' ? 3 : 4):
               return (
                 <React.Fragment>
                   <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />

@@ -19,21 +19,25 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     minHeight: 300,
-    marginTop: 24,
     marginBottom: 24,
     backgroundColor: theme.palette.background.default,
   },
   header: {
     display: 'flex',
     justifyContent: 'center',
-    height: 50,
-    marginTop: 16,
     backgroundColor: theme.palette.background.default,
   },
 
 }));
 
-const labelSteps = [
+const labelSteps4 = [
+  'Math detail',
+  'Course',
+  'Add Picture',
+  'Match Rules, Regulations and Detail'
+]
+
+const labelSteps5 = [
   'Math detail',
   'Set up special reward',
   'Course',
@@ -49,7 +53,6 @@ export default function MatchStepper(props) {
     setExpanded, pageOrganizer, pageData
   } = props
   const [ activeStep, setActiveStep ] = React.useState(0);
-  const maxSteps = labelSteps.length;
   const [ matchName, setMatchName ] = React.useState('');
   const [ selectedField, setSelectedField ] = React.useState(null);
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
@@ -66,6 +69,7 @@ export default function MatchStepper(props) {
     lowgross: false,
     booby: false
   })
+  const maxSteps = selectedMatchType === '1' ? labelSteps4.length : labelSteps5.length;
 
   const passingFunction = {
     matchName: matchName,
@@ -242,6 +246,16 @@ export default function MatchStepper(props) {
           variant: /success/.test(d.status) ? d.status : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
+        if(pageOrganizer && !/create_match/.test(window.location.href)){
+          if(props.isCreateAfterDone){
+            handleFetchCreatePost(matchid)
+          }
+          if(props.handleCloseEditor){
+            props.handleCloseEditor()
+          }
+        }else{
+          window.location.replace(`/match/${matchid}`);
+        }
       }
     })
   }
@@ -299,9 +313,12 @@ export default function MatchStepper(props) {
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         if(/success/.test(d.status)){
-          if(pageOrganizer){
+          if(pageOrganizer && !/create_match/.test(window.location.href)){
             if(props.isCreateAfterDone){
               handleFetchCreatePost(matchid)
+            }
+            if(props.handleCloseEditor){
+              props.handleCloseEditor()
             }
           }else{
             window.location.replace(`/match/${matchid}`);
@@ -309,9 +326,12 @@ export default function MatchStepper(props) {
         }
       })
     }else{
-      if(pageOrganizer){
+      if(pageOrganizer && !/create_match/.test(window.location.href)){
         if(props.isCreateAfterDone){
           handleFetchCreatePost(matchid)
+        }
+        if(props.handleCloseEditor){
+          props.handleCloseEditor()
         }
       }else{
         window.location.replace(`/match/${matchid}`);
@@ -403,7 +423,7 @@ export default function MatchStepper(props) {
                 case 0:
                   return matchName === ''
                   break;
-                case 2:
+                case selectedMatchType === '1' ? 1 : 2:
                   return selectedField === null
                   break;
                 default:
@@ -425,7 +445,9 @@ export default function MatchStepper(props) {
 
       { !( activeStep === 1 && pageState !== 'select' ) &&
         <Paper square elevation={0} className={classes.header}>
-          <Typography variant="h6" style={{ textAlign: 'center' }}>{getLabel(labelSteps[activeStep])}</Typography>
+          <Typography variant="h6" style={{ textAlign: 'center' }}>
+            {selectedMatchType === '1' ? getLabel(labelSteps4[activeStep]) : getLabel(labelSteps5[activeStep]) }
+          </Typography>
         </Paper>
       }
       <CreateMatchBody {...props} {...passingFunction} activeStep={activeStep} handleNext={handleNext} />

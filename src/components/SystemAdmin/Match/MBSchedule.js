@@ -231,7 +231,7 @@ const theme = createMuiTheme({
 
 export default function MBSchedule(props){
   const classes = useStyles();
-  const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isAvailableEditing } = props
   const [ teamState, setTeamState ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -484,78 +484,86 @@ export default function MBSchedule(props){
             </a>
           </div>
         }
-        <ListItem disableGutters className={classes.controls}>
-          <GreenTextButton
-            className={classes.button}
-            style={{ marginBottom: window.innerWidth > 700? 0 : 16, }}
-            onClick={handleTeamOpen}
-            variant="outlined">
-            { matchDetail && matchDetail.team && matchDetail.team.length > 0?
-              (
-                ( API._getWord(sess && sess.language).Manage_Schedule ) + '( ' + matchDetail.team.length + ' )'
-              )
-              :
-              ( API._getWord(sess && sess.language).Create_schedule )
-            }
-          </GreenTextButton>
-          <div style={{ flex: 1 }} />
-          <GreenTextButton variant="outlined" className={classes.button} onClick={handleMenuClick}>
-            <AccessTimeIcon fontSize="large" style={{ color: primary[600], marginRight: 4 }} />
-            { selectedTeam !== 0 ? (
-              sess && `${API._getWord(sess.language).Selected_Time} : `
-            ): (
-              API._getWord(sess && sess.language).Select_Time
-            ) }
-            { selectedTeam !== 0?
-              matchDetail && matchDetail.team &&
-              matchDetail.team.filter( item =>{
-                return item.teamno === selectedTeam
-              }).map( d =>
-                d &&
-                <React.Fragment key={d.teamname}>{d.teamname}</React.Fragment>
-              )
-              : ''
-            }
-          </GreenTextButton>
-        </ListItem>
-        <ListItem disableGutters>
-          <div style={{ display: 'flex' }}>
-            <GreenTextButton
-              className={classes.button}
-              onClick={handleFetchSwitchHostForm}
-              variant="outlined">
-              { API._getWord(sess && sess.language).Switch_Host }
-            </GreenTextButton>
-            <StyledTooltip
-              PopperProps={{
-                disablePortal: true,
-              }}
-              onClose={()=>setHelpState(false)}
-              open={helpState}
-              disableFocusListener
-              disableHoverListener
-              disableTouchListener
-              title={
-                <Typography>
-                  { ( sess && sess.language === 'TH' ) ?
-                    "กดปุ่มนี้เพื่อเพิ่มผู้จัดการแข่งขันเข้าไปในรายชื่อ ในกรณีที่ต้องการเข้าร่วมการแข่งขัน"
-                    :
-                    'Click this button to add the organizer to the list. In the case of wanting to participate in the match.'
-                  }
-                </Typography>
-              }>
-              <IconButton onClick={handleClickHelpState}>
-                <HelpIcon fontSize="small" style={{ color: primary[600] }} />
-              </IconButton>
-            </StyledTooltip>
-          </div>
-          <div style={{ flex: 1 }} />
-          { checked.length > 0 && selectedTeam !== 0 &&
-            <GreenButton variant="contained" className={classes.controlsEditButton2} onClick={handleSave}>
-              { API._getWord(sess && sess.language).Save }
-            </GreenButton>
-          }
-        </ListItem>
+        { isAvailableEditing &&
+          <React.Fragment>
+            <ListItem disableGutters className={classes.controls}>
+              <GreenTextButton
+                className={classes.button}
+                style={{ marginBottom: window.innerWidth > 700? 0 : 16, }}
+                onClick={handleTeamOpen}
+                variant="outlined">
+                { matchDetail && matchDetail.team && matchDetail.team.length > 0?
+                  (
+                    ( API._getWord(sess && sess.language).Manage_Schedule ) + '( ' + matchDetail.team.length + ' )'
+                  )
+                  :
+                  ( API._getWord(sess && sess.language).Create_schedule )
+                }
+              </GreenTextButton>
+              <div style={{ flex: 1 }} />
+              <GreenTextButton
+                variant="outlined" className={classes.button} onClick={handleMenuClick}
+                startIcon={
+                  <AccessTimeIcon fontSize="large" style={{ color: primary[600], marginRight: 4 }} />
+                }>
+                { selectedTeam !== 0 ? (
+                  sess && `${API._getWord(sess.language).Selected_Time} : `
+                ): (
+                  API._getWord(sess && sess.language).Select_Time
+                ) }
+                { selectedTeam !== 0?
+                  matchDetail && matchDetail.team &&
+                  matchDetail.team.filter( item =>{
+                    return item.teamno === selectedTeam
+                  }).map( d =>
+                    d &&
+                    <React.Fragment key={d.teamname}>{d.teamname}</React.Fragment>
+                  )
+                  : ''
+                }
+              </GreenTextButton>
+            </ListItem>
+            <ListItem disableGutters>
+              <div style={{ display: 'flex' }}>
+                <GreenTextButton
+                  className={classes.button}
+                  onClick={handleFetchSwitchHostForm}
+                  variant="outlined">
+                  { API._getWord(sess && sess.language).Switch_Host }
+                </GreenTextButton>
+                <StyledTooltip
+                  PopperProps={{
+                    disablePortal: true,
+                  }}
+                  onClose={()=>setHelpState(false)}
+                  open={helpState}
+                  disableFocusListener
+                  disableHoverListener
+                  disableTouchListener
+                  title={
+                    <Typography>
+                      { ( sess && sess.language === 'TH' ) ?
+                        "กดปุ่มนี้เพื่อเพิ่มผู้จัดการแข่งขันเข้าไปในรายชื่อ ในกรณีที่ต้องการเข้าร่วมการแข่งขัน"
+                        :
+                        'Click this button to add the organizer to the list. In the case of wanting to participate in the match.'
+                      }
+                    </Typography>
+                  }>
+                  <IconButton onClick={handleClickHelpState}>
+                    <HelpIcon fontSize="small"
+                      style={{ color: primary[helpState ? 400 : 600] }} />
+                  </IconButton>
+                </StyledTooltip>
+              </div>
+              <div style={{ flex: 1 }} />
+              { checked.length > 0 && selectedTeam !== 0 &&
+                <GreenButton variant="contained" className={classes.controlsEditButton2} onClick={handleSave}>
+                  { API._getWord(sess && sess.language).Save }
+                </GreenButton>
+              }
+            </ListItem>
+          </React.Fragment>
+        }
         { /*
           <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
             <ThemeProvider theme={theme}>
@@ -588,10 +596,8 @@ export default function MBSchedule(props){
           </ListItem>*/
         }
         <div style={{ overflow: 'auto', position: 'relative' }}>
-          <ListItem role={undefined}
-            style={{
-              display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
-            }}>
+          <ListItem
+            style={{ display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto', }}>
             <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
@@ -608,7 +614,7 @@ export default function MBSchedule(props){
                 primary={ API._getWord(sess && sess.language).Time } />
             }
           </ListItem>
-          { matchDetail && matchDetail.team && matchDetail.team.length === 0 &&
+          { isAvailableEditing && matchDetail && matchDetail.team && matchDetail.team.length === 0 &&
             <ListItem>
               <Typography component="div" style={{ width: '100%', display: 'flex' }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
@@ -621,7 +627,7 @@ export default function MBSchedule(props){
               </Typography>
             </ListItem>
           }
-          <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
+          <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative', }}>
             { ( data && !data.status ) ?
               (
                 data.length > 0 ?
@@ -630,8 +636,8 @@ export default function MBSchedule(props){
                 ].slice(0, dataSliced).map(value => {
                   return value && (
                     <React.Fragment key={value.userid}>
-                      <ListItem role={undefined} button
-                        onClick={()=>handleToggle(value)}>
+                      <ListItem button={isAvailableEditing}
+                        onClick={()=>isAvailableEditing ? handleToggle(value) : console.log()}>
                         <ListItemIcon>
                           {selectedTeam !== 0 ?
                             <GreenCheckbox
@@ -724,14 +730,16 @@ export default function MBSchedule(props){
                   <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                     { API._getWord(sess && sess.language).No_player }
                   </Box>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                    <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
-                      <BTN.PrimaryOutlined>
-                        <AddIcon style={{ marginRight: 8 }} />
-                        { API._getWord(sess && sess.language).Invite_players }
-                      </BTN.PrimaryOutlined>
-                    </BTN.NoStyleLink>
-                  </div>
+                  { isAvailableEditing &&
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                      <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
+                        <BTN.PrimaryOutlined>
+                          <AddIcon style={{ marginRight: 8 }} />
+                          { API._getWord(sess && sess.language).Invite_players }
+                        </BTN.PrimaryOutlined>
+                      </BTN.NoStyleLink>
+                    </div>
+                  }
                 </Typography>
               )
               :

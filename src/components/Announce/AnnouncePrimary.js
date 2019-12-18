@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     position: 'relative',
     width: '100%',
-    margin: 'auto',
+    marginBottom: 'auto',
     [theme.breakpoints.up(900)]: {
       width: '70%',
     },
@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.secondary,
   },
   sliderItem: {
-    maxHeight: 500,
+    maxHeight: 450,
     width: '100%',
     color: 'black',
     display: 'block',
@@ -172,7 +172,7 @@ export default function AnnouncePrimary(props) {
                     :
                     <Skeleton
                       className={classes.skeleton}
-                      style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300] }} />
+                      style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 450, backgroundColor: grey[300] }} />
                   }
                 </BTN.NoStyleLink>
                 <BTN.NoStyleLink to={`/announce/${d.announceid}`}>
@@ -191,7 +191,7 @@ export default function AnnouncePrimary(props) {
           <div>
             <Skeleton
               className={classes.skeleton}
-              style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 500, backgroundColor: grey[300] }} />
+              style={{ height: ( window.innerWidth * .6 - 48), maxHeight: 450, backgroundColor: grey[300] }} />
             <Skeleton
               className={classes.skeleton}
               height={32}

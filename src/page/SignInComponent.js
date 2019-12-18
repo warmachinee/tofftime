@@ -128,7 +128,7 @@ export default function SignInComponent(props){
       <div>
         <ThemeProvider theme={theme}>
           <TextField
-            autoFocus
+            autoFocus={API._isDesktopBrowser()}
             error={actionStatus === 'wrong email'}
             className={classes.margin}
             label="Username or Email"

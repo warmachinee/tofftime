@@ -91,7 +91,7 @@ export default function SignInComponent(props){
       <div>
         <ThemeProvider theme={theme}>
           <TextField
-            autoFocus
+            autoFocus={API._isDesktopBrowser()}
             className={classes.margin}
             label="Email"
             variant="outlined"

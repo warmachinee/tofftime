@@ -68,7 +68,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 1200,
     marginLeft: 'auto',
     marginRight: 'auto',
-    padding: theme.spacing(3, 2),
+    padding: theme.spacing(0, 2),
     overflow: 'auto',
     overflowScrolling: 'touch',
     WebkitOverflowScrolling: 'touch',
@@ -156,6 +156,10 @@ export default function Management(props) {
       </React.Fragment>
     )
   }
+
+  React.useEffect(()=>{
+    document.title = `Management - T-off Time`
+  },[ window.location.pathname ])
 
   return (
     <div className={classes.root}>

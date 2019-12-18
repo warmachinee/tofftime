@@ -412,7 +412,7 @@ function CreateMatchBody(props){
         <div className={classes.gridChild1}>
           <ThemeProvider theme={theme}>
             <TextField
-              autoFocus
+              autoFocus={API._isDesktopBrowser()}
               className={classes.margin}
               label={ API._getWord(sess && sess.language).Match_name }
               value={matchName || ''}

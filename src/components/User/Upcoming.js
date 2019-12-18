@@ -4,9 +4,10 @@ import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
 import {
-  Button, Typography, Box
+  Button, Typography, Box, Paper, IconButton,
 } from '@material-ui/core'
 
+import ArrowDownward from '@material-ui/icons/ArrowDownward'
 import Skeleton from '@material-ui/lab/Skeleton';
 
 const MatchCard = Loadable({
@@ -27,24 +28,48 @@ const useStyles = makeStyles(theme => ({
     margin: 'auto',
   },
   grid: {
-    marginTop: 24,
     padding: theme.spacing(1.5),
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     boxSizing: 'border-box',
+    [theme.breakpoints.down(400)]: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    },
   },
 
 }));
 
 export default function Upcoming(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, userid, userData, pageOrganizer, pageData } = props
+  const { API, BTN, sess, token, setCSRFToken, userid, userData, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
+  const [ cardLimit, setCardLimit ] = React.useState(
+    function(){
+      switch (true) {
+        case ( window.innerWidth < (props.open ? 1164 : 997) ):
+          return 2
+          break;
+        case ( window.innerWidth >= (props.open ? 1164 : 997) ):
+          return 3
+          break;
+        default:
+          return 10
+      }
+    }()
+  )
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
-    const sendObj = {
-      action: 'upcoming'
+    const urlAPI = pageOrganizer ? 'mloadpage' : 'loadusersystem'
+    const sendObj = {}
+    if(pageOrganizer && pageData){
+      Object.assign(sendObj, {
+        action: 'match',
+        subaction: 'upcoming',
+        pageid: pageData.pageid
+      });
+    }else{
+      Object.assign(sendObj, { action: 'upcoming' });
     }
 
     if(userid){
@@ -53,18 +78,19 @@ export default function Upcoming(props) {
 
     await API._xhrPost(
       token? token : resToken.token,
-      'loadusersystem' , {
+      urlAPI , {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
       if(!/wrong/.test(d.status)){
+        setData(d)/*
         if(pageOrganizer){
           setData(d.filter( item =>{
             return item.pageid === pageData.pageid
           }))
         }else{
           setData(d)
-        }
+        }*/
       }
     })
   }
@@ -76,18 +102,33 @@ export default function Upcoming(props) {
   },[ userid ])
 
   return(
-    <div className={classes.root}>
-      <LabelText text={ (sess && sess.language === 'TH')? 'เร็วๆนี้' : 'Upcoming' } />
+    <div id={`upcoming${userid}`} className={classes.root}>
+      <div style={{ display: 'flex' }}>
+        <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}>
+          <LabelText paddingTop={0} text={ API._getWord(sess && sess.language).Upcoming } />
+        </BTN.NoStyleLink>
+        { !/upcoming$/.test(window.location.href) &&
+          <React.Fragment>
+            <div style={{ flex: 1 }} />
+            <IconButton style={{ marginTop: 'auto' }} onClick={()=>API._scrolllToId(`history${userid}`)}>
+              <ArrowDownward />
+            </IconButton>
+          </React.Fragment>
+        }
+      </div>
       <div className={classes.grid}>
         { data ?
           ( data.length > 0 ?
-            API.sortReverseArrByDate(data, 'matchdate').slice(0, 10).map( d => <MatchCard key={d.matchid} data={d} setData={setData} {...props} />)
+            API.sortReverseArrByDate(data, 'matchdate').slice(0, cardLimit).map( d => <MatchCard key={d.matchid} data={d} setData={setData} {...props} />)
             :
-            <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+            <Paper component="div" style={{ width: '100%', padding: 12, boxSizing: 'border-box' }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                { API._getWord(sess && sess.language).No_data }
+                { API._getWord(sess && sess.language).No_match }
               </Box>
-            </Typography>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={16} m={1}>
+                { API._getWord(sess && sess.language)['Please join or create match'] }
+              </Box>
+            </Paper>
           )
           :
           Array.from(new Array(2)).map((d, i) => <MatchCard key={i} />)
@@ -96,6 +137,41 @@ export default function Upcoming(props) {
           Array.from(new Array( 3 - data.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
         }
       </div>
+      { data && ( data.length > (
+          function(){
+            switch (true) {
+              case ( window.innerWidth < (props.open ? 1164 : 997) ):
+                return 2
+                break;
+              case ( window.innerWidth >= (props.open ? 1164 : 997) ):
+                return 3
+                break;
+              default:
+                return 10
+            }
+          }()
+        )) &&
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <BTN.PrimaryOutlined onClick={()=>setCardLimit(
+              cardLimit === data.length ?
+              function(){
+                switch (true) {
+                  case ( window.innerWidth < (props.open ? 1164 : 997) ):
+                    return 2
+                    break;
+                  case ( window.innerWidth >= (props.open ? 1164 : 997) ):
+                    return 3
+                    break;
+                  default:
+                    return 10
+                }
+              }()
+              : data.length
+            )}>
+            { API._getWord(sess && sess.language)[cardLimit === data.length ? 'Collapse' : 'More'] }
+          </BTN.PrimaryOutlined>
+        </div>
+      }
     </div>
   );
 }

@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     color: primary[800],
     fontSize: '2.5rem'
   },
-
+  
 }))
 
 export default function GoBack(props){

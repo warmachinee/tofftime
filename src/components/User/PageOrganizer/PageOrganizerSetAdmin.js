@@ -48,7 +48,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1, 2),
     width: '100%',
     cursor: 'pointer',
-    marginTop: 24,
     boxSizing: 'border-box'
   },
   grid: {
@@ -228,12 +227,12 @@ export default function PageOrganizerSetAdmin(props) {
   return (
     <TemplateDialog open={props.dialog.setAdmin} handleClose={props.dialogCloseAll} maxWidth="md">
       <div className={classes.root}>
-        <LabelText text={ API._getWord(sess && sess.language).Set_admin } />
+        <LabelText text={ API._getWord(sess && sess.language).Group_admin } paddingTop={0} />
         <div className={classes.grid}>
           <Button className={classes.addAdminButton} variant="contained"
             onClick={handleOpen}>
             <AddCircle style={{ marginRight: 8, marginLeft: 12 }} />
-            Add admin
+            { API._getWord(sess && sess.language).Add_admin }
           </Button>
           <List style={{ cursor: 'auto' }}>
             <ListItem className={classes.listLabel}>

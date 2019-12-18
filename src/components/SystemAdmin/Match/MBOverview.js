@@ -237,7 +237,7 @@ const datePickers = createMuiTheme({
 
 export default function MBOverview(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
+  const { sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp, isAvailableEditing, isHost } = props
   const [ open, setOpen ] = React.useState(false);
   const [ rulesState, setRulesState ] = React.useState(false);
   const [ modalType, setModalType ] = React.useState('');
@@ -541,6 +541,7 @@ export default function MBOverview(props){
             <div className={classes.gridChild1}>
               <ThemeProvider theme={theme}>
                 <TextField
+                  disabled={!isAvailableEditing}
                   className={classes.textMatchname}
                   label={ API._getWord(sess && sess.language).Match_name }
                   value={selectedMatchName}
@@ -551,6 +552,7 @@ export default function MBOverview(props){
                 <ThemeProvider theme={datePickers}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
+                      disabled={!isAvailableEditing}
                       clearable
                       className={classes.margin}
                       label={ API._getWord(sess && sess.language).Match_Date }
@@ -563,24 +565,27 @@ export default function MBOverview(props){
                 </ThemeProvider>
               </div>
               { ( selectedFile || (data && data.picture) )?
-                <div style={{ position: 'relative', marginTop: 16 }}
-                  onMouseEnter={()=>handleFileHover(true)}
-                  onMouseLeave={()=>handleFileHover(false)}>
+                <div style={{ position: 'relative' }}
+                  onMouseEnter={()=>isAvailableEditing ? handleFileHover(true) : console.log()}
+                  onMouseLeave={()=>isAvailableEditing ? handleFileHover(false) : console.log()}>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <Typography variant="caption" style={{ textAlign: 'center' }}>
                       { API._getWord(sess && sess.language).Upload_image }
                     </Typography>
                   </div>
                   <img ref={imgRef}
-                    style={{ opacity: fileHover?.5:1, maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
                     className={classes.matchImg}
+                    style={{
+                      opacity: isAvailableEditing ? (fileHover?.5:1) : .3,
+                      ...(!isAvailableEditing && {opacity:.5,backgroundColor: grey[50]}),
+                      maxHeight: 280, height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ) }}
                     src={
                       selectedFile && tempFile ?
                       tempFile
                       :
                       API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
                     } />
-                  { imgRef.current &&
+                  { imgRef.current && isAvailableEditing &&
                     <div
                       style={{
                         display: 'flex',
@@ -603,7 +608,7 @@ export default function MBOverview(props){
                   }
                 </div>
                 :
-                <div style={{ position: 'relative', marginTop: 16 }}>
+                <div style={{ position: 'relative' }}>
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <Typography variant="caption" style={{ textAlign: 'center' }}>
                       { API._getWord(sess && sess.language).Upload_image }
@@ -612,14 +617,16 @@ export default function MBOverview(props){
                   <div className={classes.matchImgTemp}
                     style={{ height: window.innerWidth * ( window.innerWidth >= 650?.3:.45 ), maxHeight: 280 }}>
                     <div style={{ flex: 1 }} />
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <div style={{ flex: 1 }} />
-                      <StyledIconButton className={classes.matchFile}>
-                        <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                        <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
-                      </StyledIconButton>
-                      <div style={{ flex: 1 }} />
-                    </div>
+                    { isAvailableEditing &&
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ flex: 1 }} />
+                        <StyledIconButton className={classes.matchFile}>
+                          <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+                          <CloudUploadIcon fontSize="large" style={{ color: primary[500] }} />
+                        </StyledIconButton>
+                        <div style={{ flex: 1 }} />
+                      </div>
+                    }
                     <div style={{ flex: 1 }} />
                   </div>
                 </div>
@@ -628,6 +635,7 @@ export default function MBOverview(props){
             <div className={classes.gridChild2}>
               <ThemeProvider theme={theme}>
                 <FormControl component="fieldset" className={classes.margin}
+                  disabled={!isAvailableEditing}
                   style={{
                     width: '100%',
                     border: '1px rgba(0, 0, 0, 0.23) solid', borderRadius: 4, boxSizing: 'border-box'
@@ -636,6 +644,7 @@ export default function MBOverview(props){
                     { API._getWord(sess && sess.language).Course }
                   </FormLabel>
                   <GreenTextButton
+                    disabled={!isAvailableEditing}
                     className={classes.button}
                     style={{ textTransform: 'none', marginTop: 0 }}
                     onClick={()=>handleOpen('location')}>
@@ -644,6 +653,7 @@ export default function MBOverview(props){
                   </GreenTextButton>
                 </FormControl>
                 <FormControl component="fieldset" className={classes.margin}
+                  disabled={!isAvailableEditing}
                   style={{
                     width: '100%',
                     border: '1px rgba(0, 0, 0, 0.23) solid',
@@ -676,10 +686,11 @@ export default function MBOverview(props){
                   </RadioGroup>
                 </FormControl>
                 <FormControl component="fieldset" className={classes.margin}
+                  disabled={!isAvailableEditing}
                   style={{
                     width: '100%',
                     border: '1px rgba(0, 0, 0, 0.23) solid',
-                    padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box'
+                    padding: '4px 16px 8px 24px', borderRadius: 4, boxSizing: 'border-box',
                   }}>
                   <FormLabel component="legend" style={{ marginLeft: 16, fontSize: 12 }}>
                     { API._getWord(sess && sess.language).Special_reward }
@@ -744,6 +755,7 @@ export default function MBOverview(props){
             </div>
           </div>
           <GreenTextButton
+            disabled={!isAvailableEditing}
             variant="outlined"
             className={classes.button}
             style={{ textTransform: 'none' }}

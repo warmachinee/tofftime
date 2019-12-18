@@ -31,6 +31,7 @@ import {
   Search,
   Clear,
   RemoveCircleOutline,
+  AddCircle as AddCircleIcon,
 
 } from '@material-ui/icons'
 
@@ -113,7 +114,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function CourseBody(props){
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer } = props
+  const { API, BTN, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageOrganizer, pageData } = props
   const [ data, setData ] = React.useState(null)
   const [ open, setOpen ] = React.useState(false)
   const [ searchField, setSearchField ] = React.useState('')
@@ -200,16 +201,31 @@ export default function CourseBody(props){
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
+    const sendObj = {}
+    var urlAPI = ''
+    if(sess.typeid === 'admin'){
+      urlAPI = 'loadfield'
+      Object.assign(sendObj, { action: 'list' });
+    }else{
+      urlAPI = pageOrganizer ? 'mloadpage' : 'loadusersystem'
+      if(pageOrganizer && pageData){
+        Object.assign(sendObj, {
+          action: 'fieldlist',
+          pageid: pageData.pageid
+        });
+      }else{
+        Object.assign(sendObj, { action: 'fieldlist' });
+      }
+    }
+
     await API._xhrPost(
       token? token : resToken.token,
-      sess.typeid === 'admin' ? 'loadfield' : 'loadusersystem', {
-        ...(sess.typeid === 'admin') ? { action: 'list' } : {
-          action: 'fieldlist',
-          ...pageOrganizer && { type: 1 }
-        }
+      urlAPI, {
+        ...sendObj
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
+      document.title = `Course Management - T-off Time`
     })
   }
 
@@ -255,14 +271,17 @@ export default function CourseBody(props){
         </ListItem>
       </List>
       <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
-        <BTN.PrimaryText onClick={handleCreateCourse}>{ API._getWord(sess && sess.language).Create }</BTN.PrimaryText>
-        <BTN.PrimaryText onClick={()=>setRemoveState(!removeState)}>
+        <BTN.Red onClick={handleCreateCourse}
+          startIcon={<AddCircleIcon color="inherit" />}>
+          { API._getWord(sess && sess.language).Create }
+        </BTN.Red>
+        <BTN.PrimaryOutlined onClick={()=>setRemoveState(!removeState)}>
           { !removeState ?
             ( API._getWord(sess && sess.language).Remove )
             :
             ( API._getWord(sess && sess.language).Done )
           }
-        </BTN.PrimaryText>
+        </BTN.PrimaryOutlined>
       </div>
       <List style={{ backgroundColor: COLOR.grey[900], }}>
         <ListItem>
@@ -278,63 +297,68 @@ export default function CourseBody(props){
         </ListItem>
       </List>
       <List>
-        { data &&
-          data.filter((item)=>{
-              return (
-                (item.fieldname.search(searchField) !== -1) ||
-                (item.fieldname.toLowerCase().search(searchField.toLowerCase()) !== -1)
-              )
-            }).length > 0 ?
-          data.filter((item)=>{
-              return (
-                (item.fieldname.search(searchField) !== -1) ||
-                (item.fieldname.toLowerCase().search(searchField.toLowerCase()) !== -1)
-              )
-            }).map( d =>
-            <React.Fragment key={d.fieldid}>
-              <ListItem className={classes.list}>
-                <ListItemIcon className={classes.listOfficial}>
-                  <IconButton onClick={()=>handleFetchToggleOfficial(d)} disabled={sess && sess.typeid !== 'admin'}>
-                    { d.custom === 0 ?
-                      <CheckCircle style={{ color: COLOR.primary[600] }} />
+        { data ?
+          ( data.filter((item)=>{
+                return (
+                  (item.fieldname.search(searchField) !== -1) ||
+                  (item.fieldname.toLowerCase().search(searchField.toLowerCase()) !== -1)
+                )
+              }).length > 0 ?
+            data.filter((item)=>{
+                return (
+                  (item.fieldname.search(searchField) !== -1) ||
+                  (item.fieldname.toLowerCase().search(searchField.toLowerCase()) !== -1)
+                )
+              }).map( d =>
+              <React.Fragment key={d.fieldid}>
+                <ListItem className={classes.list}>
+                  <ListItemIcon className={classes.listOfficial}>
+                    <IconButton onClick={()=>handleFetchToggleOfficial(d)} disabled={sess && sess.typeid !== 'admin'}>
+                      { d.custom === 0 ?
+                        <CheckCircle style={{ color: COLOR.primary[600] }} />
+                        :
+                        <RemoveCircleOutline />
+                      }
+                    </IconButton>
+                  </ListItemIcon>
+                  <ListItemIcon className={classes.listImage}>
+                    { d.photopath ?
+                      <img className={classes.image}
+                        src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
                       :
-                      <RemoveCircleOutline />
+                      <img className={classes.image}
+                        src="https://thai-pga.com/default/match/matchcard.png" />
+                      /*<Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate />*/
                     }
-                  </IconButton>
-                </ListItemIcon>
-                <ListItemIcon className={classes.listImage}>
-                  { d.photopath ?
-                    <img className={classes.image}
-                      src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
-                    :
-                    <Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate />
-                  }
-                </ListItemIcon>
-                <ListItemText primary={d.fieldname}
-                  {...(sess && sess.typeid !== 'admin' && d.fieldversion > 1)?
-                    { secondary: d.fieldversion + ( ` ${API._getWord(sess && sess.language).version}` ) } : null }
-                    />
-                <ListItemSecondaryAction>
-                  { removeState ?
-                    <IconButton onClick={()=>handleOpen(d)}>
-                      <Delete />
-                    </IconButton>
-                    :
-                    <IconButton onClick={()=>handleEditCourse(d)}>
-                      <Create />
-                    </IconButton>
-                  }
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider />
-            </React.Fragment>
+                  </ListItemIcon>
+                  <ListItemText primary={d.fieldname}
+                    {...(sess && sess.typeid !== 'admin' && d.fieldversion > 1)?
+                      { secondary: d.fieldversion + ( ` ${API._getWord(sess && sess.language).version}` ) } : null }
+                      />
+                  <ListItemSecondaryAction>
+                    { removeState ?
+                      <IconButton onClick={()=>handleOpen(d)}>
+                        <Delete />
+                      </IconButton>
+                      :
+                      <IconButton onClick={()=>handleEditCourse(d)}>
+                        <Create />
+                      </IconButton>
+                    }
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            )
+            :
+            <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+              <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_course }
+              </Box>
+            </Typography>
           )
           :
-          <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
-            <Box style={{ textAlign: 'center', color: COLOR.primary[900] }} fontWeight={500} fontSize={24} m={1}>
-              { API._getWord(sess && sess.language).No_data }
-            </Box>
-          </Typography>
+          <LDCircular />
         }
       </List>
       <TemplateDialog open={editing} handleClose={handleEditingClose}>

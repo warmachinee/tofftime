@@ -313,7 +313,7 @@ export default function DummyPlayer(props){
       <div className={classes.textFieldGrid}>
         <ThemeProvider theme={theme}>
           <TextField
-            autoFocus
+            autoFocus={API._isDesktopBrowser()}
             className={classes.textField}
             variant="outlined"
             label={API._getWord(sess && sess.language).First_name}

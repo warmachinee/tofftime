@@ -5,7 +5,7 @@ import ReactHtmlParser from 'react-html-parser';
 import { Link } from "react-router-dom";
 import { makeStyles, fade } from '@material-ui/core/styles';
 import * as API from './../../api'
-import { primary } from './../../api/palette'
+import { primary, green, blueGrey, amber } from './../../api/palette'
 
 import {
   Button,
@@ -21,6 +21,8 @@ import {
   ListItemText,
   Menu,
   MenuItem,
+  Avatar,
+  Divider,
 
 } from '@material-ui/core';
 
@@ -30,10 +32,17 @@ import {
   Close as CloseIcon,
   Share as ShareIcon,
   VideogameAsset,
+  AccountCircle,
 
 } from '@material-ui/icons';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFileExport } from '@fortawesome/free-solid-svg-icons'
+
 import { LDCircular } from './../loading/LDCircular'
+
+import PrintPDF from './../export/PrintPDF'
+import RewardPDF from './../export/RewardPDF'
 
 const Scoreboard = Loadable({
   loader: () => import(/* webpackChunkName: "Scoreboard" */'./Scoreboard'),
@@ -55,6 +64,11 @@ const CourseScorecard = Loadable({
   loading: () => <LDCircular />
 });
 
+const ScoreTableChip = Loadable({
+  loader: () => import(/* webpackChunkName: "ScoreTableChip" */'./ScoreTableChip'),
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     minHeight: window.innerHeight * .8,
@@ -62,13 +76,14 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
+    position: 'relative'
   },
   content: {
     margin: '0 5%',
     [theme.breakpoints.up(500)]: {
       margin: '0 5%',
     },
-    [theme.breakpoints.up(700)]: {
+    [theme.breakpoints.up(600)]: {
       margin: '0 72px',
     },
   },
@@ -77,7 +92,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center'
   },
   image: {
-    maxWidth: 800,
+    maxWidth: '100%',
     maxHeight: 450,
     color: 'black',
     backgroundColor: '#ccc',
@@ -130,6 +145,43 @@ const useStyles = makeStyles(theme => ({
   paperWidthSm: {
     maxWidth: 700
   },
+  avatar: {
+    fontSize: 100
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+  },
+  moreThan600: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none',
+    },
+  },
+  lessThan600: {
+    [theme.breakpoints.up(600)]: {
+      display: 'none',
+    },
+  },
+  banner: {
+    [theme.breakpoints.down(1700)]: {
+      display: 'none',
+    },
+  },
+  display: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  moreThan600: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  lessThan600: {
+    [theme.breakpoints.up(600)]: {
+      display: 'none'
+    },
+  },
 
 }));
 
@@ -166,16 +218,211 @@ function DetailComponent(props){
   );
 }
 
+function ListSpecialReward(props){
+  const classes = useStyles();
+  const { BTN, sess, label, row, data, isSupportWebp, booby } = props
+  const [ expanded, setExpanded ] = React.useState(false)
+  const [ fieldData, setFieldData ] = React.useState({
+    out: 0,
+    in: 0,
+    gross: 0
+  })
+
+  function toggleExpand(){
+    setExpanded(!expanded)
+  }
+
+  React.useEffect(()=>{
+    if(data && data.fieldscore){
+      let tempIn = 0
+      let tempOut = 0
+      for(var i = 0;i < 18;i++){
+        if(i >= 9){
+          tempIn += data.fieldscore[i]
+        }else{
+          tempOut += data.fieldscore[i]
+        }
+      }
+      setFieldData({
+        out: tempOut,
+        in: tempIn,
+        gross: tempOut + tempIn
+      })
+    }
+  },[ ])
+
+  return (
+    <React.Fragment>
+      <ListItem button onClick={toggleExpand}>
+        <Typography className={classes.moreThan600} variant="body1" style={{ width: 150, borderRight: `2px solid ${primary[900]}`, marginRight: 8 }}>
+          {label}
+        </Typography>
+        <ListItemText
+          primary={
+            <React.Fragment>
+              <Typography className={classes.lessThan600} variant="body1" style={{ borderBottom: `3px solid ${primary[900]}` }}>
+                {label}
+              </Typography>
+              <div className={classes.moreThan600}>
+                <div style={{ display: 'flex'}}>
+                  <Typography variant="body1" style={{ marginRight: 16 }}>
+                    {`${row[booby ? 'firstname' : 'fullname']}`}
+                  </Typography>
+                  <Typography variant="body1">
+                    {`${row.lastname}`}
+                  </Typography>
+                </div>
+              </div>
+            </React.Fragment>
+          }
+          secondary={
+            <Typography component="span" className={classes.lessThan600}>
+              <Typography component="span" style={{ display: 'flex'}}>
+                <Typography variant="body1" style={{ marginRight: 16 }}>
+                  {`${row[booby ? 'firstname' : 'fullname']}`}
+                </Typography>
+                <Typography variant="body1">
+                  {`${row.lastname}`}
+                </Typography>
+              </Typography>
+            </Typography>
+          } />
+      </ListItem>
+      {!expanded && <Divider />}
+      <Collapse in={expanded} unmountOnExit>
+        { data && data.fieldscore && row && row.score &&
+          <div
+            style={{
+              overflow: 'auto', padding: '16px 0',
+              overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'center', width: 1000 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: 16, paddingTop: 0 }}>
+                  { row.photopath ?
+                    <Avatar className={classes.avatarImage} style={{ marginLeft: 'auto', marginRight: 'auto' }}
+                      src={API._getPictureUrl(row.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                    :
+                    <AccountCircle classes={{ root: classes.avatar }} style={{ marginLeft: 'auto', marginRight: 'auto' }} />
+                  }
+                  { BTN && row && sess && sess.status === 1 && sess.typeid !== 'admin' && ('typeid' in row) &&
+                    <div style={{ padding: '8px 24px' }}>
+                      { row.typeid === 'dummy' ?
+                        <Typography variant="body2"
+                          align="center"
+                          style={{ color: primary[500], textTransform: 'uppercase', letterSpacing: '0.02857em', fontWeight: 500 }}>
+                          { API._getWord(sess && sess.language).Dummy }
+                        </Typography>
+                        :
+                        <Link to={`/user/timeline/${row.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <BTN.PrimaryOutlined>{ API._getWord(sess && sess.language).Profile }</BTN.PrimaryOutlined>
+                        </Link>
+                      }
+                    </div>
+                  }
+                </div>
+                <div>
+                  <ListItem style={{ padding: 0 }}>
+                    <div style={{ display: 'flex', margin: 'auto' }}>
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '4px 0 0 0', fontWeight: 800 }}>HOLE</div>
+                      {[0,1,2,3,4,5,6,7,8].map( d=>
+                        <div key={d} style={{ backgroundColor: 'black', color: 'white',
+                          padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
+                      )}
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>OUT</div>
+                      {[9,10,11,12,13,14,15,16,17].map( d=>
+                        <div key={d} style={{ backgroundColor: 'black', color: 'white',
+                          padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
+                      )}
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>IN</div>
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 4px 0 0', fontWeight: 800 }}>TOT</div>
+                    </div>
+                  </ListItem>
+                  <ListItem style={{ padding: 0 }}>
+                    <div style={{ display: 'flex', margin: 'auto' }}>
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 64, textAlign: 'right', fontWeight: 800 }}>PAR</div>
+                      { data.fieldscore.slice(0,9).map( (d,i)=>
+                        <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
+                          padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.out}</div>
+                      { data.fieldscore.slice(9,18).map( (d,i)=>
+                        <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
+                          padding: '8px 4px', width: 32, textAlign: 'center'}}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.in}</div>
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.gross}</div>
+                    </div>
+                  </ListItem>
+                  <ListItem style={{ padding: 0 }}>
+                    <div style={{ display: 'flex', margin: 'auto' }}>
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '0 0 0 4px', fontWeight: 800 }}>SCORE</div>
+                      { row.score.slice(0,9).map( (d,i)=>
+                        <div key={i}
+                          style={{
+                            backgroundColor:
+                            data.fieldscore[i] - d < 0? amber[300]:
+                            data.fieldscore[i] - d > 0? green[300]:blueGrey[50],
+                            padding: '8px 4px', width: 32, textAlign: 'center'
+                        }}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row[booby ? 'out' : 'sout']}
+                      </div>
+                      { row.score.slice(9,18).map( (d,i)=>
+                        <div key={i}
+                          style={{
+                            backgroundColor:
+                            data.fieldscore[i + 9] - d < 0? amber[300]:
+                            data.fieldscore[i + 9] - d > 0? green[300]:blueGrey[50],
+                            padding: '8px 4px', width: 32, textAlign: 'center'
+                        }}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row[booby ? 'in' : 'sin']}</div>
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 0 4px 0', fontWeight: 800 }}>{
+                          row[booby ? 'out' : 'sout'] + row[booby ? 'in' : 'sin']
+                        }</div>
+                    </div>
+                  </ListItem>
+                  <div style={{ display: 'flex' }}>
+                    <ScoreTableChip dotColor={green[300]} label="Under"/>
+                    <ScoreTableChip dotColor={blueGrey[50]} label="Par"/>
+                    <ScoreTableChip dotColor={amber[300]} label="Over"/>
+                  </div>
+                </div>
+              </div>
+          </div>
+        }
+      </Collapse>
+      <Divider />
+    </React.Fragment>
+  );
+}
+
 export default function MatchDetailBody(props) {
   const classes = useStyles();
   const {
     BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, matchid,
-    data, setData, userscore, setUserscore, setRawUserscore, mainClassSelected
+    data, setData, userscore, setUserscore, setRawUserscore, mainClassSelected, value
   } = props
   const [ expanded, setExpanded ] = React.useState(true)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
-  const [ anchorEl, setAnchorEl ] = React.useState(null);
+  const [ anchorEl, setAnchorEl ] = React.useState({
+    minigame: null,
+    export: null
+  });
   const [ scorecardState, setScorecardState ] = React.useState(false);
+  const [ reward, setReward ] = React.useState(null)
 
   const handleScorecardOpen = () => {
     setScorecardState(true);
@@ -185,13 +432,16 @@ export default function MatchDetailBody(props) {
     setScorecardState(false);
   };
 
-  const handleClick = event => {
-    setAnchorEl(event.currentTarget);
-  };
+  function menuClick(event, type){
+    setAnchorEl({ ...anchorEl, [type]: event.currentTarget });
+  }
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  function menuClose(){
+    setAnchorEl({
+      minigame: null,
+      export: null
+    });
+  }
 
   function toggleShowAction(userto, userfrom, requestaction){
     if(sess && sess.status === 1){
@@ -299,136 +549,217 @@ export default function MatchDetailBody(props) {
     })
   }
 
+  async function handleFetchReward(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'loadmatchsystem', {
+        action: 'reward',
+        matchid: matchid,
+        mainclass: parseInt(mainClassSelected)
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(
+        d.status !== 'no reward' ||
+        d.status !== 'reward not create' ||
+        d.status !== 'wrong matchid' ||
+        d.status !== 'wrong action' ||
+        d.status !== 'wrong params'
+      ){
+        setReward(d)
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
+    })
+  }
+
+  React.useEffect(()=>{
+    handleFetchReward()
+  },[ mainClassSelected ])
+
   return (
     <Paper className={classes.root}>
-      <GoBack />
+      <div className={classes.display} style={{ position: 'absolute', top: 8 }}>
+        <GoBack />
+      </div>
+      <div className={classes.banner}>
+        <div style={{ position: 'fixed', right: 0, zIndex: 10 }}>
+          <img
+            style={{
+              maxwidth: 300,
+              maxHeight: window.innerHeight * .7,
+              color: 'black',
+              backgroundColor: props.COLOR.grey[300],
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+            }}
+            src="https://thai-pga.com/system/ads/matchads.png" />
+        </div>
+        <div style={{ position: 'fixed', left: 0, zIndex: 10 }}>
+          <img
+            style={{
+              maxWidth: 300,
+              maxHeight: window.innerHeight * .7,
+              color: 'black',
+              backgroundColor: props.COLOR.grey[300],
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+            }}
+            src="https://thai-pga.com/system/ads/matchads.png" />
+        </div>
+      </div>
       { data ?
         (
           !/wrong/.test(data.status) ?
           <div className={classes.content}>
             <Tooltip title={data?data.title:'Match Title'} placement="top-start">
-              <Typography variant="h4">
-                {data?data.title:'Match Title'}
-              </Typography>
+              <div>
+                <Typography variant="h4" className={classes.moreThan600}>
+                  {data?data.title:'Match Title'}
+                </Typography>
+                <Typography variant="h6" className={classes.lessThan600}>
+                  {data?data.title:'Match Title'}
+                </Typography>
+              </div>
             </Tooltip>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-              <Typography gutterBottom variant="body2"
-                style={{
-                  color: data.scorematch === 1 ? primary[700] : 'inherit',
-                  fontWeight: data.scorematch === 1 ? 900 : 600
-                }}>
-                { function(){
-                    switch (data.scorematch) {
-                      case 0:
-                        return 'Amateur'
-                        break;
-                      case 1:
-                        return 'Professional'
-                        break;
-                      default:
-                        return 'Charity'
-                    }
-                  }()
-                }
-              </Typography>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <Typography gutterBottom variant="h6" className={classes.moreThan600}
+                  style={{
+                    color: data.scorematch === 1 ? primary[700] : 'inherit',
+                    fontWeight: data.scorematch === 1 ? 900 : 600
+                  }}>
+                  { function(){
+                      switch (data.scorematch) {
+                        case 0:
+                          return 'Amateur'
+                          break;
+                        case 1:
+                          return 'Professional'
+                          break;
+                        default:
+                          return 'Charity'
+                      }
+                    }()
+                  }
+                </Typography>
+                <Typography gutterBottom variant="body2" className={classes.lessThan600}
+                  style={{
+                    color: data.scorematch === 1 ? primary[700] : 'inherit',
+                    fontWeight: data.scorematch === 1 ? 900 : 600
+                  }}>
+                  { function(){
+                      switch (data.scorematch) {
+                        case 0:
+                          return 'Amateur'
+                          break;
+                        case 1:
+                          return 'Professional'
+                          break;
+                        default:
+                          return 'Charity'
+                      }
+                    }()
+                  }
+                </Typography>
+                <Typography variant="h6" className={classes.moreThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+                <Typography variant="body2" className={classes.lessThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+                <Typography variant="h6" className={classes.moreThan600}>
+                  {data?API._dateToString(data.date):'date'}
+                </Typography>
+                <Typography variant="body2" className={classes.lessThan600}>
+                  {data?API._dateToString(data.date):'date'}
+                </Typography>
+              </div>
               {handleGetButton()}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
-              <Typography variant="h6">
-                {data?API._dateToString(data.date):'date'}
-              </Typography>
-              <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
               <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
                 <LocationOn style={{ color: primary[600], marginRight: 4 }} />
-                <Typography variant="h6">
+                <Typography variant="h6" className={classes.moreThan600}>
                   {data?data.location:'Course'}
+                </Typography>
+                <Typography variant="body2" className={classes.lessThan600}>
+                  {data?API._dateToString(data.date):'date'}
                 </Typography>
               </Button>
             </div>
             <div style={{ display: 'flex', marginBottom: 24, flexWrap: 'wrap', justifyContent: 'space-between' }}>
               <div style={{ marginTop: 'auto', marginBottom: 6 }}>
-                <BTN.PrimaryOutlined onClick={handleScorecardOpen} style={{ marginRight: 8 }}>
+                <BTN.PrimaryOutlined onClick={handleScorecardOpen} style={{ marginRight: 8, marginTop: 8 }}>
                   { API._getWord(sess && sess.language).Scorecard }
                 </BTN.PrimaryOutlined>
                 { matchid &&
                   <BTN.NoStyleLink to={`/matchform/${matchid}`}>
-                    <BTN.PrimaryOutlined style={{ marginRight: 8 }}>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
+                    <BTN.PrimaryOutlined style={{ marginRight: 8, marginTop: 8 }}>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
                   </BTN.NoStyleLink>
                 }
                 { data.team &&
                   ( (data.status === 0 && data.team.length > 0) ?
                     <BTN.NoStyleLink to={`/schedule/${matchid}`}>
-                      <BTN.PrimaryOutlined style={{ marginRight: 8 }}>
+                      <BTN.PrimaryOutlined style={{ marginRight: 8, marginTop: 8 }}>
                         { API._getWord(sess && sess.language).Schedule }
                       </BTN.PrimaryOutlined>
                     </BTN.NoStyleLink>
                     :
-                    <BTN.PrimaryOutlined disabled style={{ marginRight: 8 }}>
+                    <BTN.PrimaryOutlined disabled style={{ marginRight: 8, marginTop: 8 }}>
                       { API._getWord(sess && sess.language).Schedule }
                     </BTN.PrimaryOutlined>
                   )
                 }
               </div>
               <div>
+                <IconButton onClick={e => menuClick(e, 'export')}>
+                  <FontAwesomeIcon icon={faFileExport} style={{ color: primary[600] }} />
+                </IconButton>
                 <a href={`/session/share?url=/match/${matchid}`}
                   target='_blank'
                   style={{ textDecoration: 'none', color: 'inherit' }}>
                   <IconButton>
                     <ShareIcon style={{ color: primary[600] }} />
                   </IconButton>
-                  {/*
-                    <BTN.PrimaryOutlined
-                      startIcon={<ShareIcon style={{ color: primary[600] }} />}>
-                      {API._getWord(sess && sess.language).Share}
-                    </BTN.PrimaryOutlined>*/
-                  }
                 </a>
                 { BTN && data.scorematch === 2 && sess.status === 1 &&
-                  <IconButton onClick={handleClick}>
+                  <IconButton onClick={e => menuClick(e, 'minigame')}>
                     <VideogameAsset fontSize="large" style={{ color: primary[600] }} />
                   </IconButton>
-                  /*
-                  <BTN.PrimaryOutlined onClick={handleClick}
-                    startIcon={<VideogameAsset fontSize="large" style={{ color: primary[600] }} />}>
-                    { API._getWord(sess && sess.language).Mini_Game }
-                  </BTN.PrimaryOutlined>*/
                 }
               </div>
             </div>
             <DetailComponent matchid={matchid} detail={data.message} picture={data.picture} isSupportWebp={isSupportWebp} />
             { data.reward &&
-              <div>
+              <Paper style={{ width: '100%', }}>
+                <Divider />
                 { data.lowgross === 1 && data.reward.lowgross &&
-                  <div style={{ display: 'flex' }}>
-                    <Typography variant="body1" style={{ width: 120, padding: '5px 15px', border: `1px solid ${primary[600]}`, borderRadius: 4, marginRight: 8 }}>
-                      Low gross
-                    </Typography>
-                    <Typography variant="body1">
-                      {`${data.reward.lowgross.fullname} ${data.reward.lowgross.lastname}`}
-                    </Typography>
-                  </div>
+                  <ListSpecialReward
+                    {...props}
+                    label={ API._getWord(sess && sess.language).Lowgross }
+                    row={data.reward.lowgross}
+                    data={data} />
                 }
                 { data.lownet === 1 && data.reward.lownet &&
-                  <div style={{ display: 'flex' }}>
-                    <Typography variant="body1" style={{ width: 120, padding: '5px 15px', border: `1px solid ${primary[600]}`, borderRadius: 4, marginRight: 8 }}>
-                      Low net
-                    </Typography>
-                    <Typography>
-                      {`${data.reward.lownet.fullname} ${data.reward.lownet.lastname}`}
-                    </Typography>
-                  </div>
+                  <ListSpecialReward
+                    {...props}
+                    label={ API._getWord(sess && sess.language).Lownet }
+                    row={data.reward.lownet}
+                    data={data} />
                 }
-                { data.booby === 1 && data.reward.booby &&
-                  <div style={{ display: 'flex' }}>
-                    <Typography variant="body1" style={{ width: 120, padding: '5px 15px', border: `1px solid ${primary[600]}`, borderRadius: 4, marginRight: 8 }}>
-                      The last secondary
-                    </Typography>
-                    <Typography>
-                      {`${data.reward.booby.fullname} ${data.reward.booby.lastname}`} 
-                    </Typography>
-                  </div>
+                { data.booby === 1 && userscore && userscore.length > 2 &&
+                  <ListSpecialReward
+                    {...props}
+                    booby
+                    label={ API._getWord(sess && sess.language).Booby }
+                    row={userscore[userscore.length - 2]}
+                    data={data} />
                 }
-              </div>
+              </Paper>
             }
             { data ?
               ( data.mainclass && data.mainclass.length > 0 ?
@@ -540,24 +871,52 @@ export default function MatchDetailBody(props) {
         }
       </Dialog>
       <Menu
-        anchorEl={anchorEl}
+        anchorEl={anchorEl.export}
         keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
+        open={Boolean(anchorEl.export)}
+        onClose={menuClose}>
+        { data && data.mainclass && data.mainclass.length > 0 &&
+          data.mainclass[parseInt(mainClassSelected) - 1].values &&
+          data.mainclass[parseInt(mainClassSelected) - 1].values.map((d,i)=>
+            value === i &&
+            <div style={{ marginTop: 'auto', marginBottom: 4 }} key={d.classname}>
+              <RewardPDF {...props} matchClass={d} reward={reward} menuClose={menuClose} />
+              <PrintPDF {...props} matchClass={d} menuClose={menuClose}  />
+            </div>
+          )
+        }
+        { data && data.mainclass && data.mainclass.length > 0 &&
+          ( data.scorematch === 0 || data.mainclass[parseInt(mainClassSelected) - 1].type === 'flight' ) &&
+          data.mainclass[parseInt(mainClassSelected) - 1].values &&
+          ( value === data.mainclass[parseInt(mainClassSelected) - 1].values.length ) &&
+          <div style={{ marginTop: 'auto', marginBottom: 4 }}>
+            <RewardPDF {...props}
+              matchClass={{ classno: 0, classname: 'No class', color: '' }} reward={reward} menuClose={menuClose}  />
+            <PrintPDF {...props}
+              matchClass={{ classno: 0, classname: 'No class', color: '' }} menuClose={menuClose}  />
+          </div>
+        }
+        <div />
+      </Menu>
+      <Menu
+        anchorEl={anchorEl.minigame}
+        keepMounted
+        open={Boolean(anchorEl.minigame)}
+        onClose={menuClose}
       >
         { matchid &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/scoreboard`}>
-            <MenuItem onClick={handleClose}>Scoreboard</MenuItem>
+            <MenuItem onClick={menuClose}>Scoreboard</MenuItem>
           </Link>
         }
         { matchid &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/mah`}>
-            <MenuItem onClick={handleClose}>Mah</MenuItem>
+            <MenuItem onClick={menuClose}>Mah</MenuItem>
           </Link>
         }
         { matchid &&
           <Link style={{ textDecoration: 'none', color: 'inherit' }} to={`/match/${matchid}/minigame/jao`}>
-            <MenuItem onClick={handleClose}>Jao</MenuItem>
+            <MenuItem onClick={menuClose}>Jao</MenuItem>
           </Link>
         }
       </Menu>

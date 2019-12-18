@@ -93,21 +93,21 @@ export default function OrganizerMatchCard(props) {
   function handleGetButton(){
     if(BTN && data && data.messagedetail.matchstatus === 0){
       return (
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', boxSizing: 'border-box', padding: '0 16px 16px' }}>
           {function() {
             switch (true) {
               case data.messagedetail.permission === 'host' || data.messagedetail.permission === 'admin':
                 return (
                   <BTN.NoStyleLink to={`/user/management/match/${data.messagedetail.matchid}`}>
-                    <BTN.Primary style={{ padding: '4px 16px' }}>Edit</BTN.Primary>
+                    <BTN.Primary size="small">Edit</BTN.Primary>
                   </BTN.NoStyleLink>
                 )
                 break;
               case data.messagedetail.permission === 'pending':
-                return <Button disabled>Pending</Button>
+                return <Button size="small" variant="outlined" disabled>Pending</Button>
                 break;
               case data.messagedetail.permission === 'none':
-                return <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>Join</BTN.Primary>
+                return <BTN.Primary size="small" onClick={handleJoinMatch}>Join</BTN.Primary>
                 break;
               default:
                 return null
@@ -164,40 +164,56 @@ export default function OrganizerMatchCard(props) {
             src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
         </BTN.NoStyleLink>
         :
-        <Skeleton className={classes.image} style={{ margin: 0 }} />
+        /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
+        <img className={classes.image}
+          src="https://thai-pga.com/default/match/matchcard.png" />
       }
       { ( data && data.messagedetail ) ?
         <Box className={classes.box}>
-          <Typography gutterBottom variant="body2"
-            style={{
-              color: data.messagedetail.scorematch === 1 ? primary[700] : 'inherit',
-              fontWeight: data.messagedetail.scorematch === 1 ? 900 : 400
-            }}>
-            {function(){
-              switch (data.messagedetail.scorematch) {
-                case 0:
-                  return 'Amateur'
-                  break;
-                case 1:
-                  return 'Professional'
-                  break;
-                default:
-                  return 'Charity'
-              }
-            }()}
-          </Typography>
           <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
-            <Typography gutterBottom variant="h6" className={classes.title}>
-              {data.messagedetail.matchname}
-            </Typography>
-            <Typography gutterBottom variant="body2">
-              {API._dateToString(data.messagedetail.matchdate)}
-            </Typography>
-            <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-              <LocationOnIcon fontSize="small" className={classes.locationIcon} />
-              {data.messagedetail.fieldname}
-            </Typography>
+            <div style={{ boxSizing: 'border-box' }}>
+              <Typography gutterBottom variant="h6" className={classes.title}>
+                {data.messagedetail.matchname}
+              </Typography>
+              <Typography gutterBottom variant="body2"
+                style={{
+                  color: data.messagedetail.scorematch === 1 ? primary[700] : 'inherit',
+                  fontWeight: data.messagedetail.scorematch === 1 ? 900 : 400
+                }}>
+                {`${
+                  API._getWord(sess && sess.language).Match
+                } ${
+                  function(){
+                    switch (data.messagedetail.scorematch) {
+                      case 0:
+                        return API._getWord(sess && sess.language).Amateur
+                        break;
+                      case 1:
+                        return API._getWord(sess && sess.language).Professional
+                        break;
+                      default:
+                        return API._getWord(sess && sess.language).Charity
+                    }
+                  }()
+                }`}
+              </Typography>
+              <Typography gutterBottom variant="body2">
+                {API._dateToString(data.messagedetail.matchdate)}
+              </Typography>
+              <Typography gutterBottom display="block" variant="body2" className={classes.location}>
+                <LocationOnIcon fontSize="small" className={classes.locationIcon} />
+                {data.messagedetail.fieldname}
+              </Typography>
+            </div>
           </BTN.NoStyleLink>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
+              <Typography variant="caption" color="textSecondary" style={{ whiteSpace: 'nowrap' }}>
+                {`${API._shotnessNumber(data.messagedetail.views)} view${data.messagedetail.views > 1 ? 's' : ''}`}
+              </Typography>
+            </BTN.NoStyleLink>
+            {handleGetButton()}
+          </div>
         </Box>
         :
         <Box className={classes.box}>
@@ -205,7 +221,6 @@ export default function OrganizerMatchCard(props) {
           <Skeleton height={14} width="60%"/>
         </Box>
       }
-      {handleGetButton()}
     </Paper>
   );
 }

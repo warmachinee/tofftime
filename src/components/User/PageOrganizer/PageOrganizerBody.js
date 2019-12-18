@@ -103,7 +103,18 @@ export default function PageOrganizerBody(props) {
 
   return (
     <React.Fragment>
+      <div style={{ padding: '12px 12px 0 12px', position: 'relative', boxSizing: 'border-box' }}>
+        <OrganizerAnnounce {...passingProps} />
+      </div>
       <PageOrganizerOverview {...passingProps} />
+      <div style={{ padding: '0 12px', position: 'relative', boxSizing: 'border-box' }}>
+        <OrganizerMatchList {...passingProps} />
+        <OrganizerPost {...passingProps} />
+      </div>
+      <PageOrganizerSetAdmin
+        {...passingProps} />
+      <PageOrganizerCreatePost
+        {...passingProps} />
       <TemplateDialog maxWidth="md" open={dialog.createMatch} handleClose={()=>dialogClose('createMatch')}>
         <LabelText text={ API._getWord(sess && sess.language).Create_Match } />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -114,17 +125,8 @@ export default function PageOrganizerBody(props) {
             label={ API._getWord(sess && sess.language)['Add to your page after create.'] }
           />
         </div>
-        <MatchStepper {...passingProps} isCreateAfterDone={isCreateAfterDone} />
+        <MatchStepper {...passingProps} isCreateAfterDone={isCreateAfterDone} handleCloseEditor={()=>dialogClose('createMatch')} />
       </TemplateDialog>
-      <div style={{ padding: 12, position: 'relative', boxSizing: 'border-box' }}>
-        <OrganizerAnnounce {...passingProps} />
-        <OrganizerMatchList {...passingProps} />
-        <OrganizerPost {...passingProps} />
-      </div>
-      <PageOrganizerSetAdmin
-        {...passingProps} />
-      <PageOrganizerCreatePost
-        {...passingProps} />
     </React.Fragment>
   );
 }

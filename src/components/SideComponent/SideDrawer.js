@@ -84,7 +84,15 @@ export default function SideDrawer(props) {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d)
+      handleAccountData({
+        ...d,
+        photopath: (
+          d.photopath ?
+          API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+          :
+          null
+        )
+      })
     })
   }
 
@@ -111,7 +119,7 @@ export default function SideDrawer(props) {
                   { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
                       onClick={drawerClose}
-                      src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                      src={accountData.photopath} />
                     :
                     <AccountIcon onClick={drawerClose} classes={{ root: classes.avatar }} />
                   }

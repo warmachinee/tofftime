@@ -141,7 +141,7 @@ export default function Schedule(props) {
       setCSRFToken(csrf)
       if(d.team && d.team.length > 0){
         setMatchDetail(d)
-        document.title = `( Schedule ) ${d.title} - T-off Time`
+        document.title = `(Schedule) ${d.title} - T-off Time`
         handleFetchSchedule()
       }else{
         handleSnackBar({

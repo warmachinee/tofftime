@@ -119,7 +119,7 @@ const StyledTab = withStyles(theme => ({
 
 function PlayoffContainer(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, data, setData, setMatchDetail, mainClassSelected } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, data, setData, setMatchDetail, mainClassSelected, isAvailableEditing } = props
 
   function handleUpdatePlayoff(selected){
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
@@ -223,8 +223,9 @@ function PlayoffContainer(props){
 
   return(
     <ListItem
-      button
-      onClick={()=>handleSetPlayoff(data)}
+      button={isAvailableEditing}
+      disabled={!isAvailableEditing}
+      onClick={()=>isAvailableEditing ? handleSetPlayoff(data) : console.log()}
     >
       <ListItemText className={classes.listText} primary={data.fullname} />
       <ListItemText className={classes.listText} primary={data.lastname} />
@@ -241,7 +242,7 @@ function PlayoffContainer(props){
 
 export default function MBPlayoff(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isSetup, pageOrganizer, pageData } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isSetup, pageOrganizer, pageData, isAvailableEditing } = props
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
@@ -345,43 +346,47 @@ export default function MBPlayoff(props){
   return(
     <React.Fragment>
       { !isSetup ?
-        <div style={{ display: 'flex', marginTop: 24 }}>
-          <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
-            { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
-          </Typography>
-          <BTN.NoStyleLink
-            to={
-              sess.typeid === 'admin' ?
-              `/system_admin/match/${matchid}` :
-              `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
-              }>
-            <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
-              { API._getWord(sess && sess.language).Back }
-            </BTN.RedOutlined>
-          </BTN.NoStyleLink>
-        </div>
+        ( isAvailableEditing &&
+          <div style={{ display: 'flex', marginTop: 24 }}>
+            <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
+              { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
+            </Typography>
+            <BTN.NoStyleLink
+              to={
+                sess.typeid === 'admin' ?
+                `/system_admin/match/${matchid}` :
+                `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${matchid}`
+                }>
+              <BTN.RedOutlined style={{ fontWeight: 600, marginLeft: 16 }}>
+                { API._getWord(sess && sess.language).Back }
+              </BTN.RedOutlined>
+            </BTN.NoStyleLink>
+          </div>
+        )
         :
         <div className={classes.root}>
-          <Typography component="div" style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Box className={classes.notice} m={1}>
-              { API._getWord(sess && sess.language).Select_Group }
-            </Box>
-            { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass.length > 1 &&
-              <FormControl className={classes.formControl}>
-                <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
-                <Select
-                  value={mainClassSelected}
-                  onChange={e => setMainClassSelected(e.target.value)}>
-                  { matchDetail &&
-                    matchDetail.mainclass.map( d =>
-                      <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                        {d.mainclassname}
-                      </MenuItem>
-                  )}
-                </Select>
-              </FormControl>
-            }
-          </Typography>
+          { isAvailableEditing &&
+            <Typography component="div" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Box className={classes.notice} m={1}>
+                { API._getWord(sess && sess.language).Select_Group }
+              </Box>
+              { matchDetail && matchDetail.scorematch !== 0 && matchDetail.mainclass.length > 1 &&
+                <FormControl className={classes.formControl}>
+                  <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
+                  <Select
+                    value={mainClassSelected}
+                    onChange={e => setMainClassSelected(e.target.value)}>
+                    { matchDetail &&
+                      matchDetail.mainclass.map( (d, i) =>
+                        <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                          {d.mainclassname} ({d.type})
+                        </MenuItem>
+                    )}
+                  </Select>
+                </FormControl>
+              }
+            </Typography>
+          }
           { data && /no playoff/.test(data.status) ?
             <Typography component="div" style={{ width: '100%' }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
@@ -399,7 +404,7 @@ export default function MBPlayoff(props){
                 >
                   { matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
                     matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.map( d =>
-                      d && <StyledTab key={d.classname}
+                    <StyledTab key={d.classname}
                       label={
                         (
                           matchDetail.scorematch === 0 ||
@@ -424,11 +429,13 @@ export default function MBPlayoff(props){
                         <React.Fragment key={i}>
                           { value === i && filtered &&
                             <React.Fragment>
-                              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-                                <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
-                                  { API._getWord(sess && sess.language).Clear }
-                                </GreenTextButton>
-                              </div>
+                              { isAvailableEditing &&
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+                                  <GreenTextButton onClick={()=>handleClearPlayoff(c)}>
+                                    { API._getWord(sess && sess.language).Clear }
+                                  </GreenTextButton>
+                                </div>
+                              }
                               <ListItem className={classes.listItem}>
                                 <ListItemText style={{ color: 'white' }} className={classes.listText}
                                   primary={ API._getWord(sess && sess.language).First_name } />

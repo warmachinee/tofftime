@@ -130,15 +130,22 @@ const useStyles = makeStyles(theme => ({
   },
   userInfo: {
     width: '100%',
-    padding: 16,
+    padding: '16px 16px 0 16px',
     boxSizing: 'border-box',
   },
   avatarInfo: {
-    fontSize: 120
+    fontSize: 120,
+    [theme.breakpoints.down(600)]: {
+      fontSize: 64,
+    },
   },
   avatarImageInfo: {
     width: 120,
     height: 120,
+    [theme.breakpoints.down(600)]: {
+      width: 64,
+      height: 64,
+    },
   },
   userTitle: {
     display: '-webkit-box',
@@ -168,6 +175,13 @@ export default function SideMenu(props) {
     friend: false,
     follow: false
   });
+
+  function handleClickNotiButton(){
+    toggleNoti()
+    if(window.innerWidth <= 600){
+      props.setOpen(false)
+    }
+  }
 
   function handleExpand(type) {
     setExpanded({ ...expanded, [type]: !expanded[type] });
@@ -253,11 +267,11 @@ export default function SideMenu(props) {
         }
         { ( accountData || pageData ) &&
           <React.Fragment>
-            <div className={classes.userInfo}>
+            <div className={classes.userInfo} style={{ ...( !open && window.innerWidth > 600 && {paddingBottom: 16}) }}>
               <BTN.NoStyleLink
                 to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <IconButton style={{ padding: 0 }}>
+                  <IconButton style={{ padding: 0 }} onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
                     { pageOrganizer ?
                       (
                         pageData.logo ?
@@ -287,7 +301,7 @@ export default function SideMenu(props) {
                             [classes.avatarImageInfo]: open,
                             [classes.avatarImage]: !open
                           })}
-                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={accountData.photopath} />
                         :
                         <AccountCircle
                           style={{ transition: '.2s', color: COLOR.grey[900] }}
@@ -306,7 +320,7 @@ export default function SideMenu(props) {
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <BTN.NoStyleLink
                     to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}>
-                    <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
+                    <Button style={{ width: '100%', textTransform: 'none', padding: 4 }} onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
                       <Typography variant="body1" className={classes.userTitle}>
                         { pageOrganizer ?
                           <React.Fragment>{pageData.pagename}</React.Fragment>
@@ -319,7 +333,7 @@ export default function SideMenu(props) {
                   { !pageOrganizer &&
                     <BTN.NoStyleLink
                       to={`/user/profile/${accountData.userid}`}>
-                      <Button style={{ width: '100%', textTransform: 'none', padding: 4 }}>
+                      <Button style={{ width: '100%', textTransform: 'none', padding: 4 }} onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
                         <Typography variant="caption" className={classes.userTitle}>
                           {accountData.email}
                         </Typography>
@@ -345,7 +359,7 @@ export default function SideMenu(props) {
         }
         <Divider />
         <List>
-          <ListItem button onClick={toggleNoti} className={classes.iconHidden}>
+          <ListItem button onClick={handleClickNotiButton} className={classes.iconHidden}>
             <Tooltip title={ API._getWord(sess && sess.language).Notifications } placement="right">
               <ListItemIcon>
                 { notiData && notiData.length > 0?
@@ -365,6 +379,7 @@ export default function SideMenu(props) {
           </ListItem>
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`}>
             <ListItem button
+               onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
               style={{
                 ...(
                   window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`
@@ -385,11 +400,11 @@ export default function SideMenu(props) {
         { pageOrganizer && accountData &&
           <React.Fragment>
             <BTN.NoStyleLink to='/user'>
-              <ListItem button>
+              <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
                 <ListItemIcon>
                   { accountData.photopath ?
                     <Avatar className={classes.avatarImage}
-                      src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                      src={accountData.photopath} />
                     :
                     <AccountCircle classes={{ root: classes.avatar }} />
                   }
@@ -403,6 +418,7 @@ export default function SideMenu(props) {
         <List>
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_page`}>
             <ListItem button
+              onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
               style={{
                 ...(
                   window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_page`
@@ -424,7 +440,7 @@ export default function SideMenu(props) {
         <List>
           { ( open ? window.innerWidth < 840 : window.innerWidth < 600 ) &&
             <BTN.NoStyleLink to='/'>
-              <ListItem button>
+              <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
                 <ListItemIcon>
                   <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
                 </ListItemIcon>
@@ -434,7 +450,7 @@ export default function SideMenu(props) {
           }
           { sess &&
             <BTN.NoStyleLink to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}>
-              <ListItem button
+              <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
                 style={{
                   ...(window.location.pathname === `/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`) &&
                   { backgroundColor: COLOR.grey[300] },
@@ -459,7 +475,7 @@ export default function SideMenu(props) {
           </ListItem>
           <Collapse in={expanded.management} timeout="auto" style={{ minHeight: 'auto' }}>
             <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`}>
-              <ListItem button
+              <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
                 style={{
                   ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match`)) &&
                   { backgroundColor: COLOR.grey[300] },
@@ -475,7 +491,7 @@ export default function SideMenu(props) {
               </ListItem>
             </BTN.NoStyleLink>
             <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`}>
-              <ListItem button
+              <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
                 style={{
                   ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/course`)) &&
                   { backgroundColor: COLOR.grey[300] },
@@ -492,7 +508,7 @@ export default function SideMenu(props) {
             </BTN.NoStyleLink>
             { pageOrganizer &&
               <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`}>
-                <ListItem button
+                <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
                   style={{
                     ...(window.location.pathname.includes(`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/post`)) &&
                     { backgroundColor: COLOR.grey[300] },
@@ -510,7 +526,7 @@ export default function SideMenu(props) {
             }
           </Collapse>
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}>
-            <ListItem button
+            <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
               style={{
                 ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`) &&
                 { backgroundColor: COLOR.grey[300] },
@@ -522,7 +538,7 @@ export default function SideMenu(props) {
             </ListItem>
           </BTN.NoStyleLink>
           <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}>
-            <ListItem button
+            <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}
               style={{
                 ...(window.location.pathname === `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`) &&
                 { backgroundColor: COLOR.grey[300] },
@@ -537,13 +553,15 @@ export default function SideMenu(props) {
         <ListFriend expanded={expanded} handleExpand={handleExpand} state={expanded.friend} {...props} />
         <ListFollow expanded={expanded} handleExpand={handleExpand} state={expanded.follow} {...props} />
         <Divider />
-        <List>
-          <ListItem button onClick={toggleConfirmLogout} className={classes.logout}>
-            <ListItemIcon><ExitToApp classes={{ root: classes. logoutIcon }} /></ListItemIcon>
-            <ListItemText className={classes.logoutTitle}
-              primary={ API._getWord(sess && sess.language).Log_out } />
-          </ListItem>
-        </List>
+        {/*
+          <List>
+            <ListItem button onClick={toggleConfirmLogout} className={classes.logout}>
+              <ListItemIcon><ExitToApp classes={{ root: classes. logoutIcon }} /></ListItemIcon>
+              <ListItemText className={classes.logoutTitle}
+                primary={ API._getWord(sess && sess.language).Log_out } />
+            </ListItem>
+          </List>*/
+        }
       </Drawer>
       <ConfirmDialog
         sess={sess}

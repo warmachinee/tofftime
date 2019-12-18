@@ -141,7 +141,7 @@ const colorsPicker = [
 
 export default function MatchClass(props) {
   const classes = useStyles();
-  const { BTN, COLOR, sess, token, setCSRFToken, data, matchid, setData, handleSnackBar, matchClass } = props
+  const { BTN, COLOR, sess, token, setCSRFToken, data, matchid, setData, handleSnackBar, matchClass, isAvailableEditing, value, setValue } = props
   const [ lists, setLists ] = React.useState([])
   const [ text, setText ] = React.useState('')
   const [ confirmDeleteState, handleConfirmDeleteState ] = React.useState(false)
@@ -369,6 +369,11 @@ export default function MatchClass(props) {
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
       setCSRFToken(csrf)
+      if(value > 1){
+        setValue(value - 1)
+      }else{
+        setValue(0)
+      }
       try {
         handleFetch()
         if(/success/.test(d.status)){
@@ -498,18 +503,20 @@ export default function MatchClass(props) {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        { editing ?
-          <BTN.Red onClick={()=>dialogOpen('deleteMainclass')}
-            startIcon={<DeleteIcon color="inherit" />}>
-            { API._getWord(sess && sess.language).Remove }
-          </BTN.Red>
-          :
-          <GreenTextButton onClick={()=>setEditing(!editing)}>
-            { API._getWord(sess && sess.language).Edit }
-          </GreenTextButton>
-        }
-      </div>
+      { isAvailableEditing &&
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          { editing ?
+            <BTN.Red onClick={()=>dialogOpen('deleteMainclass')}
+              startIcon={<DeleteIcon color="inherit" />}>
+              { API._getWord(sess && sess.language).Remove }
+            </BTN.Red>
+            :
+            <GreenTextButton onClick={()=>setEditing(!editing)}>
+              { API._getWord(sess && sess.language).Edit }
+            </GreenTextButton>
+          }
+        </div>
+      }
       <List className={classes.root}>
         { lists && lists.length === 0 && data &&
           <ListItem>
@@ -549,12 +556,13 @@ export default function MatchClass(props) {
             )
           }
         )}
-        { !editing && data &&
+        { isAvailableEditing && !editing && data &&
           <ListItem className={classes.addClass}>
             <ThemeProvider theme={theme}>
               <TextField
+                disabled={!isAvailableEditing}
                 fullWidth
-                autoFocus
+                autoFocus={API._isDesktopBrowser()}
                 value={text || ''}
                 type={ ( data.scorematch === 0 || matchClass.type === 'flight' )? 'number' : 'text' }
                 helperText={function(){
@@ -604,7 +612,7 @@ export default function MatchClass(props) {
                         <TextField
                           fullWidth
                           style={{ marginRight: 16 }}
-                          autoFocus={i==0}
+                          autoFocus={API._isDesktopBrowser() && i==0}
                           value={arrEdit[i] || ''}
                           onChange={e =>handleEditClass(d, e, i)}
                           onKeyPress={e => ( e.key === 'Enter' )? handleSave() : console.log() }

@@ -1,7 +1,3 @@
-function dummyPlayer(){
-  return [{"userid":773936,"status":"success"},{"userid":656705,"status":"success"},{"userid":380855,"status":"success"},{"userid":980385,"status":"success"},{"userid":968694,"status":"fail"},{"userid":452902,"status":"success"},{"userid":448179,"status":"success"},{"userid":317246,"status":"success"},{"userid":838489,"status":"success"},{"userid":127642,"status":"success"},{"userid":422094,"status":"success"},{"userid":637016,"status":"success"},{"userid":398717,"status":"fail"},{"userid":846610,"status":"success"},{"userid":186918,"status":"success"},{"userid":296764,"status":"success"},{"userid":177725,"status":"success"},{"userid":223893,"status":"success"},{"userid":735952,"status":"success"},{"userid":704282,"status":"success"},{"userid":470988,"status":"success"},{"userid":395229,"status":"success"},{"userid":843398,"status":"success"},{"userid":765571,"status":"fail"},{"userid":456902,"status":"success"},{"userid":937491,"status":"success"},{"userid":623655,"status":"success"},{"userid":579154,"status":"success"},{"userid":283135,"status":"success"},{"userid":243286,"status":"fail"},{"userid":872037,"status":"success"},{"userid":215839,"status":"success"},{"userid":760333,"status":"success"},{"userid":722638,"status":"success"},{"userid":525973,"status":"success"},{"userid":396119,"status":"success"},{"userid":121302,"status":"success"},{"userid":584981,"status":"success"},{"userid":144078,"status":"success"},{"userid":745918,"status":"success"},{"userid":872971,"status":"success"},{"userid":731068,"status":"success"},{"userid":289142,"status":"success"},{"userid":171247,"status":"success"},{"userid":561425,"status":"success"},{"userid":254177,"status":"success"},{"userid":294070,"status":"success"},{"userid":531624,"status":"success"},{"userid":441485,"status":"success"},{"userid":349921,"status":"success"},{"userid":508979,"status":"success"},{"userid":206427,"status":"success"},{"userid":344566,"status":"success"},{"userid":362257,"status":"success"},{"userid":672912,"status":"success"},{"userid":265192,"status":"success"},{"userid":329912,"status":"success"},{"userid":123456,"status":"success"},{"userid":832753,"status":"success"},{"userid":293360,"status":"success"},{"userid":684696,"status":"success"},{"userid":859661,"status":"success"},{"userid":697510,"status":"success"},{"userid":872312,"status":"success"},{"userid":186040,"status":"success"},{"userid":657493,"status":"success"},{"userid":189058,"status":"success"},{"userid":220606,"status":"success"},{"userid":224679,"status":"success"},{"userid":725595,"status":"success"},{"userid":834214,"status":"success"},{"userid":502367,"status":"success"},{"userid":479188,"status":"success"},{"userid":147737,"status":"success"},{"userid":828698,"status":"success"},{"userid":958766,"status":"success"},{"userid":801873,"status":"success"},{"userid":804737,"status":"success"},{"userid":476885,"status":"success"},{"userid":722345,"status":"success"},{"userid":863757,"status":"success"},{"userid":906954,"status":"success"},{"userid":673426,"status":"success"},{"userid":176525,"status":"success"},{"userid":299043,"status":"success"},{"userid":171843,"status":"success"},{"userid":870523,"status":"success"},{"userid":368303,"status":"success"},{"userid":432045,"status":"success"},{"userid":781511,"status":"success"},{"userid":317029,"status":"success"},{"userid":516627,"status":"success"},{"userid":964238,"status":"success"},{"userid":511165,"status":"success"},{"userid":808611,"status":"fail"},{"userid":755692,"status":"success"},{"userid":148989,"status":"success"},{"userid":825953,"status":"success"},{"userid":834212,"status":"success"},{"userid":983681,"status":"success"},{"userid":385153,"status":"success"},{"userid":780070,"status":"success"},{"userid":302319,"status":"success"},{"userid":492624,"status":"success"},{"userid":940352,"status":"success"},{"userid":722126,"status":"success"},{"userid":135543,"status":"success"},{"userid":290370,"status":"success"},{"userid":995067,"status":"success"},{"userid":745066,"status":"success"},{"userid":335794,"status":"success"},{"userid":897468,"status":"success"},{"userid":509279,"status":"success"},{"userid":923566,"status":"success"},{"userid":879750,"status":"success"},{"userid":922817,"status":"success"},{"userid":449656,"status":"success"},{"userid":302918,"status":"success"},{"userid":686853,"status":"success"},{"userid":366656,"status":"success"},{"userid":688633,"status":"success"},{"userid":150746,"status":"success"},{"userid":668104,"status":"success"},{"userid":726183,"status":"success"},{"userid":719142,"status":"success"},{"userid":784669,"status":"success"},{"userid":154714,"status":"success"},{"userid":489319,"status":"success"},{"userid":845215,"status":"success"},{"userid":455753,"status":"success"},{"userid":169226,"status":"success"},{"userid":802436,"status":"success"},{"userid":767936,"status":"success"},{"userid":889093,"status":"success"},{"userid":943009,"status":"success"},{"userid":473826,"status":"success"},{"userid":560646,"status":"success"},{"userid":772860,"status":"success"},{"userid":531500,"status":"success"},{"userid":166164,"status":"success"},{"userid":915035,"status":"success"},{"userid":375128,"status":"success"},{"userid":463456,"status":"success"},{"userid":986963,"status":"success"},{"userid":247348,"status":"success"},{"userid":158541,"status":"success"},{"userid":570929,"status":"success"},{"userid":162256,"status":"success"},{"userid":313675,"status":"success"},{"userid":383134,"status":"success"},{"userid":118486,"status":"success"},{"userid":175937,"status":"success"},{"userid":839337,"status":"success"},{"userid":381888,"status":"success"},{"userid":428247,"status":"success"},{"userid":961801,"status":"success"},{"userid":298863,"status":"success"},{"userid":823839,"status":"success"}]
-}
-
 function _webURL(){
   const URL = [ 'tofftime.com', 'thai-pga.com' ]
   return URL[1]
@@ -174,6 +170,22 @@ function _fetchPostFile(url, extendURL, obj, formData){
  *
  * Sort object array handler function
  */
+
+function _sortArrBy(data, primary, secondary){
+   if(data){
+     var obj = data
+     obj.sort( (a, b) =>{
+       const da = a[primary]
+       const db = b[primary]
+       if (da > db) return 1;
+       if (da < db) return -1;
+       if(secondary) return a[secondary].localeCompare(b[secondary]);
+     })
+     return obj
+   }else{
+     return null
+   }
+ }
 
 function _sortArrByDate(data, primary, secondary){
   if(data){
@@ -354,11 +366,11 @@ function _stringToDate(d){
  */
 
 function _getTodayTime(){
-  const today = new Date()
-  const hr = ( today.getHours() < 10 )? '0' + today.getHours() : today.getHours()
-  const min = ( today.getMinutes() < 10 )? '0' + today.getMinutes() : today.getMinutes()
-  const time = hr + ":" + min
-  return time
+const today = new Date()
+const hr = ( today.getHours() < 10 )? '0' + today.getHours() : today.getHours()
+const min = ( today.getMinutes() < 10 )? '0' + today.getMinutes() : today.getMinutes()
+const time = hr + ":" + min
+return time
 }
 
 function _dateToTimeString(d){
@@ -379,30 +391,30 @@ function _dateToTimeString(d){
  * Other number handler function
  */
 
-  function _handleHoleSum(array, type){
-    let temp = 0
-    let start = (type === 'out')? 0 : 9
-    let end = (type === 'out')? 9 : 18
-    for(var i = start;i < end;i++){
-     temp += array[i]
-    }
-    return temp
+function _handleHoleSum(array, type){
+  let temp = 0
+  let start = (type === 'out')? 0 : 9
+  let end = (type === 'out')? 9 : 18
+  for(var i = start;i < end;i++){
+   temp += array[i]
   }
+  return temp
+}
 
-  function _prefixNumber(num){
-    switch (true) {
-     case num > 0:
-       return `+ ${num}`
-       break;
-     case num < 0:
-       return `- ${Math.abs(num)}`
-       break;
-     default:
-       return num
-    }
+function _prefixNumber(num){
+  switch (true) {
+   case num > 0:
+     return `+ ${num}`
+     break;
+   case num < 0:
+     return `- ${Math.abs(num)}`
+     break;
+   default:
+     return num
   }
+}
 
-  function _shotnessNumber(number){
+function _shotnessNumber(number){
     var num = parseInt(number)
     var str = ''
     var strNum = 0;
@@ -456,6 +468,12 @@ function _handleScrolllTo(element){
   window.scrollTo(0, elmnt.offsetTop - header.offsetHeight)
 }
 
+function _scrolllToId(id){
+  var elmnt = document.getElementById(id);
+  //elmnt.scrollIntoView(true);
+  window.scrollTo(0, elmnt.offsetTop - 64)
+}
+
 function _handleAmateurClass(classno){
   var asciiNumber = parseInt(classno)
   if(!isNaN(asciiNumber)){
@@ -478,6 +496,21 @@ function objectException(object, attribute){
   return rawObj
 }
 
+function _isDesktopBrowser(){
+  if(
+    navigator.userAgent.match(/Android/i) ||
+    navigator.userAgent.match(/webOS/i) ||
+    navigator.userAgent.match(/iPhone/i) ||
+    navigator.userAgent.match(/iPad/i) ||
+    navigator.userAgent.match(/iPod/i) ||
+    navigator.userAgent.match(/BlackBerry/i) ||
+    navigator.userAgent.match(/Windows Phone/i)
+  ){
+    return false;
+  }else{
+    return true;
+  }
+}
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
@@ -485,7 +518,6 @@ function objectException(object, attribute){
 import wording from './wording'
 
 export {
-  dummyPlayer,
   _webURL,
   _getWebURL,
   _getPictureUrl,
@@ -495,6 +527,7 @@ export {
   _xhrGet,
   _xhrPost,
 
+  _sortArrBy,
   _sortArrByDate,
   sortReverseArrByDate,
 
@@ -511,9 +544,11 @@ export {
   _shotnessNumber,
 
   _handleScrolllTo,
+  _scrolllToId,
   _handleAmateurClass,
 
   objectException,
+  _isDesktopBrowser,
 
   wording as _getWord,
 }

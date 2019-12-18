@@ -22,9 +22,11 @@ import {
   Checkbox,
   Input,
   Chip,
+  IconButton,
 
 } from '@material-ui/core'
 
+import ArrowUpward from '@material-ui/icons/ArrowUpward'
 import Skeleton from '@material-ui/lab/Skeleton';
 
 const Statistics = Loadable({
@@ -49,10 +51,10 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     margin: 'auto',
     marginBottom: 36,
+    paddingTop: 24
   },
   grid: {
     boxSizing: 'border-box',
-    marginTop: 24,
     padding: 12
   },
   gridChild: {
@@ -152,10 +154,11 @@ const matchTypeNames = [
 export default function History(props) {
   const classes = useStyles();
   const {
-    API, COLOR, sess, token, setCSRFToken, accountData, handleAccountData, open, userid, userData,
+    API, BTN, COLOR, sess, token, setCSRFToken, isSupportWebp, accountData, handleAccountData, open, userid, userData,
     pageOrganizer, pageData, userPageList
   } = props
   const [ data, setData ] = React.useState(null)
+  const [ dataStat, setDataStat ] = React.useState(null)
   const [ statType, setStatType ] = React.useState('total')
   const [ checked, setChecked ] = React.useState([]);
 
@@ -212,15 +215,51 @@ export default function History(props) {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d)
+      handleAccountData({
+        ...d,
+        photopath: (
+          d.photopath ?
+          API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+          :
+          null
+        )
+      })
       setChecked(d.historystat)
+    })
+  }
+
+  async function handleFetchStat(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    const sendObj = {
+      action: 'statavg'
+    }
+
+    if(userid){
+      Object.assign(sendObj, { targetuser: userid });
+    }
+
+    await API._xhrPost(
+      token? token : resToken.token,
+      'loadusersystem', {
+        ...sendObj
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      setDataStat(d)
     })
   }
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
-    const sendObj = {
-      action: 'history'
+    const urlAPI = pageOrganizer ? 'mloadpage' : 'loadusersystem'
+    const sendObj = {}
+    if(pageOrganizer && pageData){
+      Object.assign(sendObj, {
+        action: 'match',
+        subaction: 'history',
+        pageid: pageData.pageid
+      });
+    }else{
+      Object.assign(sendObj, { action: 'history' });
     }
 
     if(userid){
@@ -236,7 +275,7 @@ export default function History(props) {
 
     await API._xhrPost(
       token? token : resToken.token,
-      'loadusersystem' , {
+      urlAPI, {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
@@ -247,6 +286,9 @@ export default function History(props) {
           }))
         }else{
           setData(d)
+        }
+        if(!pageOrganizer){
+          handleFetchStat()
         }
       }
     })
@@ -272,9 +314,21 @@ export default function History(props) {
   },[ window.innerWidth ])
 
   return(
-    <div className={classes.root}>
-      <LabelText text={ API._getWord(sess && sess.language).History } />
-      <div className={classes.grid}>
+    <div id={`history${userid}`} className={classes.root}>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex' }}>
+          <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/history`}>
+            <LabelText paddingTop={0} text={ API._getWord(sess && sess.language).History } />
+          </BTN.NoStyleLink>
+          { !/history/.test(window.location.href) &&
+            <React.Fragment>
+              <div style={{ flex: 1 }} />
+              <IconButton style={{ marginTop: 'auto' }} onClick={()=>API._scrolllToId(`upcoming${userid}`)}>
+                <ArrowUpward />
+              </IconButton>
+            </React.Fragment>
+          }
+        </div>
         <div
           className={clsx(classes.gridChild,{
             [classes.gridFlexDirectionDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
@@ -324,7 +378,7 @@ export default function History(props) {
             </Paper>*/
           }
           <Paper
-            style={{ boxSizing: 'border-box', marginTop: 'auto', marginBottom: 12 }}
+            style={{ boxSizing: 'border-box', marginTop: 'auto' }}
             className={clsx({
               [classes.controlPaperDown]: open ? window.innerWidth < 700 : window.innerWidth < 460 ,
               [classes.controlPaperUp]: !( open ? window.innerWidth < 700 : window.innerWidth < 460 )
@@ -347,6 +401,8 @@ export default function History(props) {
             </form>
           </Paper>
         </div>
+      </div>
+      <div className={classes.grid}>
         <List>
           <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
             <ListItemIcon
@@ -364,25 +420,44 @@ export default function History(props) {
                 primary={ (sess && sess.language === 'TH')? 'วันที่' : 'Date' } />
             }
             <ListItemText style={{ color: 'white', width: 100 }}
-              primary={ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' } />
+              primary={ (sess && sess.language === 'TH')? 'การแข่งขัน' : 'Match' }
+              secondary={
+                <Typography variant="body2" style={{ color: 'white' }}>
+                  {dataStat ? `${ dataStat.matchnum ? dataStat.matchnum : 0 } ${
+                    ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : `Match${ (dataStat.matchnum > 1) ? 'es': '' }`
+                  }` : ''}
+                </Typography>
+              } />
 
             { ( open ? window.innerWidth >= 1140 : window.innerWidth >= 900) &&
               <ListItemText
                 style={{ width: 100, color: 'white' }}
                 primary={ (sess && sess.language === 'TH')? 'สนาม' : 'Course' } />
             }
-            <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
-              <Typography variant="subtitle2" color="textSecondary" style={{ color: 'white' }}>
-                {
-                  ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ?
-                  ( (sess && sess.language === 'TH')? 'แฮนดิแคป' : 'Handicap' ) : 'HC'
-                }
-              </Typography>
-            </ListItemIcon>
+            <ListItemText
+              style={{ flex: 'none', width: 100, ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { maxWidth: 64 }}}
+              primary={
+                <Typography variant="subtitle2" color="textSecondary" style={{ color: 'white' }}>
+                  {/*
+                    ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ?
+                    ( (sess && sess.language === 'TH')? 'แฮนดิแคป' : 'Handicap' ) : 'HC'*/
+                    ( (sess && sess.language === 'TH')? 'แฮนดิแคป' : 'Handicap' )
+                  }
+                </Typography>
+              }
+              secondary={
+                <Typography component="span" variant="subtitle2" color="textSecondary" style={{ color: 'white' }}>
+                  {dataStat ? `${
+                    ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ?
+                    ( (sess && sess.language === 'TH')? 'เฉลี่ย' : 'Average' ) :
+                    ( (sess && sess.language === 'TH')? 'เฉลี่ย' : 'Avg.' )
+                  } ${ (dataStat && dataStat.hc) ? dataStat.hc : '-' }` : ''}
+                </Typography>
+              } />
           </ListItem>
         </List>
-        { !pageOrganizer &&
-          <Statistics {...props} checked={checked} setChecked={setChecked} />
+        {/* !pageOrganizer &&
+          <Statistics {...props} checked={checked} setChecked={setChecked} />*/
         }
         { data ?
           (
@@ -401,7 +476,10 @@ export default function History(props) {
             :
             <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                { API._getWord(sess && sess.language).No_data }
+                { API._getWord(sess && sess.language).No_match }
+              </Box>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={16} m={1}>
+                { API._getWord(sess && sess.language)['Please join or create match'] }
               </Box>
             </Typography>
           )

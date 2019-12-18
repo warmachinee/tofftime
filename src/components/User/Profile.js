@@ -64,7 +64,6 @@ const useStyles = makeStyles(theme => ({
   paper: {
     width: '100%',
     maxWidth: 600,
-    padding: theme.spacing(3, 2),
     display: 'flex',
     flexDirection: 'column',
     borderRadius: 0,
@@ -145,6 +144,16 @@ const StyledIconButton = withStyles(theme => ({
   },
 }))(IconButton);
 
+const GreenRadio = withStyles({
+  root: {
+    color: COLOR.primary[400],
+    '&$checked': {
+      color: COLOR.primary[600],
+    },
+  },
+  checked: {},
+})(props => <Radio color="default" {...props} />);
+
 const theme = createMuiTheme({
   palette: {
     primary: COLOR.primary,
@@ -173,6 +182,63 @@ const datePickers = createMuiTheme({
     }
   },
 });
+
+function AccountProfileImage(props){
+  const classes = useStyles();
+  const {
+    API, BTN, sess, isSupportWebp, token, setCSRFToken, handleAccountData, accountData, handleSnackBar,
+    pageOrganizer, pageData,
+    editing, selectedFile, tempFile, handlePicture
+  } = props
+
+  return (
+    <div className={classes.imageGrid}>
+      { editing ?
+        <IconButton>
+          <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
+          { accountData.photopath ?
+            <Avatar className={classes.avatarImage}
+              src={
+                selectedFile ?
+                tempFile
+                :
+                accountData.photopath
+              } />
+            :
+            ( selectedFile ?
+              <Avatar className={classes.avatarImage} src={tempFile} />
+              :
+              <AccountCircleIcon classes={{ root: classes.avatar }} />
+            )
+          }
+          <div style={{ position: 'absolute', color: 'black', bottom: -16, display: 'flex' }}>
+            <EditIcon fontSize="small"/>
+            <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>
+              { API._getWord(sess && sess.language).Upload_image }
+            </Typography>
+          </div>
+        </IconButton>
+        :
+        (
+          <div style={{ padding: 12 }}>
+            <BTN.NoStyleLink to={`/user/timeline/${accountData.userid}`}>
+              {
+                accountData.photopath ?
+                <Avatar className={classes.avatarImage}
+                  style={{ cursor: 'pointer' }}
+                  src={accountData.photopath} />
+                :
+                <AccountCircleIcon
+                  style={{ cursor: 'pointer' }}
+                  classes={{ root: classes.avatar }} />
+              }
+            </BTN.NoStyleLink>
+          </div>
+        )
+      }
+    </div>
+  );
+}
 
 function TextMaskCustom(props) {
   const { inputRef, ...other } = props;
@@ -404,7 +470,15 @@ export default function Profile(props) {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d)
+      handleAccountData({
+        ...d,
+        photopath: (
+          d.photopath ?
+          API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+          :
+          null
+        )
+      })
       setEditingData({
         fullname: d.fullname ? d.fullname : '',
         lastname: d.lastname ? d.lastname : '',
@@ -456,51 +530,7 @@ export default function Profile(props) {
                 }
               </BTN.PrimaryText>
             </div>
-            <div className={classes.imageGrid}>
-              { editing ?
-                <IconButton>
-                  <input className={classes.inputFile} type="file" accept="image/png, image/jpeg" onChange={handlePicture} />
-                  { accountData.photopath ?
-                    <Avatar className={classes.avatarImage}
-                      src={
-                        selectedFile ?
-                        tempFile
-                        :
-                        API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
-                      } />
-                    :
-                    ( selectedFile ?
-                      <Avatar className={classes.avatarImage} src={tempFile} />
-                      :
-                      <AccountCircleIcon classes={{ root: classes.avatar }} />
-                    )
-                  }
-                  <div style={{ position: 'absolute', color: 'black', bottom: -16, display: 'flex' }}>
-                    <EditIcon fontSize="small"/>
-                    <Typography variant="subtitle1" style={{ marginRight: 8, fontWeight: 600 }}>
-                      { API._getWord(sess && sess.language).Upload_image }
-                    </Typography>
-                  </div>
-                </IconButton>
-                :
-                (
-                  <div style={{ padding: 12 }}>
-                    <BTN.NoStyleLink to={`/user/timeline/${accountData.userid}`}>
-                      {
-                        accountData.photopath ?
-                        <Avatar className={classes.avatarImage}
-                          style={{ cursor: 'pointer' }}
-                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
-                        :
-                        <AccountCircleIcon
-                          style={{ cursor: 'pointer' }}
-                          classes={{ root: classes.avatar }} />
-                      }
-                    </BTN.NoStyleLink>
-                  </div>
-                )
-              }
-            </div>
+            <AccountProfileImage {...props} editing={editing} selectedFile={selectedFile} tempFile={tempFile} handlePicture={handlePicture} />
             { editing ?
               <List style={{ marginTop: 16 }}>
                 <ListItem>
@@ -583,19 +613,19 @@ export default function Profile(props) {
                 <RadioGroup value={editingData.privacy} onChange={e => setEditingData({ ...editingData, privacy: e.target.value})} row>
                   <FormControlLabel
                     value={'public'}
-                    control={<Radio />}
+                    control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Public }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'friend'}
-                    control={<Radio />}
+                    control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Friend }
                     labelPlacement="end"
                   />
                   <FormControlLabel
                     value={'private'}
-                    control={<Radio />}
+                    control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Private }
                     labelPlacement="end"
                   />
@@ -696,14 +726,16 @@ export default function Profile(props) {
               <List className={classes.listItem}>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { API._getWord(sess && sess.language).Age } :
-                    {accountData.birthdate && ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear())}
+                    {`${API._getWord(sess && sess.language).Age} : ${
+                      accountData.birthdate ? ( new Date().getFullYear() - new Date(accountData.birthdate).getFullYear()) : '-'
+                    }`}
                   </Typography>
                 </ListItem>
                 <ListItem>
                   <Typography variant="subtitle1" className={classes.name}>
-                    { API._getWord(sess && sess.language).Birthday } :
-                    {accountData.birthdate && API._dateToString(accountData.birthdate)}
+                    {`${API._getWord(sess && sess.language).Birthday} : ${
+                      accountData.birthdate ? API._dateToString(accountData.birthdate) : '-'
+                    }`}
                   </Typography>
                 </ListItem>
               </List>
@@ -751,7 +783,7 @@ export default function Profile(props) {
           <div style={{ marginTop: 24, marginBottom: 24 }}>
             <ThemeProvider theme={theme}>
               <TextField
-                autoFocus={changePasswordState}
+                autoFocus={API._isDesktopBrowser() && changePasswordState}
                 fullWidth
                 label={ API._getWord(sess && sess.language).Old_password }
                 variant="outlined"

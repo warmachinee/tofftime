@@ -239,7 +239,7 @@ export default function ScoreBoardCharity(props){
             { editing ?
               <div className={classes.playerLimitChildGrid}>
                 <TextField label="Player Limit"
-                  autoFocus
+                  autoFocus={API._isDesktopBrowser()}
                   value={!isNaN(playerLimit.current) ? playerLimit.current : ''}
                   type="number"
                   onChange={e =>handlePlayerLimit(e.target.value)}
@@ -267,9 +267,9 @@ export default function ScoreBoardCharity(props){
               value={mainClassSelected}
               onChange={e => setMainClassSelected(e.target.value)}>
               { data &&
-                data.mainclass.map( d =>
+                data.mainclass.map( (d, i) =>
                   <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                    {d.mainclass}
+                    {d.mainclassname} ({d.type})
                   </MenuItem>
               )}
             </Select>

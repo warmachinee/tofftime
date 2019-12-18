@@ -170,12 +170,22 @@ export default function HistoryList(props) {
                     </Typography>
                   } />
               }
-              <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
-                <Typography variant="subtitle2" color="textSecondary"
-                  style={{ marginRight: 16, marginLeft: 'auto' }}>
-                  {data.hc}
-                </Typography>
-              </ListItemIcon>
+              <ListItemText
+                style={{ flex: 'none', width: 100, ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { maxWidth: 64 }}}
+                primary={
+                  <Typography variant="subtitle2" color="textSecondary" align={( open ? window.innerWidth < 690 : window.innerWidth < 450) ? "right" : "center"}
+                    style={{ marginRight: 16, marginLeft: 'auto' }}>
+                    {data.hc}
+                  </Typography>
+                } />
+              {/*
+                <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
+                  <Typography variant="subtitle2" color="textSecondary"
+                    style={{ marginRight: 16, marginLeft: 'auto' }}>
+                    {data.hc}
+                  </Typography>
+                </ListItemIcon>*/
+              }
 
             </ListItem>
           </BTN.NoStyleLink>

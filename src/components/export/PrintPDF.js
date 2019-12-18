@@ -18,18 +18,23 @@ pdfMake.fonts = {
   }
 }
 
-import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
 
 export default function PrintPDF(props){
-  const { data, userscore, matchClass, sess, sortBy } = props
-  const userData = userscore.filter((d)=>{
+  const { data, userscore, matchClass, sess, sortBy, menuClose, reward } = props
+  const userData = userscore && userscore.filter((d)=>{
     return d.classno === matchClass.classno
   })
 
+  function handleClick(){
+    menuClose()
+    handleDownload(data, userData, matchClass, sortBy, sess)
+  }
+
   return(
-    <Button onClick={()=>handleDownload(data, userData, matchClass, sortBy, sess)} color="primary">
+    <MenuItem disabled={userscore && reward && ('status' in reward)} onClick={handleClick} color="primary">
       PDF
-    </Button>
+    </MenuItem>
   );
 }
 

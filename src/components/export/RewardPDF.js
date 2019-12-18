@@ -18,27 +18,23 @@ pdfMake.fonts = {
   }
 }
 
-import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
 
 export default function RewardPDF(props){
-  const { data, matchClass, reward, sess, sortBy } = props
-  const rewardSelected = !('status' in reward) && reward.filter( item =>{
+  const { data, matchClass, reward, sess, sortBy, menuClose } = props
+  const rewardSelected = reward && !('status' in reward) && reward.filter( item =>{
     return ( item.classno === matchClass.classno )
   })
 
+  function handleClick(){
+    menuClose()
+    handleDownload(matchClass, rewardSelected, data, sortBy, sess)
+  }
+
   return(
-    <React.Fragment>
-      {/* !('status' in reward) ?
-        <Button disabled={!(rewardSelected.length > 0)} onClick={()=>handleDownload(matchClass, rewardSelected, data, sortBy, sess)} color="primary">
-          { API._getWord(sess && sess.language).Reward }
-        </Button>
-        :
-        <Button disabled color="primary">{reward.status}</Button>
-      */}
-      <Button disabled={!(rewardSelected.length > 0)} onClick={()=>handleDownload(matchClass, rewardSelected, data, sortBy, sess)} color="primary">
-        { API._getWord(sess && sess.language).Reward }
-      </Button>
-    </React.Fragment>
+    <MenuItem disabled={!(rewardSelected && rewardSelected.length > 0) || (reward && ('status' in reward))} onClick={handleClick} color="primary">
+      { API._getWord(sess && sess.language).Reward }
+    </MenuItem>
   );
 }
 

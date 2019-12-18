@@ -79,8 +79,16 @@ export default function UpcomingList(props) {
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
-    const sendObj = {
-      action: 'upcoming'
+    const urlAPI = pageOrganizer ? 'mloadpage' : 'loadusersystem'
+    const sendObj = {}
+    if(pageOrganizer && pageData){
+      Object.assign(sendObj, {
+        action: 'match',
+        subaction: 'upcoming',
+        pageid: pageData.pageid
+      });
+    }else{
+      Object.assign(sendObj, { action: 'upcoming' });
     }
 
     if(userid){
@@ -89,18 +97,20 @@ export default function UpcomingList(props) {
 
     await API._xhrPost(
       token? token : resToken.token,
-      'loadusersystem' , {
+      urlAPI, {
         ...sendObj
     }, function(csrf, d){
       setCSRFToken(csrf)
       if(!/wrong/.test(d.status)){
+        setData(d)
+        /*
         if(pageOrganizer){
           setData(d.filter( item =>{
             return item.pageid === pageData.pageid
           }))
         }else{
           setData(d)
-        }
+        }*/
       }
     })
   }
@@ -124,7 +134,7 @@ export default function UpcomingList(props) {
 
   return(
     <div className={classes.root}>
-      <LabelText text={ (sess && sess.language === 'TH')? 'เร็วๆนี้' : 'Upcoming' } />
+      <LabelText text={ API._getWord(sess && sess.language).Upcoming } />
       <div className={classes.grid}>
         <List>
           <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
@@ -159,7 +169,10 @@ export default function UpcomingList(props) {
             :
             <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                { API._getWord(sess && sess.language).No_data }
+                { API._getWord(sess && sess.language).No_match }
+              </Box>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={16} m={1}>
+                { API._getWord(sess && sess.language)['Please join or create match'] }
               </Box>
             </Typography>
           )

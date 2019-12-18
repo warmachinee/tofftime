@@ -306,7 +306,7 @@ export default function AddPlayerModal(props){
         <div className={classes.textFieldGrid}>
           <ThemeProvider theme={theme}>
             <TextField
-              autoFocus={createState}
+              autoFocus={API._isDesktopBrowser() && createState}
               className={classes.textField}
               variant="outlined"
               label="Full name"
@@ -339,7 +339,7 @@ export default function AddPlayerModal(props){
       </Collapse>
       <ThemeProvider theme={theme}>
         <TextField
-          autoFocus
+          autoFocus={API._isDesktopBrowser()}
           className={classes.searchBox}
           variant="outlined"
           placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search ) : '' }
@@ -365,7 +365,8 @@ export default function AddPlayerModal(props){
           }}
         />
         <GreenTextButton
-          style={{ marginTop: 10 }}
+          variant="outlined"
+          style={{ marginLeft: 16, marginTop: 10 }}
           onClick={handleDummyOpen}>
           { API._getWord(sess && sess.language).Dummy }
         </GreenTextButton>

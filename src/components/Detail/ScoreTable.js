@@ -4,21 +4,30 @@ import { Link } from "react-router-dom";
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { primary, secondary, blueGrey, amber, green } from './../../api/palette'
 
-import Button from '@material-ui/core/Button'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import AppBar from '@material-ui/core/AppBar';
-import Zoom from '@material-ui/core/Zoom';
-import Grow from '@material-ui/core/Grow';
-import Collapse from '@material-ui/core/Collapse';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  AppBar,
+  Zoom,
+  Grow,
+  Collapse,
+  ListItem,
+  Divider,
+  Typography,
+  Box,
+  Avatar,
+
+} from '@material-ui/core'
+
+import {
+  AccountCircle,
+
+} from '@material-ui/icons'
 
 const ScoreTableChip = Loadable({
   loader: () => import(/* webpackChunkName: "ScoreTableChip" */'./ScoreTableChip'),
@@ -68,6 +77,13 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     padding: '0 0 0 14px',
   },
+  avatar: {
+    fontSize: 100
+  },
+  avatarImage: {
+    width: 100,
+    height: 100,
+  },
 
 }));
 
@@ -114,7 +130,7 @@ const StyledTableCell = withStyles(theme => ({
 function ScoreRow(props){
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false)
-  const { sess, BTN, row, data, index, fieldData, sortBy, scoringMethod, mainClassSelected } = props
+  const { API, sess, isSupportWebp, BTN, row, data, index, fieldData, sortBy, scoringMethod, } = props
   const wd = window.innerWidth
 
   const tableCell = {
@@ -167,60 +183,78 @@ function ScoreRow(props){
       </ListItem>
       {!expanded && <Divider />}
       <Collapse in={expanded} unmountOnExit>
-        <div style={{ padding: '8px 24px' }}>
-          { BTN && row && sess && sess.status === 1 && sess.typeid !== 'admin' &&
-            <Link to={`/user/timeline/${row.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <BTN.PrimaryText>Profile</BTN.PrimaryText>
-            </Link>
-          }
-        </div>
-        <div style={{
-            overflow: 'auto', padding: '16px 0 16px 0',
-            overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch'
-          }}>
-          { data && data.fieldscore && row && row.score &&
-            <React.Fragment>
-              <ListItem style={{ padding: 0 }}>
-                <div style={{ display: 'flex', margin: 'auto' }}>
-                  <div style={{ backgroundColor: 'black', color: 'white',
-                    padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '4px 0 0 0', fontWeight: 800 }}>HOLE</div>
-                  {[0,1,2,3,4,5,6,7,8].map( d=>
-                    <div key={d} style={{ backgroundColor: 'black', color: 'white',
-                      padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
-                  )}
-                  <div style={{ backgroundColor: 'black', color: 'white',
-                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>OUT</div>
-                  {[9,10,11,12,13,14,15,16,17].map( d=>
-                    <div key={d} style={{ backgroundColor: 'black', color: 'white',
-                      padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
-                  )}
-                  <div style={{ backgroundColor: 'black', color: 'white',
-                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>IN</div>
-                  <div style={{ backgroundColor: 'black', color: 'white',
-                    padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 4px 0 0', fontWeight: 800 }}>TOT</div>
+        { data && data.fieldscore && row && row.score &&
+          <div style={{
+              overflow: 'auto', padding: '16px 0',
+              overflowScrolling: 'touch', WebkitOverflowScrolling: 'touch'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'center', width: 1000 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: 16, paddingTop: 0 }}>
+                  { row.photopath ?
+                    <Avatar className={classes.avatarImage} style={{ marginLeft: 'auto', marginRight: 'auto' }}
+                      src={API._getPictureUrl(row.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                    :
+                    <AccountCircle classes={{ root: classes.avatar }} style={{ marginLeft: 'auto', marginRight: 'auto' }} />
+                  }
+                  { BTN && row && sess && sess.status === 1 && sess.typeid !== 'admin' && ('typeid' in row) &&
+                    <div style={{ padding: '8px 24px' }}>
+                      { row.typeid === 'dummy' ?
+                        <Typography variant="body2"
+                          align="center"
+                          style={{ color: primary[500], textTransform: 'uppercase', letterSpacing: '0.02857em', fontWeight: 500 }}>
+                          { API._getWord(sess && sess.language).Dummy }
+                        </Typography>
+                        :
+                        <Link to={`/user/timeline/${row.userid}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                          <BTN.PrimaryOutlined>{ API._getWord(sess && sess.language).Profile }</BTN.PrimaryOutlined>
+                        </Link>
+                      }
+                    </div>
+                  }
+
                 </div>
-              </ListItem>
-              <ListItem style={{ padding: 0 }}>
-                <div style={{ display: 'flex', margin: 'auto' }}>
-                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
-                    padding: '8px 4px', width: 64, textAlign: 'right', fontWeight: 800 }}>PAR</div>
-                  { data.fieldscore.slice(0,9).map( (d,i)=>
-                    <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
-                      padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
-                  )}
-                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
-                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.out}</div>
-                  { data.fieldscore.slice(9,18).map( (d,i)=>
-                    <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
-                      padding: '8px 4px', width: 32, textAlign: 'center'}}>{d}</div>
-                  )}
-                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
-                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.in}</div>
-                  <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
-                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.gross}</div>
-                </div>
-              </ListItem>
-              <ListItem style={{ padding: 0 }}>
+                <div>
+                  <ListItem style={{ padding: 0 }}>
+                    <div style={{ display: 'flex', margin: 'auto' }}>
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '4px 0 0 0', fontWeight: 800 }}>HOLE</div>
+                      {[0,1,2,3,4,5,6,7,8].map( d=>
+                        <div key={d} style={{ backgroundColor: 'black', color: 'white',
+                          padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
+                      )}
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>OUT</div>
+                      {[9,10,11,12,13,14,15,16,17].map( d=>
+                        <div key={d} style={{ backgroundColor: 'black', color: 'white',
+                          padding: '8px 4px', width: 32, textAlign: 'center' }}>{d + 1}</div>
+                      )}
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>IN</div>
+                      <div style={{ backgroundColor: 'black', color: 'white',
+                        padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 4px 0 0', fontWeight: 800 }}>TOT</div>
+                    </div>
+                  </ListItem>
+                  <ListItem style={{ padding: 0 }}>
+                    <div style={{ display: 'flex', margin: 'auto' }}>
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 64, textAlign: 'right', fontWeight: 800 }}>PAR</div>
+                      { data.fieldscore.slice(0,9).map( (d,i)=>
+                        <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
+                          padding: '8px 4px', width: 32, textAlign: 'center' }}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.out}</div>
+                      { data.fieldscore.slice(9,18).map( (d,i)=>
+                        <div key={i} style={{ backgroundColor: blueGrey[700], color: blueGrey[100],
+                          padding: '8px 4px', width: 32, textAlign: 'center'}}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.in}</div>
+                      <div style={{ backgroundColor: blueGrey[700], color: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{fieldData.gross}</div>
+                    </div>
+                  </ListItem>
+                  <ListItem style={{ padding: 0 }}>
                 <div style={{ display: 'flex', margin: 'auto' }}>
                   <div style={{ backgroundColor: blueGrey[50],
                     padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '0 0 0 4px', fontWeight: 800 }}>SCORE</div>
@@ -251,14 +285,15 @@ function ScoreRow(props){
                     padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 0 4px 0', fontWeight: 800 }}>{row.out + row.in}</div>
                 </div>
               </ListItem>
-              <div style={{ display: 'flex' }}>
-                <ScoreTableChip dotColor={green[300]} label="Under"/>
-                <ScoreTableChip dotColor={blueGrey[50]} label="Par"/>
-                <ScoreTableChip dotColor={amber[300]} label="Over"/>
+                  <div style={{ display: 'flex' }}>
+                    <ScoreTableChip dotColor={green[300]} label="Under"/>
+                    <ScoreTableChip dotColor={blueGrey[50]} label="Par"/>
+                    <ScoreTableChip dotColor={amber[300]} label="Over"/>
+                  </div>
+                </div>
               </div>
-            </React.Fragment>
-          }
-        </div>
+          </div>
+        }
         <Divider />
       </Collapse>
     </React.Fragment>

@@ -257,24 +257,21 @@ export default function PagePost(props){
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
+      document.title = `Post Management - T-off Time`
     })
   }
 
   React.useEffect(()=>{
     handleFetch()
-  },[ open, confirmDeleteState ])
+  },[ open, confirmDeleteState, dialog ])
 
   return(
     <div className={classes.root}>
-      <Typography component="div">
-        <Box className={classes.title} fontWeight={600} m={1}>
-          { API._getWord(sess && sess.language).Page_post }
-        </Box>
-      </Typography>
-      <div style={{ display: 'flex' }}>
-        <RedButton style={{ padding: '8px 16px 8px 0' }} variant="contained" color="secondary"
-          onClick={()=>handleOpen('create')}>
-          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
+      <LabelText text={ API._getWord(sess && sess.language).Page_post } />
+      <div style={{ display: 'flex', marginTop: 16 }}>
+        <RedButton variant="contained" color="secondary"
+          onClick={()=>handleOpen('create')}
+          startIcon={<AddCircleIcon color="inherit" />}>
           { API._getWord(sess && sess.language).Create }
         </RedButton>
         <div style={{ flex: 1 }} />
@@ -311,13 +308,21 @@ export default function PagePost(props){
                         src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
                         className={classes.bigAvatar} />
                       :
-                      <ImageIcon className={classes.bigAvatar} />
+                      <img className={classes.bigAvatar}
+                        src="https://thai-pga.com/default/match/matchcard.png" />
+                      /*<ImageIcon className={classes.bigAvatar} />*/
                   }
                 </ListItemAvatar>
                 <ListItemText className={classes.listDetail}
                   primary={
                     <Typography className={classes.name} component="div">
-                      {d.message.split('<$$split$$>')[0]}
+                      { d.type === 'match' ?
+                        (
+                          d.messagedetail && d.messagedetail.matchname
+                        )
+                        :
+                        d.message.split('<$$split$$>')[0]
+                      }
                     </Typography>
                   }
                   secondary={

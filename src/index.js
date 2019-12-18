@@ -84,7 +84,7 @@ class RenderApp extends React.Component {
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <div style={{ marginTop: 24 }}>
                 <TextField
-                  autoFocus
+                  autoFocus={API._isDesktopBrowser()}
                   label="Password"
                   variant="outlined"
                   type="password"
@@ -115,7 +115,7 @@ if ('serviceWorker' in navigator) {
 
 ReactDOM.render(<RenderApp />, document.getElementById('root'));
 
-import MBOverview from './components/SystemAdmin/Match/MBOverview'
+import MatchDetailBody from './components/Detail/MatchDetailBody'
 
 function TestFunction() {
   const [ data, setData ] = React.useState(null)
@@ -167,10 +167,11 @@ function TestFunction() {
       WebkitOverflowScrolling: 'touch',
       backgroundColor: COLOR.grey[100]
     }}>
-      <MBOverview API={API} COLOR={COLOR} BTN={BTN}
+      <MatchDetailBody API={API} COLOR={COLOR} BTN={BTN}
         data={data}
         setData={setData}
-        sess={{status:1}} />
+        sess={{status:1}}
+         />
     </div>
   );
 }

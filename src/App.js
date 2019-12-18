@@ -389,7 +389,9 @@ export default function App() {
   },[ ])
 
   React.useEffect(()=>{
-    document.title = 'T-off Time'
+    if(window.location.pathname === '/'){
+      document.title = 'T-off Time'
+    }
   },[ window.location.pathname ])
 
   const [ ,updateState ] = React.useState(null)

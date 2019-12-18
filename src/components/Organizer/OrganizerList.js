@@ -27,12 +27,14 @@ const useStyles = makeStyles(theme => ({
   grid: {
     marginTop: 24,
     padding: theme.spacing(3),
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+    display: 'flex',
+    flexWrap: 'wrap',
     boxSizing: 'border-box',
   },
   marginAuto: {
-    marginRight: 'auto',
+    width: 150,
+    marginRight: 24,
+    marginBottom: 24
   },
   iconButton: {
     marginBottom: 16,

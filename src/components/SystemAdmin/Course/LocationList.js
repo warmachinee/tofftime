@@ -28,6 +28,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckCircle from '@material-ui/icons/CheckCircle';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -38,7 +39,7 @@ const ConfirmDialog = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: 48,
+    //marginTop: 48,
   },
   list: {
     borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
@@ -253,7 +254,7 @@ export default function LocationList(props){
       <div className={classes.searchGrid}>
         <ThemeProvider theme={theme}>
           <TextField
-            autoFocus
+            autoFocus={API._isDesktopBrowser()}
             className={classes.searchBox}
             variant="outlined"
             placeholder={ !searchField? ( API._getWord(sess && sess.language).Search ) : '' }
@@ -407,7 +408,14 @@ function ListField(props){
             <Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate />
           }
         </ListItemIcon>
-        <ListItemText primary={data.fieldname}
+        <ListItemText primary={
+            <span style={{ display: 'flex' }}>
+              <Typography variant="body1">
+                {data.fieldname}
+              </Typography>
+              {data.custom === 0 && <CheckCircle style={{ color: primary[600], marginLeft: 8 }} />}
+            </span>
+          }
           {...(sess && sess.typeid !== 'admin' && data.fieldversion > 1)? { secondary: data.fieldversion + ' version' } : null } />
       </ListItem>
       <Divider />

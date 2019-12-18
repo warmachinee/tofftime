@@ -123,33 +123,31 @@ export default function SelectMatch(props) {
   return (
     <div className={classes.root}>
       <LabelText text={
-          `${API._getWord(sess && sess.language)[selectedMatch ? 'Selected_match' : 'Select_match' ]}`
-        } />
-      <Typography variant="h6" style={{ padding: 16 }}>
-        { clickAction === 'edit' ?
-          ( selectedMatch ?
-            ( selectedMatch.matchname ?
-              selectedMatch.matchname
+          `${API._getWord(sess && sess.language)[selectedMatch ? 'Selected_match' : 'Select_match' ]} : ${
+            clickAction === 'edit' ?
+              ( selectedMatch ?
+                ( selectedMatch.matchname ?
+                  selectedMatch.matchname
+                  :
+                  (
+                    selectedMatch.title?
+                    selectedMatch.title
+                    :
+                    ''
+                  )
+                )
+                :
+                ''
+              )
               :
               (
-                selectedMatch.title?
+                selectedMatch?
                 selectedMatch.title
                 :
                 ''
               )
-            )
-            :
-            ''
-          )
-          :
-          (
-            selectedMatch?
-            selectedMatch.title
-            :
-            ''
-          )
-        }
-      </Typography>
+          }`
+        } />
       <div className={classes.grid}>
         <BTN.Red style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createMatch')}>
           <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
@@ -188,7 +186,7 @@ export default function SelectMatch(props) {
             :
             <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                { API._getWord(sess && sess.language).No_data }
+                { API._getWord(sess && sess.language).No_match }
               </Box>
             </Typography>
           )

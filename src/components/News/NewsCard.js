@@ -4,54 +4,33 @@ import { makeStyles } from '@material-ui/core/styles'
 import { primary, grey } from './../../api/palette'
 
 import {
-  Box, Typography, Paper
+  Box, Typography, Paper, Avatar
 } from '@material-ui/core';
+
+import {
+  AccountCircle as AccountCircleIcon,
+
+} from '@material-ui/icons';
 
 import Skeleton from '@material-ui/lab/Skeleton';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    position: 'relative',
-    margin: theme.spacing(1.5, 0),
-    marginRight: theme.spacing(1),
-    display: 'flex',
-    boxSizing: 'border-box',
-    transition: '.2s',
-    flexDirection: 'column',
-    WebkitFlexDirection: 'column',
+    width: '100%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    marginBottom: 24,
     [theme.breakpoints.up(600)]: {
-      flexDirection: 'row',
-      WebkitFlexDirection: 'row',
-      maxHeight: 300,
-      height: window.innerWidth * .25,
-    },
-    [theme.breakpoints.up(1000)]: {
-      maxHeight: 300,
-      height: window.innerWidth * .2,
+      width: 300,
     },
   },
   box: {
-    width: '100%',
-    padding: theme.spacing(1.5, 0),
-    paddingRight: theme.spacing(2),
-    paddingLeft: theme.spacing(1.5),
-    overflow: 'hidden',
-    boxSizing: 'border-box',
-    [theme.breakpoints.up(600)]: {
-      width: '50%',
-    },
-  },
-  imageGrid: {
-    width: '100%',
-    [theme.breakpoints.up(600)]: {
-      width: 300
-    },
+    padding: theme.spacing(1.5)
   },
   image: {
     width: '100%',
-    height: '100%',
+    height: 160,
     backgroundColor: grey[300],
-    marginRight: theme.spacing(1.5),
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
@@ -59,19 +38,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
   },
   title: {
-    display: '-webkit-box',
-    overflow: 'hidden',
-    whiteSpace: 'normal',
-    textOverflow: 'ellipsis',
-    WebkitBoxOrient: 'vertical',
-    WebkitLineClamp: 2,
-    lineHeight: 1.4,
-    cursor: 'pointer'
-  },
-  date: {
-    cursor: 'pointer'
-  },
-  subtitle: {
+    position: 'relative',
     display: '-webkit-box',
     overflow: 'hidden',
     whiteSpace: 'normal',
@@ -80,70 +47,86 @@ const useStyles = makeStyles(theme => ({
     WebkitLineClamp: 2,
     lineHeight: 1.4,
     cursor: 'pointer',
-    [theme.breakpoints.up(600)]: {
-      WebkitLineClamp: 3,
-    },
-    [theme.breakpoints.up(720)]: {
-      WebkitLineClamp: 4,
-    },
-    [theme.breakpoints.up(1000)]: {
-      WebkitLineClamp: 5,
+  },
+  imageGrid: {
+    margin: 12,
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  avatar: {
+    fontSize: 48,
+    [theme.breakpoints.down(500)]: {
+      fontSize: 32,
     },
   },
-  skeleton: {
-    boxSizing: 'border-box',
-    backgroundColor: grey[300],
-    margin: 0
-  }
+  avatarImage: {
+    width: 48,
+    height: 48,
+    [theme.breakpoints.down(500)]: {
+      width: 32,
+      height: 32,
+    },
+  },
+
 }));
 
 export default function NewsCard(props) {
   const classes = useStyles();
-  const { API, BTN, isSupportWebp, data, loading } = props
-  const [ paperHover, setPaperHover ] = React.useState(0)
-  const [ pictureURL, setPictureURL ] = React.useState(data ? data.picture : null)
+  const { API, BTN, sess, isSupportWebp, data, loading } = props
 
   return(
     <Paper
       className={classes.root}
-      elevation={window.innerWidth >= 600 ? paperHover : 1}
-      onMouseEnter={()=>setPaperHover(3)}
-      onMouseLeave={()=>setPaperHover(0)}>
-      <div className={classes.imageGrid}>
-        { ( !loading && pictureURL ) ?
+      elevation={1}>
+      { ( !loading && data ) ?
+        <Box className={classes.box}>
           <BTN.NoStyleLink to={`/news/${data.newsid}`}>
-            <img
-              className={classes.image}
-              src={API._getPictureUrl(pictureURL) + ( isSupportWebp? '.webp' : '.jpg' )}
-              onError={()=>setPictureURL(null)} />
+            <div style={{ boxSizing: 'border-box' }}>
+              <div style={{ display: 'flex' }}>
+                <div className={classes.imageGrid}>
+                  <Avatar className={classes.avatarImage}
+                    src="https://file.thai-pga.com/system/image/logoX2.png" />
+                </div>
+                <Typography variant="h6" className={classes.title} style={{ marginBottom: 'auto', marginTop: 'auto' }}>
+                  {"T-off Time"}
+                </Typography>
+              </div>
+              <Typography gutterBottom variant="body1" className={classes.title}>
+                {data.title}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" className={classes.title}>
+                {data.subtitle}
+              </Typography>
+              <Typography gutterBottom variant="body2">
+                { API._dateToString(data.createdate)}
+              </Typography>
+
+            </div>
           </BTN.NoStyleLink>
-          :
-          <Skeleton className={classes.skeleton} style={{ width: '100%', height: window.innerWidth >= 600 ? '100%' : 200 }} />
-        }
-      </div>
-      <Box className={classes.box}>
-        { !loading ?
+        </Box>
+        :
+        <Box className={classes.box}>
+          <Skeleton height={25} />
+          <Skeleton height={14} width="60%"/>
+        </Box>
+      }
+      { ( data && data.picture ) ?
+        <BTN.NoStyleLink to={`/news/${data.newsid}`}>
+          <img className={classes.image}
+            src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+        </BTN.NoStyleLink>
+        :
+        /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
+        <img className={classes.image}
+          src="https://thai-pga.com/default/match/matchcard.png" />
+      }
+      { data &&
+        <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
           <BTN.NoStyleLink to={`/news/${data.newsid}`}>
-            <Typography gutterBottom variant="h6" className={classes.title}>
-              {data.title}
-            </Typography>
-            <Typography gutterBottom display="block" variant="caption" color="textSecondary" className={classes.date}>
-              { API._dateToString(data.createdate)}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" className={classes.subtitle}>
-              {data.subtitle}
-            </Typography>
+            <BTN.PrimaryText style={{ margin: 16, }}>{ API._getWord(sess && sess.language).Detail }</BTN.PrimaryText>
           </BTN.NoStyleLink>
-          :
-          <React.Fragment>
-            <Skeleton width="100%" height={28} />
-            <Skeleton width="20%" height={14} />
-            <Skeleton width="70%"/>
-            <Skeleton width="90%"/>
-            <Skeleton width="90%"/>
-          </React.Fragment>
-        }
-      </Box>
+        </div>
+      }
     </Paper>
   );
 }

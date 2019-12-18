@@ -205,7 +205,7 @@ export default function MatchFormResult(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setMatchDetail(d)
-      document.title = `( Form ) ${d.title} - T-off Time`
+      document.title = `(Form) ${d.title} - T-off Time`
     })
     await handleFetchForm()
   }
@@ -255,9 +255,9 @@ export default function MatchFormResult(props) {
             <Typography variant="body1" align="right"
               style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
               { ( sess && sess.language === 'TH' ) ?
-                `ผู้เล่น ${data.length} คน`
+                `ผู้เล่น ${data.filter(item =>{ return item.display === 1 }).length} คน`
                 :
-                `${data.length} player${data.length > 1? 's' : ''}`
+                `${data.filter(item =>{ return item.display === 1 }).length} player${data.filter(item =>{ return item.display === 1 }).length > 1? 's' : ''}`
               }
             </Typography>
           }
@@ -277,8 +277,8 @@ export default function MatchFormResult(props) {
           </List>
           <List disablePadding>
             { data ?
-              ( data.length > 0 ?
-                data.map( (d, i) =>
+              ( data.filter(item =>{ return item.display === 1 }).length > 0 ?
+                data.filter(item =>{ return item.display === 1 }).map( (d, i) =>
                   <React.Fragment key={i}>
                     <ListItem style={{
                         backgroundColor: d.status === 2 ? 'inherit' : COLOR.grey[200]

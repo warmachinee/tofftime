@@ -95,10 +95,10 @@ export default function MatchCard(props) {
       switch (true) {
         case data.permission === 'host' || data.permission === 'admin':
           return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, paddingTop: 0, boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', boxSizing: 'border-box' }}>
               <BTN.NoStyleLink
                 to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${data.matchid}`}>
-                <BTN.Primary style={{ padding: '4px 16px' }}>
+                <BTN.Primary size="small">
                   {API._getWord(sess && sess.language).Edit}
                 </BTN.Primary>
               </BTN.NoStyleLink>
@@ -106,16 +106,12 @@ export default function MatchCard(props) {
           )
           break;
         case data.permission === 'pending':
-          return (
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <Button disabled>{API._getWord(sess && sess.language).Pending}</Button>
-            </div>
-          )
+          return <Button size="small" variant="outlined" disabled>Pending</Button>
           break;
         case data.permission === 'none':
           return (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: 16, boxSizing: 'border-box' }}>
-              <BTN.Primary style={{ padding: '4px 16px' }} onClick={handleJoinMatch}>
+              <BTN.Primary size="small" onClick={handleJoinMatch}>
                 {API._getWord(sess && sess.language).Join}
               </BTN.Primary>
             </div>
@@ -187,48 +183,61 @@ export default function MatchCard(props) {
             src={API._getPictureUrl(data.matchphoto) + ( isSupportWebp? '.webp' : '.jpg' )} />
         </BTN.NoStyleLink>
         :
-        <Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />
+        /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
+        <img className={classes.image}
+          src="https://thai-pga.com/default/match/matchcard.png" />
       }
       { data ?
         <Box className={classes.box}>
-          <Typography gutterBottom variant="body2"
-            style={{
-              color: data.scorematch === 1 ? primary[700] : 'inherit',
-              fontWeight: data.scorematch === 1 ? 900 : 400
-            }}>
-            {function(){
-              switch (data.scorematch) {
-                case 0:
-                  return API._getWord(sess && sess.language).Amateur
-                  break;
-                case 1:
-                  return API._getWord(sess && sess.language).Professional
-                  break;
-                default:
-                  return API._getWord(sess && sess.language).Charity
-              }
-            }()}
-          </Typography>
           <BTN.NoStyleLink to={`/match/${data.matchid}`}>
-            <Typography gutterBottom variant="body1" className={classes.title}>
-              {data.matchname}
-            </Typography>
-            <Typography gutterBottom variant="body2">
-              {API._dateToString(data.matchdate)}
-            </Typography>
-            <Typography gutterBottom display="block" variant="caption" className={classes.location}>
-              <LocationOnIcon fontSize="small" className={classes.locationIcon} />
-              {data.fieldname}
-            </Typography>
-            <Typography variant="caption" color="textSecondary">
-              {`${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.views)} ${
-                ( sess && sess.language === 'TH' ) ?
-                `การดู ${API._shotnessNumber(data.views)} ครั้ง`
-                :
-                `view${data.views > 1? 's' : ''}`
-              }`}
-            </Typography>
+            <div style={{ boxSizing: 'border-box' }}>
+              <Typography gutterBottom variant="h6" className={classes.title}>
+                {data.matchname}
+              </Typography>
+              <Typography gutterBottom variant="body2"
+                style={{
+                  color: data.scorematch === 1 ? primary[700] : 'inherit',
+                  fontWeight: data.scorematch === 1 ? 900 : 400
+                }}>
+                {`${
+                  API._getWord(sess && sess.language).Match
+                } ${
+                  function(){
+                    switch (data.scorematch) {
+                      case 0:
+                        return API._getWord(sess && sess.language).Amateur
+                        break;
+                      case 1:
+                        return API._getWord(sess && sess.language).Professional
+                        break;
+                      default:
+                        return API._getWord(sess && sess.language).Charity
+                    }
+                  }()
+                }`}
+              </Typography>
+              <Typography gutterBottom variant="body2">
+                {API._dateToString(data.matchdate)}
+              </Typography>
+              <Typography gutterBottom display="block" variant="body2" className={classes.location}>
+                <LocationOnIcon fontSize="small" className={classes.locationIcon} />
+                {data.fieldname}
+              </Typography>
+            </div>
           </BTN.NoStyleLink>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <BTN.NoStyleLink to={`/match/${data.matchid}`}>
+              <Typography variant="caption" color="textSecondary" style={{ whiteSpace: 'nowrap' }}>
+                {`${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.views)} ${
+                  ( sess && sess.language === 'TH' ) ?
+                  `การดู ${API._shotnessNumber(data.views)} ครั้ง`
+                  :
+                  `view${data.views > 1? 's' : ''}`
+                }`}
+              </Typography>
+            </BTN.NoStyleLink>
+            {handleGetButton()}
+          </div>
         </Box>
         :
         <Box className={classes.box}>
@@ -236,7 +245,6 @@ export default function MatchCard(props) {
           <Skeleton height={14} width="60%"/>
         </Box>
       }
-      {handleGetButton()}
     </Paper>
   );
 }

@@ -223,12 +223,14 @@ export default function Header(props) {
               <SearchMatchPage {...props} searchState={searchState} setSearchState={setSearchState} />
               :
               <React.Fragment>
-                <IconButton
-                  className={classes.lessThan700}
-                  onClick={drawerOpen}>
-                  <MenuIcon />
-                </IconButton>
-                <Link to="/" style={{ textDecoration: 'none' }} className={classes.moreThan500}>
+                {/*
+                  <IconButton
+                    className={classes.lessThan700}
+                    onClick={drawerOpen}>
+                    <MenuIcon />
+                  </IconButton>*/
+                }
+                <Link to="/" style={{ textDecoration: 'none' }}>
                   <IconButton
                     edge="start"
                     className={classes.logo}
@@ -242,7 +244,7 @@ export default function Header(props) {
                 { window.location.pathname === '/' &&
                   <React.Fragment>
                     <div className={classes.moreThan700} style={{ borderRight: '1px solid rgba(0, 0, 0, 0.12)', height: 32, marginRight: 16, marginLeft: 8 }} />
-                    <Button className={classes.moreThan700} size="small" onClick={()=>API._handleScrolllTo('match')}>
+                    <Button className={classes.moreThan700} size="small" onClick={()=>API._scrolllToId('main-banner')}>
                       Match
                     </Button>
                     <Button className={classes.moreThan700} size="small" onClick={()=>API._handleScrolllTo('news')}>
@@ -286,10 +288,7 @@ export default function Header(props) {
                             style={{ padding: 8 }}>
                             { accountData && accountData.photopath ?
                               <Avatar className={classes.avatarImage}
-                                src={
-                                  API._getPictureUrl(accountData.photopath) +
-                                  ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
-                                } />
+                                src={accountData.photopath} />
                               :
                               <AccountIcon classes={{ root: classes.avatar }} />
                             }

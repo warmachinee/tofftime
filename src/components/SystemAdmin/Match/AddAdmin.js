@@ -392,7 +392,7 @@ export default function AddAdmin(props){
       </Collapse>
       <ThemeProvider theme={theme}>
         <TextField
-          autoFocus
+          autoFocus={API._isDesktopBrowser()}
           disabled={data === null}
           className={classes.searchBox}
           variant="outlined"

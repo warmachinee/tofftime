@@ -27,7 +27,7 @@ const LabelText = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: theme.spacing(1.5)
+    padding: theme.spacing(0, 1.5, 1.5, 1.5)
   },
   margin: {
     width: '100%',
@@ -217,11 +217,11 @@ export default function EditPage(props) {
 
   return (
     <div className={classes.root}>
-      <LabelText text={ API._getWord(sess && sess.language).Edit_page } />
+      <LabelText text={ API._getWord(sess && sess.language).Edit_group } paddingTop={0} />
       <div style={{ marginTop: 24 }}>
         <ThemeProvider theme={theme}>
           <TextField
-            autoFocus
+            autoFocus={API._isDesktopBrowser()}
             className={classes.margin}
             label={ API._getWord(sess && sess.language).Page_name }
             value={pageName}

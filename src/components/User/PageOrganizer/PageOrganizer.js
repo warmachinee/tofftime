@@ -7,7 +7,7 @@ const UserPage = Loadable({
 });
 
 export default function PageOrganizer(props) {
-  const { API, sess, token, setCSRFToken, handleAccountData, pageData, handlePageData, editPageRefresh } = props
+  const { API, sess, token, setCSRFToken, isSupportWebp, handleAccountData, pageData, handlePageData, editPageRefresh } = props
 
   async function handleFetch(){
     if(sess){
@@ -26,6 +26,9 @@ export default function PageOrganizer(props) {
           ...d[0],
           pageid: parseInt(props.computedMatch.params.pageid)
         })
+        if(d && d[0] && ('pagename' in d[0])){
+          document.title = `${d[0].pagename} (Organizer) - T-off Time Organizer`
+        }
       })
     }
   }
@@ -38,7 +41,15 @@ export default function PageOrganizer(props) {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d)
+      handleAccountData({
+        ...d,
+        photopath: (
+          d.photopath ?
+          API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+          :
+          null
+        )
+      })
     })
     if(props.computedMatch){
       await handleFetch()

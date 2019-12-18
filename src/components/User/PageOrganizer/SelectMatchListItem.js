@@ -103,10 +103,16 @@ export default function SelectMatchListItem(props) {
                 })}
                   src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
                 :
+                <img className={clsx({
+                  [classes.imageUp]: window.innerWidth >= 500,
+                  [classes.imageDown]: window.innerWidth < 500
+                })}
+                  src="https://thai-pga.com/default/match/matchcard.png" />
+                /*
                 <Skeleton className={clsx({
                   [classes.imageUp]: window.innerWidth >= 500,
                   [classes.imageDown]: window.innerWidth < 500
-                })} style={{ margin: 0 }} disableAnimate />
+                })} style={{ margin: 0 }} disableAnimate />*/
               }
             </ListItemIcon>
             { window.innerWidth >= 600 &&

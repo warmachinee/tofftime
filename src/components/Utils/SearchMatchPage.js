@@ -185,7 +185,7 @@ export default function SearchMatchPage(props) {
             ref={params.ref}
             inputProps={params.inputProps}
             onChange={e =>searchTextOnChange(e)}
-            autoFocus={searchState}
+            autoFocus={API._isDesktopBrowser() && searchState}
             placeholder={ API._getWord(sess && sess.language)['Search Match or Page'] }
             />
         )} />

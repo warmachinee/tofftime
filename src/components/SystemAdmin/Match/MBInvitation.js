@@ -209,7 +209,7 @@ const theme = createMuiTheme({
 
 export default function MBInvitation(props){
   const classes = useStyles();
-  const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { COLOR, BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isAvailableEditing } = props
   const [ addState, setAddState ] = React.useState(false);
   const [ dummyState, setDummyState ] = React.useState(false);
   const [ formState, setFormState ] = React.useState(false);
@@ -276,7 +276,7 @@ export default function MBInvitation(props){
           setDataSliced( dataSliced + 10 )
         }
       }else{
-        if( dataSliced >= data.length ){
+        if( dataSliced >= data.filter(item =>{ return item.display === 1 }).length ){
           setDataSliced( 10 )
         }else{
           setDataSliced( dataSliced + 10 )
@@ -294,10 +294,10 @@ export default function MBInvitation(props){
           setDataSliced( handleSearch().length )
         }
       }else{
-        if( dataSliced >= data.length ){
+        if( dataSliced >= data.filter(item =>{ return item.display === 1 }).length ){
           setDataSliced( 10 )
         }else{
-          setDataSliced( data.length )
+          setDataSliced( data.filter(item =>{ return item.display === 1 }).length )
         }
       }
     }
@@ -429,21 +429,24 @@ export default function MBInvitation(props){
     <div className={classes.root}>
       <List className={classes.listRoot}>
         <div style={{ display: 'flex', marginBottom: 8 }}>
-          <RedButton className={classes.iconButton} variant="contained"
-            onClick={handleAddOpen}>
-            <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-            { API._getWord(sess && sess.language).Invite }
-          </RedButton>
+          { isAvailableEditing &&
+            <RedButton
+              className={classes.iconButton} variant="contained"
+              onClick={handleAddOpen}>
+              <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
+              { API._getWord(sess && sess.language).Invite }
+            </RedButton>
+          }
           <div style={{ flex: 1 }} />
           <a href={`/matchform/${matchid}`}
             target='_blank'
             style={{ textDecoration: 'none', color: 'inherit' }}>
-            <GreenTextButton className={classes.controlsEditButton}>
+            <GreenTextButton className={classes.controlsEditButton} variant="outlined">
               { API._getWord(sess && sess.language).Form }
             </GreenTextButton>
           </a>
         </div>
-        {/* data && data.length > 10 &&
+        {/* data && data.filter(item =>{ return item.display === 1 }).length > 10 &&
           <ListItem style={{ marginBottom: 8, cursor: 'auto' }}>
             <ThemeProvider theme={theme}>
               <TextField
@@ -475,11 +478,21 @@ export default function MBInvitation(props){
           </ListItem>
           */
         }
+        { data &&
+          <div style={{ display: 'flex', justifyContent: 'flex-end', }}>
+            <Typography variant="body1" align="right"
+              style={{ marginBottom: 8, marginTop: 'auto', marginRight: 8 }}>
+              { ( sess && sess.language === 'TH' ) ?
+                `ผู้เล่น ${data.length} คน`
+                :
+                `${data.length} player${data.length > 1? 's' : ''}`
+              }
+            </Typography>
+          </div>
+        }
         <div style={{ overflow: 'auto', position: 'relative' }}>
-          <ListItem role={undefined}
-            style={{
-              display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
-            }}>
+          <ListItem
+            style={{ display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto', }}>
             <ListItemText style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
               primary={
                 window.innerWidth < 600?
@@ -496,16 +509,17 @@ export default function MBInvitation(props){
                 primary={ API._getWord(sess && sess.language).Status } />
             }
           </ListItem>
-          <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
+          <div
+            style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative', }}>
             { data ?
-              ( !data.status && data.length > 0?
+              ( !data.status && data.filter(item =>{ return item.display === 1 }).length > 0?
                 [
                   ...searchUser? handleSearch() : data
-                ].slice(0, dataSliced).map(value => {
+                ].slice(0, dataSliced).filter(item =>{ return item.display === 1 }).map(value => {
                   return value && (
                     <React.Fragment key={value.userid}>
-                      <ListItem role={undefined} button
-                        onClick={()=>handleFormOpen(value)}>
+                      <ListItem button={isAvailableEditing}
+                        onClick={()=>isAvailableEditing ? handleFormOpen(value) : console.log()}>
                         <ListItemText className={classes.listText}
                           primary={
                             ( window.innerWidth >= 450 && window.innerWidth < 600 )?
@@ -579,12 +593,12 @@ export default function MBInvitation(props){
                   );
                 })
                 :
-                <Typography component="div" style={{ width: '100%' }}>
+                <Typography component="div" style={{ width: '100%', }}>
                   <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                     { API._getWord(sess && sess.language)['Invite players to a match.'] }
                   </Box>
                   <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                    <BTN.PrimaryOutlined onClick={handleAddOpen}>
+                    <BTN.PrimaryOutlined disabled={!isAvailableEditing} onClick={handleAddOpen}>
                       <AddIcon style={{ marginRight: 8 }} />
                       { API._getWord(sess && sess.language).Invite_players }
                     </BTN.PrimaryOutlined>
@@ -595,17 +609,17 @@ export default function MBInvitation(props){
               <LDCircular />
             }
           </div>
-          <ListItem role={undefined} dense style={{ display: 'flex' }}>
-            { data && data.length > 10 && !searchUser &&
+          <ListItem dense style={{ display: 'flex' }}>
+            { data && data.filter(item =>{ return item.display === 1 }).length > 10 && !searchUser &&
               <React.Fragment>
                 <Button fullWidth onClick={handleMore}>
-                  { dataSliced >= data.length ? (
+                  { dataSliced >= data.filter(item =>{ return item.display === 1 }).length ? (
                     API._getWord(sess && sess.language).Collapse
                   ):(
                     API._getWord(sess && sess.language).More
                   ) }
                 </Button>
-                { data && dataSliced < data.length &&
+                { data && dataSliced < data.filter(item =>{ return item.display === 1 }).length &&
                   <Button fullWidth onClick={handleMoreAll}>{ API._getWord(sess && sess.language).Show_all }</Button>
                 }
               </React.Fragment>

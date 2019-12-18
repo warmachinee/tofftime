@@ -114,6 +114,16 @@ const useStyles = makeStyles(theme => ({
 
 }))
 
+const GreenRadio = withStyles({
+  root: {
+    color: primary[400],
+    '&$checked': {
+      color: primary[600],
+    },
+  },
+  checked: {},
+})(props => <Radio color="default" {...props} />);
+
 const theme = createMuiTheme({
   palette: {
     primary: primary,
@@ -141,7 +151,7 @@ function TabPanel(props) {
 
 export default function MBGroup(props){
   const classes = useStyles();
-  const { BTN, API, sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp } = props
+  const { BTN, API, sess, token, setCSRFToken, setData, data, matchid, handleSnackBar, isSupportWebp, isAvailableEditing } = props
   const [ dialog, setDialog ] = React.useState({
     create: false,
   });
@@ -229,8 +239,13 @@ export default function MBGroup(props){
         setCSRFToken(csrf)
         if(/success/.test(d.status)){
           toggleRealtime(data.mainclass.length + 1)
+          handleFetch()
+          if(data && data.mainclass && data.mainclass.length > 0){
+            setValue(value + 1)
+          }else{
+            setValue(0)
+          }
         }
-        handleFetch()
         dialogClose('create')
         setMainclassType('group')
         setMainclassName('')
@@ -277,7 +292,7 @@ export default function MBGroup(props){
         { data && ( data.scorematch === 0 ? !( data.mainclass && data.mainclass.length > 0 ) : true ) &&
           <ListItem disableGutters className={classes.addClass}>
             <ListItemIcon className={classes.addClassButtonGrid}>
-              <BTN.Primary className={classes.addClassButton}
+              <BTN.Primary disabled={!isAvailableEditing} className={classes.addClassButton}
                 onClick={()=>data.scorematch === 0 ? handleFetchCreate() : dialogOpen('create')}>
                 <AddCircle style={{ marginRight: 8 }} />
                 { API._getWord(sess && sess.language).Create }
@@ -313,17 +328,18 @@ export default function MBGroup(props){
           { data &&
             data.mainclass.map((d, index) =>
             <TabPanel key={d.mainclass} value={value} index={index}>
-              <MatchClass {...props} matchClass={d} data={data} setData={setData} />
+              <MatchClass {...props} matchClass={d} data={data} setData={setData} value={value} setValue={setValue} />
             </TabPanel>
           )}
         </div>
         :
-        <Typography component="div" style={{ width: '100%' }}>
+        <Typography component="div" style={{ width: '100%', ...(!isAvailableEditing && {opacity: .5, backgroundColor: grey[50]}) }}>
           <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
             { API._getWord(sess && sess.language)['Create the match group.'] }
           </Box>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-            <BTN.PrimaryOutlined onClick={()=>data.scorematch === 0 ? handleFetchCreate() : dialogOpen('create')}>
+            <BTN.PrimaryOutlined disabled={!isAvailableEditing}
+              onClick={()=>data.scorematch === 0 ? handleFetchCreate() : dialogOpen('create')}>
               <AddIcon style={{ marginRight: 8 }} />
               { API._getWord(sess && sess.language).Create_group }
             </BTN.PrimaryOutlined>
@@ -332,7 +348,7 @@ export default function MBGroup(props){
           <Typography gutterBottom variant="h6" style={{ fontWeight: 600, textDecoration: 'underline' }}>
             { API._getWord(sess && sess.language).Example }
           </Typography>
-          { data && data.scorematch === 0 ?
+          { isAvailableEditing && data && data.scorematch === 0 ?
             <React.Fragment>
               <img style={{ width: '100%' }}
                 src={`https://file.thai-pga.com/system/image/MBGroup0${sess && sess.language === 'TH' ? 'TH' : ''}.jpg`} />
@@ -358,7 +374,7 @@ export default function MBGroup(props){
           <ThemeProvider theme={theme}>
             <TextField
               fullWidth
-              autoFocus={dialog.create}
+              autoFocus={API._isDesktopBrowser() && dialog.create}
               error={errorMainclassName}
               helperText={errorMainclassName && API._getWord(sess && sess.language)['Please fill Main group name.']}
               label={ API._getWord(sess && sess.language).Main_group_name }
@@ -374,9 +390,9 @@ export default function MBGroup(props){
                   { API._getWord(sess && sess.language).Main_group_type }
                 </FormLabel>
                 <RadioGroup style={{ flexDirection: 'row' }} value={mainclassType} onChange={e => setMainclassType(event.target.value)}>
-                  <FormControlLabel value="group" control={<Radio />}
+                  <FormControlLabel value="group" control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Group } />
-                  <FormControlLabel value="flight" control={<Radio />}
+                  <FormControlLabel value="flight" control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Flight } />
                 </RadioGroup>
               </FormControl>

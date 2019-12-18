@@ -23,8 +23,8 @@ const useStyles = makeStyles(theme => ({
   },
   close: {
     position: 'absolute',
-    top: 8,
-    right: 8,
+    top: 0,
+    right: 0,
     zIndex: 2
   },
   closeIcon: {
@@ -40,7 +40,7 @@ export default function TemplateDialog(props) {
   const classes = useStyles();
   const {
     open, scroll = 'paper', maxWidth = 'sm', maxHeight = 'calc(100% - 64px)', fullWidth = true,
-    handleClose, getRef, fullScreen, titleDivider, elementId
+    handleClose, getRef, fullScreen = window.innerWidth <= 600, titleDivider, elementId
   } = props
 
   const dialogStyle = makeStyles(theme => ({

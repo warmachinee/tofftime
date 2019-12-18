@@ -29,14 +29,10 @@ const useStyles = makeStyles(theme => ({
     position: 'relative',
     boxSizing: 'border-box',
     width: '100%',
-    padding: theme.spacing(1, 0),
     height: window.innerWidth * .3,
-    [theme.breakpoints.up(500)]: {
-      padding: theme.spacing(2, 0),
-    },
     [theme.breakpoints.up(900)]: {
       height: '100%',
-      padding: theme.spacing(0, 2),
+      paddingLeft: 16
     },
   },
   item: {
@@ -56,10 +52,14 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down(450)]: {
       height: 72
     },
+    [theme.breakpoints.up(900)]: {
+      height: window.innerWidth * .3,
+      maxHeight: (450 - 24)/2,
+    },
   },
   label: {
     position: 'absolute',
-    bottom: 16,
+    bottom: 0,
     width: '100%',
     boxSizing: 'border-box',
     color: grey[50],
@@ -84,8 +84,7 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: grey[700],
     },
     [theme.breakpoints.up(900)]: {
-      bottom: 0,
-      width: 'calc(100% - 32px)',
+      width: 'calc(100% - 16px)',
     },
   },
   skeleton: {
@@ -105,12 +104,16 @@ export default function AnnounceSecondary(props) {
   return (
     <div className={classes.root}>
       { ( data && data.length > 0 ) ?
-        <BTN.NoStyleLink to={`/announce/${data[0].announceid}`}>
-          <div className={classes.itemGrid}
-            style={{
-              marginBottom: window.innerWidth >= 900? 24 : 0,
-              marginRight: window.innerWidth >= 900? 0 : 24,
-            }}>
+        <BTN.NoStyleLink to={`/announce/${data[0].announceid}`}
+          style={{
+            ...(window.innerWidth >= 900 && {marginBottom: 24}),
+            ...(window.innerWidth < 900 && {
+              marginBottom: 0,
+              marginRight: 16,
+              marginTop: 16
+            })
+          }}>
+          <div className={classes.itemGrid}>
             { data[0].picture ?
               <img className={classes.item} src={API._getPictureUrl(data[0].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
               :
@@ -126,14 +129,19 @@ export default function AnnounceSecondary(props) {
         :
         <div className={classes.itemGrid}
           style={{
-            marginBottom: window.innerWidth >= 900? 24 : 0,
-            marginRight: window.innerWidth >= 900? 0 : 24,
+            ...(window.innerWidth >= 900 && {marginBottom: 24}),
+            ...(window.innerWidth < 900 && {
+              marginBottom: 0,
+              marginRight: 16,
+              marginTop: 16
+            })
           }}>
           <Skeleton className={classes.skeleton} />
         </div>
       }
       { ( data && data.length > 1 ) ?
-        <BTN.NoStyleLink to={`/announce/${data[1].announceid}`}>
+        <BTN.NoStyleLink to={`/announce/${data[1].announceid}`}
+          style={{ ...(window.innerWidth >= 900 && {marginBottom: 24}), ...(window.innerWidth < 900 && {marginBottom: 0, marginTop: 16}) }}>
           <div className={classes.itemGrid}>
             { data[1].picture ?
               <img className={classes.item} src={API._getPictureUrl(data[1].picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
@@ -149,10 +157,7 @@ export default function AnnounceSecondary(props) {
         </BTN.NoStyleLink>
         :
         <div className={classes.itemGrid}
-          style={{
-            marginBottom: window.innerWidth >= 900? 24 : 0,
-            marginRight: window.innerWidth >= 900? 0 : 24,
-          }}>
+          style={{ ...(window.innerWidth >= 900 && {marginBottom: 24}), ...(window.innerWidth < 900 && {marginBottom: 0, marginTop: 16}) }}>
           <Skeleton className={classes.skeleton} />
         </div>
       }

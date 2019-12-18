@@ -217,7 +217,7 @@ export default function AddAdmin(props){
     <div className={classes.root}>
       <ThemeProvider theme={theme}>
         <TextField
-          autoFocus
+          autoFocus={API._isDesktopBrowser()}
           className={classes.searchBox}
           variant="outlined"
           placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search ) : '' }

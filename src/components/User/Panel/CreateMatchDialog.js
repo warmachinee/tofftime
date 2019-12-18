@@ -27,14 +27,14 @@ export default function CreateMatchDialog(props) {
   return (
     <div style={{
         position: 'relative',
-        padding: '8px 16px',
+        padding: '0 16px',
         width: '100%',
         boxSizing: 'border-box',
         maxWidth: 900,
         marginLeft: 'auto',
         marginRight: 'auto'
       }}>
-      <LabelText text={ API._getWord(sess && sess.language).Create_Match } />
+      <LabelText text={ API._getWord(sess && sess.language).Create_Match } paddingTop={0} />
       <MatchStepper {...props} />
     </div>
   );

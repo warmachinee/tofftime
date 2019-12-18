@@ -184,7 +184,7 @@ export default function SignUpComponent(props){
       <div>
         <ThemeProvider theme={theme}>
           <TextField
-            autoFocus
+            autoFocus={API._isDesktopBrowser()}
             required
             error={actionStatus === 'email is used' || actionStatus === 'invalid email'}
             className={classes.margin}

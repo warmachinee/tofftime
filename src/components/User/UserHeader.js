@@ -211,24 +211,17 @@ export default function UserHeader(props) {
           >
             <MenuIcon />
           </IconButton>
-          { ( open ? window.innerWidth >= 840 : window.innerWidth > 600 ) &&
-            <Link to="/" style={{ textDecoration: 'none' }}>
-              <IconButton
-                edge="start"
-                className={classes.logo}
-              >
-                <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
-              </IconButton>
-            </Link>
+          {/* ( open ? window.innerWidth >= 840 : window.innerWidth > 600 ) &&*/
+
           }
-          { /*
+          <Link to="/" style={{ textDecoration: 'none' }}>
             <IconButton
               edge="start"
+              className={classes.logo}
             >
-              <Add />
+              <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
             </IconButton>
-            */
-          }
+          </Link>
           <div style={{ flex: 1 }} />
           <IconButton className={classes.iconHidden} onClick={toggleNoti}>
             { notiData && notiData.length > 0?
@@ -261,7 +254,7 @@ export default function UserHeader(props) {
                       (
                         accountData.photopath ?
                         <Avatar className={classes.avatarImage}
-                          src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          src={accountData.photopath} />
                         :
                         <AccountCircle classes={{ root: classes.avatar }} />
                       )
@@ -277,7 +270,7 @@ export default function UserHeader(props) {
                 :
                 <React.Fragment>
                   <Link
-                    to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
+                    to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/`/*profile/${ pageOrganizer? '' : accountData.userid}*/}
                     style={{ textDecoration: 'none', color: 'inherit' }}>
                     <IconButton className={classes.accountAvatar}>
                       { pageOrganizer ?
@@ -292,14 +285,14 @@ export default function UserHeader(props) {
                         (
                           accountData.photopath ?
                           <Avatar className={classes.avatarImage}
-                            src={API._getPictureUrl(accountData.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                            src={accountData.photopath} />
                           :
                           <AccountCircle classes={{ root: classes.avatar }} />
                         )
                       }
                     </IconButton>
                   </Link>
-                  <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
+                  <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/`/*profile/${ pageOrganizer? '' : accountData.userid}*/}
                     style={{ textDecoration: 'none', color: 'inherit', }}>
                     <Typography variant="subtitle1" noWrap className={classes.accountTitle}
                       style={{
@@ -336,19 +329,21 @@ export default function UserHeader(props) {
         }
         { ( accountData || pageData ) &&
           ( /\/user\/profile/.test(window.location.pathname) ?
-          <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}
-            style={{ textDecoration: 'none', color: 'inherit' }}>
-            <MenuItem onClick={handleClose}>
-              { API._getWord(sess && sess.language).Dashboard }
-            </MenuItem>
-          </Link>
-          :
-          <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}>
-            <MenuItem onClick={handleClose}>
-              { API._getWord(sess && sess.language).Profile }
-            </MenuItem>
-          </Link>
+            <Link to={`/${ pageOrganizer ? 'organizer' : 'user' }/${ pageOrganizer ? pageData.pageid : '' }`}
+              style={{ textDecoration: 'none', color: 'inherit' }}>
+              <MenuItem onClick={handleClose}>
+                { API._getWord(sess && sess.language).Dashboard }
+              </MenuItem>
+            </Link>
+            :
+            ( !/\/organizer/.test(window.location.pathname) &&
+              <Link to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/profile/${ pageOrganizer? '' : accountData.userid}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}>
+                <MenuItem onClick={handleClose}>
+                  { API._getWord(sess && sess.language).Profile }
+                </MenuItem>
+              </Link>
+            )
           )
         }
         <MenuItem onClick={handleLogout}>{ API._getWord(sess && sess.language).Log_out }</MenuItem>

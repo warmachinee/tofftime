@@ -42,6 +42,9 @@ const useStyles = makeStyles(theme => ({
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
     boxSizing: 'border-box',
+    [theme.breakpoints.down(400)]: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    },
   },
 
 }));
@@ -99,11 +102,28 @@ const MATCH_LABEL = [
 function TabContainer(props) {
   const classes = useStyles();
   const { API, sess, filteredData } = props;
+
+  React.useEffect(()=>{
+    if(filteredData){
+      const logData = []
+      for(var i = 0;i < filteredData.length;i++){
+
+      }
+      filteredData.forEach(e =>{
+        logData.push({
+          sequence: e.sequence,
+          title: e.title
+        })
+      })
+      console.log(logData);
+    }
+  },[ ])
+
   return (
     <div>
       { filteredData.length > 0 ?
         <div className={classes.grid}>
-          { filteredData.map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
+          { API._sortArrBy(filteredData, 'sequence').map( d => <MatchCard key={d.matchid} data={d} {...props} />) }
           { ( filteredData.length === 1 || filteredData.length === 2 ) &&
             Array.from(new Array( 3 - filteredData.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)
           }

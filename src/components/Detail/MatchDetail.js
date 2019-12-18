@@ -49,6 +49,26 @@ export default function MatchDetail(props){
   const [ sortBy, setSortBy ] = React.useState('net')
   const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
   const [ scoringMethod, setScoringMethod ] = React.useState('flight')
+  const [ value, setValue ] = React.useState(0);
+
+  const passingProps = {
+    ...props,
+    data: data,
+    setData: setData,
+    userscore: userscore,
+    setUserscore: setUserscore,
+    setRawUserscore: setRawUserscore,
+    sortBy: sortBy,
+    setSortBy: setSortBy,
+    scoringMethod: scoringMethod,
+    setScoringMethod: setScoringMethod,
+    mainClassSelected: mainClassSelected,
+    setMainClassSelected: setMainClassSelected,
+    matchid: parseInt(props.computedMatch.params.matchid),
+    value: value,
+    setValue: setValue,
+
+  }
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -115,14 +135,10 @@ export default function MatchDetail(props){
   React.useEffect(()=>{
     if(rawUserscore){//usersolo
       if(rawUserscore.scorematch !== 1){
-        if(scoringMethod === 'flight'){
-          if(rawUserscore.scorematch === 2){
-            setUserscore( sortBy === 'sf' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)
-          }else{
-            setUserscore( sortBy === 'net' ? rawUserscore.userscoreSortBySF : rawUserscore.userscore)
-          }
+        if(rawUserscore.scorematch === 2){
+          setUserscore( sortBy === 'sf' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)
         }else{
-          setUserscore(rawUserscore.usersolo)
+          setUserscore( sortBy === 'net' ? rawUserscore.userscoreSortBySF : rawUserscore.userscore)
         }
       }
     }
@@ -133,19 +149,7 @@ export default function MatchDetail(props){
       <RouteMatchDetailBody
         exact
         path={`/match/${props.computedMatch.params.matchid}`}
-        {...props}
-        data={data}
-        setData={setData}
-        userscore={userscore}
-        setUserscore={setUserscore}
-        setRawUserscore={setRawUserscore}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        scoringMethod={scoringMethod}
-        setScoringMethod={setScoringMethod}
-        mainClassSelected={mainClassSelected}
-        setMainClassSelected={setMainClassSelected}
-        matchid={parseInt(props.computedMatch.params.matchid)} />
+        {...passingProps} />
       <RouteMiniGameMah
         path={`/match/${props.computedMatch.params.matchid}/minigame/:gametype`}
         {...props} />

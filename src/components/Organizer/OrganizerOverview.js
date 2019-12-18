@@ -26,7 +26,8 @@ const useStyles = makeStyles(theme => ({
     marginTop: 16,
     padding: theme.spacing(2),
     display: 'flex',
-    borderRadius: 0
+    borderRadius: 0,
+    flexWrap: 'wrap'
   },
   imageGrid: {
     margin: 12,
@@ -34,11 +35,18 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center'
   },
   avatar: {
-    fontSize: 120
+    fontSize: 120,
+    [theme.breakpoints.down(500)]: {
+      fontSize: 60,
+    },
   },
   avatarImage: {
     width: 120,
     height: 120,
+    [theme.breakpoints.down(500)]: {
+      width: 60,
+      height: 60,
+    },
   },
   pageDetailGrid: {
     display: 'flex',
@@ -94,11 +102,7 @@ export default function OrganizerOverview(props) {
       if(d.length > 1){
         setData(d[0])
         document.title = `${d[0].pagename} - T-off Time Organizer`
-        if(d[1].subscribe){
-          setIsFollow(true)
-        }else{
-          setIsFollow(false)
-        }
+        setIsFollow(d[1].subscribe)
       }else{
         setData('No page')
       }

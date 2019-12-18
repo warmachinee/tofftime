@@ -121,7 +121,7 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     maxWidth: 1200,
-    margin: 'auto',
+    /*margin: 'auto',*/
   },
   toolbar: {
     display: 'flex',
@@ -169,6 +169,7 @@ export default function UserPage(props) {
     pageList: pageList,
     setPageList: setPageList,
     open: open,
+    setOpen: setOpen,
     handleDrawerClick: handleDrawerClick,
     handleDrawerOpen: handleDrawerOpen,
     handleDrawerClose: handleDrawerClose,
@@ -226,13 +227,16 @@ export default function UserPage(props) {
         action: 'info'
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      handleAccountData(d)
+      handleAccountData({
+        ...d,
+        photopath: (
+          d.photopath ?
+          API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()
+          :
+          null
+        )
+      })
     })
-  }
-
-  function LoadTempData(){
-    var json = '{"userid":812454,"nickname":"P.R.E.M.io","fullname":"Sippakorn","lastname":"Suppapinyo","photopath":"/general/812454.webp","privacy":"private","historystat":["indy","unofficial","official"],"email":"warmachineza01@gmail.com","tel":"0806760057","gender":"male","birthdate":"1995-10-25T17:00:00.000Z","favgolf":"-"}'
-    handleAccountData(JSON.parse(json))
   }
 
   React.useEffect(()=>{
@@ -247,6 +251,25 @@ export default function UserPage(props) {
     }
     window.scrollTo(0, 0)
   },[ sess, props.location ])
+
+  React.useEffect(()=>{
+    const p = window.location.pathname
+    if((p === '/user' || p === '/user/') && sess && (('fullname', 'lastname') in sess)){
+      document.title = `${sess.fullname} ${sess.lastname}`
+    }
+    if(/upcoming/.test(p)){
+      document.title = `Upcoming - T-off Time`
+    }
+    if(/history/.test(p)){
+      document.title = `History - T-off Time`
+    }
+    if(/create_match/.test(p)){
+      document.title = `Create match - T-off Time`
+    }
+    if(/create_page/.test(p)){
+      document.title = `Create page - T-off Time`
+    }
+  },[ sess, window.location.pathname ])
 
   return (
     <div className={classes.root}>

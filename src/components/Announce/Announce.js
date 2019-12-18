@@ -30,11 +30,9 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     WebkitFlexDirection: 'column',
     boxSizing: 'border-box',
-    paddingTop: theme.spacing(1.5),
     [theme.breakpoints.up(900)]: {
       flexDirection: 'row',
       WebkitFlexDirection: 'row',
-      padding: theme.spacing(1.5),
       paddingRight: 0
     },
   },

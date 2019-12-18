@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactQuill, { Quill } from 'react-quill';
+import * as API from './../../api'
 
 var QuillFont = Quill.import('formats/font');
 
@@ -46,7 +47,7 @@ export default function RichTextEditor(props){
 
 	React.useEffect(()=>{
 		handleGetHTML(comments)
-		if(quillRef.current){
+		if(quillRef.current && API._isDesktopBrowser()){
 			quillRef.current.focus();
 		}
 	},[ comments ])

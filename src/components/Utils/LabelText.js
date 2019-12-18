@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core';
 
 export default function LabelText(props){
-  const { style, text = 'No text', paddingTop = 16, paddingLeft = 12 } = props
+  const { style, text = 'No text', paddingTop = 0, paddingLeft = 12 } = props
 
   return(
     <div style={{ paddingTop: paddingTop, paddingLeft: paddingLeft, ...style }}>

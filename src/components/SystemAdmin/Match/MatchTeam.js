@@ -94,6 +94,16 @@ const GreenTextButton = withStyles(theme => ({
   },
 }))(Button);
 
+const GreenRadio = withStyles({
+  root: {
+    color: primary[400],
+    '&$checked': {
+      color: primary[600],
+    },
+  },
+  checked: {},
+})(props => <Radio color="default" {...props} />);
+
 const theme = createMuiTheme({
   palette: {
     primary: primary,
@@ -304,9 +314,9 @@ export default function MatchTeam(props) {
                   { API._getWord(sess && sess.language).Type_of_amount }
                 </FormLabel>
                 <RadioGroup style={{ flexDirection: 'row' }} value={scheduleNumberType} onChange={e => setScheduleNumberType(event.target.value)}>
-                  <FormControlLabel value="person" control={<Radio />}
+                  <FormControlLabel value="person" control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Person } />
-                  <FormControlLabel value="team" control={<Radio />}
+                  <FormControlLabel value="team" control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Team } />
                 </RadioGroup>
               </FormControl>

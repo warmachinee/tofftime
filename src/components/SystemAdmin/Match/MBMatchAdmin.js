@@ -1,21 +1,29 @@
 import React from 'react';
 import Loadable from 'react-loadable';
+import clsx from "clsx";
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
 import { primary, grey, red } from './../../../api/palette'
 
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
+import {
+  Button,
+  Menu,
+  MenuItem,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Typography,
+  Switch,
 
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+} from '@material-ui/core';
+
+import {
+  AddCircle as AddCircleIcon,
+
+} from '@material-ui/icons';
 
 import { LDCircular } from './../../loading/LDCircular'
 
@@ -43,38 +51,52 @@ const useStyles = makeStyles(theme => ({
   listText: {
     margin: theme.spacing(1, 0),
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-    width: '100%',
+    width: '60%',
     textAlign: 'left'
   },
   listStatus: {
     margin: theme.spacing(1, 0),
-    width: '40%',
+    width: 100,
     display: 'flex', justifyContent: 'flex-start'
+  },
+  listDisplay: {
+    margin: theme.spacing(1, 0),
+    width: 250,
+    display: 'flex', justifyContent: 'center'
   },
   menuButton: {
     textTransform: 'capitalize',
     padding: '6px 8px',
     left: -8
   },
-  controls: {
-    position: 'relative',
-    cursor: 'auto',
-    display: 'block',
-    [theme.breakpoints.up(700)]: {
-      display: 'flex',
+  moreThan450: {
+    [theme.breakpoints.down(450)]: {
+      display: 'none'
     },
   },
-  addAdminButton: {
-    marginTop: 'auto',
-    padding: '8px 16px 8px 0',
-    width: '100%',
-    color: theme.palette.getContrastText(red[600]),
-    backgroundColor: red[600],
-    '&:hover': {
-      backgroundColor: red[800],
+  lessThan450: {
+    [theme.breakpoints.up(450)]: {
+      display: 'none'
     },
+  },
+  moreThan700: {
+    [theme.breakpoints.down(700)]: {
+      display: 'none'
+    },
+  },
+  lessThan700: {
     [theme.breakpoints.up(700)]: {
-      width: 'auto'
+      display: 'none'
+    },
+  },
+  moreThan940: {
+    [theme.breakpoints.down(940)]: {
+      display: 'none'
+    },
+  },
+  lessThan940: {
+    [theme.breakpoints.up(940)]: {
+      display: 'none'
     },
   },
 
@@ -86,9 +108,26 @@ const StyledText = withStyles(theme => ({
   },
 }))(ListItemText);
 
+const StyledSwitch = withStyles({
+  switchBase: {
+    '&$checked': {
+      color: primary[500],
+    },
+    '&$checked + $track': {
+      backgroundColor: primary[500],
+    },
+  },
+  checked: {
+    color: primary[500],
+  },
+  track: {
+    color: primary[500],
+  }
+})(props => <Switch color="default" {...props} />);
+
 function ListMenu(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar, setMBData, primary } = props
+  const { sess, token, setCSRFToken, matchid, handleSnackBar, setMBData, primary, isAvailableEditing } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
   function getAdminRole(role){
@@ -153,7 +192,7 @@ function ListMenu(props) {
 
   return (
     <div>
-      { primary.permission !== 'host' ?
+      { ( isAvailableEditing && primary.permission !== 'host' ) ?
         <Button className={classes.menuButton} onClick={handleClick}>
           {getAdminRole(primary.permission)}
         </Button>
@@ -172,9 +211,69 @@ function ListMenu(props) {
   );
 }
 
+function ListSwitch(props){
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, data, setMBData, isAvailableEditing } = props
+  const [ showing, setShowing ] = React.useState(data.display === 1)
+
+  async function handleSetDisplay(){
+    if(matchid){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'displaymatchsystem' : 'mdisplaymatchsystem', {
+          action: 'user',
+          matchid: matchid,
+          userid: data.userid,
+          type: 'form'
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? 'success' : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        if(/success/.test(d.status)){
+          handleFetchUserList()
+        }
+      })
+    }
+  }
+
+  async function handleFetchUserList(){
+    if(matchid){
+      setShowing(!showing)
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadmatch' : 'mloadmatch', {
+          action: 'admin',
+          matchid: matchid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        setMBData(d)
+      })
+    }
+  }
+
+  React.useEffect(()=>{
+    setShowing(data.display === 1)
+  },[ data ])
+
+  return (
+    <div>
+      { data.display === 0 ?
+        <Typography variant="h6">{'-'}</Typography>
+        :
+        <StyledSwitch disabled={!isAvailableEditing} checked={showing} onChange={handleSetDisplay} />
+      }
+    </div>
+  );
+}
+
 export default function MBMatchAdmin(props){
   const classes = useStyles();
-  const { sess, token, setCSRFToken, matchid, handleSnackBar } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isAvailableEditing } = props
   const [ open, setOpen ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
 
@@ -185,6 +284,36 @@ export default function MBMatchAdmin(props){
   function handleClose(){
     setOpen(false);
   };
+
+  async function handleFetchSwitchHostForm(){
+    if(matchid){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'matchsection' : 'mmatchsection', {
+          action: 'switchhostform',
+          matchid: matchid,
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        if(/success/.test(d.status)){
+          handleFetch()
+          handleSnackBar({
+            state: true,
+            message: d.action,
+            variant: 'success',
+            autoHideDuration: 5000
+          })
+        }else{
+          handleSnackBar({
+            state: true,
+            message: d.status,
+            variant: /success/.test(d.status) ? 'success' : 'error',
+            autoHideDuration: /success/.test(d.status)? 2000 : 5000
+          })
+        }
+      })
+    }
+  }
 
   async function handleFetch(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -201,70 +330,93 @@ export default function MBMatchAdmin(props){
 
   React.useEffect(()=>{
     handleFetch()
+
   },[ ])
 
   return(
     <div className={classes.root}>
-      <ListItem disableGutters className={classes.controls}>
-        <Button className={classes.addAdminButton} variant="contained"
-          onClick={handleOpen}>
-          <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-          { API._getWord(sess && sess.language).Add_admin }
-        </Button>
-        <div style={{ flex: 1 }} />
-      </ListItem>
+      { isAvailableEditing &&
+        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <BTN.Red className={classes.addAdminButton}
+            onClick={handleOpen}
+            startIcon={<AddCircleIcon />}>
+            { API._getWord(sess && sess.language).Add_admin }
+          </BTN.Red>
+          <BTN.Primary onClick={handleFetchSwitchHostForm}>
+            { API._getWord(sess && sess.language).Switch_Host }
+          </BTN.Primary>
+        </div>
+      }
       <List>
         <ListItem className={classes.listLabel}>
-          <StyledText className={classes.listText}
-            primary={ API._getWord(sess && sess.language).First_name } />
-          { window.innerWidth >= 600 &&
-            <StyledText className={classes.listText}
-              primary={ API._getWord(sess && sess.language).Last_name } />
-          }
-          <StyledText className={classes.listStatus}
+          <StyledText className={clsx(classes.listStatus, classes.moreThan450)}
             primary={ API._getWord(sess && sess.language).Role } />
+          <StyledText className={classes.listText}
+            primary={ API._getWord(sess && sess.language).Full_name } />
+          <StyledText className={classes.listDisplay}
+            primary={
+              <React.Fragment>
+                <span className={clsx({
+                  [classes.moreThan940]: props.open,
+                  [classes.moreThan700]: !props.open
+                })}>{ API._getWord(sess && sess.language)['Show in Registration player'] }</span>
+                <span className={clsx({
+                  [classes.lessThan940]: props.open,
+                  [classes.lessThan700]: !props.open
+                })}>{ API._getWord(sess && sess.language).Show }</span>
+              </React.Fragment>
+            } />
         </ListItem>
-        { data &&
+        { data ?
           data.map( d =>
-          <React.Fragment key={d.userid}>
-            <ListItem>
-              <ListItemText className={classes.listText}
-                primary={
-                  ( window.innerWidth >= 450 && window.innerWidth < 600 )?
-                  <div style={{ display: 'flex' }}>
-                    { d.fullname }<div style={{ width: 20 }}></div>{ d.lastname }
-                  </div>
-                  : d.fullname
-                }
-                secondary={
-                  window.innerWidth < 450 &&
-                  <React.Fragment>
-                    <br></br>
-                    <Typography
-                      component="span"
-                      variant="body1"
-                      color="textPrimary"
-                    >
-                      { d.lastname }
-                    </Typography>
-                  </React.Fragment>
-                }
-                />
-              { window.innerWidth >= 600 &&
-                <ListItemText className={classes.listText} primary={ d.lastname } />
-              }
-              <ListItemText className={classes.listStatus}
-                primary={
-                  <ListMenu
-                    {...props}
-                    primary={d}
-                    data={data}
-                    setMBData={setData} />
-                } />
-            </ListItem>
-            <Divider />
-          </React.Fragment>
-        )}
+            <React.Fragment key={d.userid}>
+              <ListItem>
+                <ListItemText className={clsx(classes.listStatus, classes.moreThan450)}
+                  primary={
+                    <ListMenu
+                      {...props}
+                      primary={d}
+                      data={data}
+                      setMBData={setData} />
+                  } />
+                <ListItemText className={classes.listText}
+                  primary={
+                    <React.Fragment>
+                      <div style={{ display: 'flex' }}>
+                        <Typography
+                          component="span"
+                          variant="body1"
+                          color="textPrimary"
+                        >
+                          { d.fullname }
+                        </Typography>
+                        <div style={{ width: 16 }} />
+                        <Typography
+                          component="span"
+                          variant="body1"
+                          color="textPrimary"
+                        >
+                          { d.lastname }
+                        </Typography>
+                      </div>
+                      <div style={{ marginTop: 16, marginLeft: 12 }} className={classes.lessThan450}>
+                        <ListMenu
+                          {...props}
+                          primary={d}
+                          data={data}
+                          setMBData={setData} />
+                      </div>
+                    </React.Fragment>
+                  } />
+                <ListItemText className={classes.listDisplay}
+                  primary={<ListSwitch {...props} data={d} setMBData={setData} />} />
+              </ListItem>
+              <Divider />
+            </React.Fragment>
+          )
+          :
+          <LDCircular />
+        }
       </List>
       <TemplateDialog open={open} handleClose={handleClose}>
         <AddAdmin

@@ -14,10 +14,13 @@ import {
   FormHelperText,
   FormControl,
   Select,
+  ListItem,
+  ListItemIcon,
   ListItemText,
   Checkbox,
   Input,
   Chip,
+  Divider,
 
 } from '@material-ui/core';
 
@@ -190,11 +193,6 @@ export default function Statistics(props) {
     })
   }
 
-  function LoadTempData(){
-    var json = '{"matchnum":4,"hc":15}'
-    setData(JSON.parse(json))
-  }
-
   React.useEffect(()=>{
     if(!(userData && userData.privacy === 'private')){
       handleFetch()
@@ -211,53 +209,70 @@ export default function Statistics(props) {
 
   return (
     <React.Fragment>
-      <div
-        className={clsx({
-          [classes.rootDown]: open ? window.innerWidth < 750 : window.innerWidth < 475 ,
-          [classes.rootUp]: !( open ? window.innerWidth < 750 : window.innerWidth < 475 )
-        })}>
-        <Paper className={classes.paper}
-          style={{
-            ...!( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
-            { marginLeft: 'auto', marginRight: 'auto' } : null,
-            marginTop: 'auto'
-          }}>
-          <div className={classes.statLabel}>
-            <GolfCourse className={classes.icon} style={{ color: primary[700] }} />
-            <Typography variant="body1" className={classes.typo} style={{ color: primary[300] }}>
-              { ( sess && sess.language === 'TH' ) ? "จำนวนการแข่งขัน" : `Match${ (data && data.matchnum > 1) ? 'es': '' }` }
+      { data &&
+        <ListItem>
+          <ListItemText
+            primary={`${data.matchnum} ${ ( sess && sess.language === 'TH' ) ? "การแข่งขัน" : `Match${ (data && data.matchnum > 1) ? 'es': '' }` }`} />
+          <ListItemIcon style={{ ...( open ? window.innerWidth < 690 : window.innerWidth < 450) && { minWidth: 32 }}}>
+            <Typography variant="body1" color="textPrimary">
+              {`${
+                ( open ? window.innerWidth >= 690 : window.innerWidth >= 450) ?
+                ( (sess && sess.language === 'TH')? 'แฮนดิแคปเฉลี่ย' : 'Average Handicap' ) : 'Avg.'
+              } ${ data.hc ? data.hc : '-' }`}
             </Typography>
-          </div>
-          <div className={classes.valueGrid}>
-            { data &&
-              <Typography variant="h3" classes={{ root: classes.value }} style={{ color: primary[700] }}>
-                {data.matchnum}
+          </ListItemIcon>
+        </ListItem>
+      }
+      {/*
+        <div
+          className={clsx({
+            [classes.rootDown]: open ? window.innerWidth < 750 : window.innerWidth < 475 ,
+            [classes.rootUp]: !( open ? window.innerWidth < 750 : window.innerWidth < 475 )
+          })}>
+          <Paper className={classes.paper}
+            style={{
+              ...!( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
+              { marginLeft: 'auto', marginRight: 'auto' } : null,
+              marginTop: 'auto'
+            }}>
+            <div className={classes.statLabel}>
+              <GolfCourse className={classes.icon} style={{ color: primary[700] }} />
+              <Typography variant="body1" className={classes.typo} style={{ color: primary[300] }}>
+                { ( sess && sess.language === 'TH' ) ? "จำนวนการแข่งขัน" : `Match${ (data && data.matchnum > 1) ? 'es': '' }` }
               </Typography>
-            }
-          </div>
-        </Paper>
-        <Paper className={classes.paper}
-          style={{
-            ...( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
-            { marginLeft: 24 } : { marginTop: 16 },
-            ...!( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
-            { marginLeft: 'auto', marginRight: 'auto' } : null,
-          }}>
-          <div className={classes.statLabel}>
-            <AssignmentInd className={classes.icon} style={{ color: COLOR.primary[700] }} />
-            <Typography variant="body1" className={classes.typo} style={{ color: COLOR.primary[300] }}>
-              { API._getWord(sess && sess.language).Handicap }
-            </Typography>
-          </div>
-          <div className={classes.valueGrid}>
-            { data &&
-              <Typography variant="h3" classes={{ root: classes.value }} style={{ color: COLOR.primary[700] }}>
-                { data.hc ? data.hc : '-' }
+            </div>
+            <div className={classes.valueGrid}>
+              { data &&
+                <Typography variant="h3" classes={{ root: classes.value }} style={{ color: primary[700] }}>
+                  {data.matchnum}
+                </Typography>
+              }
+            </div>
+          </Paper>
+          <Paper className={classes.paper}
+            style={{
+              ...( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
+              { marginLeft: 24 } : { marginTop: 16 },
+              ...!( open ? window.innerWidth >= 750 : window.innerWidth >= 475 )?
+              { marginLeft: 'auto', marginRight: 'auto' } : null,
+            }}>
+            <div className={classes.statLabel}>
+              <AssignmentInd className={classes.icon} style={{ color: COLOR.primary[700] }} />
+              <Typography variant="body1" className={classes.typo} style={{ color: COLOR.primary[300] }}>
+                { API._getWord(sess && sess.language).Handicap }
               </Typography>
-            }
-          </div>
-        </Paper>
-      </div>
+            </div>
+            <div className={classes.valueGrid}>
+              { data &&
+                <Typography variant="h3" classes={{ root: classes.value }} style={{ color: COLOR.primary[700] }}>
+                  { data.hc ? data.hc : '-' }
+                </Typography>
+              }
+            </div>
+          </Paper>
+        </div>*/
+      }
+      <Divider />
     </React.Fragment>
   );
 }

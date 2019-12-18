@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { makeStyles, withStyles, createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import * as API from './../../../api'
-import { primary, grey, red } from './../../../api/palette'
+import { primary, grey, red, green } from './../../../api/palette'
 import { LDCircular } from './../../loading/LDCircular'
 
 import {
@@ -15,6 +15,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  ListItemSecondaryAction,
   TextField,
   Typography,
   Box,
@@ -33,6 +34,7 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DoneIcon from '@material-ui/icons/Done';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -87,6 +89,10 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up(500)]: {
       width: '30%',
     },
+  },
+  listStatus: {
+    width: 100,
+    justifyContent: 'center'
   },
   textfield: {
     margin: 8,
@@ -280,7 +286,7 @@ function MBScoreEditorContainer(props){
           <ThemeProvider theme={theme}>
             <TextField
               disabled={data === null}
-              autoFocus={expanded}
+              autoFocus={API._isDesktopBrowser() && expanded}
               className={classes.searchBox}
               variant="outlined"
               placeholder={ !searchUser? ( API._getWord(sess && sess.language).Search_player ) : '' }
@@ -321,21 +327,6 @@ function MBScoreEditorContainer(props){
                   `${data.length} player${data.length > 1? 's' : ''}`
                 }
               </Typography>
-              {/* matchDetail && matchDetail.scorematch !== 0 &&  matchDetail.mainclass.length > 1 &&
-                <FormControl className={classes.formControl}>
-                  <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
-                  <Select
-                    value={mainClassSelected}
-                    onChange={e => setMainClassSelected(e.target.value)}>
-                    { matchDetail &&
-                      matchDetail.mainclass.map( d =>
-                        <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                          {d.mainclassname}
-                        </MenuItem>
-                    )}
-                  </Select>
-                </FormControl>*/
-              }
               </React.Fragment>
           }
         </Typography>
@@ -350,22 +341,8 @@ function MBScoreEditorContainer(props){
               } />
             <ListItemText style={{ color: 'white' }} className={classes.listText}
               primary={ window.innerWidth < 450? "" : ( API._getWord(sess && sess.language).Last_name ) } />
-            {/* window.innerWidth > 450 &&
-              <ListItemText style={{ color: 'white', marginRight: 20 }} className={classes.listClass}
-                primary={
-                  matchDetail &&
-                  function(){
-                    switch (matchDetail.scorematch) {
-                      case 0:
-                        return API._getWord(sess && sess.language).Flight
-                        break;
-                      default:
-                        return API._getWord(sess && sess.language).Group
-                    }
-                  }()
-                } />*/
-            }
-
+            <ListItemText style={{ color: 'white' }} className={classes.listStatus}
+              primary={ API._getWord(sess && sess.language).Status } />
           </ListItem>
         </List>
         <List style={{ overflow: 'auto', maxHeight: window.innerHeight * .4 }}>
@@ -387,65 +364,18 @@ function MBScoreEditorContainer(props){
                       </div>
                       : value.firstname
                     } />
-                  {/*secondary=
-                    matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
-                    window.innerWidth < 450 &&
-                    ( matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
-                      ( value.classno === 0 ?
-                        <React.Fragment>
-                          <br></br>
-                          {"-"}
-                        </React.Fragment>
-                        :
-                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                          return d.classno === value.classno
-                        }).map((d, i) =>
-                          d &&
-                          <React.Fragment key={i}>
-                            <br></br>
-                            {
-                              matchDetail.scorematch !== 0 ?
-                              d.classname
-                              :
-                              String.fromCharCode(65 + value.classno - 1)
-                            }
-                          </React.Fragment>
-                        )
-                      )
-                      :
-                      <React.Fragment>
-                        <br></br>
-                        { API._getWord(sess && sess.language).No_group }
-                      </React.Fragment>
-                    )*/
-                  }
                   { window.innerWidth > 450 &&
                     <ListItemText className={classes.listText}
                       primary={value.lastname} />
                   }
-                  {/* matchDetail && matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
-                    window.innerWidth > 450 &&
-                    ( matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0 ?
-                      ( value.classno === 0 ?
-                        <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass} primary={"-"} />
-                        :
-                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                          return d.classno === value.classno
-                        }).map( d =>
-                          d &&
-                          <ListItemText key={d.classname + `(${value.userid})`} style={{ justifyContent: 'center' }} className={classes.listClass} primary={
-                            matchDetail.scorematch !== 0 ?
-                            d.classname
-                            :
-                            String.fromCharCode(65 + value.classno - 1)
-                          } />
-                        )
-                      )
+                  <ListItemText className={classes.listStatus}
+                    primary={
+                      value.score &&
+                      value.score.some(s => s === 0) ?
+                      <div style={{ width: 24 }} />
                       :
-                      <ListItemText style={{ justifyContent: 'center' }} className={classes.listClass}
-                        primary={ API._getWord(sess && sess.language).No_group } />
-                    )*/
-                  }
+                      <DoneIcon style={{ color: green[600] }} />
+                    } />
                 </ListItem>
                 <Divider />
               </React.Fragment>
@@ -506,7 +436,7 @@ function MBScoreEditorContainer(props){
 
 export default function MBScoreEditor(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, pageOrganizer, pageData, isSetup } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, pageOrganizer, pageData, isSetup, isAvailableEditing } = props
   const tempArr = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -775,7 +705,7 @@ export default function MBScoreEditor(props){
 
   return(
     <div className={classes.root}>
-      { !isSetup &&
+      { !isSetup && isAvailableEditing &&
         <div style={{ display: 'flex', marginBottom: 24 }}>
           <Typography variant="h6" style={{ color: red[600], fontWeight: 600 }}>
             { API._getWord(sess && sess.language)['Please complete the Setup step.'] }
@@ -792,61 +722,130 @@ export default function MBScoreEditor(props){
           </BTN.NoStyleLink>
         </div>
       }
-      <MBScoreEditorContainer
-        {...props}
-        data={data}
-        matchDetail={matchDetail}
-        selected={selected}
-        handleSelectPlayer={handleSelectPlayer}
-        expanded={expanded}
-        setExpanded={setExpanded}
-        mainClassSelected={mainClassSelected}
-        setMainClassSelected={setMainClassSelected} />
-      { selected !== null &&
-        <React.Fragment>
+      { isAvailableEditing &&
+        <MBScoreEditorContainer
+          {...props}
+          data={data}
+          matchDetail={matchDetail}
+          selected={selected}
+          handleSelectPlayer={handleSelectPlayer}
+          expanded={expanded}
+          setExpanded={setExpanded}
+          mainClassSelected={mainClassSelected}
+          setMainClassSelected={setMainClassSelected} />
+      }
+      { isAvailableEditing ?
+        ( selected !== null &&
+          <React.Fragment>
+            <ThemeProvider theme={theme}>
+              <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
+              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <Typography variant="h5" className={classes.scorcardLabel}>
+                  {`${ API._getWord(sess && sess.language).Scorecard_MBSE } ${selected ? ` | ${selected.firstname} ${selected.lastname}` : ''}`}
+                </Typography>
+              </div>
+              <div style={{
+                  overflow: 'auto', marginTop: 24, marginBottom: 24,
+                  width: gridWidth,
+                }}>
+                <div className={classes.textfieldGrid}>
+                  {tempArr.slice(0, 9).map( d =>
+                    <TextField
+                      disabled={selected === null}
+                      key={d}
+                      className={classes.textfield}
+                      label={d + 1}
+                      value={arrScore[d] || 0}
+                      onChange={e =>handleChange(e.target.value, d)}
+                      onFocus={e => handleFocus(e)}
+                      onKeyPress={e =>handleKeyPress(e)}
+                      variant="outlined"
+                      type="number"
+                    />
+                  )}
+                </div>
+                <div className={classes.textfieldGrid}>
+                  {tempArr.slice(9, 18).map( d =>
+                    <TextField
+                      disabled={selected === null}
+                      key={d}
+                      className={classes.textfield}
+                      label={d + 1}
+                      value={arrScore[d] || 0}
+                      onChange={e =>handleChange(e.target.value, d)}
+                      onFocus={e => handleFocus(e)}
+                      onKeyPress={e =>handleKeyPress(e)}
+                      variant="outlined"
+                      type="number"
+                    />
+                  )}
+                </div>
+              </div>
+            </ThemeProvider>
+            <Typography component="div" style={{ display: 'flex' }}>
+              <Box className={classes.text} m={1}>
+                OUT = {API._handleHoleSum(arrScore, 'out')}
+              </Box>
+              <Box className={classes.text} m={1}>
+                IN = {API._handleHoleSum(arrScore, 'in')}
+              </Box>
+              <div style={{ flex: 1 }} />
+              <Box className={classes.textHighlight} m={1}>
+                Total = {API._handleHoleSum(arrScore, 'out') + API._handleHoleSum(arrScore, 'in')}
+              </Box>
+            </Typography>
+            <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
+            { matchDetail && matchDetail.scorematch === 2 && selected &&
+              <ThemeProvider theme={theme}>
+                <div className={classes.predictScoreChildGrid}>
+                  <TextField label={ API._getWord(sess && sess.language).Predict_Score }
+                    type="number"
+                    value={predictScore}
+                    onChange={e =>handleSetPredictScore(e.target.value)}
+                    onKeyPress={e =>handleKeyPressSetPredictScore(e)}
+                    onFocus={e => e.target.select()} />
+                  <BTN.Primary className={classes.saveButton}
+                    onClick={handleFetchSetPredict}>Save</BTN.Primary>
+                </div>
+              </ThemeProvider>
+            }
+            <div className={classes.controls}>
+              <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
+                { API._getWord(sess && sess.language).Reset }
+              </Button>
+              { selected?
+                <GreenButton
+                  disabled={selected === null}
+                  variant="contained" color="primary"
+                  className={classes.button} onClick={handleFetchUpdateScore}>
+                  { API._getWord(sess && sess.language).Save }
+                </GreenButton>
+                :
+                <Button
+                  disabled
+                  variant="contained" color="primary"
+                  className={classes.button}>{ API._getWord(sess && sess.language).Save }</Button>
+              }
+            </div>
+          </React.Fragment>
+        )
+        :
+        <div>
           <ThemeProvider theme={theme}>
             <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
               <Typography variant="h5" className={classes.scorcardLabel}>
-                {`${ API._getWord(sess && sess.language).Scorecard_MBSE } ${selected ? ` | ${selected.firstname} ${selected.lastname}` : ''}`}
+                { API._getWord(sess && sess.language).Scorecard_MBSE }
               </Typography>
-              {/*
-                <Typography variant="body1" className={classes.scorcardPlayer}>
-                  {selected && `${selected.firstname} ${selected.lastname}`}
-                  {
-                    (${
-                      matchDetail &&
-                      matchDetail.mainclass &&
-                      matchDetail.mainclass.length > 0 &&
-                      matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.filter( d =>{
-                        return d.classno === selected.classno
-                      }).map((d, i) =>{
-                        return (
-                          matchDetail.scorematch !== 0 ?
-                          d.classname
-                          :
-                          String.fromCharCode(65 + value.classno - 1)
-                        )
-                      })
-                    })
-                  }
-                </Typography>*/
-              }
             </div>
-            {/*
-              <Typography variant="caption" className={classes.scorcardMainClass} color="textSecondary">
-                {`{ API._getWord(sess && sess.language).Main_group } ${mainClassSelected}`}
-              </Typography>
-              */
-            }
             <div style={{
-                overflow: 'auto', marginTop: 24, marginBottom: 24,
-                width: gridWidth,
+                overflow: 'hidden', marginTop: 24, marginBottom: 24,
+                width: '100%',
               }}>
               <div className={classes.textfieldGrid}>
                 {tempArr.slice(0, 9).map( d =>
                   <TextField
-                    disabled={selected === null}
+                    disabled
                     key={d}
                     className={classes.textfield}
                     label={d + 1}
@@ -862,7 +861,7 @@ export default function MBScoreEditor(props){
               <div className={classes.textfieldGrid}>
                 {tempArr.slice(9, 18).map( d =>
                   <TextField
-                    disabled={selected === null}
+                    disabled
                     key={d}
                     className={classes.textfield}
                     label={d + 1}
@@ -879,50 +878,18 @@ export default function MBScoreEditor(props){
           </ThemeProvider>
           <Typography component="div" style={{ display: 'flex' }}>
             <Box className={classes.text} m={1}>
-              OUT = {API._handleHoleSum(arrScore, 'out')}
+              OUT
             </Box>
             <Box className={classes.text} m={1}>
-              IN = {API._handleHoleSum(arrScore, 'in')}
+              IN
             </Box>
             <div style={{ flex: 1 }} />
             <Box className={classes.textHighlight} m={1}>
-              Total = {API._handleHoleSum(arrScore, 'out') + API._handleHoleSum(arrScore, 'in')}
+              Total
             </Box>
           </Typography>
           <Divider style={{ marginTop: 24 , marginBottom: 24 }} />
-          { matchDetail && matchDetail.scorematch === 2 && selected &&
-            <ThemeProvider theme={theme}>
-              <div className={classes.predictScoreChildGrid}>
-                <TextField label={ API._getWord(sess && sess.language).Predict_Score }
-                  type="number"
-                  value={predictScore}
-                  onChange={e =>handleSetPredictScore(e.target.value)}
-                  onKeyPress={e =>handleKeyPressSetPredictScore(e)}
-                  onFocus={e => e.target.select()} />
-                <BTN.Primary className={classes.saveButton}
-                  onClick={handleFetchSetPredict}>Save</BTN.Primary>
-              </div>
-            </ThemeProvider>
-          }
-          <div className={classes.controls}>
-            <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
-              { API._getWord(sess && sess.language).Reset }
-            </Button>
-            { selected?
-              <GreenButton
-                disabled={selected === null}
-                variant="contained" color="primary"
-                className={classes.button} onClick={handleFetchUpdateScore}>
-                { API._getWord(sess && sess.language).Save }
-              </GreenButton>
-              :
-              <Button
-                disabled
-                variant="contained" color="primary"
-                className={classes.button}>{ API._getWord(sess && sess.language).Save }</Button>
-            }
-          </div>
-        </React.Fragment>
+        </div>
       }
     </div>
   );

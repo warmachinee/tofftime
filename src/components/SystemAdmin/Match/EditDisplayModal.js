@@ -198,6 +198,7 @@ export default function EditDisplayModal(props){
             <FormLabel component="legend">{ API._getWord(sess && sess.language).Note }</FormLabel>
             <TextField
               fullWidth
+              value={comment || ''}
               onChange={e => setComment(e.target.value)}
               onKeyPress={e =>handleKeyPress(e)}
               />
@@ -208,7 +209,7 @@ export default function EditDisplayModal(props){
         <GreenTextButton className={classes.button} onClick={handleClose}>
           { API._getWord(sess && sess.language).Cancel }
         </GreenTextButton>
-        { (state === (selectedPlayer.display === 1)) && comment === '' ?
+        { ( (state === (selectedPlayer.display === 1)) && (comment === ( selectedPlayer.note ? selectedPlayer.note : '' )) ) ?
           <Button className={classes.button} variant="contained" disabled>
             { API._getWord(sess && sess.language).Save }
           </Button>

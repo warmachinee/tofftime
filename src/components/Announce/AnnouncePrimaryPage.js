@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.secondary,
   },
   sliderItem: {
-    maxHeight: 500,
+    maxHeight: 450,
     width: '100%',
     color: 'black',
     display: 'block',

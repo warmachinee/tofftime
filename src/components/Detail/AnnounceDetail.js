@@ -21,23 +21,40 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
+    position: 'relative'
   },
   content: {
     margin: '0 5%',
     [theme.breakpoints.up(500)]: {
       margin: '0 5%',
     },
-    [theme.breakpoints.up(700)]: {
+    [theme.breakpoints.up(600)]: {
       margin: '0 72px',
     },
   },
   img: {
-    width: '100%',
+    maxWidth: '100%',
+    maxHeight: 450,
     color: 'black',
     backgroundColor: '#ccc',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
+  },
+  display: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  moreThan600: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  lessThan600: {
+    [theme.breakpoints.up(600)]: {
+      display: 'none'
+    },
   },
 
 }))
@@ -55,7 +72,9 @@ export default function AnnounceDetail(props){
     )
     setCSRFToken(d.token)
     setData(d.response)
-    document.title = `${d.response.title} - T-off Time`
+    if('title' in d.response){
+      document.title = `${d.response.title} - T-off Time`
+    }
   }
 
   React.useEffect(()=>{
@@ -65,15 +84,28 @@ export default function AnnounceDetail(props){
 
   return(
     <Paper className={classes.root}>
-      <GoBack />
+      <div className={classes.display} style={{ position: 'absolute', top: 8 }}>
+        <GoBack />
+      </div>
       { data &&
         <div className={classes.content}>
-          <Typography gutterBottom variant="h3">
+          <Typography variant="h4" className={classes.moreThan600}>
             {data.title}
           </Typography>
-          { data.picture &&
-            <img className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
-          }
+          <Typography variant="h6" className={classes.lessThan600}>
+            {data.title}
+          </Typography>
+          <Typography gutterBottom variant="h6" className={classes.moreThan600}>
+            {API._dateToString(data.createdate)}
+          </Typography>
+          <Typography gutterBottom variant="body2" className={classes.lessThan600}>
+            {API._dateToString(data.createdate)}
+          </Typography>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            { data.picture &&
+              <img className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            }
+          </div>
           <DetailComponent detail={data.announcedetail} />
         </div>
       }

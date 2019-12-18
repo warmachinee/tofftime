@@ -48,6 +48,9 @@ export default function UserOverview(props) {
     handleClose()
     handleAddFriendClose()
     //window.location.href = `/user/timeline/${userid}`
+    if(window.innerWidth <= 600){
+      props.setOpen(false)
+    }
   }
 
   function handleFriendClick(userid, action){

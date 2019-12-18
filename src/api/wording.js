@@ -248,6 +248,25 @@ export default function _getWord(lang){
         return 'Search Match or Page'
     }
   }()
+  Imperative['Follow the group to get the latest update'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'ติดตามกลุ่มเพื่อรับการอัปเดตล่าสุด'
+        break;
+      default:
+        return 'Follow the group to get the latest update'
+    }
+  }()
+  Imperative['Please join or create match'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'โปรดเข้าร่วมหรือสร้างการแข่งขัน'
+        break;
+      default:
+        return 'Please join or create match'
+    }
+  }()
+
 
   const Notifications = {
     Friend_request: function(){
@@ -374,10 +393,10 @@ export default function _getWord(lang){
     Edit_Dummy: function(){
       switch (lang) {
         case 'TH':
-          return 'แก้ไขดัมมี่'
+          return 'แก้ไขผู้ใช้ที่ยังไม่ลงทะเบียน'
           break;
         default:
-          return 'Edit Dummy'
+          return 'Edit non-register user'
       }
     }(),
     Edit_Display: function(){
@@ -398,13 +417,13 @@ export default function _getWord(lang){
           return 'Edit schedule'
       }
     }(),
-    Edit_page: function(){
+    Edit_group: function(){
       switch (lang) {
         case 'TH':
-          return 'แก้ไขเพจ'
+          return 'แก้ไขกลุ่ม'
           break;
         default:
-          return 'Edit page'
+          return 'Edit group'
       }
     }(),
     Edit_post: function(){
@@ -572,10 +591,10 @@ export default function _getWord(lang){
     Create_Dummy: function(){
       switch (lang) {
         case 'TH':
-          return 'สร้างดัมมี่'
+          return 'สร้างผู้ใช้ที่ยังไม่ลงทะเบียน'
           break;
         default:
-          return 'Create Dummy'
+          return 'Create non-register user'
       }
     }(),
     Create_group: function(){
@@ -758,13 +777,13 @@ export default function _getWord(lang){
           return 'Set player display'
       }
     }(),
-    Set_admin: function(){
+    Group_admin: function(){
       switch (lang) {
         case 'TH':
-          return 'แต่งตั้งผู้ดูแล'
+          return 'ผู้ดูแลกลุ่ม'
           break;
         default:
-          return 'Set admin'
+          return 'Group admin'
       }
     }(),
     Invite: function(){
@@ -866,6 +885,24 @@ export default function _getWord(lang){
           return 'Go back to the main page'
       }
     }(),
+    Go_back: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ย้อนกลับ'
+          break;
+        default:
+          return 'Go back'
+      }
+    }(),
+    Show: function(){
+      switch (lang) {
+        case 'TH':
+          return 'แสดง'
+          break;
+        default:
+          return 'Show'
+      }
+    }(),
 
   }
   Action['Go back to match'] = function(){
@@ -913,6 +950,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Finish'
+      }
+    }(),
+    End: function(){
+      switch (lang) {
+        case 'TH':
+          return 'จบแล้ว'
+          break;
+        default:
+          return 'End'
       }
     }(),
     None: function(){
@@ -1008,10 +1054,10 @@ export default function _getWord(lang){
     No_Dummy: function(){
       switch (lang) {
         case 'TH':
-          return 'ไม่มีดัมมี่'
+          return 'ไม่มีผู้ใช้ที่ยังไม่ลงทะเบียน'
           break;
         default:
-          return 'No Dummy'
+          return 'No non-register user'
       }
     }(),
     No_player: function(){
@@ -1131,7 +1177,24 @@ export default function _getWord(lang){
           return 'No match for'
       }
     }(),
-
+    No_user: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีผู้ใช้'
+          break;
+        default:
+          return 'No user'
+      }
+    }(),
+    No_notifications: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ไม่มีการแจ้งเตือน'
+          break;
+        default:
+          return 'No notifications'
+      }
+    }(),
   }
   Status['This match is over'] = function(){
     switch (lang) {
@@ -1151,8 +1214,26 @@ export default function _getWord(lang){
         return 'No groups were chosen for the players.'
     }
   }()
+  Status['Show in Registration player'] = function(){
+    switch (lang) {
+      case 'TH':
+        return 'แสดงในรายชื่อผู้สมัคร'
+        break;
+      default:
+        return 'Show in Registration player'
+    }
+  }()
 
   const Name = {
+    Detail: function(){
+      switch (lang) {
+        case 'TH':
+          return 'รายละเอียด'
+          break;
+        default:
+          return 'Detail'
+      }
+    }(),
     Method: function(){
       switch (lang) {
         case 'TH':
@@ -1295,6 +1376,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Registration player'
+      }
+    }(),
+    Registration: function(){
+      switch (lang) {
+        case 'TH':
+          return 'รายชื่อผู้สมัคร'
+          break;
+        default:
+          return 'Registration'
       }
     }(),
     Schedule: function(){
@@ -1579,10 +1669,10 @@ export default function _getWord(lang){
     Upcoming: function(){
       switch (lang) {
         case 'TH':
-          return 'เร็วๆนี้'
+          return 'การแข่งขันเร็วๆนี้'
           break;
         default:
-          return 'Upcoming'
+          return 'Upcoming match'
       }
     }(),
     History: function(){
@@ -1651,10 +1741,10 @@ export default function _getWord(lang){
     Dummy: function(){
       switch (lang) {
         case 'TH':
-          return 'ดัมมี่'
+          return 'ผู้ใช้ที่ยังไม่ลงทะเบียน'
           break;
         default:
-          return 'Dummy'
+          return 'Non-register user'
       }
     }(),
     Match_name: function(){

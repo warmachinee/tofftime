@@ -139,6 +139,16 @@ const GreenCheckbox = withStyles({
   },
 })(props => <Checkbox color="default" {...props} />);
 
+const GreenRadio = withStyles({
+  root: {
+    color: primary[400],
+    '&$checked': {
+      color: primary[600],
+    },
+  },
+  checked: {},
+})(props => <Radio color="default" {...props} />);
+
 const theme = createMuiTheme({
   palette: {
     primary: primary,
@@ -147,7 +157,7 @@ const theme = createMuiTheme({
 
 function ListComponent(props){
   const classes = useStyles();
-  const { data, editing, setRemoveData, handleConfirmDeleteState } = props
+  const { sess, data, editing, setRemoveData, handleConfirmDeleteState } = props
 
   function handleRemoveMatch(d){
     handleConfirmDeleteState(true)
@@ -181,10 +191,11 @@ function ListComponent(props){
             >
               {API._dateToString(data.date)}
             </Typography>
-          } />
+          }
+          secondary={ data.status === 1 && API._getWord(sess && sess.language).End } />
       }
       <ListItemText primary={API._shotnessNumber(data.views)} className={classes.tableView} />
-      <ListItemText inset className={classes.tableTitle}
+      <ListItemText style={{ ...(editing && {width: '100%'}) }} inset className={classes.tableTitle}
         primary={data.title}
         secondary={
           <React.Fragment>
@@ -202,7 +213,7 @@ function ListComponent(props){
                   }
                 }()
               }
-              { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) &&<br></br>}
+              { ( props.open ? window.innerWidth >= 860 : window.innerWidth >= 620 ) && <br></br>}
             </Typography>
             { ( ( props.open ? window.innerWidth < 1040 : window.innerWidth < 800 ) || editing ) &&
               (
@@ -219,6 +230,8 @@ function ListComponent(props){
                   >
                     {API._dateToString(data.date)}
                   </Typography>
+                  <br></br>
+                  { data.status === 1 && API._getWord(sess && sess.language).End }
                   <br></br>
                   {data.location}
                 </React.Fragment>
@@ -317,7 +330,11 @@ export default function MatchBody(props){
       setCSRFToken(csrf)
       try {
         handleConfirmPasswordCancel()
-        handleFetch()
+        if(matchOwnerStatus === 'mine'){
+          handleFetch()
+        }else{
+          handleFetchAdminMatch()
+        }
       }catch(err) { console.log(err.message) }
     })
   }
@@ -338,7 +355,11 @@ export default function MatchBody(props){
       })
       setCSRFToken(csrf)
       try {
-        handleFetch()
+        if(matchOwnerStatus === 'mine'){
+          handleFetch()
+        }else{
+          handleFetchAdminMatch()
+        }
       }catch(err) { console.log(err.message) }
     })
   }
@@ -363,9 +384,20 @@ export default function MatchBody(props){
             return d.display === -1
           })
         )
-        setDataClassed(arrData)
+        setDataClassed(
+          (pageOrganizer && pageData) ?
+          arrData.filter( m =>{ return m.pageid === pageData.pageid })
+          :
+          arrData
+        )
       }
-      setData(d)
+      setData(
+        (pageOrganizer && pageData) ?
+        d.filter( m =>{ return m.pageid === pageData.pageid })
+        :
+        d
+      )
+      document.title = `Match Management - T-off Time`
     })
   }
 
@@ -378,7 +410,7 @@ export default function MatchBody(props){
         ...(sess.typeid === 'admin') ? { action: 'list' } : { action: 'adminmatch' }
     }, (csrf, d) =>{
       setCSRFToken(csrf)
-      if(!d.status){
+      if(!('status' in d)){
         arrData.push(
           ...d.filter( d =>{
             return d.display === 1
@@ -389,9 +421,19 @@ export default function MatchBody(props){
             return d.display === -1
           })
         )
-        setDataClassed(arrData)
+        setDataClassed(
+          (pageOrganizer && pageData) ?
+          arrData.filter( m =>{ return m.pageid === pageData.pageid })
+          :
+          arrData
+        )
       }
-      setData(d)
+      setData(
+        (pageOrganizer && pageData) ?
+        d.filter( m =>{ return m.pageid === pageData.pageid })
+        :
+        d
+      )
     })
   }
 
@@ -422,34 +464,39 @@ export default function MatchBody(props){
         <GoBack to='/system_admin/' />
       }
       <LabelText text={ API._getWord(sess && sess.language).Match } />
-      { sess && sess.typeid !== 'admin' &&
+      { sess && sess.typeid !== 'admin' && !pageOrganizer &&
         <div style={{ marginTop: 24, boxSizing: 'border-box' }}>
           <FormControl component="fieldset" className={classes.formControl}>
             <FormLabel component="legend">{API._getWord(sess && sess.language).Type}</FormLabel>
-            <RadioGroup value={matchOwnerStatus} onChange={handleChange}>
-              <FormControlLabel value="mine" control={<Radio />}
+            <RadioGroup style={{ flexDirection: 'row' }} value={matchOwnerStatus} onChange={handleChange}>
+              <FormControlLabel value="mine" control={<GreenRadio />}
                 label={API._getWord(sess && sess.language).My_match} />
-              <FormControlLabel value="admin" control={<Radio />}
+              <FormControlLabel value="admin" control={<GreenRadio />}
                 label={API._getWord(sess && sess.language).Admin} />
             </RadioGroup>
           </FormControl>
         </div>
       }
-      <div style={{ display: 'flex', marginTop: 24, justifyContent: 'space-between', boxSizing: 'border-box' }}>
-        <GreenTextButton color="primary" onClick={toggleEditingDisplay}>
-          { editingDisplay?
-            ( API._getWord(sess && sess.language).Done )
-            :
-            ( API._getWord(sess && sess.language).Edit_Display )
-          }
-        </GreenTextButton>
-        <GreenTextButton color="primary" onClick={toggleEditing}>
-          { editing?
-            ( API._getWord(sess && sess.language).Done )
-            :
-            ( API._getWord(sess && sess.language).Remove )
-          }
-        </GreenTextButton>
+      <div style={{ display: 'flex', marginTop: 24, boxSizing: 'border-box' }}>
+        { !editing &&
+          <GreenTextButton variant="outlined" color="primary" onClick={toggleEditingDisplay}>
+            { editingDisplay?
+              ( API._getWord(sess && sess.language).Done )
+              :
+              ( API._getWord(sess && sess.language).Edit_Display )
+            }
+          </GreenTextButton>
+        }
+        <div style={{ flex: 1 }} />
+        { !editingDisplay &&
+          <GreenTextButton variant="outlined" color="primary" onClick={toggleEditing}>
+            { editing?
+              ( API._getWord(sess && sess.language).Done )
+              :
+              ( API._getWord(sess && sess.language).Remove )
+            }
+          </GreenTextButton>
+        }
       </div>
       <List style={{ overflow: 'auto', boxSizing: 'border-box' }}>
         { editingDisplay?
@@ -466,7 +513,7 @@ export default function MatchBody(props){
             }
             <StyledText
               primary={API._getWord(sess && sess.language).View} className={classes.tableView} />
-            <StyledText inset primary={ API._getWord(sess && sess.language).Match } className={classes.tableTitle} />
+            <StyledText style={{ ...(editing && {width: '100%'}) }} inset primary={ API._getWord(sess && sess.language).Match } className={classes.tableTitle} />
             { ( props.open ? window.innerWidth >= 1040 : window.innerWidth >= 800 ) && !editing &&
               <StyledText inset primary={ API._getWord(sess && sess.language).Course } className={classes.tableLocation} />
             }
@@ -495,10 +542,11 @@ export default function MatchBody(props){
                         `/system_admin/match/${d.matchid}` :
                         `/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management/match/${d.matchid}`
                       }>
-                      <ListComponent data={d} open={props.open} />
+                      <ListComponent sess={sess} data={d} open={props.open} />
                     </Link>
                     :
-                    <ListComponent data={d} open={props.open} editing={editing} setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
+                    <ListComponent sess={sess} data={d} open={props.open} editing={editing}
+                      setRemoveData={setRemoveData} handleConfirmDeleteState={handleConfirmDeleteState} />
                   }
                   <Divider />
                 </React.Fragment>
@@ -506,7 +554,7 @@ export default function MatchBody(props){
               :
               <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
                 <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-                  { API._getWord(sess && sess.language).No_data }
+                  { API._getWord(sess && sess.language).No_match }
                 </Box>
               </Typography>
             )
@@ -543,7 +591,8 @@ export default function MatchBody(props){
               </ListItem>
               <Divider />
             </React.Fragment>
-        )}
+          )
+        }
       </List>
       <ConfirmDialog
         sess={sess}
@@ -570,7 +619,7 @@ export default function MatchBody(props){
         content={
           <ThemeProvider theme={theme}>
             <TextField
-              autoFocus
+              autoFocus={API._isDesktopBrowser()}
               fullWidth
               style={{ marginTop: 16 }}
               className={classes.margin}

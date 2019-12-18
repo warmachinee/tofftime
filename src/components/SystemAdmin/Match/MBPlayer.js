@@ -220,7 +220,7 @@ const theme = createMuiTheme({
 
 export default function MBPlayer(props){
   const classes = useStyles();
-  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, } = props
+  const { BTN, sess, token, setCSRFToken, matchid, handleSnackBar, isAvailableEditing } = props
   const [ editing, setEditing ] = React.useState(false);
   const [ editingClass, setEditingClass ] = React.useState(false);
   const [ editingDisplay, setEditingDisplay ] = React.useState(false);
@@ -517,7 +517,7 @@ export default function MBPlayer(props){
             })
             setData(remainUser.concat(normalData))
           }else{
-            setData([])
+            setData(defaultPlayer)
           }
         }else{
           handleSnackBar({
@@ -550,7 +550,7 @@ export default function MBPlayer(props){
           setMatchDetail(d)
           try {
             handleFetch(
-              mainClassSelected !== '1' ? parseInt(mainClassSelected) : ( d.mainclass.length > 0 ? d.mainclass[0].mainclass : 1 )
+              mainClassSelected !== 1 ? parseInt(mainClassSelected) : ( d.mainclass.length > 0 ? d.mainclass[0].mainclass : 1 )
               , defaultPlayer, d
             )
           }catch(err) { console.log(err.message) }
@@ -568,6 +568,7 @@ export default function MBPlayer(props){
 
   async function handleFetchDefault(){
     if(matchid){
+      setData(null)
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
         token? token : resToken.token,
@@ -616,103 +617,111 @@ export default function MBPlayer(props){
                 </Button>
               }
               <div style={{ flex: 1 }} />
-              <div
-                className={classes.controlsEdit}
-                style={{
-                  border: editingClass && '0 solid',
-                  justifyContent: (editing || editingClass || editingDisplay)? 'flex-end' : 'space-around',
-                }}>
-                { !editing && !editingClass &&
-                  (
-                    editingDisplay?
-                    <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEditingDisplay}>
-                      { API._getWord(sess && sess.language).Done }
-                    </GreenTextButton>
-                    :
-                    <GreenTextButton className={classes.controlsEditButton} onClick={handleEditingDisplay}>
-                      <DesktopMacIcon
-                        style={{ left:
-                          window.innerWidth > 500? 0 :
-                          window.innerWidth > 450? '20%':'10%'
-                        }}
-                        className={classes.controlsEditButtonIcon} />
-                      { API._getWord(sess && sess.language).Showing }
-                    </GreenTextButton>
-                  )
-                }
-                { !editing && !editingDisplay && matchDetail &&/*style={{ padding: '8px 36px', margin: '2px 0' }}*/
-                  (
-                    editingClass?
-                    <React.Fragment>
-                      {
-                        ( matchDetail.scorematch === 0 ||
-                          (
-                            matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
-                            matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
-                          )
-                        ) ?
-                        <React.Fragment>
-                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
-                            { API._getWord(sess && sess.language).Done }
-                          </GreenTextButton>
-                        </React.Fragment>
-                        :
-                        <React.Fragment>
-                          <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
-                            { API._getWord(sess && sess.language).Done }
-                          </GreenTextButton>
-                          <GreenButton variant="contained" className={classes.controlsEditButton2} onClick={handleSave}>
-                            { API._getWord(sess && sess.language).Save }
-                          </GreenButton>
-                        </React.Fragment>
-                      }
-                    </React.Fragment>
-                    :
-                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditingClass(!editingClass)}>
-                      <ClassIcon
-                        style={{ left:
-                          window.innerWidth > 500? 0 :
-                          window.innerWidth > 450? '20%':'10%'
-                        }}
-                        className={classes.controlsEditButtonIcon} />
-                      {function(){
-                        switch (true) {
-                          case (
-                            matchDetail.scorematch === 0 ||
+              { isAvailableEditing &&
+                <div
+                  className={classes.controlsEdit}
+                  style={{
+                    border: editingClass && '0 solid',
+                    justifyContent: (editing || editingClass || editingDisplay)? 'flex-end' : 'space-around',
+                  }}>
+                  { !editing && !editingClass &&
+                    (
+                      editingDisplay?
+                      <GreenTextButton className={classes.controlsEditButton} onClick={handleDoneEditingDisplay}>
+                        { API._getWord(sess && sess.language).Done }
+                      </GreenTextButton>
+                      :
+                      <GreenTextButton className={classes.controlsEditButton} onClick={handleEditingDisplay}>
+                        <DesktopMacIcon
+                          style={{ left:
+                            window.innerWidth > 500? 0 :
+                            window.innerWidth > 450? '20%':'10%'
+                          }}
+                          className={classes.controlsEditButtonIcon} />
+                        { API._getWord(sess && sess.language).Showing }
+                      </GreenTextButton>
+                    )
+                  }
+                  { !( matchDetail.scorematch === 0 ||
+                      (
+                        matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                        matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                      )
+                    ) &&
+                    !editing && !editingDisplay && matchDetail &&/*style={{ padding: '8px 36px', margin: '2px 0' }}*/
+                    (
+                      editingClass?
+                      <React.Fragment>
+                        {
+                          ( matchDetail.scorematch === 0 ||
                             (
-                              matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                              matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
                               matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
                             )
-                          ):
-                            return API._getWord(sess && sess.language).Flight
-                            break;
-                          default:
-                            return API._getWord(sess && sess.language).Group
+                          ) ?
+                          <React.Fragment>
+                            <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
+                              { API._getWord(sess && sess.language).Done }
+                            </GreenTextButton>
+                          </React.Fragment>
+                          :
+                          <React.Fragment>
+                            <GreenTextButton className={classes.controlsEditButton2} onClick={handleDoneEditingClass}>
+                              { API._getWord(sess && sess.language).Done }
+                            </GreenTextButton>
+                            <GreenButton variant="contained" className={classes.controlsEditButton2} onClick={handleSave}>
+                              { API._getWord(sess && sess.language).Save }
+                            </GreenButton>
+                          </React.Fragment>
                         }
-                      }()}
-                    </GreenTextButton>
-                  )
-                }
-                { !editingClass && !editingDisplay &&
-                  (
-                    editing?
-                    <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
-                      onClick={handleDoneEditing}>
-                      { API._getWord(sess && sess.language).Done }
-                    </GreenTextButton>
-                    :
-                    <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditing(!editing)}>
-                      <DeleteIcon
-                        style={{ left:
-                          window.innerWidth > 500? 0 :
-                          window.innerWidth > 450? '20%':'10%'
-                        }}
-                        className={classes.controlsEditButtonIcon} />
-                      { API._getWord(sess && sess.language).Remove }
-                    </GreenTextButton>
-                  )
-                }
-              </div>
+                      </React.Fragment>
+                      :
+                      <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditingClass(!editingClass)}>
+                        <ClassIcon
+                          style={{ left:
+                            window.innerWidth > 500? 0 :
+                            window.innerWidth > 450? '20%':'10%'
+                          }}
+                          className={classes.controlsEditButtonIcon} />
+                        {function(){
+                          switch (true) {
+                            case (
+                              matchDetail.scorematch === 0 ||
+                              (
+                                matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
+                                matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
+                              )
+                            ):
+                              return API._getWord(sess && sess.language).Flight
+                              break;
+                            default:
+                              return API._getWord(sess && sess.language).Group
+                          }
+                        }()}
+                      </GreenTextButton>
+                    )
+                  }
+                  { !editingClass && !editingDisplay &&
+                    (
+                      editing?
+                      <GreenTextButton className={classes.controlsEditButton2} style={{ marginTop: 0, marginBottom: 0}}
+                        onClick={handleDoneEditing}>
+                        { API._getWord(sess && sess.language).Done }
+                      </GreenTextButton>
+                      :
+                      <GreenTextButton className={classes.controlsEditButton} onClick={()=>setEditing(!editing)}>
+                        <DeleteIcon
+                          style={{ left:
+                            window.innerWidth > 500? 0 :
+                            window.innerWidth > 450? '20%':'10%'
+                          }}
+                          className={classes.controlsEditButtonIcon} />
+                        { API._getWord(sess && sess.language).Remove }
+                      </GreenTextButton>
+                    )
+                  }
+                </div>
+              }
             </ListItem>
             <ListItem disableGutters className={classes.controlsSecondary}>
               { editingClass && matchDetail &&
@@ -863,9 +872,9 @@ export default function MBPlayer(props){
                       value={mainClassSelected}
                       onChange={e => setMainClassSelected(e.target.value)}>
                       { matchDetail &&
-                        matchDetail.mainclass.map( d =>
+                        matchDetail.mainclass.map( (d, i) =>
                           <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                            {d.mainclassname}
+                            {d.mainclassname} ({d.type})
                           </MenuItem>
                       )}
                     </Select>
@@ -873,7 +882,7 @@ export default function MBPlayer(props){
                 }
               </div>
             }
-            <div style={{ overflow: 'auto', position: 'relative' }}>
+            <div style={{ overflow: 'auto', position: 'relative', }}>
               {/* ( editing || editingClass || editingDisplay ) &&
                 <Typography component="div">
                   <Box className={classes.notice} m={1}>
@@ -883,10 +892,8 @@ export default function MBPlayer(props){
                   </Box>
                 </Typography>*/
               }
-              <ListItem role={undefined}
-                style={{
-                  display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto',
-                }}>
+              <ListItem
+                style={{ display: 'flex', backgroundColor: grey[900], borderRadius: 4, cursor: 'auto', }}>
                 <ListItemText inset style={{ color: 'white', margin: '8px 0' }} className={classes.listText}
                   primary={ window.innerWidth < 600? (
                     API._getWord(sess && sess.language).Full_name
@@ -905,7 +912,7 @@ export default function MBPlayer(props){
                           case (
                             matchDetail.scorematch === 0 ||
                             (
-                              matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+                              matchDetail.mainclass && matchDetail.mainclass.length > 0 &&
                               matchDetail.mainclass[parseInt(mainClassSelected) - 1].type === 'flight'
                             )
                           ):
@@ -922,7 +929,7 @@ export default function MBPlayer(props){
                   </ListItemIcon>*/
                 }
               </ListItem>
-              <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative' }}>
+              <div style={{ overflow: 'auto', maxHeight: window.innerHeight * .6, position: 'relative', }}>
 
                 { ( data && matchDetail && matchDetail.mainclass ) ?
                   ( !data.status && data.length > 0 ?
@@ -932,15 +939,21 @@ export default function MBPlayer(props){
 
                       return value && (
                         <React.Fragment key={value.userid}>
-                          <ListItem role={undefined} button={editing || editingClass || editingDisplay}
+                          <ListItem
+                            button={isAvailableEditing && ( editing || editingClass || editingDisplay )}
                             onClick={()=>
-                              ( editing || editingClass )?
-                              handleToggle(value):
-                              ( editingDisplay && value.classno !== 0?
-                                handleSelectedPlayer(value)
-                                :
-                                console.log()
+                              isAvailableEditing ?
+                              (
+                                ( editing || editingClass )?
+                                handleToggle(value):
+                                ( editingDisplay && value.classno !== 0?
+                                  handleSelectedPlayer(value)
+                                  :
+                                  console.log()
+                                )
                               )
+                              :
+                              console.log()
                             }>
                             <ListItemIcon>
                               { ( editing || editingClass )?
@@ -1082,14 +1095,16 @@ export default function MBPlayer(props){
                       <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                         { API._getWord(sess && sess.language).No_player }
                       </Box>
-                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
-                        <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
-                          <BTN.PrimaryOutlined>
-                            <AddIcon style={{ marginRight: 8 }} />
-                            { API._getWord(sess && sess.language).Invite_players }
-                          </BTN.PrimaryOutlined>
-                        </BTN.NoStyleLink>
-                      </div>
+                      { isAvailableEditing &&
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16, }}>
+                          <BTN.NoStyleLink to={`${window.location.pathname}#invitation`}>
+                            <BTN.PrimaryOutlined>
+                              <AddIcon style={{ marginRight: 8 }} />
+                              { API._getWord(sess && sess.language).Invite_players }
+                            </BTN.PrimaryOutlined>
+                          </BTN.NoStyleLink>
+                        </div>
+                      }
                     </Typography>
                   )
                   :
@@ -1097,7 +1112,7 @@ export default function MBPlayer(props){
                 }
               </div>
               <ListItem role={undefined} dense style={{ display: 'flex' }}>
-                { data && data.length > 10 && !searchUser &&
+                { isAvailableEditing && data && data.length > 10 && !searchUser &&
                   <React.Fragment>
                     <Button fullWidth onClick={handleMore}>
                       { dataSliced >= data.length ? (
@@ -1111,7 +1126,7 @@ export default function MBPlayer(props){
                     }
                   </React.Fragment>
                 }
-                { data && handleSearch().length > 10 && searchUser &&
+                { isAvailableEditing && data && handleSearch().length > 10 && searchUser &&
                   <React.Fragment>
                     <Button fullWidth onClick={handleMore}>
                       { dataSliced >= handleSearch().length ? (
