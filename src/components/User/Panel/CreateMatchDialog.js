@@ -31,8 +31,6 @@ export default function CreateMatchDialog(props) {
         width: '100%',
         boxSizing: 'border-box',
         maxWidth: 900,
-        marginLeft: 'auto',
-        marginRight: 'auto'
       }}>
       <LabelText text={ API._getWord(sess && sess.language).Create_Match } paddingTop={0} />
       <MatchStepper {...props} />

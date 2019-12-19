@@ -267,7 +267,7 @@ export default function PagePost(props){
 
   return(
     <div className={classes.root}>
-      <LabelText text={ API._getWord(sess && sess.language).Page_post } />
+      <LabelText text={ API._getWord(sess && sess.language).Group_post } />
       <div style={{ display: 'flex', marginTop: 16 }}>
         <RedButton variant="contained" color="secondary"
           onClick={()=>handleOpen('create')}
@@ -372,7 +372,7 @@ export default function PagePost(props){
             control={
               <StyledSwitch checked={isCreateAfterDone} onChange={e =>setIsCreateAfterDone(e.target.checked)} />
             }
-            label={ API._getWord(sess && sess.language)['Add to your page after create.'] }
+            label={ API._getWord(sess && sess.language)['Add to your group after create.'] }
           />
         </div>
         <MatchStepper {...passingProps} isCreateAfterDone={isCreateAfterDone} />

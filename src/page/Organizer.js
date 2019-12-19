@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Organizer(props) {
   const classes = useStyles();
-  const { API, sess, token, setCSRFToken, handleSnackBar, BTN } = props
+  const { API, sess, token, setCSRFToken, handleSnackBar, BTN, handlePageData } = props
   const [ isFollow, setIsFollow ] = React.useState(false)
   const [ data, setData ] = React.useState(null)
   const [ isMatchNotEmpty, setIsMatchNotEmpty ] = React.useState(null)
@@ -54,6 +54,7 @@ export default function Organizer(props) {
       setCSRFToken(csrf)
       if(d.length > 1){
         setData(d[0])
+        handlePageData(d[0])
         document.title = `${d[0].pagename} - T-off Time Organizer`
         if(d[1].subscribe){
           setIsFollow(true)
@@ -114,7 +115,7 @@ export default function Organizer(props) {
           :
           <div>
             <h3 style={{ textAlign: 'center', fontSize: 28 , marginTop: 72 }}>
-              { API._getWord(sess && sess.language).No_page }
+              { API._getWord(sess && sess.language).No_group }
               <code>{' ' + parseInt(props.computedMatch.params.pageid)}</code>
             </h3>
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>

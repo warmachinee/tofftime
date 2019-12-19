@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     position: 'relative'
   },
   content: {
-    margin: '0 5%',
+    margin: 0,
     [theme.breakpoints.up(500)]: {
       margin: '0 5%',
     },

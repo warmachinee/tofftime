@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     },
   },
   box: {
-    padding: theme.spacing(1.5)
+    padding: theme.spacing(1.5, 1.5, 0, 1.5)
   },
   image: {
     width: '100%',
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
     cursor: 'pointer',
   },
   imageGrid: {
-    margin: 12,
+    margin: '0 12px 8px 0',
     display: 'flex',
     justifyContent: 'center'
   },
@@ -78,30 +78,46 @@ export default function OrganizerPostCard(props) {
     <Paper
       className={classes.root}
       elevation={1}>
+      { data ?
+        <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+          { data.photopath ?
+            <img className={classes.image}
+              src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            :
+            <img className={classes.image}
+              src="https://thai-pga.com/default/match/matchcard.png" />
+          }
+        </BTN.NoStyleLink>
+        :
+        /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
+        <img className={classes.image}
+          src="https://thai-pga.com/default/match/matchcard.png" />
+      }
       { ( !loading && data && data.message ) ?
         <Box className={classes.box}>
           <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
             <div style={{ boxSizing: 'border-box' }}>
               <div style={{ display: 'flex' }}>
                 <div className={classes.imageGrid}>
-                  { pageData.logo ?
+                  { pageData && pageData.logo ?
                     <Avatar className={classes.avatarImage}
                       src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
                     :
                     <AccountCircleIcon classes={{ root: classes.avatar }} />
                   }
                 </div>
-                <Typography variant="h6" className={classes.title} style={{ marginBottom: 'auto', marginTop: 'auto' }}>
-                  {pageData && pageData.pagename}
-                </Typography>
+                <div style={{ marginBottom: 'auto', marginTop: 'auto' }}>
+                  <Typography variant="body1" className={classes.title}>
+                    {pageData && pageData.pagename}
+                  </Typography>
+                  <Typography gutterBottom variant="caption">
+                    { API._getPostTime(data.createdate)}
+                  </Typography>
+                </div>
               </div>
-              <Typography gutterBottom variant="body2" className={classes.title}>
+              <Typography gutterBottom variant="body1" className={classes.title} style={{ height: 44 }}>
                 {data.message && data.message.split('<$$split$$>')[0]}
               </Typography>
-              <Typography gutterBottom variant="body2">
-                { API._dateToString(data.createdate)}
-              </Typography>
-
             </div>
           </BTN.NoStyleLink>
         </Box>
@@ -111,20 +127,12 @@ export default function OrganizerPostCard(props) {
           <Skeleton height={14} width="60%"/>
         </Box>
       }
-      { ( data && data.photopath ) ?
-        <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
-          <img className={classes.image}
-            src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-        </BTN.NoStyleLink>
-        :
-        /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
-        <img className={classes.image}
-          src="https://thai-pga.com/default/match/matchcard.png" />
-      }
       { data &&
         <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
           <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
-            <BTN.PrimaryText style={{ margin: 16, }}>{ API._getWord(sess && sess.language).Detail }</BTN.PrimaryText>
+            <BTN.PrimaryText
+              disabled={data && data.message && !data.message.split('<$$split$$>')[1]}
+              size="small" style={{ margin: '0px 12px 6px 0px', }}>{ API._getWord(sess && sess.language).Read_more }</BTN.PrimaryText>
           </BTN.NoStyleLink>
         </div>
       }

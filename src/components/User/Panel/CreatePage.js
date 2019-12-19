@@ -33,8 +33,6 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     boxSizing: 'border-box',
     maxWidth: 600,
-    marginLeft: 'auto',
-    marginRight: 'auto'
   },
   margin: {
     width: '100%',

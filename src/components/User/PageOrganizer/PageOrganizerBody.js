@@ -122,7 +122,7 @@ export default function PageOrganizerBody(props) {
             control={
               <StyledSwitch checked={isCreateAfterDone} onChange={e =>setIsCreateAfterDone(e.target.checked)} />
             }
-            label={ API._getWord(sess && sess.language)['Add to your page after create.'] }
+            label={ API._getWord(sess && sess.language)['Add to your group after create.'] }
           />
         </div>
         <MatchStepper {...passingProps} isCreateAfterDone={isCreateAfterDone} handleCloseEditor={()=>dialogClose('createMatch')} />

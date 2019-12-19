@@ -156,13 +156,18 @@ export default function MatchCard(props) {
     <Paper
       className={classes.root}
       elevation={1}>
-      { ( data && data.picture ) ?
+      { data ?
         <BTN.NoStyleLink to={`/match/${data.matchid}`}>
-          <img className={classes.image}
-            src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+          { data.picture ?
+            <img className={classes.image}
+              src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            :
+            <img className={classes.image}
+              src="https://thai-pga.com/default/match/matchcard.png" />
+          }
         </BTN.NoStyleLink>
         :
-        /*<Skeleton className={classes.image} style={{ margin: 0 }} />*/
+        /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
         <img className={classes.image}
           src="https://thai-pga.com/default/match/matchcard.png" />
       }

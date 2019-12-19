@@ -21,6 +21,7 @@ import {
   Typography,
   Box,
   Avatar,
+  Chip,
 
 } from '@material-ui/core'
 
@@ -255,36 +256,49 @@ function ScoreRow(props){
                     </div>
                   </ListItem>
                   <ListItem style={{ padding: 0 }}>
-                <div style={{ display: 'flex', margin: 'auto' }}>
-                  <div style={{ backgroundColor: blueGrey[50],
-                    padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '0 0 0 4px', fontWeight: 800 }}>SCORE</div>
-                  { row.score.slice(0,9).map( (d,i)=>
-                    <div key={i}
-                      style={{
-                        backgroundColor:
-                        data.fieldscore[i] - d < 0? amber[300]:
-                        data.fieldscore[i] - d > 0? green[300]:blueGrey[50],
-                        padding: '8px 4px', width: 32, textAlign: 'center'
-                    }}>{d}</div>
-                  )}
-                  <div style={{ backgroundColor: blueGrey[50],
-                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.out}
+                    <div style={{ display: 'flex', margin: 'auto' }}>
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 64, textAlign: 'right', borderRadius: '0 0 0 4px', fontWeight: 800 }}>SCORE</div>
+                      { row.score.slice(0,9).map( (d,i)=>
+                        <div key={i}
+                          style={{
+                            backgroundColor:
+                            data.fieldscore[i] - d < 0? amber[300]:
+                            data.fieldscore[i] - d > 0? green[300]:blueGrey[50],
+                            padding: '8px 4px', width: 32, textAlign: 'center'
+                        }}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.out}
+                      </div>
+                      { row.score.slice(9,18).map( (d,i)=>
+                        <div key={i}
+                          style={{
+                            backgroundColor:
+                            data.fieldscore[i + 9] - d < 0? amber[300]:
+                            data.fieldscore[i + 9] - d > 0? green[300]:blueGrey[50],
+                            padding: '8px 4px', width: 32, textAlign: 'center'
+                        }}>{d}</div>
+                      )}
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.in}</div>
+                      <div style={{ backgroundColor: blueGrey[50],
+                        padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 0 4px 0', fontWeight: 800 }}>{row.out + row.in}</div>
+                    </div>
+                  </ListItem>
+                  <div style={{ display: 'flex', padding: '8px 12px' }}>
+                    { data.scorematch !== 1 && scoringMethod === 'flight' &&
+                      <Chip variant="outlined" style={{ marginRight: 12 }}
+                        label={`HC | ${row.hc}`} />
+                    }
+                    { ( data.scorematch === 1 || scoringMethod === 'stroke' ) ?
+                      <Chip variant="outlined" style={{ marginRight: 12 }}
+                        label={`PAR | ${row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par}`} />
+                      :
+                      <Chip variant="outlined" style={{ marginRight: 12 }}
+                        label={`${sortBy === 'net' ? 'NET' : 'SF'} | ${sortBy === 'net' ? row.net : row.sf}`} />
+                    }
                   </div>
-                  { row.score.slice(9,18).map( (d,i)=>
-                    <div key={i}
-                      style={{
-                        backgroundColor:
-                        data.fieldscore[i + 9] - d < 0? amber[300]:
-                        data.fieldscore[i + 9] - d > 0? green[300]:blueGrey[50],
-                        padding: '8px 4px', width: 32, textAlign: 'center'
-                    }}>{d}</div>
-                  )}
-                  <div style={{ backgroundColor: blueGrey[50],
-                    padding: '8px 4px', width: 48, textAlign: 'center', fontWeight: 800 }}>{row.in}</div>
-                  <div style={{ backgroundColor: blueGrey[50],
-                    padding: '8px 4px', width: 48, textAlign: 'center', borderRadius: '0 0 4px 0', fontWeight: 800 }}>{row.out + row.in}</div>
-                </div>
-              </ListItem>
                   <div style={{ display: 'flex' }}>
                     <ScoreTableChip dotColor={green[300]} label="Under"/>
                     <ScoreTableChip dotColor={blueGrey[50]} label="Par"/>

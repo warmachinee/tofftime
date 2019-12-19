@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactHtmlParser from 'react-html-parser';
 import { makeStyles } from '@material-ui/core/styles';
 import { primary, grey } from './../../api/palette'
 
@@ -70,12 +71,69 @@ const useStyles = makeStyles(theme => ({
     marginRight: 8,
     marginTop: 16
   },
+  aboutPage: {
+    display: 'flex',
+    padding: '12px 0px',
+    flexDirection: 'column',
+    [theme.breakpoints.up(800)]: {
+      flexDirection: 'row',
+    },
+  },
+  aboutDetail: {
+    position: 'relative',
+    display: '-webkit-box',
+    overflow: 'hidden',
+    whiteSpace: 'normal',
+    textOverflow: 'ellipsis',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    lineHeight: 1.4,
+  },
+  aboutLabel: {
+    maxWidth: 100,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottom: `4px solid ${primary[600]}`,
+    borderRight: 'none',
+    paddingRight: 8,
+    whiteSpace: 'nowrap',
+    [theme.breakpoints.up(800)]: {
+      marginRight: 12,
+      paddingRight: 12,
+      borderRight: `4px solid ${primary[600]}`,
+      borderBottom: 'none',
+      paddingBottom: 8,
+    },
+  },
+  moreThan600: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  lessThan600: {
+    [theme.breakpoints.up(600)]: {
+      display: 'none'
+    },
+  },
 
 }));
 
+function DetailComponent(props){
+  const { detail } = props
+
+  return(
+    <div className="ql-container ql-snow" style={{ border: 'none' }}>
+      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '0 15px' }}>
+        {ReactHtmlParser(detail)}
+      </div>
+    </div>
+  );
+}
+
 export default function OrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, isFollow, setIsFollow, data, setData, pageid } = props
+  const { API, BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, isFollow, setIsFollow, data, setData, pageid, handlePageData } = props
+  const [ moreState, setMoreState ] = React.useState(false)
 
   async function handleToggleFollow(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -101,6 +159,7 @@ export default function OrganizerOverview(props) {
       setCSRFToken(csrf)
       if(d.length > 1){
         setData(d[0])
+        handlePageData(d[0])
         document.title = `${d[0].pagename} - T-off Time Organizer`
         setIsFollow(d[1].subscribe)
       }else{
@@ -113,24 +172,43 @@ export default function OrganizerOverview(props) {
     <div className={classes.root}>
       { data &&
         <Paper className={classes.paper}>
-          <div className={classes.imageGrid}>
-            { data.logo ?
-              <Avatar className={classes.avatarImage}
-                src={API._getPictureUrl(data.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
-              :
-              <AccountCircleIcon classes={{ root: classes.avatar }} />
-            }
-          </div>
-          <div className={classes.pageDetailGrid}>
-            <div className={classes.pageDetail}>
-              <Typography gutterBottom variant="h5" className={classes.pageTitle}>
-                {data.pagename}
-              </Typography>
-              <Typography gutterBottom variant="body2" className={classes.followers}>
-                {data.subscriber} { (
-                  API._getWord(sess && sess.language).follower
-                ) + ( data.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
-              </Typography>
+          <div style={{ display: 'flex' }}>
+            <div className={classes.imageGrid}>
+              { data.logo ?
+                <Avatar className={classes.avatarImage}
+                  src={API._getPictureUrl(data.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                :
+                <AccountCircleIcon classes={{ root: classes.avatar }} />
+              }
+            </div>
+            <div className={classes.pageDetailGrid}>
+              <div className={classes.pageDetail}>
+                <Typography gutterBottom variant="h5" className={classes.pageTitle}>
+                  {data.pagename}
+                </Typography>
+                <Typography gutterBottom variant="body2" className={classes.followers}>
+                  {data.subscriber} { (
+                    API._getWord(sess && sess.language).follower
+                  ) + ( data.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
+                </Typography>
+                { data.pagedetail &&
+                  <div className={classes.moreThan600}>
+                    <div className={classes.aboutPage}>
+                      <div>
+                        <Typography variant="body1" className={classes.aboutLabel}>{ API._getWord(sess && sess.language).About }</Typography>
+                      </div>
+                      <div>
+                        <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
+                          <DetailComponent detail={data.pagedetail} />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                          <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
             </div>
           </div>
           { data && sess && ( data.hostid !== sess.userid ) &&
@@ -161,6 +239,23 @@ export default function OrganizerOverview(props) {
                   }
                 </React.Fragment>
               }
+            </div>
+          }
+          { data.pagedetail &&
+            <div className={classes.lessThan600}>
+              <div className={classes.aboutPage} style={{ marginLeft: 16 }}>
+                <div>
+                  <Typography variant="body1" className={classes.aboutLabel}>{ API._getWord(sess && sess.language).About }</Typography>
+                </div>
+                <div>
+                  <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
+                    <DetailComponent detail={data.pagedetail} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
+                  </div>
+                </div>
+              </div>
             </div>
           }
         </Paper>

@@ -41,6 +41,7 @@ import {
   Translate,
   GolfCourse,
   Note as NoteIcon,
+  Language as LanguageIcon,
 
 } from '@material-ui/icons';
 
@@ -344,7 +345,7 @@ export default function SideMenu(props) {
                     <div
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <IconButton onClick={handleSwitchLanguage}>
-                        <Translate style={{ color: COLOR.primary[700] }} />
+                        <LanguageIcon style={{ color: COLOR.primary[700] }} />
                       </IconButton>
                       <div style={{ fontSize: 16, fontWeight: 600, color: COLOR.grey[500], padding: 12  }}>
                         {sess.language}

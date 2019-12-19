@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from "clsx";
 import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
 import ReactHtmlParser from 'react-html-parser';
@@ -79,13 +80,16 @@ const useStyles = makeStyles(theme => ({
     position: 'relative'
   },
   content: {
-    margin: '0 5%',
+    margin: 0,
     [theme.breakpoints.up(500)]: {
       margin: '0 5%',
     },
     [theme.breakpoints.up(600)]: {
       margin: '0 72px',
     },
+  },
+  titleOverflow: {
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
   imageGrid: {
     display: 'flex',
@@ -142,6 +146,9 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.shortest,
     }),
   },
+  iconButtonSmall: {
+    padding: 8
+  },
   paperWidthSm: {
     maxWidth: 700
   },
@@ -151,16 +158,6 @@ const useStyles = makeStyles(theme => ({
   avatarImage: {
     width: 100,
     height: 100,
-  },
-  moreThan600: {
-    [theme.breakpoints.down(600)]: {
-      display: 'none',
-    },
-  },
-  lessThan600: {
-    [theme.breakpoints.up(600)]: {
-      display: 'none',
-    },
   },
   banner: {
     [theme.breakpoints.down(1700)]: {
@@ -182,6 +179,17 @@ const useStyles = makeStyles(theme => ({
       display: 'none'
     },
   },
+  moreThan720: {
+    [theme.breakpoints.down(720)]: {
+      display: 'none',
+    },
+  },
+  lessThan720: {
+    [theme.breakpoints.up(720)]: {
+      display: 'none',
+    },
+  },
+
 
 }));
 
@@ -204,16 +212,18 @@ function DetailComponent(props){
 
   return(
     <div className="ql-container ql-snow" style={{ border: 'none' }}>
-      <div className={classes.imageGrid}>
-        { picture &&
+      { picture &&
+        <div className={classes.imageGrid}>
           <img align="left" className={classes.image}
             style={{ height: window.innerWidth * .45, }}
             src={API._getPictureUrl(picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
-        }
-      </div>
-      <div className="ql-editor">
-        {ReactHtmlParser(detail)}
-      </div>
+        </div>
+      }
+      { detail &&
+        <div className="ql-editor">
+          {ReactHtmlParser(detail)}
+        </div>
+      }
     </div>
   );
 }
@@ -620,123 +630,171 @@ export default function MatchDetailBody(props) {
           !/wrong/.test(data.status) ?
           <div className={classes.content}>
             <Tooltip title={data?data.title:'Match Title'} placement="top-start">
-              <div>
-                <Typography variant="h4" className={classes.moreThan600}>
+              <div style={{ display: 'flex' }}>
+                <Typography variant="h4" className={classes.moreThan600} style={{ flex: 1 }}>
                   {data?data.title:'Match Title'}
                 </Typography>
-                <Typography variant="h6" className={classes.lessThan600}>
+                <Typography variant="h6" className={classes.lessThan600} style={{ flex: 1 }}>
                   {data?data.title:'Match Title'}
                 </Typography>
+                {handleGetButton()}
               </div>
             </Tooltip>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                <Typography gutterBottom variant="h6" className={classes.moreThan600}
-                  style={{
-                    color: data.scorematch === 1 ? primary[700] : 'inherit',
-                    fontWeight: data.scorematch === 1 ? 900 : 600
-                  }}>
-                  { function(){
-                      switch (data.scorematch) {
-                        case 0:
-                          return 'Amateur'
-                          break;
-                        case 1:
-                          return 'Professional'
-                          break;
-                        default:
-                          return 'Charity'
-                      }
-                    }()
-                  }
-                </Typography>
-                <Typography gutterBottom variant="body2" className={classes.lessThan600}
-                  style={{
-                    color: data.scorematch === 1 ? primary[700] : 'inherit',
-                    fontWeight: data.scorematch === 1 ? 900 : 600
-                  }}>
-                  { function(){
-                      switch (data.scorematch) {
-                        case 0:
-                          return 'Amateur'
-                          break;
-                        case 1:
-                          return 'Professional'
-                          break;
-                        default:
-                          return 'Charity'
-                      }
-                    }()
-                  }
-                </Typography>
-                <Typography variant="h6" className={classes.moreThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
-                <Typography variant="body2" className={classes.lessThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
-                <Typography variant="h6" className={classes.moreThan600}>
-                  {data?API._dateToString(data.date):'date'}
-                </Typography>
-                <Typography variant="body2" className={classes.lessThan600}>
-                  {data?API._dateToString(data.date):'date'}
-                </Typography>
-              </div>
-              {handleGetButton()}
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+              <Typography gutterBottom variant="h6" className={classes.moreThan600}
+                style={{
+                  color: data.scorematch === 1 ? primary[700] : 'inherit',
+                  fontWeight: data.scorematch === 1 ? 900 : 600
+                }}>
+                { function(){
+                    switch (data.scorematch) {
+                      case 0:
+                        return 'Amateur'
+                        break;
+                      case 1:
+                        return 'Professional'
+                        break;
+                      default:
+                        return 'Charity'
+                    }
+                  }()
+                }
+              </Typography>
+              <Typography gutterBottom variant="body2" className={classes.lessThan600}
+                style={{
+                  color: data.scorematch === 1 ? primary[700] : 'inherit',
+                  fontWeight: data.scorematch === 1 ? 900 : 600
+                }}>
+                { function(){
+                    switch (data.scorematch) {
+                      case 0:
+                        return 'Amateur'
+                        break;
+                      case 1:
+                        return 'Professional'
+                        break;
+                      default:
+                        return 'Charity'
+                    }
+                  }()
+                }
+              </Typography>
+              <Typography variant="h6" className={classes.moreThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+              <Typography variant="body2" className={classes.lessThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+              <Typography variant="h6" className={classes.moreThan600}>
+                {data?API._dateToString(data.date):'date'}
+              </Typography>
+              <Typography variant="body2" className={classes.lessThan600}>
+                {data?API._dateToString(data.date):'date'}
+              </Typography>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
               <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
                 <LocationOn style={{ color: primary[600], marginRight: 4 }} />
-                <Typography variant="h6" className={classes.moreThan600}>
+                <Typography variant="h6" className={clsx(classes.titleOverflow, classes.moreThan600)}>
                   {data?data.location:'Course'}
                 </Typography>
-                <Typography variant="body2" className={classes.lessThan600}>
-                  {data?API._dateToString(data.date):'date'}
+                <Typography variant="body2" className={clsx(classes.titleOverflow, classes.lessThan600)}>
+                  {data?data.location:'Course'}
                 </Typography>
               </Button>
             </div>
-            <div style={{ display: 'flex', marginBottom: 24, flexWrap: 'wrap', justifyContent: 'space-between' }}>
-              <div style={{ marginTop: 'auto', marginBottom: 6 }}>
-                <BTN.PrimaryOutlined onClick={handleScorecardOpen} style={{ marginRight: 8, marginTop: 8 }}>
-                  { API._getWord(sess && sess.language).Scorecard }
-                </BTN.PrimaryOutlined>
-                { matchid &&
-                  <BTN.NoStyleLink to={`/matchform/${matchid}`}>
-                    <BTN.PrimaryOutlined style={{ marginRight: 8, marginTop: 8 }}>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
-                  </BTN.NoStyleLink>
-                }
-                { data.team &&
-                  ( (data.status === 0 && data.team.length > 0) ?
-                    <BTN.NoStyleLink to={`/schedule/${matchid}`}>
-                      <BTN.PrimaryOutlined style={{ marginRight: 8, marginTop: 8 }}>
+            <div className={classes.moreThan720}>
+              <div style={{ display: 'flex', marginBottom: 24, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div style={{ marginTop: 'auto', marginBottom: 6 }}>
+                  <BTN.PrimaryOutlined onClick={handleScorecardOpen} style={{ marginRight: 8, marginTop: 8 }}>
+                    { API._getWord(sess && sess.language).Scorecard }
+                  </BTN.PrimaryOutlined>
+                  { matchid &&
+                    <BTN.NoStyleLink to={`/matchform/${matchid}`}>
+                      <BTN.PrimaryOutlined style={{ marginRight: 8, marginTop: 8 }}>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
+                    </BTN.NoStyleLink>
+                  }
+                  { data.team &&
+                    ( (data.status === 0 && data.team.length > 0) ?
+                      <BTN.NoStyleLink to={`/schedule/${matchid}`}>
+                        <BTN.PrimaryOutlined style={{ marginRight: 8, marginTop: 8 }}>
+                          { API._getWord(sess && sess.language).Schedule }
+                        </BTN.PrimaryOutlined>
+                      </BTN.NoStyleLink>
+                      :
+                      <BTN.PrimaryOutlined disabled style={{ marginRight: 8, marginTop: 8 }}>
                         { API._getWord(sess && sess.language).Schedule }
                       </BTN.PrimaryOutlined>
-                    </BTN.NoStyleLink>
-                    :
-                    <BTN.PrimaryOutlined disabled style={{ marginRight: 8, marginTop: 8 }}>
-                      { API._getWord(sess && sess.language).Schedule }
-                    </BTN.PrimaryOutlined>
-                  )
-                }
+                    )
+                  }
+                </div>
+                <div>
+                  <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'export')}>
+                    <FontAwesomeIcon icon={faFileExport} style={{ color: primary[600], fontSize: 20 }} />
+                  </IconButton>
+                  <a href={`/session/share?url=/match/${matchid}`}
+                    target='_blank'
+                    style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <IconButton className={classes.iconButtonSmall}>
+                      <ShareIcon style={{ color: primary[600] }} />
+                    </IconButton>
+                  </a>
+                  { BTN && data.scorematch === 2 && sess.status === 1 &&
+                    <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'minigame')}>
+                      <VideogameAsset fontSize="large" style={{ color: primary[600] }} />
+                    </IconButton>
+                  }
+                </div>
               </div>
-              <div>
-                <IconButton onClick={e => menuClick(e, 'export')}>
-                  <FontAwesomeIcon icon={faFileExport} style={{ color: primary[600] }} />
-                </IconButton>
-                <a href={`/session/share?url=/match/${matchid}`}
-                  target='_blank'
-                  style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <IconButton>
-                    <ShareIcon style={{ color: primary[600] }} />
+            </div>
+            <div style={{ marginTop: 'auto', marginBottom: 6 }} className={classes.lessThan720}>
+              <BTN.PrimaryOutlined onClick={handleScorecardOpen} style={{ marginRight: 8, marginTop: 8 }}>
+                { API._getWord(sess && sess.language).Scorecard }
+              </BTN.PrimaryOutlined>
+              { matchid &&
+                <BTN.NoStyleLink to={`/matchform/${matchid}`}>
+                  <BTN.PrimaryOutlined style={{ marginRight: 8, marginTop: 8 }}>{ API._getWord(sess && sess.language).Form }</BTN.PrimaryOutlined>
+                </BTN.NoStyleLink>
+              }
+            </div>
+            <div className={classes.lessThan720}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div>
+                  { data.team &&
+                    ( (data.status === 0 && data.team.length > 0) ?
+                      <BTN.NoStyleLink to={`/schedule/${matchid}`}>
+                        <BTN.PrimaryOutlined>
+                          { API._getWord(sess && sess.language).Schedule }
+                        </BTN.PrimaryOutlined>
+                      </BTN.NoStyleLink>
+                      :
+                      <BTN.PrimaryOutlined disabled>
+                        { API._getWord(sess && sess.language).Schedule }
+                      </BTN.PrimaryOutlined>
+                    )
+                  }
+                </div>
+                <div>
+                  <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'export')}>
+                    <FontAwesomeIcon icon={faFileExport} style={{ color: primary[600], fontSize: 20 }} />
                   </IconButton>
-                </a>
-                { BTN && data.scorematch === 2 && sess.status === 1 &&
-                  <IconButton onClick={e => menuClick(e, 'minigame')}>
-                    <VideogameAsset fontSize="large" style={{ color: primary[600] }} />
-                  </IconButton>
-                }
+                  <a href={`/session/share?url=/match/${matchid}`}
+                    target='_blank'
+                    style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <IconButton className={classes.iconButtonSmall}>
+                      <ShareIcon style={{ color: primary[600] }} />
+                    </IconButton>
+                  </a>
+                  { BTN && data.scorematch === 2 && sess.status === 1 &&
+                    <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'minigame')}>
+                      <VideogameAsset fontSize="large" style={{ color: primary[600] }} />
+                    </IconButton>
+                  }
+                </div>
               </div>
             </div>
             <DetailComponent matchid={matchid} detail={data.message} picture={data.picture} isSupportWebp={isSupportWebp} />
             { data.reward &&
               <Paper style={{ width: '100%', }}>
-                <Divider />
+                { ((data.lowgross === 1 && data.reward.lowgross === 1) || (data.reward.lownet === 1&& data.reward.lownet)) &&
+                  <Divider />
+                }
                 { data.lowgross === 1 && data.reward.lowgross &&
                   <ListSpecialReward
                     {...props}
@@ -766,7 +824,6 @@ export default function MatchDetailBody(props) {
                 <React.Fragment>
                   <ListItem button onClick={expandHandler}
                     style={{
-                      marginTop: 16,
                       boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)'
                     }}>
                     <ListItemText primary={ API._getWord(sess && sess.language).Scoreboard } />

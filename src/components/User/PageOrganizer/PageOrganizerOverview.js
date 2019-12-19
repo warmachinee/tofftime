@@ -1,5 +1,7 @@
 import React from 'react';
+import clsx from "clsx";
 import Loadable from 'react-loadable';
+import ReactHtmlParser from 'react-html-parser';
 import { makeStyles, fade, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { primary, grey, red } from './../../../api/palette'
@@ -93,6 +95,84 @@ const useStyles = makeStyles(theme => ({
   panelButton: {
     marginRight: 16
   },
+  aboutPage800: {
+    display: 'flex',
+    padding: '12px 0px',
+    flexDirection: 'column',
+    [theme.breakpoints.up(800)]: {
+      flexDirection: 'row',
+    },
+  },
+  aboutPage1040: {
+    display: 'flex',
+    padding: '12px 0px',
+    flexDirection: 'column',
+    [theme.breakpoints.up(1040)]: {
+      flexDirection: 'row',
+    },
+  },
+  aboutDetail: {
+    position: 'relative',
+    display: '-webkit-box',
+    overflow: 'hidden',
+    whiteSpace: 'normal',
+    textOverflow: 'ellipsis',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    lineHeight: 1.4,
+  },
+  aboutLabel800: {
+    maxWidth: 100,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottom: `4px solid ${primary[600]}`,
+    borderRight: 'none',
+    paddingRight: 8,
+    whiteSpace: 'nowrap',
+    [theme.breakpoints.up(800)]: {
+      marginRight: 12,
+      paddingRight: 12,
+      borderRight: `4px solid ${primary[600]}`,
+      borderBottom: 'none',
+      paddingBottom: 8,
+    },
+  },
+  aboutLabel1040: {
+    maxWidth: 100,
+    marginBottom: 12,
+    paddingBottom: 8,
+    borderBottom: `4px solid ${primary[600]}`,
+    borderRight: 'none',
+    paddingRight: 8,
+    whiteSpace: 'nowrap',
+    [theme.breakpoints.up(1040)]: {
+      marginRight: 12,
+      paddingRight: 12,
+      borderRight: `4px solid ${primary[600]}`,
+      borderBottom: 'none',
+      paddingBottom: 8,
+    },
+  },
+  moreThan600: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  lessThan600: {
+    [theme.breakpoints.up(600)]: {
+      display: 'none'
+    },
+  },
+  moreThan840: {
+    [theme.breakpoints.down(840)]: {
+      display: 'none'
+    },
+  },
+  lessThan840: {
+    [theme.breakpoints.up(840)]: {
+      display: 'none'
+    },
+  },
 
 }));
 
@@ -101,6 +181,18 @@ const theme = createMuiTheme({
     primary: primary,
   },
 });
+
+function DetailComponent(props){
+  const { detail } = props
+
+  return(
+    <div className="ql-container ql-snow" style={{ border: 'none' }}>
+      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '0 15px' }}>
+        {ReactHtmlParser(detail)}
+      </div>
+    </div>
+  );
+}
 
 export default function PageOrganizerOverview(props) {
   const classes = useStyles();
@@ -113,6 +205,7 @@ export default function PageOrganizerOverview(props) {
     request: false
   })
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [ moreState, setMoreState ] = React.useState(false)
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -215,46 +308,113 @@ export default function PageOrganizerOverview(props) {
                 <MoreVert />
               </IconButton>
             </div>
-            <div className={classes.imageGrid}>
-              <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
-                { pageData.logo ?
-                  <Avatar className={classes.avatarImage}
-                    src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
-                  :
-                  <AccountCircleIcon classes={{ root: classes.avatar }} />
-                }
-              </BTN.NoStyleLink>
-            </div>
-            <div className={classes.pageDetailGrid}>
-              <div className={classes.pageDetail}>
+            <div style={{ display: 'flex' }}>
+              <div className={classes.imageGrid}>
                 <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
-                  <Typography gutterBottom variant="h5" className={classes.pageTitle}>
-                    {pageData.pagename}
-                  </Typography>
+                  { pageData.logo ?
+                    <Avatar className={classes.avatarImage}
+                      src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                    :
+                    <AccountCircleIcon classes={{ root: classes.avatar }} />
+                  }
                 </BTN.NoStyleLink>
-                <Typography gutterBottom variant="body1" className={classes.followers}>
-                  {pageData.subscriber} { (
-                    API._getWord(sess && sess.language).follower
-                  ) + ( pageData.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
-                </Typography>
-                <Typography gutterBottom variant="body2" className={classes.followers}>
-                  {API._shotnessNumber(pageData.view)} {` view${pageData.view > 1 ? 's' : ''}`}
-                </Typography>
+              </div>
+              <div className={classes.pageDetailGrid}>
+                <div className={classes.pageDetail}>
+                  <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
+                    <Typography gutterBottom variant="h5" className={classes.pageTitle}>
+                      {pageData.pagename}
+                    </Typography>
+                  </BTN.NoStyleLink>
+                  <Typography gutterBottom variant="body1" className={classes.followers}>
+                    {pageData.subscriber} { (
+                      API._getWord(sess && sess.language).follower
+                    ) + ( pageData.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
+                  </Typography>
+                  <Typography gutterBottom variant="body2" className={classes.followers}>
+                    {API._shotnessNumber(pageData.view)} {` view${pageData.view > 1 ? 's' : ''}`}
+                  </Typography>
+                  { pageData.pagedetail &&
+                    <div
+                      className={clsx({
+                        [classes.moreThan840]: props.open,
+                        [classes.moreThan600]: !props.open
+                      })}>
+                      <div
+                        className={clsx({
+                          [classes.aboutPage1040]: props.open,
+                          [classes.aboutPage800]: !props.open
+                        })}>
+                        <div>
+                          <BTN.NoStyleLink to={`/organizer/${pageData.pageid}/profile/`}>
+                            <Typography variant="body1"
+                              className={clsx({
+                                [classes.aboutLabel1040]: props.open,
+                                [classes.aboutLabel800]: !props.open
+                              })}>{ API._getWord(sess && sess.language).About }</Typography>
+                          </BTN.NoStyleLink>
+                        </div>
+                        <div>
+                          <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
+                            <DetailComponent detail={pageData.pagedetail} />
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           </div>
+          { pageData.pagedetail &&
+            <div
+              className={clsx({
+                [classes.lessThan840]: props.open,
+                [classes.lessThan600]: !props.open
+              })}>
+              <div
+                className={clsx({
+                  [classes.aboutPage1040]: props.open,
+                  [classes.aboutPage800]: !props.open
+                })}
+                style={{ marginLeft: 16 }}>
+                <div>
+                  <BTN.NoStyleLink to={`/organizer/${pageData.pageid}/profile/`}>
+                    <Typography variant="body1"
+                      className={clsx({
+                        [classes.aboutLabel1040]: props.open,
+                        [classes.aboutLabel800]: !props.open
+                      })}>{ API._getWord(sess && sess.language).About }</Typography>
+                  </BTN.NoStyleLink>
+                </div>
+                <div>
+                  <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
+                    <DetailComponent detail={pageData.pagedetail} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
           <Divider />
-          <div style={{ padding: 16 }}>
+          <div style={{ padding: 16, display: 'flex' }}>
             {/*
               <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createMatch')}>
                 <AddCircle style={{ marginRight: 8 }} />
                 { API._getWord(sess && sess.language).Create_Match }
               </BTN.PrimaryOutlined>*/
             }
-            <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createPost')}>
-              <AddCircle style={{ marginRight: 8 }} />
-              { API._getWord(sess && sess.language).Post }
-            </BTN.PrimaryOutlined>
+            <div>
+              <BTN.PrimaryOutlined className={classes.panelButton} style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createPost')}>
+                <AddCircle style={{ marginRight: 8 }} />
+                { API._getWord(sess && sess.language).Post }
+              </BTN.PrimaryOutlined>
+            </div>
           </div>
         </Paper>
       }
@@ -303,7 +463,7 @@ export default function PageOrganizerOverview(props) {
         onClose={confirmCloseAll}
         icon={{ width: 96, height: 96 }}
         iconColor={primary[600]}
-        title={API._getWord(sess && sess.language)['Send a request to show this Page on the Toff-time page.']}
+        title={API._getWord(sess && sess.language)['Send a request to show this Group on the Toff-time page.']}
         content={
           pageData && pageData.pageid &&
           <Typography component="div" style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
@@ -323,8 +483,7 @@ export default function PageOrganizerOverview(props) {
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
+        onClose={handleClose}>
         <MenuItem onClick={()=>confirmOpen('request')}>{ API._getWord(sess && sess.language).Request_mainpage_BTN }</MenuItem>
         <MenuItem onClick={()=>props.dialogOpen('setAdmin')}>{ API._getWord(sess && sess.language).Group_admin }</MenuItem>
         { pageData &&
@@ -333,7 +492,7 @@ export default function PageOrganizerOverview(props) {
           </BTN.NoStyleLink>
         }
         <Divider style={{ marginTop: 8, marginBottom: 8 }} />
-        <MenuItem onClick={()=>confirmOpen('delete')}>{ API._getWord(sess && sess.language).Delete_page }</MenuItem>
+        <MenuItem onClick={()=>confirmOpen('delete')}>{ API._getWord(sess && sess.language).Delete_group }</MenuItem>
       </Menu>
     </div>
   );

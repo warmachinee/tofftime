@@ -158,10 +158,15 @@ export default function OrganizerMatchCard(props) {
     <Paper
       className={classes.root}
       elevation={1}>
-      { ( data.messagedetail && data.messagedetail.photopath ) ?
-        <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
-          <img className={classes.image}
-            src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+      { data && data.messagedetail ?
+        <BTN.NoStyleLink to={`/match/${data.matchid}`}>
+          { data.messagedetail.photopath ?
+            <img className={classes.image}
+              src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+            :
+            <img className={classes.image}
+              src="https://thai-pga.com/default/match/matchcard.png" />
+          }
         </BTN.NoStyleLink>
         :
         /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/

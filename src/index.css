@@ -114,6 +114,14 @@ code {
 .ql-font-monospace {
   font-family: "monospace";
 }
+
+.ql-toolbar.ql-snow {
+	position: sticky;
+	position: -webkit-sticky;
+  top: 120px;
+  z-index: 100;
+  background: white;
+}
 /*
  *
  * Scroll Bar Css Style

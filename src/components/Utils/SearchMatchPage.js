@@ -177,7 +177,7 @@ export default function SearchMatchPage(props) {
             </List>
           );
         }}
-        style={{ width: '100%', }}
+        style={{ width: '100%', /**/ }}
         onBlur={()=>setSearchState(false)}
         renderInput={params => (
           <InputBase
@@ -186,7 +186,7 @@ export default function SearchMatchPage(props) {
             inputProps={params.inputProps}
             onChange={e =>searchTextOnChange(e)}
             autoFocus={API._isDesktopBrowser() && searchState}
-            placeholder={ API._getWord(sess && sess.language)['Search Match or Page'] }
+            placeholder={ API._getWord(sess && sess.language)['Search Match or Group'] }
             />
         )} />
       <div className={classes.grow} />

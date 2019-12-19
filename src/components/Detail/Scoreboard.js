@@ -35,6 +35,17 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 80,
+    maxWidth: '50%'
+  },
+  moreThan600: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  lessThan600: {
+    [theme.breakpoints.up(600)]: {
+      display: 'none'
+    },
   },
 
 }));
@@ -45,12 +56,12 @@ function TabContainer(props) {
 
   return (
     <React.Fragment>
-      <Paper style={{ display: 'flex', justifyContent: 'flex-end', padding: 12, borderRadius: 'unset' }}>
-        <div>
+      <div className={classes.lessThan600}>
+        <Paper style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 4px 0 0', borderRadius: 'unset' }}>
           { data && data.scorematch !== 1 &&
             <React.Fragment>
               <FormControl className={classes.formControl}>
-                <InputLabel>{ API._getWord(sess && sess.language).Method }</InputLabel>
+                <InputLabel style={{ whiteSpace: 'nowrap' }}>{ API._getWord(sess && sess.language).Method }</InputLabel>
                 <Select
                   value={scoringMethod}
                   onChange={e => setScoringMethod(e.target.value)}
@@ -60,7 +71,7 @@ function TabContainer(props) {
                 </Select>
               </FormControl>
               <FormControl className={classes.formControl}>
-                <InputLabel>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
+                <InputLabel style={{ whiteSpace: 'nowrap' }}>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
                 <Select
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value)}
@@ -71,8 +82,35 @@ function TabContainer(props) {
               </FormControl>
             </React.Fragment>
           }
-        </div>
-      </Paper>
+        </Paper>
+      </div>
+      <div className={classes.moreThan600}>
+        { data && data.scorematch !== 1 &&
+          <React.Fragment>
+            <FormControl className={classes.formControl}>
+              <InputLabel style={{ whiteSpace: 'nowrap' }}>{ API._getWord(sess && sess.language).Method }</InputLabel>
+              <Select
+                value={scoringMethod}
+                onChange={e => setScoringMethod(e.target.value)}
+              >
+                <MenuItem value={'flight'}>{'36System'}</MenuItem>
+                <MenuItem value={'stroke'}>Stroke play</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabel style={{ whiteSpace: 'nowrap' }}>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
+              <Select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+              >
+                <MenuItem value={'net'}>Net</MenuItem>
+                <MenuItem value={'sf'}>SF</MenuItem>
+              </Select>
+            </FormControl>
+          </React.Fragment>
+        }
+      </div>
+
       {/*<ScoreTable {...props} data={data} userscore={userscore} matchClass={matchClass} />*/}
     </React.Fragment>
   )
@@ -164,28 +202,52 @@ export default function Scoreboard(props) {
 
   return (
     <div className={classes.root}>
-      { data && data.scorematch !== 0 && data.mainclass.length > 1 &&
+      { data &&
         <div style={{ display: 'flex' }}>
-          <FormControl className={classes.formControl}>
-            <InputLabel>Main Group</InputLabel>
-            <Select
-              value={mainClassSelected}
-              onChange={e => handleSelectMainClass(e)}>
-              { data &&
-                data.mainclass.map( (d, i) =>
-                  <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                    {d.mainclassname} ({d.type})
-                  </MenuItem>
-              )}
-            </Select>
-          </FormControl>
+          { data.scorematch !== 0 && data.mainclass.length > 1 &&
+            <FormControl className={classes.formControl}>
+              <InputLabel>Main Group</InputLabel>
+              <Select
+                value={mainClassSelected}
+                onChange={e => handleSelectMainClass(e)}>
+                { data &&
+                  data.mainclass.map( (d, i) =>
+                    <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
+                      {d.mainclassname} ({d.type})
+                    </MenuItem>
+                )}
+              </Select>
+            </FormControl>
+          }
           <div style={{ flex: 1 }} />
-          <IconButton style={{ marginTop: 'auto' }} onClick={toggleExpand}>
-            <FontAwesomeIcon icon={faCog} style={{ color: primary[600] }} />
-          </IconButton>
+          <Collapse in={expanded} timeout="auto" unmountOnExit className={classes.moreThan600}>
+            { matchClass &&
+              matchClass.map((d,i)=>{
+                return d && (
+                  <React.Fragment key={i}>
+                    {
+                      value === i &&
+                      <TabContainer {...props} key={d.classname} value={i} data={data} userscore={userscore} matchClass={d}></TabContainer>
+                    }
+                  </React.Fragment>
+                );
+              })
+            }
+            { ( data.scorematch === 0 || data.mainclass[parseInt(mainClassSelected) - 1].type === 'flight' ) && matchClass && ( value === matchClass.length ) &&
+              <TabContainer {...props}
+                data={data}
+                value={matchClass.length}
+                userscore={userscore} matchClass={{ classno: 0, classname: 'No class', color: '' }}></TabContainer>
+            }
+          </Collapse>
+          { data.scorematch !== 1 &&
+            <IconButton style={{ marginTop: 'auto' }} onClick={toggleExpand}>
+              <FontAwesomeIcon icon={faCog} style={{ color: primary[600] }} />
+            </IconButton>
+          }
         </div>
       }
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
+      <Collapse in={expanded} timeout="auto" unmountOnExit className={classes.lessThan600}>
         { matchClass &&
           matchClass.map((d,i)=>{
             return d && (

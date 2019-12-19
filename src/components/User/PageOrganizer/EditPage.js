@@ -25,6 +25,11 @@ const LabelText = Loadable({
   loading: () => null
 });
 
+const RichTextEditor = Loadable({
+  loader: () => import(/* webpackChunkName: "RichTextEditor" */ './../../Utils/RichTextEditor'),
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(0, 1.5, 1.5, 1.5)
@@ -118,10 +123,30 @@ export default function EditPage(props) {
   const { API, sess, token, setCSRFToken, handleSnackBar, isSupportWebp, pageData, setEditPageRefresh  } = props
   const [ data, setData ] = React.useState(null);
   const [ pageName, setPageName ] = React.useState('')
+  const [ aboutPageData, setAboutPageData ] = React.useState(null)
   const [ selectedFile, setSelectedFile ] = React.useState(null);
   const [ tempFile, setTempFile ] = React.useState(null)
   const [ fileHover, handleFileHover ] = React.useState(false);
   const imgRef = React.useRef(null)
+
+  function setInitialData(d){
+    setPageName(d.pagename)
+    if(d.logo){
+      setTempFile(API._getPictureUrl(d.logo) + ( isSupportWebp? '.webp' : '.jpg' ))
+    }
+    setAboutPageData(d.pagedetail)
+  }
+
+  function isEditDetail(){
+    if(
+      data.pagename !== pageName ||
+      data.pagedetail !== aboutPageData ||
+      selectedFile
+    ){
+      return true
+    }
+    return false
+  }
 
   function handlePicture(e){
     const file = event.target.files[0]
@@ -158,6 +183,10 @@ export default function EditPage(props) {
     }
   }
 
+  function handleEditorOnChange(data){
+    setAboutPageData(data)
+  }
+
   async function handleEditPage(){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -166,6 +195,7 @@ export default function EditPage(props) {
         action: 'edit',
         pageid: pageData.pageid,
         pagename: pageName,
+        pagedetail: aboutPageData,
         color: ''
     }, (csrf, d) =>{
       setCSRFToken(csrf)
@@ -193,6 +223,7 @@ export default function EditPage(props) {
       })
       if(/success/.test(response.status)){
         setEditPageRefresh(new Date().toISOString())
+        handleFetch()
       }
     }else{
       setCSRFToken(csrf)
@@ -205,25 +236,39 @@ export default function EditPage(props) {
       if(/success/.test(d.status)){
         setEditPageRefresh(new Date().toISOString())
       }
+      handleFetch()
     }
   }
 
+  async function handleFetch(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      ( sess && sess.status === 1 ) ? 'ploadpage' : 'mloadpage' , {
+        action: 'detail',
+        pageid: pageData.pageid,
+    }, function(csrf, d){
+      setCSRFToken(csrf)
+      if(d.length > 1){
+        setInitialData(d[0])
+        setData(d[0])
+      }
+    })
+  }
+
   React.useEffect(()=>{
-    setPageName(pageData.pagename)
-    if(pageData.logo){
-      setTempFile(API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' ))
-    }
+    handleFetch()
   }, [ ])
 
   return (
     <div className={classes.root}>
       <LabelText text={ API._getWord(sess && sess.language).Edit_group } paddingTop={0} />
-      <div style={{ marginTop: 24 }}>
+      <div>
         <ThemeProvider theme={theme}>
           <TextField
             autoFocus={API._isDesktopBrowser()}
             className={classes.margin}
-            label={ API._getWord(sess && sess.language).Page_name }
+            label={ API._getWord(sess && sess.language).Group_name }
             value={pageName}
             variant="outlined"
             onChange={(e)=>setPageName(e.target.value)}
@@ -294,7 +339,16 @@ export default function EditPage(props) {
             </div>
           </div>
         }
+        <div style={{ marginTop: 24 }}>
+          { API._getWord(sess && sess.language).About_group }
+        </div>
+        { (aboutPageData) ?
+          <RichTextEditor HTMLData={aboutPageData} handleGetHTML={e =>handleEditorOnChange(e)} />
+          :
+          <RichTextEditor handleGetHTML={e =>handleEditorOnChange(e)} />
+        }
         <GreenButton variant="contained" color="primary" className={classes.button}
+          disabled={data && !isEditDetail()}
           onClick={handleEditPage}>
           { API._getWord(sess && sess.language).Save }
         </GreenButton>

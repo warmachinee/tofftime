@@ -30,13 +30,13 @@ export default function _getWord(lang){
         return 'Match Rules, Regulations and Detail'
     }
   }()
-  Declarative['Add to your page after create.'] = function(){
+  Declarative['Add to your group after create.'] = function(){
     switch (lang) {
       case 'TH':
-        return 'เพิ่มในเพจของคุณหลังจากสร้าง'
+        return 'เพิ่มในกลุ่มของคุณหลังจากสร้าง'
         break;
       default:
-        return 'Add to your page after create.'
+        return 'Add to your group after create.'
     }
   }()
 
@@ -149,13 +149,13 @@ export default function _getWord(lang){
         return 'Send a request to show this Match on the Toff-time page.'
     }
   }()
-  Imperative['Send a request to show this Page on the Toff-time page.'] = function(){
+  Imperative['Send a request to show this Group on the Toff-time page.'] = function(){
     switch (lang) {
       case 'TH':
-        return 'ส่งคำขอเพื่อแสดงเพจนี้ในหน้า Toff-time'
+        return 'ส่งคำขอเพื่อแสดงกลุ่มนี้ในหน้า Toff-time'
         break;
       default:
-        return 'Send a request to show this Page on the Toff-time page.'
+        return 'Send a request to show this Group on the Toff-time page.'
     }
   }()
   Imperative['Create the match group.'] = function(){
@@ -239,13 +239,13 @@ export default function _getWord(lang){
         return 'Click to show the control panel.'
     }
   }()
-  Imperative['Search Match or Page'] = function(){
+  Imperative['Search Match or Group'] = function(){
     switch (lang) {
       case 'TH':
-        return 'ค้นหาการแข่งขันหรือเพจ'
+        return 'ค้นหาการแข่งขันหรือกลุ่ม'
         break;
       default:
-        return 'Search Match or Page'
+        return 'Search Match or Group'
     }
   }()
   Imperative['Follow the group to get the latest update'] = function(){
@@ -840,13 +840,13 @@ export default function _getWord(lang){
           return 'Upload image'
       }
     }(),
-    Delete_page: function(){
+    Delete_group: function(){
       switch (lang) {
         case 'TH':
-          return 'ลบเพจ'
+          return 'ลบกลุ่ม'
           break;
         default:
-          return 'Delete page'
+          return 'Delete group'
       }
     }(),
     Next: function(){
@@ -1042,13 +1042,13 @@ export default function _getWord(lang){
           return 'No match'
       }
     }(),
-    No_page: function(){
+    No_group: function(){
       switch (lang) {
         case 'TH':
-          return 'ไม่มีเพจ'
+          return 'ไม่มีกลุ่ม'
           break;
         default:
-          return 'No page'
+          return 'No group'
       }
     }(),
     No_Dummy: function(){
@@ -1085,15 +1085,6 @@ export default function _getWord(lang){
           break;
         default:
           return 'No flight'
-      }
-    }(),
-    No_group: function(){
-      switch (lang) {
-        case 'TH':
-          return 'ไม่มีกลุ่ม'
-          break;
-        default:
-          return 'No group'
       }
     }(),
     No_image: function(){
@@ -1225,6 +1216,24 @@ export default function _getWord(lang){
   }()
 
   const Name = {
+    About_group: function(){
+      switch (lang) {
+        case 'TH':
+          return 'เกี่ยวกับกลุ่ม'
+          break;
+        default:
+          return 'About group'
+      }
+    }(),
+    About: function(){
+      switch (lang) {
+        case 'TH':
+          return 'เกี่ยวกับ'
+          break;
+        default:
+          return 'About'
+      }
+    }(),
     Detail: function(){
       switch (lang) {
         case 'TH':
@@ -1232,6 +1241,15 @@ export default function _getWord(lang){
           break;
         default:
           return 'Detail'
+      }
+    }(),
+    Read_more: function(){
+      switch (lang) {
+        case 'TH':
+          return 'อ่านต่อ'
+          break;
+        default:
+          return 'Read more'
       }
     }(),
     Method: function(){
@@ -2188,15 +2206,6 @@ export default function _getWord(lang){
           return 'Predict Score'
       }
     }(),
-    Page_name: function(){
-      switch (lang) {
-        case 'TH':
-          return 'ชื่อเพจ'
-          break;
-        default:
-          return 'Page name'
-      }
-    }(),
     Group_name: function(){
       switch (lang) {
         case 'TH':
@@ -2314,13 +2323,13 @@ export default function _getWord(lang){
           return 'New password'
       }
     }(),
-    Page_post: function(){
+    Group_post: function(){
       switch (lang) {
         case 'TH':
-          return 'โพสต์ของเพจ'
+          return 'โพสต์ของกลุ่ม'
           break;
         default:
-          return 'Page\'s post'
+          return 'Group\'s post'
       }
     }(),
     Profile: function(){
