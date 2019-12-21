@@ -149,12 +149,12 @@ export default function SelectMatch(props) {
           }`
         } />
       <div className={classes.grid}>
-        <BTN.Red style={{ paddingRight: 16 }} onClick={()=>props.dialogOpen('createMatch')}>
+        <BTN.Red style={{ paddingRight: 16 }} onClick={props.dialogOpenBySelectComp}>
           <AddCircle style={{ marginLeft: 4, marginRight: 8 }} />
           { API._getWord(sess && sess.language).Create_Match }
         </BTN.Red>
         <List style={{ marginTop: 16 }}>
-          <ListItem button style={{ backgroundColor: COLOR.grey[900] }}>
+          <ListItem style={{ backgroundColor: COLOR.grey[900] }}>
             <ListItemIcon
               className={clsx({
                 [classes.listImageUp]: window.innerWidth >= 500,

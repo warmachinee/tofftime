@@ -70,7 +70,7 @@ export default function OrganizerMatchList(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  },[ props.dialog ])
+  },[ props.dialog, window.location.pathname ])
 
   return(
     <div className={classes.root}>

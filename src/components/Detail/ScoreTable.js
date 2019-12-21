@@ -287,16 +287,19 @@ function ScoreRow(props){
                     </div>
                   </ListItem>
                   <div style={{ display: 'flex', padding: '8px 12px' }}>
+                    <Chip variant="outlined" style={{ marginRight: 12 }}
+                      label={`PAR | ${row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par}`} />
                     { data.scorematch !== 1 && scoringMethod === 'flight' &&
                       <Chip variant="outlined" style={{ marginRight: 12 }}
                         label={`HC | ${row.hc}`} />
                     }
-                    { ( data.scorematch === 1 || scoringMethod === 'stroke' ) ?
-                      <Chip variant="outlined" style={{ marginRight: 12 }}
-                        label={`PAR | ${row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par}`} />
-                      :
-                      <Chip variant="outlined" style={{ marginRight: 12 }}
-                        label={`${sortBy === 'net' ? 'NET' : 'SF'} | ${sortBy === 'net' ? row.net : row.sf}`} />
+                    { !( data.scorematch === 1 || scoringMethod === 'stroke' ) &&
+                      <React.Fragment>
+                        <Chip variant="outlined" style={{ marginRight: 12 }}
+                          label={`${sortBy === 'net' ? 'NET' : 'SF'} | ${sortBy === 'net' ? row.net : row.sf}`} />
+                        <Chip variant="outlined" style={{ marginRight: 12 }}
+                          label={`${sortBy === 'net' ? 'SF' : 'NET'} | ${sortBy === 'net' ? row.sf : row.net}`} />
+                      </React.Fragment>
                     }
                   </div>
                   <div style={{ display: 'flex' }}>

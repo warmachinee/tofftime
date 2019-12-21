@@ -93,12 +93,17 @@ export default function OrganizerMatchCard(props) {
   function handleGetButton(){
     if(BTN && data && data.messagedetail.matchstatus === 0){
       return (
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', boxSizing: 'border-box', padding: '0 16px 16px' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', boxSizing: 'border-box' }}>
           {function() {
             switch (true) {
               case data.messagedetail.permission === 'host' || data.messagedetail.permission === 'admin':
                 return (
-                  <BTN.NoStyleLink to={`/user/management/match/${data.messagedetail.matchid}`}>
+                  <BTN.NoStyleLink to={
+                      pageOrganizer ?
+                      `/organizer/${pageData.pageid}/management/match/${data.messagedetail.matchid}`
+                      :
+                      `/user/management/match/${data.messagedetail.matchid}`
+                    }>
                     <BTN.Primary size="small">Edit</BTN.Primary>
                   </BTN.NoStyleLink>
                 )
@@ -159,7 +164,7 @@ export default function OrganizerMatchCard(props) {
       className={classes.root}
       elevation={1}>
       { data && data.messagedetail ?
-        <BTN.NoStyleLink to={`/match/${data.matchid}`}>
+        <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
           { data.messagedetail.photopath ?
             <img className={classes.image}
               src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
@@ -191,13 +196,13 @@ export default function OrganizerMatchCard(props) {
                   function(){
                     switch (data.messagedetail.scorematch) {
                       case 0:
-                        return API._getWord(sess && sess.language).Amateur
+                        return API._getWord(sess && sess.language).Amateur_match
                         break;
                       case 1:
-                        return API._getWord(sess && sess.language).Professional
+                        return API._getWord(sess && sess.language).Professional_match
                         break;
                       default:
-                        return API._getWord(sess && sess.language).Charity
+                        return API._getWord(sess && sess.language).Charity_match
                     }
                   }()
                 }`}
@@ -214,7 +219,12 @@ export default function OrganizerMatchCard(props) {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <BTN.NoStyleLink to={`/match/${data.messagedetail.matchid}`}>
               <Typography variant="caption" color="textSecondary" style={{ whiteSpace: 'nowrap' }}>
-                {`${API._shotnessNumber(data.messagedetail.views)} view${data.messagedetail.views > 1 ? 's' : ''}`}
+                {`${( sess && sess.language === 'TH' ) ? '' : API._shotnessNumber(data.messagedetail.views)} ${
+                  ( sess && sess.language === 'TH' ) ?
+                  `การดู ${API._shotnessNumber(data.messagedetail.views)} ครั้ง`
+                  :
+                  `view${data.messagedetail.views > 1? 's' : ''}`
+                }`}
               </Typography>
             </BTN.NoStyleLink>
             {handleGetButton()}

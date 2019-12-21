@@ -258,7 +258,7 @@ export default function EditPage(props) {
 
   React.useEffect(()=>{
     handleFetch()
-  }, [ ])
+  }, [ window.location.pathname ])
 
   return (
     <div className={classes.root}>

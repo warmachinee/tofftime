@@ -9,8 +9,6 @@ import * as serviceWorker from './serviceWorker';
 import { LDCircular } from './components/loading/LDCircular'
 
 import * as API from './api'
-import * as COLOR from './api/palette'
-import * as BTN from './components/Button'
 
 import {
   TextField,
@@ -78,7 +76,7 @@ class RenderApp extends React.Component {
           (
             ( password === 'catty15000' || session.status === 1 ) ?
             <Router>
-              {/localhost/.test(window.location.href) ? <TestFunction /> : <App />}
+              <App />
             </Router>
             :
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -114,67 +112,6 @@ if ('serviceWorker' in navigator) {
 }*/
 
 ReactDOM.render(<RenderApp />, document.getElementById('root'));
-
-import MatchDetailBody from './components/Detail/MatchDetailBody'
-
-function TestFunction() {
-  const [ data, setData ] = React.useState(null)
-
-  function getData(){
-    var json = '{"title":"Amateur test class (Group)","date":"2019-12-10T17:00:00.000Z","hostid":812454,"message":null,"picture":"/matchs/32668289/32668289","location":"Northern Rangsit Golf Club","locationid":127238,"locationversion":1,"createdate":"2019-12-10T17:54:46.000Z","scorematch":0,"privacy":"public","matchtype":0,"display":1,"status":0,"views":1,"lownet":0,"lowgross":0,"booby":0,"member":false,"mainclass":[{"mainclass":1,"mainclassname":"amateur flight","type":"flight","values":[{"classno":1,"classname":"0","color":""},{"classno":2,"classname":"12","color":""}]}],"team":[],"chkadminpermission":{"status":true,"string":""},"playoff":[]}'
-    return JSON.parse(json)
-  }
-
-  React.useEffect(()=>{
-    /*
-    const successObj = []
-    const errorMsg = ''
-    d.forEach(e =>{
-      if(e.status === 'success'){
-        successObj.push(e.status)
-      }else{
-        errorMsg = e.status
-      }
-    })
-    if(successObj.every(d => d === 'success')){
-      handleSnackBar({
-        state: true,
-        message: 'success',
-        variant: 'success',
-        autoHideDuration: 2000
-      })
-      handleClose()
-    }else{
-      handleSnackBar({
-        state: true,
-        message: errorMsg,
-        variant: 'error',
-        autoHideDuration: 5000
-      })
-    }
-    */
-  },[ ])
-
-  return (
-    <div style={{
-      minHeight: window.innerHeight - 48,
-      maxWidth: 1200,
-      marginLeft: 'auto',
-      marginRight: 'auto',
-      padding: '24px 16px',
-      overflow: 'auto',
-      overflowScrolling: 'touch',
-      WebkitOverflowScrolling: 'touch',
-      backgroundColor: COLOR.grey[100]
-    }}>
-      <MatchDetailBody API={API} COLOR={COLOR} BTN={BTN}
-        data={data}
-        setData={setData}
-        sess={{status:1}}
-         />
-    </div>
-  );
-}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

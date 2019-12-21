@@ -104,7 +104,7 @@ export default function NewsDetail(props){
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             {
               data.picture &&
-                <img className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                <img onTouchStart={API._openFullScreen} onClick={API._openFullScreen} className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
           </div>
           <Typography variant="h5">

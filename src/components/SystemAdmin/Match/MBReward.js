@@ -392,7 +392,10 @@ export default function MBReward(props){
   async function handleEdit(){
     let classno = []
     let customsequence = []
-    if(matchDetail.mainclass.values.length > 0){
+    if(
+      matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
+      matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0
+    ){
       classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
     }
     customsequence.push(parseInt(rewardEdit))

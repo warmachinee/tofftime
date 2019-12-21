@@ -1033,6 +1033,33 @@ export default function _getWord(lang){
           return 'Charity'
       }
     }(),
+    Professional_match: function(){
+      switch (lang) {
+        case 'TH':
+          return 'การแข่งขันมืออาชีพ'
+          break;
+        default:
+          return 'Professional match'
+      }
+    }(),
+    Amateur_match: function(){
+      switch (lang) {
+        case 'TH':
+          return 'การแข่งขันมือสมัครเล่น'
+          break;
+        default:
+          return 'Amateur match'
+      }
+    }(),
+    Charity_match: function(){
+      switch (lang) {
+        case 'TH':
+          return 'การแข่งขันการกุศล'
+          break;
+        default:
+          return 'Charity match'
+      }
+    }(),
     No_match: function(){
       switch (lang) {
         case 'TH':
@@ -2381,6 +2408,15 @@ export default function _getWord(lang){
   }
 
   const Follow = {
+    Follow_BTN: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ติดตาม'
+          break;
+        default:
+          return 'Follow'
+      }
+    }(),
     Follow: function(){
       switch (lang) {
         case 'TH':

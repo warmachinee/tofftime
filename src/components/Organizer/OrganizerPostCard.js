@@ -127,11 +127,15 @@ export default function OrganizerPostCard(props) {
           <Skeleton height={14} width="60%"/>
         </Box>
       }
-      { data &&
+      { data && data.message &&
         <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
           <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
             <BTN.PrimaryText
-              disabled={data && data.message && !data.message.split('<$$split$$>')[1]}
+              disabled={
+                data.message.split('<$$split$$>')[1] === null ||
+                data.message.split('<$$split$$>')[1] === '<p><br></p>' ||
+                data.message.split('<$$split$$>')[1] === '<p></p>'
+              }
               size="small" style={{ margin: '0px 12px 6px 0px', }}>{ API._getWord(sess && sess.language).Read_more }</BTN.PrimaryText>
           </BTN.NoStyleLink>
         </div>

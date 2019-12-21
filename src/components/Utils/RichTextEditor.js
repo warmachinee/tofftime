@@ -4,7 +4,7 @@ import * as API from './../../api'
 
 var QuillFont = Quill.import('formats/font');
 
-QuillFont.whitelist = ['inconsolata', 'roboto', 'mirza', 'arial', 'monospace'];
+QuillFont.whitelist = ['inconsolata', 'serif', 'mirza', 'arial', 'monospace'];
 
 Quill.register(QuillFont, true);
 

@@ -119,11 +119,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function DetailComponent(props){
-  const { detail } = props
+  const { id, detail } = props
 
   return(
-    <div className="ql-container ql-snow" style={{ border: 'none' }}>
-      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '0 15px' }}>
+    <div id={id} className="ql-container ql-snow" style={{ border: 'none' }}>
+      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '2px 15px 0 15px' }}>
         {ReactHtmlParser(detail)}
       </div>
     </div>
@@ -134,6 +134,7 @@ export default function OrganizerOverview(props) {
   const classes = useStyles();
   const { API, BTN, sess, token, setCSRFToken, isSupportWebp, handleSnackBar, isFollow, setIsFollow, data, setData, pageid, handlePageData } = props
   const [ moreState, setMoreState ] = React.useState(false)
+  const aboutElement = document.getElementById(`about-page-${pageid}`)
 
   async function handleToggleFollow(){
     const resToken = token? token : await API._xhrGet('getcsrf')
@@ -172,7 +173,7 @@ export default function OrganizerOverview(props) {
     <div className={classes.root}>
       { data &&
         <Paper className={classes.paper}>
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', flex: 1 }}>
             <div className={classes.imageGrid}>
               { data.logo ?
                 <Avatar className={classes.avatarImage}
@@ -199,11 +200,15 @@ export default function OrganizerOverview(props) {
                       </div>
                       <div>
                         <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
-                          <DetailComponent detail={data.pagedetail} />
+                          <DetailComponent id={`about-page-${pageid}`} detail={data.pagedetail} />
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                          <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
-                        </div>
+                        { aboutElement && aboutElement.offsetHeight > 140 &&
+                          <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>
+                              { API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }
+                            </BTN.PrimaryText>
+                          </div>
+                        }
                       </div>
                     </div>
                   </div>
@@ -216,9 +221,9 @@ export default function OrganizerOverview(props) {
               { ( sess.status !== 1 )?
                 <BTN.NoStyleLink to="/login">
                   <BTN.Primary size="large">
-                    { API._getWord(sess && sess.language).Follow }
+                    { API._getWord(sess && sess.language).Follow_BTN }
                     <div style={{ marginLeft: 12 }}>
-                      {data.subscriber}
+                      {data.subscriber && data.subscriber.length > 0 ? data.subscriber : ''}
                     </div>
                   </BTN.Primary>
                 </BTN.NoStyleLink>
@@ -231,9 +236,9 @@ export default function OrganizerOverview(props) {
                     :
                     <BTN.Primary size="large"
                       onClick={handleToggleFollow}>
-                      { API._getWord(sess && sess.language).Follow }
+                      { API._getWord(sess && sess.language).Follow_BTN }
                       <div style={{ marginLeft: 12 }}>
-                        {data.subscriber}
+                        {data.subscriber && data.subscriber.length > 0 ? data.subscriber : ''}
                       </div>
                     </BTN.Primary>
                   }
@@ -249,11 +254,15 @@ export default function OrganizerOverview(props) {
                 </div>
                 <div>
                   <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
-                    <DetailComponent detail={data.pagedetail} />
+                    <DetailComponent id={`about-page-${pageid}`} detail={data.pagedetail} />
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
-                  </div>
+                  { aboutElement && aboutElement.offsetHeight > 140 &&
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>
+                        { API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }
+                      </BTN.PrimaryText>
+                    </div>
+                  }
                 </div>
               </div>
             </div>

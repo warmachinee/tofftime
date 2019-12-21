@@ -24,6 +24,7 @@ import {
   MenuItem,
   Avatar,
   Divider,
+  Chip,
 
 } from '@material-ui/core';
 
@@ -214,7 +215,7 @@ function DetailComponent(props){
     <div className="ql-container ql-snow" style={{ border: 'none' }}>
       { picture &&
         <div className={classes.imageGrid}>
-          <img align="left" className={classes.image}
+          <img onTouchStart={API._openFullScreen} onClick={API._openFullScreen} align="left" className={classes.image}
             style={{ height: window.innerWidth * .45, }}
             src={API._getPictureUrl(picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
         </div>
@@ -230,7 +231,7 @@ function DetailComponent(props){
 
 function ListSpecialReward(props){
   const classes = useStyles();
-  const { BTN, sess, label, row, data, isSupportWebp, booby } = props
+  const { BTN, sess, label, row, data, isSupportWebp, booby, sortBy, scoringMethod } = props
   const [ expanded, setExpanded ] = React.useState(false)
   const [ fieldData, setFieldData ] = React.useState({
     out: 0,
@@ -404,6 +405,22 @@ function ListSpecialReward(props){
                         }</div>
                     </div>
                   </ListItem>
+                  <div style={{ display: 'flex', padding: '8px 12px' }}>
+                    <Chip variant="outlined" style={{ marginRight: 12 }}
+                      label={`PAR | ${row.par > 0? '+' + row.par : row.par === 0? 'E' : row.par}`} />
+                    { data.scorematch !== 1 && scoringMethod === 'flight' &&
+                      <Chip variant="outlined" style={{ marginRight: 12 }}
+                        label={`HC | ${row.hc}`} />
+                    }
+                    { !( data.scorematch === 1 || scoringMethod === 'stroke' ) &&
+                      <React.Fragment>
+                        <Chip variant="outlined" style={{ marginRight: 12 }}
+                          label={`${sortBy === 'net' ? 'NET' : 'SF'} | ${sortBy === 'net' ? row.net36sys : row.sf36sys}`} />
+                        <Chip variant="outlined" style={{ marginRight: 12 }}
+                          label={`${sortBy === 'net' ? 'SF' : 'NET'} | ${sortBy === 'net' ? row.sf36sys : row.net36sys}`} />
+                      </React.Fragment>
+                    }
+                  </div>
                   <div style={{ display: 'flex' }}>
                     <ScoreTableChip dotColor={green[300]} label="Under"/>
                     <ScoreTableChip dotColor={blueGrey[50]} label="Par"/>

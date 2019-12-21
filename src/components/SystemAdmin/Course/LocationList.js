@@ -296,22 +296,23 @@ export default function LocationList(props){
       </div>
       <List className={classes.list}>
         <Divider />
-        { data &&
-          data.length > 0 ?
-          data.map( d =>{
-            return d && (
-              <ListField
-                key={d.fieldid}
-                {...props}
-                data={d}
-                selectedField={selectedField}
-                setSelectedField={setSelectedField}
-                handleOpen={handleOpen}
-                />
-            );
-          })
-          :
-          <Typography component="div" style={{ width: '100%' }}>
+        { data ?
+          (
+            data.length > 0 ?
+            data.map( d =>{
+              return d && (
+                <ListField
+                  key={d.fieldid}
+                  {...props}
+                  data={d}
+                  selectedField={selectedField}
+                  setSelectedField={setSelectedField}
+                  handleOpen={handleOpen}
+                  />
+              );
+            })
+            :
+            <Typography component="div" style={{ width: '100%' }}>
             <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
               { API._getWord(sess && sess.language).No_course }
             </Box>
@@ -322,6 +323,9 @@ export default function LocationList(props){
               </BTN.PrimaryOutlined>
             </div>
           </Typography>
+          )
+          :
+          <LDCircular />
         }
       </List>
       <ConfirmDialog

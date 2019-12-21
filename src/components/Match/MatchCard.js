@@ -183,7 +183,7 @@ export default function MatchCard(props) {
                   color: data.typescore === 1 ? primary[700] : 'inherit',
                   fontWeight: data.typescore === 1 ? 900 : 400
                 }}>
-                {`Match ${
+                {`${
                   function(){
                     switch (data.typescore) {
                       case 0:
@@ -196,7 +196,7 @@ export default function MatchCard(props) {
                         return 'Charity'
                     }
                   }()
-                }`}
+                } match`}
               </Typography>
               <Typography gutterBottom variant="body2">
                 {API._dateToString(data.date)}

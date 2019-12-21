@@ -936,7 +936,6 @@ export default function MBPlayer(props){
                     [
                       ...searchUser? handleSearch() : data
                     ].slice(0, dataSliced).map(value => {
-
                       return value && (
                         <React.Fragment key={value.userid}>
                           <ListItem
@@ -956,21 +955,23 @@ export default function MBPlayer(props){
                               console.log()
                             }>
                             <ListItemIcon>
-                              { ( editing || editingClass )?
+                              { ( editing || editingClass ) && (value.typeid !== 'dummy' || editingClass)?
                                 <GreenCheckbox
                                   edge="start"
                                   checked={checked.indexOf(value) !== -1}
                                   tabIndex={-1}
                                   disableRipple />
                                 :
-                                (editingDisplay && value.classno !== 0 ?
+                                (
+                                  editingDisplay && value.classno !== 0 ?
                                   <GreenCheckbox
                                     edge="start"
                                     checked={value.display === 1}
                                     tabIndex={-1}
                                     disableRipple />
-                                :
-                                  <div style={{ height: 42, width: 42 }} />)
+                                  :
+                                  <div style={{ height: 42, width: 42 }} />
+                                )
                               }
                             </ListItemIcon>
                             <ListItemText className={classes.listText}

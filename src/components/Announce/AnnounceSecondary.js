@@ -101,6 +101,19 @@ export default function AnnounceSecondary(props) {
   const classes = useStyles();
   const { API, BTN, data, isSupportWebp } = props
 
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
+  
   return (
     <div className={classes.root}>
       { ( data && data.length > 0 ) ?

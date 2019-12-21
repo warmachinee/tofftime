@@ -1,4 +1,5 @@
 import React from 'react';
+import clsx from "clsx";
 import socketIOClient from 'socket.io-client'
 import Loadable from 'react-loadable';
 import { makeStyles } from '@material-ui/core/styles';
@@ -52,13 +53,14 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 'auto',
     marginRight: 'auto',
     padding: theme.spacing(3, 2),
+    position: 'relative'
   },
   content: {
-    margin: '0 5%',
+    margin: 0,
     [theme.breakpoints.up(500)]: {
       margin: '0 5%',
     },
-    [theme.breakpoints.up(700)]: {
+    [theme.breakpoints.up(600)]: {
       margin: '0 72px',
     },
   },
@@ -106,6 +108,24 @@ const useStyles = makeStyles(theme => ({
   },
   paperWidthSm: {
     maxWidth: 700
+  },
+  display: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  moreThan600: {
+    [theme.breakpoints.down(600)]: {
+      display: 'none'
+    },
+  },
+  lessThan600: {
+    [theme.breakpoints.up(600)]: {
+      display: 'none'
+    },
+  },
+  titleOverflow: {
+    overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
 
 }))
@@ -232,21 +252,82 @@ export default function MatchFormResult(props) {
 
   return (
     <Paper className={classes.root}>
-      <GoBack />
+      <div className={classes.display} style={{ position: 'absolute', top: 8 }}>
+        <GoBack />
+      </div>
       { matchDetail &&
         <div className={classes.content}>
-          <Typography gutterBottom variant="h4">
+          <Typography variant="h4" className={classes.moreThan600}>
             { API._getWord(sess && sess.language).Form }
           </Typography>
-          <Typography gutterBottom variant="h4">{matchDetail.title}</Typography>
-          <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '.75em' }}>
-            <Typography variant="h6">
+          <Typography variant="h6" className={classes.lessThan600}>
+            { API._getWord(sess && sess.language).Form }
+          </Typography>
+          <Tooltip title={matchDetail.title} placement="top-start">
+            <div>
+              <Typography variant="h4" className={classes.moreThan600} style={{ flex: 1 }}>
+                {matchDetail.title}
+              </Typography>
+              <Typography variant="h6" className={classes.lessThan600} style={{ flex: 1 }}>
+                {matchDetail.title}
+              </Typography>
+            </div>
+          </Tooltip>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            <Typography gutterBottom variant="h6" className={classes.moreThan600}
+              style={{
+                color: matchDetail.scorematch === 1 ? COLOR.primary[700] : 'inherit',
+                fontWeight: matchDetail.scorematch === 1 ? 900 : 600
+              }}>
+              { function(){
+                  switch (matchDetail.scorematch) {
+                    case 0:
+                      return 'Amateur'
+                      break;
+                    case 1:
+                      return 'Professional'
+                      break;
+                    default:
+                      return 'Charity'
+                  }
+                }()
+              }
+            </Typography>
+            <Typography gutterBottom variant="body2" className={classes.lessThan600}
+              style={{
+                color: matchDetail.scorematch === 1 ? COLOR.primary[700] : 'inherit',
+                fontWeight: matchDetail.scorematch === 1 ? 900 : 600
+              }}>
+              { function(){
+                  switch (matchDetail.scorematch) {
+                    case 0:
+                      return 'Amateur'
+                      break;
+                    case 1:
+                      return 'Professional'
+                      break;
+                    default:
+                      return 'Charity'
+                  }
+                }()
+              }
+            </Typography>
+            <Typography variant="h6" className={classes.moreThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+            <Typography variant="body2" className={classes.lessThan600} style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+            <Typography variant="h6" className={classes.moreThan600}>
               {API._dateToString(matchDetail.date)}
             </Typography>
-            <Typography variant="h6" style={{ marginLeft: 12, marginRight: 12 }}>|</Typography>
+            <Typography variant="body2" className={classes.lessThan600}>
+              {API._dateToString(matchDetail.date)}
+            </Typography>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             <Button variant="text" onClick={handleScorecardOpen} style={{ padding: 0 }}>
               <LocationOn style={{ color: COLOR.primary[600], marginRight: 4 }} />
-              <Typography variant="h6">
+              <Typography variant="h6" className={clsx(classes.titleOverflow, classes.moreThan600)}>
+                {matchDetail.location}
+              </Typography>
+              <Typography variant="body2" className={clsx(classes.titleOverflow, classes.lessThan600)}>
                 {matchDetail.location}
               </Typography>
             </Button>
@@ -265,7 +346,7 @@ export default function MatchFormResult(props) {
             <ListItem style={{ backgroundColor: COLOR.grey[900] }}>
               <ListItemText className={classes.listIndex} style={{ color: 'white' }} primary="#" />
               <ListItemIcon className={classes.listPicture}>
-                <div className={classes.avatarImage} />
+                <div style={{ width: 48 }} />
               </ListItemIcon>
               <ListItemText className={classes.listName} style={{ color: 'white' }}
                 primary={ API._getWord(sess && sess.language).First_name } />

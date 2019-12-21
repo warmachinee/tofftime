@@ -486,7 +486,11 @@ export default function MBOverview(props){
       status = response.status
     }else{
       setCSRFToken(csrf)
-      window.location.replace(`/user/management/match/${matchid}`);
+      if(props.pageOrganizer){
+        window.location.replace(`/organizer/${props.pageData.pageid}/management/match/${matchid}`);
+      }else{
+        window.location.replace(`/user/management/match/${matchid}`);
+      }
     }
     handleSnackBar({
       state: true,
@@ -496,7 +500,11 @@ export default function MBOverview(props){
     })
     await handleFetch()
     if(/success/.test(status)){
-      window.location.replace(`/user/management/match/${matchid}`);
+      if(props.pageOrganizer){
+        window.location.replace(`/organizer/${props.pageData.pageid}/management/match/${matchid}`);
+      }else{
+        window.location.replace(`/user/management/match/${matchid}`);
+      }
     }
   }
 
@@ -686,7 +694,7 @@ export default function MBOverview(props){
                   </RadioGroup>
                 </FormControl>
                 <FormControl component="fieldset" className={classes.margin}
-                  disabled={!isAvailableEditing}
+                  disabled={!isAvailableEditing || (data && data.scorematch === 1)}
                   style={{
                     width: '100%',
                     border: '1px rgba(0, 0, 0, 0.23) solid',

@@ -35,7 +35,6 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 80,
-    maxWidth: '50%'
   },
   moreThan600: {
     [theme.breakpoints.down(600)]: {
@@ -97,16 +96,18 @@ function TabContainer(props) {
                 <MenuItem value={'stroke'}>Stroke play</MenuItem>
               </Select>
             </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabel style={{ whiteSpace: 'nowrap' }}>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
-              <Select
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value)}
-              >
-                <MenuItem value={'net'}>Net</MenuItem>
-                <MenuItem value={'sf'}>SF</MenuItem>
-              </Select>
-            </FormControl>
+            { scoringMethod !== 'stroke' &&
+              <FormControl className={classes.formControl}>
+                <InputLabel style={{ whiteSpace: 'nowrap' }}>{ API._getWord(sess && sess.language).Sort_by }</InputLabel>
+                <Select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value)}
+                >
+                  <MenuItem value={'net'}>Net</MenuItem>
+                  <MenuItem value={'sf'}>SF</MenuItem>
+                </Select>
+              </FormControl>
+            }
           </React.Fragment>
         }
       </div>
@@ -205,7 +206,7 @@ export default function Scoreboard(props) {
       { data &&
         <div style={{ display: 'flex' }}>
           { data.scorematch !== 0 && data.mainclass.length > 1 &&
-            <FormControl className={classes.formControl}>
+            <FormControl className={classes.formControl} style={{ maxWidth: '50%' }}>
               <InputLabel>Main Group</InputLabel>
               <Select
                 value={mainClassSelected}

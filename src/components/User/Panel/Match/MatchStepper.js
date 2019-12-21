@@ -246,12 +246,20 @@ export default function MatchStepper(props) {
           variant: /success/.test(d.status) ? d.status : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
-        if(pageOrganizer && !/create_match/.test(window.location.href)){
-          if(props.isCreateAfterDone){
-            handleFetchCreatePost(matchid)
-          }
-          if(props.handleCloseEditor){
-            props.handleCloseEditor()
+        if(pageOrganizer){
+          if(/create_match/.test(window.location.href)){
+            if(props.isCreateAfterDone && props.swtichCreateAfterDone){
+              handleFetchCreatePost(matchid)
+            }else{
+              window.location.replace(`/organizer/${pageData.pageid}`);
+            }
+          }else{
+            if(props.isCreateAfterDone && props.swtichCreateAfterDone){
+              handleFetchCreatePost(matchid)
+            }
+            if(props.handleCloseEditor){
+              props.handleCloseEditor(d.matchid)
+            }
           }
         }else{
           window.location.replace(`/match/${matchid}`);
@@ -313,12 +321,20 @@ export default function MatchStepper(props) {
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         if(/success/.test(d.status)){
-          if(pageOrganizer && !/create_match/.test(window.location.href)){
-            if(props.isCreateAfterDone){
-              handleFetchCreatePost(matchid)
-            }
-            if(props.handleCloseEditor){
-              props.handleCloseEditor()
+          if(pageOrganizer){
+            if(/create_match/.test(window.location.href)){
+              if(props.isCreateAfterDone && props.swtichCreateAfterDone){
+                handleFetchCreatePost(matchid)
+              }else{
+                window.location.replace(`/organizer/${pageData.pageid}`);
+              }
+            }else{
+              if(props.isCreateAfterDone && props.swtichCreateAfterDone){
+                handleFetchCreatePost(matchid)
+              }
+              if(props.handleCloseEditor){
+                props.handleCloseEditor(matchid)
+              }
             }
           }else{
             window.location.replace(`/match/${matchid}`);
@@ -326,12 +342,20 @@ export default function MatchStepper(props) {
         }
       })
     }else{
-      if(pageOrganizer && !/create_match/.test(window.location.href)){
-        if(props.isCreateAfterDone){
-          handleFetchCreatePost(matchid)
-        }
-        if(props.handleCloseEditor){
-          props.handleCloseEditor()
+      if(pageOrganizer){
+        if(/create_match/.test(window.location.href)){
+          if(props.isCreateAfterDone && props.swtichCreateAfterDone){
+            handleFetchCreatePost(matchid)
+          }else{
+            window.location.replace(`/organizer/${pageData.pageid}`);
+          }
+        }else{
+          if(props.isCreateAfterDone && props.swtichCreateAfterDone){
+            handleFetchCreatePost(matchid)
+          }
+          if(props.handleCloseEditor){
+            props.handleCloseEditor(matchid)
+          }
         }
       }else{
         window.location.replace(`/match/${matchid}`);
@@ -390,9 +414,17 @@ export default function MatchStepper(props) {
           variant: /success/.test(d.status) ? d.status : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
-        setTimeout(()=>{
-          props.dialogCloseAll()
-        }, 1000)
+        if(pageOrganizer){
+          if(/create_match/.test(window.location.href)){
+            window.location.replace(`/organizer/${pageData.pageid}`);
+          }else{
+            setTimeout(()=>{
+              props.dialogCloseAll()
+            }, 1000)
+          }
+        }else{
+          window.location.replace(`/match/${matchid}`);
+        }
       }else{
         handleSnackBar({
           state: true,

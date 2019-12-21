@@ -511,6 +511,19 @@ function _isDesktopBrowser(){
     return true;
   }
 }
+
+function _openFullScreen(e) {
+  const elem = e.target
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { /* Firefox */
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE/Edge */
+    elem.msRequestFullscreen();
+  }
+}
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
@@ -549,6 +562,7 @@ export {
 
   objectException,
   _isDesktopBrowser,
+  _openFullScreen,
 
   wording as _getWord,
 }

@@ -245,7 +245,7 @@ export default function CourseBody(props){
             <TextField
               className={classes.searchBox}
               variant="outlined"
-              placeholder={ !searchField? ( API._getWord(sess && sess.language).Search ) : '' }
+              placeholder={ !searchField? ( API._getWord(sess && sess.language).Search ) : ' ' }
               value={searchField}
               onChange={e =>setSearchField(e.target.value)}
               InputProps={{

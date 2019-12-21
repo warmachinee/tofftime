@@ -183,11 +183,11 @@ const theme = createMuiTheme({
 });
 
 function DetailComponent(props){
-  const { detail } = props
+  const { id, detail } = props
 
   return(
-    <div className="ql-container ql-snow" style={{ border: 'none' }}>
-      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '0 15px' }}>
+    <div id={id} className="ql-container ql-snow" style={{ border: 'none' }}>
+      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '2px 15px 0 15px' }}>
         {ReactHtmlParser(detail)}
       </div>
     </div>
@@ -204,8 +204,9 @@ export default function PageOrganizerOverview(props) {
     password: false,
     request: false
   })
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ moreState, setMoreState ] = React.useState(false)
+  const aboutElement = document.getElementById(`about-page-${pageData.pageid}`)
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget);
@@ -261,6 +262,9 @@ export default function PageOrganizerOverview(props) {
         variant: /success/.test(d.status) ? 'success' : 'error',
         autoHideDuration: /success/.test(d.status)? 2000 : 5000
       })
+      if(/success/.test(d.status)){
+        confirmCloseAll()
+      }
     })
   }
 
@@ -308,7 +312,7 @@ export default function PageOrganizerOverview(props) {
                 <MoreVert />
               </IconButton>
             </div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', flex: 1 }}>
               <div className={classes.imageGrid}>
                 <BTN.NoStyleLink to={`/page/${pageData.pageid}`}>
                   { pageData.logo ?
@@ -332,7 +336,11 @@ export default function PageOrganizerOverview(props) {
                     ) + ( pageData.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
                   </Typography>
                   <Typography gutterBottom variant="body2" className={classes.followers}>
-                    {API._shotnessNumber(pageData.view)} {` view${pageData.view > 1 ? 's' : ''}`}
+                    {`${
+                      ( sess && sess.language === 'TH' ) ? 'การดู ' : ''
+                    }${API._shotnessNumber(pageData.view)} ${
+                      ( sess && sess.language === 'TH' ) ? 'ครั้ง' : ` view${pageData.view > 1 ? 's' : ''}`
+                    }`}
                   </Typography>
                   { pageData.pagedetail &&
                     <div
@@ -356,11 +364,15 @@ export default function PageOrganizerOverview(props) {
                         </div>
                         <div>
                           <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
-                            <DetailComponent detail={pageData.pagedetail} />
+                            <DetailComponent id={`about-page-${pageData.pageid}`} detail={pageData.pagedetail} />
                           </div>
-                          <div style={{ display: 'flex', justifyContent: 'center' }}>
-                            <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
-                          </div>
+                          { aboutElement && aboutElement.offsetHeight > 140 &&
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                              <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>
+                                { API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }
+                              </BTN.PrimaryText>
+                            </div>
+                          }
                         </div>
                       </div>
                     </div>
@@ -392,11 +404,15 @@ export default function PageOrganizerOverview(props) {
                 </div>
                 <div>
                   <div className={classes.aboutDetail} style={{ maxHeight: moreState ? '100%' : 140, transition: '.2s' }}>
-                    <DetailComponent detail={pageData.pagedetail} />
+                    <DetailComponent id={`about-page-${pageData.pageid}`} detail={pageData.pagedetail} />
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>{ API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }</BTN.PrimaryText>
-                  </div>
+                  { aboutElement && aboutElement.offsetHeight > 140 &&
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      <BTN.PrimaryText onClick={()=>setMoreState(!moreState)}>
+                        { API._getWord(sess && sess.language)[moreState ? 'Collapse' : 'More' ] }
+                      </BTN.PrimaryText>
+                    </div>
+                  }
                 </div>
               </div>
             </div>
@@ -478,7 +494,7 @@ export default function PageOrganizerOverview(props) {
             <Typography variant="h6" style={{ marginTop: 'auto', marginBottom: 'auto' }}>{pageData.pagename}</Typography>
           </Typography>
         }
-        onSubmit={handleFetchRemove}
+        onSubmit={handleRequestMain}
         submitText={ API._getWord(sess && sess.language).Request } />
       <Menu
         anchorEl={anchorEl}

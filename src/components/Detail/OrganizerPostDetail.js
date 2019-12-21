@@ -123,7 +123,7 @@ export default function OrganizerPostDetail(props){
           </Typography>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             { data.photopath &&
-              <img className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              <img onTouchStart={API._openFullScreen} onClick={API._openFullScreen} className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             }
           </div>
           <DetailComponent

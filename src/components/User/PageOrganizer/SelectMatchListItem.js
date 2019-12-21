@@ -86,6 +86,14 @@ export default function SelectMatchListItem(props) {
     }
   },[ window.innerWidth ])
 
+  React.useEffect(()=>{
+    if(props.matchidAfterCreate && data){
+      if(data.matchid === props.matchidAfterCreate){
+        handleSelectMatch()
+      }
+    }
+  },[ props.matchidAfterCreate ])
+
   return(
     <div className={classes.root}>
       <List>

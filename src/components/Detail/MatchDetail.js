@@ -107,7 +107,7 @@ export default function MatchDetail(props){
       if(messageNew && /success/.test(messageNew.status)){
         const d = messageNew.result
         const dh = messageNew.hostdetail
-        if(dh){
+        if(dh && !window.location.pathname.includes('management' || 'user')){
           handleSnackBarL({
             state: true,
             sFULLNAME: dh.fullname,

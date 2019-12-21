@@ -817,7 +817,7 @@
 }
 .ql-snow .ql-picker.ql-font .ql-picker-label::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item::before {
-  content: 'Sans Serif';
+  content: "Roboto";
 }
 .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=serif]::before,
 .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=serif]::before {

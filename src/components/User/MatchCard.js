@@ -210,13 +210,13 @@ export default function MatchCard(props) {
                   function(){
                     switch (data.scorematch) {
                       case 0:
-                        return API._getWord(sess && sess.language).Amateur
+                        return API._getWord(sess && sess.language).Amateur_match
                         break;
                       case 1:
-                        return API._getWord(sess && sess.language).Professional
+                        return API._getWord(sess && sess.language).Professional_match
                         break;
                       default:
-                        return API._getWord(sess && sess.language).Charity
+                        return API._getWord(sess && sess.language).Charity_match
                     }
                   }()
                 }`}
