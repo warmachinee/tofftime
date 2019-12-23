@@ -220,11 +220,13 @@ export default function MatchStepper(props) {
     }
 
     if(selectedFieldVersion !== 1){
-      Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
+      Object.assign(sendObj, { choosefversion: selectedFieldVersion });
     }
 
     if(pageOrganizer){
       Object.assign(sendObj, { pageid: pageData.pageid });
+    }else{
+      Object.assign(sendObj, { pageid: 0 });
     }
 
     const resToken = token? token : await API._xhrGet('getcsrf')

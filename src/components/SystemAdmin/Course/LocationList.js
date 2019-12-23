@@ -365,10 +365,10 @@ function ListField(props){
     setAnchorEl(null);
   }
 
-  function handleSelectField(d, event){
-    handleFetchLoadFieldVersion(data.fieldid)
-    if(d.fieldversion > 1){
+  function handleSelectField(event){
+    if(data.version > 1){
       handleClick(event)
+      handleFetchLoadFieldVersion(event)
     }else{
       setSelectedField(data)
       setSelectedFieldVersion(1)
@@ -378,16 +378,16 @@ function ListField(props){
   function selectVersion(d){
     handleClose()
     setSelectedField(data)
-    setSelectedFieldVersion(d)
+    setSelectedFieldVersion(d.version)
   }
 
-  async function handleFetchLoadFieldVersion(fieldid){
+  async function handleFetchLoadFieldVersion(event){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
       token? token : resToken.token,
       sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
         action: 'versioncount',
-        fieldid: fieldid
+        fieldid: data.fieldid
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setFieldVersion(d)
@@ -403,7 +403,7 @@ function ListField(props){
           color: primary[900],
           ...(selectedField && selectedField.fieldid === data.fieldid) && { backgroundColor:  grey[400] }
         }}
-        onClick={e =>handleSelectField(data, e)}>
+        onClick={handleSelectField}>
         <ListItemIcon className={classes.listImage}>
           { data.photopath ?
             <img className={classes.image}
@@ -420,10 +420,10 @@ function ListField(props){
               {data.custom === 0 && <CheckCircle style={{ color: primary[600], marginLeft: 8 }} />}
             </span>
           }
-          {...(sess && sess.typeid !== 'admin' && data.fieldversion > 1)? { secondary: data.fieldversion + ' version' } : null } />
+          {...(sess && sess.typeid !== 'admin' && data.version > 1)? { secondary: data.version + ' version' } : null } />
       </ListItem>
       <Divider />
-      { data && data.fieldversion > 1 &&
+      { data.version > 1 &&
         <Menu
           anchorEl={anchorEl}
           keepMounted
@@ -432,9 +432,10 @@ function ListField(props){
         >
           { fieldVersion &&
             fieldVersion.map( d =>
-              <MenuItem key={d.createdate} onClick={()=>selectVersion(d)}>{'Version ' + d.version}</MenuItem>
+              <MenuItem key={d.createdate} onClick={()=>selectVersion(d)}>{ API._dateToString(d.createdate) }</MenuItem>
             )
           }
+          <div />
         </Menu>
       }
     </React.Fragment>

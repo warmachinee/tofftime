@@ -342,7 +342,7 @@ export default function PageOrganizerOverview(props) {
                       ( sess && sess.language === 'TH' ) ? 'ครั้ง' : ` view${pageData.view > 1 ? 's' : ''}`
                     }`}
                   </Typography>
-                  { pageData.pagedetail &&
+                  { ( pageData.pagedetail && pageData.pagedetail !== '<p></p>' && pageData.pagedetail !== '<p><br></p>' ) ?
                     <div
                       className={clsx({
                         [classes.moreThan840]: props.open,
@@ -376,12 +376,20 @@ export default function PageOrganizerOverview(props) {
                         </div>
                       </div>
                     </div>
+                    :
+                    <div style={{ marginBottom: 16 }}>
+                      <BTN.NoStyleLink to={`/organizer/${pageData.pageid}/profile/`}>
+                        <BTN.PrimaryOutlined startIcon={<AddCircle color="inherit" />}>
+                          { API._getWord(sess && sess.language).Add_about_group }
+                        </BTN.PrimaryOutlined>
+                      </BTN.NoStyleLink>
+                    </div>
                   }
                 </div>
               </div>
             </div>
           </div>
-          { pageData.pagedetail &&
+          { ( pageData.pagedetail && pageData.pagedetail !== '<p></p>' && pageData.pagedetail !== '<p><br></p>' ) &&
             <div
               className={clsx({
                 [classes.lessThan840]: props.open,

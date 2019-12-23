@@ -318,7 +318,7 @@ function CreateMatchBody(props){
     }
 
     if(selectedFieldVersion !== 1){
-      Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
+      Object.assign(sendObj, { choosefversion: selectedFieldVersion });
     }
 
     const resToken = token? token : await API._xhrGet('getcsrf')

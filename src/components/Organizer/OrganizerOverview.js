@@ -192,7 +192,7 @@ export default function OrganizerOverview(props) {
                     API._getWord(sess && sess.language).follower
                   ) + ( data.subscriber > 1 ? ( API._getWord(sess && sess.language).s ) : '')}
                 </Typography>
-                { data.pagedetail &&
+                { data.pagedetail && data.pagedetail !== '<p></p>' && data.pagedetail !== '<p><br></p>' &&
                   <div className={classes.moreThan600}>
                     <div className={classes.aboutPage}>
                       <div>
@@ -216,37 +216,48 @@ export default function OrganizerOverview(props) {
               </div>
             </div>
           </div>
-          { data && sess && ( data.hostid !== sess.userid ) &&
-            <div className={classes.followButton}>
-              { ( sess.status !== 1 )?
-                <BTN.NoStyleLink to="/login">
+          { data && sess &&
+            (
+              ( data.hostid === sess.userid ) ?
+              <div className={classes.followButton}>
+                <BTN.NoStyleLink to={`/organizer/${pageid}`}>
                   <BTN.Primary size="large">
-                    { API._getWord(sess && sess.language).Follow_BTN }
-                    <div style={{ marginLeft: 12 }}>
-                      {data.subscriber && data.subscriber.length > 0 ? data.subscriber : ''}
-                    </div>
+                    { API._getWord(sess && sess.language).Edit }
                   </BTN.Primary>
                 </BTN.NoStyleLink>
-                :
-                <React.Fragment>
-                  { isFollow ?
-                    <BTN.Following size="large" onClick={handleToggleFollow}>
-                      { API._getWord(sess && sess.language).Following }
-                    </BTN.Following>
-                    :
-                    <BTN.Primary size="large"
-                      onClick={handleToggleFollow}>
+              </div>
+              :
+              <div className={classes.followButton}>
+                { ( sess.status !== 1 )?
+                  <BTN.NoStyleLink to="/login">
+                    <BTN.Primary size="large">
                       { API._getWord(sess && sess.language).Follow_BTN }
                       <div style={{ marginLeft: 12 }}>
                         {data.subscriber && data.subscriber.length > 0 ? data.subscriber : ''}
                       </div>
                     </BTN.Primary>
-                  }
-                </React.Fragment>
-              }
-            </div>
+                  </BTN.NoStyleLink>
+                  :
+                  <React.Fragment>
+                    { isFollow ?
+                      <BTN.Following size="large" onClick={handleToggleFollow}>
+                        { API._getWord(sess && sess.language).Following }
+                      </BTN.Following>
+                      :
+                      <BTN.Primary size="large"
+                        onClick={handleToggleFollow}>
+                        { API._getWord(sess && sess.language).Follow_BTN }
+                        <div style={{ marginLeft: 12 }}>
+                          {data.subscriber && data.subscriber.length > 0 ? data.subscriber : ''}
+                        </div>
+                      </BTN.Primary>
+                    }
+                  </React.Fragment>
+                }
+              </div>
+            )
           }
-          { data.pagedetail &&
+          { data.pagedetail && data.pagedetail !== '<p></p>' && data.pagedetail !== '<p><br></p>' &&
             <div className={classes.lessThan600}>
               <div className={classes.aboutPage} style={{ marginLeft: 16 }}>
                 <div>

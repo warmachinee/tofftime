@@ -16,6 +16,7 @@ import {
   FormControl,
   FormControlLabel,
   Select,
+  Checkbox,
 
 } from '@material-ui/core'
 
@@ -154,6 +155,15 @@ const GreenTextButton = withStyles(theme => ({
   },
 }))(Button);
 
+const GreenCheckbox = withStyles({
+  root: {
+    color: primary[400],
+    '&$checked': {
+      color: primary[600],
+    },
+  },
+})(props => <Checkbox color="default" {...props} />);
+
 const StyledIconButton = withStyles(theme => ({
   root: {
     backgroundColor: grey[400],
@@ -264,6 +274,7 @@ export default function CourseEditor(props){
   const [ official, setOfficial ] = React.useState(false)
   const [ courseVersion, setCourseVersion ] = React.useState(null)
   const [ selectedCourseVersion, setSelectedCourseVersion ] = React.useState(1)
+  const [ isCreateNewVersion, setIsCreateNewVersion ] = React.useState(false)
 
   function handleVersionChange(event){
     setSelectedCourseVersion(event.target.value)
@@ -440,7 +451,7 @@ export default function CourseEditor(props){
       usertarget: editingField.hostid
     };
 
-    if(selectedCourseVersion){
+    if(selectedCourseVersion && !isCreateNewVersion){
       Object.assign(sendObj, { fieldversion: selectedCourseVersion });
     }
 
@@ -534,10 +545,13 @@ export default function CourseEditor(props){
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         try {
+          setSelectedCourseVersion(version)
           setHoleScore(d.fieldscore)
           setHCPScore(d.hfieldscore)
           setLocation(editingField.fieldname)
-          setTempFile(API._getPictureUrl(editingField.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString())
+          if(editingField.photopath){
+            setTempFile(API._getPictureUrl(editingField.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString())
+          }
         }catch(err) { console.log(err.message) }
       })
     }
@@ -561,21 +575,29 @@ export default function CourseEditor(props){
           }
         </Box>
       </Typography>
-      { courseVersion && courseVersion.length > 0 &&
-        <div style={{ marginBottom: 24 }}>
-          <FormControl className={classes.formControl}>
-            <InputLabel>Version</InputLabel>
-            <Select
-              value={selectedCourseVersion}
-              onChange={handleVersionChange}>
-              {
-                courseVersion.map( d =>
-                  <MenuItem key={d.createdate} value={d.version}>
-                    {( `${API._getWord(sess && sess.language).Version_up} ` ) + d.version}
-                  </MenuItem>
-              )}
-            </Select>
-          </FormControl>
+      { editingField &&
+        <div style={{ display: 'flex', marginBottom: 8 }}>
+          { !isCreateNewVersion && courseVersion && courseVersion.length > 0 &&
+            <FormControl className={classes.formControl} style={{ marginRight: 16 }}>
+              <InputLabel>Version</InputLabel>
+              <Select
+                value={selectedCourseVersion}
+                onChange={handleVersionChange}>
+                {
+                  courseVersion.map( d =>
+                    <MenuItem key={d.createdate} value={d.version}>
+                      {( `${API._getWord(sess && sess.language).Version_up} ` ) + d.version}
+                    </MenuItem>
+                )}
+              </Select>
+            </FormControl>
+          }
+          <FormControlLabel style={{ marginBottom: 4, marginTop: 'auto', whiteSpace: 'nowrap' }}
+            control={
+              <GreenCheckbox checked={isCreateNewVersion} onChange={()=>setIsCreateNewVersion(!isCreateNewVersion)} />
+            }
+            label={ API._getWord(sess && sess.language).Create_new_version }
+          />
         </div>
       }
       <div className={classes.flexGrid}>

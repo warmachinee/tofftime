@@ -279,6 +279,7 @@ export default function MBOverview(props){
       fieldid: d.locationid,
       fieldname: d.location
     })
+    setSelectedFieldVersion(d.locationversion)
     setSelectedPrivacy('public')
     setSpecialRewardData({
       lownet: d.lownet !== 0,
@@ -296,6 +297,7 @@ export default function MBOverview(props){
       data.title !== selectedMatchName ||
       API._dateToString(new Date(data.date)) !== API._dateToString(new Date(selectedDate)) ||
       data.locationid !== selectedField.fieldid ||
+      data.locationversion !== selectedFieldVersion ||
       data.privacy !== selectedPrivacy ||
       ( data.lownet !== 0 ) !== specialRewardData.lownet ||
       ( data.lowgross !== 0 ) !== specialRewardData.lowgross ||
@@ -400,6 +402,12 @@ export default function MBOverview(props){
       matchid: parseInt(matchid)
     };
 
+    if(props.pageOrganizer){
+      Object.assign(sendObj, { pageid: props.pageData.pageid });
+    }else{
+      Object.assign(sendObj, { pageid: 0 });
+    }
+
     if(specialRewardData.lowgross !== ( data.lowgross !== 0)){
       if(specialRewardData.lowgross){
         Object.assign(sendObj, { lowgross: 'set' });
@@ -433,7 +441,7 @@ export default function MBOverview(props){
     }
 
     if(selectedFieldVersion !== 1){
-      Object.assign(sendObj, { choosefversion: selectedFieldVersion.version });
+      Object.assign(sendObj, { choosefversion: selectedFieldVersion });
     }
 
     if(selectedMatchName.length){
@@ -657,7 +665,7 @@ export default function MBOverview(props){
                     style={{ textTransform: 'none', marginTop: 0 }}
                     onClick={()=>handleOpen('location')}>
                     {selectedField.fieldname}
-                    {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
+                    {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion + ' )'}
                   </GreenTextButton>
                 </FormControl>
                 <FormControl component="fieldset" className={classes.margin}

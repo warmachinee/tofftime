@@ -78,16 +78,31 @@ export default function OrganizerPostCard(props) {
     <Paper
       className={classes.root}
       elevation={1}>
-      { data ?
-        <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
-          { data.photopath ?
-            <img className={classes.image}
+      { data && data.message ?
+        (
+          (
+            data.message.split('<$$split$$>')[1] &&
+            data.message.split('<$$split$$>')[1] !== '<p><br></p>' &&
+            data.message.split('<$$split$$>')[1] !== '<p></p>'
+          ) ?
+          <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+            { data.photopath ?
+              <img className={classes.image}
+                src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              :
+              <img className={classes.image}
+                src="https://thai-pga.com/default/match/matchcard.png" />
+            }
+          </BTN.NoStyleLink>
+          :
+          ( data.photopath ?
+            <img className={classes.image} style={{ cursor: 'auto' }}
               src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             :
-            <img className={classes.image}
+            <img className={classes.image} style={{ cursor: 'auto' }}
               src="https://thai-pga.com/default/match/matchcard.png" />
-          }
-        </BTN.NoStyleLink>
+          )
+        )
         :
         /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
         <img className={classes.image}
@@ -95,7 +110,38 @@ export default function OrganizerPostCard(props) {
       }
       { ( !loading && data && data.message ) ?
         <Box className={classes.box}>
-          <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+          {
+            (
+              data.message.split('<$$split$$>')[1] &&
+              data.message.split('<$$split$$>')[1] !== '<p><br></p>' &&
+              data.message.split('<$$split$$>')[1] !== '<p></p>'
+            ) ?
+            <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+              <div style={{ boxSizing: 'border-box' }}>
+                <div style={{ display: 'flex' }}>
+                  <div className={classes.imageGrid}>
+                    { pageData && pageData.logo ?
+                      <Avatar className={classes.avatarImage}
+                        src={API._getPictureUrl(pageData.logo) + ( isSupportWebp? '.webp' : '.jpg' )} />
+                      :
+                      <AccountCircleIcon classes={{ root: classes.avatar }} />
+                    }
+                  </div>
+                  <div style={{ marginBottom: 'auto', marginTop: 'auto' }}>
+                    <Typography variant="body1" className={classes.title}>
+                      {pageData && pageData.pagename}
+                    </Typography>
+                    <Typography gutterBottom variant="caption">
+                      { API._getPostTime(sess && sess.language, data.createdate) }
+                    </Typography>
+                  </div>
+                </div>
+                <Typography gutterBottom variant="body1" className={classes.title} style={{ height: 44 }}>
+                  {data.message && data.message.split('<$$split$$>')[0]}
+                </Typography>
+              </div>
+            </BTN.NoStyleLink>
+            :
             <div style={{ boxSizing: 'border-box' }}>
               <div style={{ display: 'flex' }}>
                 <div className={classes.imageGrid}>
@@ -107,19 +153,19 @@ export default function OrganizerPostCard(props) {
                   }
                 </div>
                 <div style={{ marginBottom: 'auto', marginTop: 'auto' }}>
-                  <Typography variant="body1" className={classes.title}>
+                  <Typography variant="body1" className={classes.title} style={{ cursor: 'auto' }}>
                     {pageData && pageData.pagename}
                   </Typography>
                   <Typography gutterBottom variant="caption">
-                    { API._getPostTime(data.createdate)}
+                    { API._getPostTime(sess && sess.language, data.createdate) }
                   </Typography>
                 </div>
               </div>
-              <Typography gutterBottom variant="body1" className={classes.title} style={{ height: 44 }}>
+              <Typography gutterBottom variant="body1" className={classes.title} style={{ height: 44, cursor: 'auto' }}>
                 {data.message && data.message.split('<$$split$$>')[0]}
               </Typography>
             </div>
-          </BTN.NoStyleLink>
+          }
         </Box>
         :
         <Box className={classes.box}>
@@ -129,15 +175,21 @@ export default function OrganizerPostCard(props) {
       }
       { data && data.message &&
         <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
-          <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+          {
+            (
+              data.message.split('<$$split$$>')[1] &&
+              data.message.split('<$$split$$>')[1] !== '<p><br></p>' &&
+              data.message.split('<$$split$$>')[1] !== '<p></p>'
+            ) ?
+            <BTN.NoStyleLink to={`/post/${pageid}/${data.postid}`}>
+              <BTN.PrimaryText
+                size="small" style={{ margin: '0px 12px 6px 0px', }}>{ API._getWord(sess && sess.language).Read_more }</BTN.PrimaryText>
+            </BTN.NoStyleLink>
+            :
             <BTN.PrimaryText
-              disabled={
-                data.message.split('<$$split$$>')[1] === null ||
-                data.message.split('<$$split$$>')[1] === '<p><br></p>' ||
-                data.message.split('<$$split$$>')[1] === '<p></p>'
-              }
+              disabled
               size="small" style={{ margin: '0px 12px 6px 0px', }}>{ API._getWord(sess && sess.language).Read_more }</BTN.PrimaryText>
-          </BTN.NoStyleLink>
+          }
         </div>
       }
     </Paper>

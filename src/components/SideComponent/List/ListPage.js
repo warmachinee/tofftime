@@ -64,7 +64,7 @@ export default function ListPage(props) {
           return item.pageid !== pageid
         }).map( d =>
           <BTN.NoStyleLink to={`/organizer/${d.pageid}`} key={d.pageid}>
-            <ListItem button>
+            <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
               <Tooltip title={d.pagename} placement="right">
                 <ListItemIcon>
                   { d.logo ?

@@ -106,7 +106,7 @@ export default function MatchCard(props) {
           )
           break;
         case data.permission === 'pending':
-          return <Button size="small" variant="outlined" disabled>Pending</Button>
+          return <Button size="small" variant="outlined" disabled>{API._getWord(sess && sess.language).Pending}</Button>
           break;
         case data.permission === 'none':
           return (

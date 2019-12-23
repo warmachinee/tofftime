@@ -107,7 +107,7 @@ export default function NewsCard(props) {
                     {"T-off Time"}
                   </Typography>
                   <Typography gutterBottom variant="caption">
-                    { API._getPostTime(data.createdate)}
+                    { API._getPostTime(sess && sess.language, data.createdate) }
                   </Typography>
                 </div>
               </div>

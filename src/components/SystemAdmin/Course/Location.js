@@ -121,11 +121,15 @@ export default function Location(props) {
           { selectedField ?
             <Typography variant="h4">
               {selectedField.fieldname}
-              {selectedFieldVersion !== 1 && '( '+ selectedFieldVersion.version + ' )'}
             </Typography>
             :
             <Typography variant="h4">
               { API._getWord(sess && sess.language)['Please Select Course.'] }
+            </Typography>
+          }
+          { selectedField && selectedFieldVersion !== 1 &&
+            <Typography variant="body2" color="textSecondary">
+              Version {selectedFieldVersion}
             </Typography>
           }
         </div>

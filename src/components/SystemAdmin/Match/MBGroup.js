@@ -391,7 +391,7 @@ export default function MBGroup(props){
                 </FormLabel>
                 <RadioGroup style={{ flexDirection: 'row' }} value={mainclassType} onChange={e => setMainclassType(event.target.value)}>
                   <FormControlLabel value="group" control={<GreenRadio />}
-                    label={ API._getWord(sess && sess.language).Group } />
+                    label={ API._getWord(sess && sess.language).Group_group } />
                   <FormControlLabel value="flight" control={<GreenRadio />}
                     label={ API._getWord(sess && sess.language).Flight } />
                 </RadioGroup>
@@ -400,7 +400,7 @@ export default function MBGroup(props){
           }
         </div>
         <BTN.Primary style={{ width: '100%', marginTop: 16 }} size="large" onClick={checkMainclassName}>
-          Create
+          { API._getWord(sess && sess.language).Create }
         </BTN.Primary>
       </TemplateDialog>
     </div>

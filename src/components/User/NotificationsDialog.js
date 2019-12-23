@@ -300,7 +300,7 @@ function ListNotiItem(props) {
                 </React.Fragment>
               }
               <Typography variant="caption" color="textSecondary">
-                {API._getPostTime(data.createdate)}
+                { API._getPostTime(sess && sess.language, data.createdate) }
               </Typography>
             </React.Fragment>
           }

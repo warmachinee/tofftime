@@ -516,6 +516,15 @@ export default function _getWord(lang){
           return 'Create'
       }
     }(),
+    Create_new_version: function(){
+      switch (lang) {
+        case 'TH':
+          return 'สร้างเวอร์ชันใหม่'
+          break;
+        default:
+          return 'Create new version'
+      }
+    }(),
     Create_Match: function(){
       switch (lang) {
         case 'TH':
@@ -1189,7 +1198,7 @@ export default function _getWord(lang){
     No_match_for: function(){
       switch (lang) {
         case 'TH':
-          return 'ไม่มีหน้าที่่ตรงกับ'
+          return 'ไม่มีหน้าที่ตรงกับ'
           break;
         default:
           return 'No match for'
@@ -1243,6 +1252,15 @@ export default function _getWord(lang){
   }()
 
   const Name = {
+    Add_about_group: function(){
+      switch (lang) {
+        case 'TH':
+          return 'เพิ่มรายละเอียดเกี่ยวกับกลุ่ม'
+          break;
+        default:
+          return 'Add about group detail'
+      }
+    }(),
     About_group: function(){
       switch (lang) {
         case 'TH':
@@ -1544,6 +1562,15 @@ export default function _getWord(lang){
       switch (lang) {
         case 'TH':
           return 'ประเภท'
+          break;
+        default:
+          return 'Group'
+      }
+    }(),
+    Group_group: function(){
+      switch (lang) {
+        case 'TH':
+          return 'กลุ่ม'
           break;
         default:
           return 'Group'

@@ -118,10 +118,11 @@ code {
 .ql-toolbar.ql-snow {
 	position: sticky;
 	position: -webkit-sticky;
-  top: 120px;
-  z-index: 100;
+  top: 0px;
+	z-index: 1202;
   background: white;
 }
+
 /*
  *
  * Scroll Bar Css Style

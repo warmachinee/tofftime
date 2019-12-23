@@ -104,15 +104,15 @@ export default function OrganizerMatchCard(props) {
                       :
                       `/user/management/match/${data.messagedetail.matchid}`
                     }>
-                    <BTN.Primary size="small">Edit</BTN.Primary>
+                    <BTN.Primary size="small">{API._getWord(sess && sess.language).Edit}</BTN.Primary>
                   </BTN.NoStyleLink>
                 )
                 break;
               case data.messagedetail.permission === 'pending':
-                return <Button size="small" variant="outlined" disabled>Pending</Button>
+                return <Button size="small" variant="outlined" disabled>{API._getWord(sess && sess.language).Pending}</Button>
                 break;
               case data.messagedetail.permission === 'none':
-                return <BTN.Primary size="small" onClick={handleJoinMatch}>Join</BTN.Primary>
+                return <BTN.Primary size="small" onClick={handleJoinMatch}>{API._getWord(sess && sess.language).Join}</BTN.Primary>
                 break;
               default:
                 return null

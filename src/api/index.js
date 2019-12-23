@@ -224,7 +224,7 @@ function sortReverseArrByDate(data, primary, secondary){
  * Date handler function
  */
 
-function _getPostTime(time){
+function _getPostTime(lang, time){
   const today = new Date()
   const cdate = new Date(time)
   var diff = (today - cdate)/(1000) //millisecond
@@ -237,41 +237,41 @@ function _getPostTime(time){
       case diff >= 60 && diff < 60*60:
         diff = diff / 60
         if(Math.floor(diff) > 1){
-          str = ' mins'
+          str = ( lang === 'TH' ) ? ' นาที' : ' mins'
         }else{
-          str = ' min'
+          str = ( lang === 'TH' ) ? ' นาที' : ' min'
         }
         break;
       case diff>=60*60 && diff < 60*60*24:
         diff = diff / ( 60*60 )
         if(Math.floor(diff) > 1){
-          str = ' hrs'
+          str = ( lang === 'TH' ) ? ' ชม.' : ' hrs'
         }else{
-          str = ' hr'
+          str = ( lang === 'TH' ) ? ' ชม.' : ' hr'
         }
         break;
       case diff>=60*60*24 && diff < 60*60*24*30:
         diff = diff / ( 60*60*24 )
         if(Math.floor(diff) > 1){
-          str = ' days'
+          str = ( lang === 'TH' ) ? ' วัน' : ' days'
         }else{
-          str = ' day'
+          str = ( lang === 'TH' ) ? ' วัน' : ' day'
         }
         break;
       case diff>=60*60*24*30 && diff < 60*60*24*30*12:
         diff = diff / ( 60*60*24*30 )
         if(Math.floor(diff) > 1){
-          str = ' months'
+          str = ( lang === 'TH' ) ? ' เดือน' : ' months'
         }else{
-          str = ' month'
+          str = ( lang === 'TH' ) ? ' เดือน' : ' month'
         }
         break;
       case diff>=60*60*24*30*12:
         diff = diff / ( 60*60*24*30*12 )
         if(Math.floor(diff) > 1){
-          str = ' years'
+          str = ( lang === 'TH' ) ? ' ปี' : ' years'
         }else{
-          str = ' year'
+          str = ( lang === 'TH' ) ? ' ปี' : ' year'
         }
         break;
       default:

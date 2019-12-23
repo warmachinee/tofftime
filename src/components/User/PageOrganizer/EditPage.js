@@ -32,7 +32,8 @@ const RichTextEditor = Loadable({
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: theme.spacing(0, 1.5, 1.5, 1.5)
+    padding: theme.spacing(0, 1.5, 1.5, 1.5),
+    position: 'relative'
   },
   margin: {
     width: '100%',

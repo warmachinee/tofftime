@@ -519,6 +519,54 @@ export default function MatchEditor(props){
     })
   }
 
+  function setInitialData(d){
+    if(
+      d.status !== 'class database error' ||
+      d.status !== 'wrong matchid' ||
+      d.status !== 'wrong action' ||
+      d.status !== 'wrong params'
+    ){
+      setData(d)
+      if(d && ('hostid' in d) && sess && ('userid' in sess)){
+        /*console.log({
+          hostid: d.hostid,
+          sess: sess.userid,
+          isHost: d.hostid === sess.userid
+        });*/
+        setIsHost(d.hostid === sess.userid || sess.typeid === 'admin')
+      }
+      if(d && ('status' in d)){
+        //console.log(d.status === 0);
+        setIsAvailableEditing(d.status === 0)
+      }
+      if(d && ('title' in d)){
+        document.title = `${d.title} (Management) - T-off Time`
+      }
+      setMainRequest(function(){
+        switch (true) {
+          case d.mainstatus === 0 && d.mainrequest === 'complete':
+            return 'complete'
+            break;
+          case d.mainstatus === 1 || d.mainrequest === 'complete':
+            return 'reject'
+            break;
+          case d.mainstatus === 0 && d.mainrequest === 'pending':
+            return 'pending'
+            break;
+          default:
+            return 'none'
+        }
+      }())
+    }else{
+      handleSnackBar({
+        state: true,
+        message: d.status,
+        variant: 'error',
+        autoHideDuration: 5000
+      })
+    }
+  }
+
   async function handleFetch(matchid){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
@@ -529,68 +577,10 @@ export default function MatchEditor(props){
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       if(sess.typeid === 'admin'){
-        if(
-          d.status !== 'class database error' ||
-          d.status !== 'wrong matchid' ||
-          d.status !== 'wrong action' ||
-          d.status !== 'wrong params'
-        ){
-          setData(d)
-        }else{
-          handleSnackBar({
-            state: true,
-            message: d.status,
-            variant: 'error',
-            autoHideDuration: 5000
-          })
-        }
+        setInitialData(d)
       }else{
         if(d.chkadminpermission.status){
-          if(
-            d.status !== 'class database error' ||
-            d.status !== 'wrong matchid' ||
-            d.status !== 'wrong action' ||
-            d.status !== 'wrong params'
-          ){
-            setData(d)
-            if(d && ('hostid' in d) && sess && ('userid' in sess)){
-              /*console.log({
-                hostid: d.hostid,
-                sess: sess.userid,
-                isHost: d.hostid === sess.userid
-              });*/
-              setIsHost(d.hostid === sess.userid)
-            }
-            if(d && ('status' in d)){
-              //console.log(d.status === 0);
-              setIsAvailableEditing(d.status === 0)
-            }
-            if(d && ('title' in d)){
-              document.title = `${d.title} (Management) - T-off Time`
-            }
-            setMainRequest(function(){
-              switch (true) {
-                case d.mainstatus === 0 && d.mainrequest === 'complete':
-                  return 'complete'
-                  break;
-                case d.mainstatus === 1 || d.mainrequest === 'complete':
-                  return 'reject'
-                  break;
-                case d.mainstatus === 0 && d.mainrequest === 'pending':
-                  return 'pending'
-                  break;
-                default:
-                  return 'none'
-              }
-            }())
-          }else{
-            handleSnackBar({
-              state: true,
-              message: d.status,
-              variant: 'error',
-              autoHideDuration: 5000
-            })
-          }
+          setInitialData(d)
         }else{
           handleSnackBar({
             state: true,

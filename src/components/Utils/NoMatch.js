@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from "react-router-dom";
+import * as API from './../../api'
 
-function NoMatch(props) {
+export default function NoMatch(props) {
 
   return (
     <div>
       <h3 style={{ textAlign: 'center', fontSize: 28 , marginTop: 72 }}>
         { API._getWord(props.sess && props.sess.language).No_match_for }
-        <code>{props.location && props.location.pathname}</code>
+        <code>{window.location.pathname}</code>
       </h3>
       <div style={{ display: 'flex', justifyContent: 'space-around' }}>
         <Link to='/'
@@ -19,5 +20,3 @@ function NoMatch(props) {
     </div>
   );
 }
-
-export default NoMatch;
