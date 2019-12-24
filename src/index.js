@@ -8,13 +8,6 @@ import App from './App'
 import * as serviceWorker from './serviceWorker';
 import { LDCircular } from './components/loading/LDCircular'
 
-import * as API from './api'
-
-import {
-  TextField,
-
-} from '@material-ui/core'
-
 const SomthingWrongPage = Loadable({
   loader: () => import(/* webpackChunkName: "SomthingWrongPage" */'./components/Utils/SomthingWrongPage'),
   loading: () => <LDCircular />
@@ -26,8 +19,6 @@ class RenderApp extends React.Component {
     this.state = {
       hasError: false,
       errMsg: null,
-      password: /localhost/.test(window.location.href) ? 'catty15000' : '',
-      session: /localhost/.test(window.location.href) ? {status: 1} : null
     };
   }
 
@@ -42,26 +33,6 @@ class RenderApp extends React.Component {
     }})
   }
 
-  handleGetUserinfo = async () =>{
-    const resToken = await API._xhrGet('getcsrf')
-    await API._xhrPost(
-      resToken.token,
-      'userinfo', {
-    }, (csrf, d) =>{
-      this.setState({ session: d })
-    })
-  }
-
-  onChangePassword = (e) =>{
-    this.setState({ password: e.target.value })
-  }
-
-  componentDidMount(){
-    if(!/localhost/.test(window.location.href)){
-      this.handleGetUserinfo()
-    }
-  }
-
   render() {
     const { hasError, errMsg, password, session } = this.state
     if (hasError) {
@@ -71,29 +42,9 @@ class RenderApp extends React.Component {
     }
 
     return (
-      <React.Fragment>
-        { session ?
-          (
-            ( password === 'catty15000' || session.status === 1 ) ?
-            <Router>
-              <App />
-            </Router>
-            :
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <div style={{ marginTop: 24 }}>
-                <TextField
-                  autoFocus={API._isDesktopBrowser()}
-                  label="Password"
-                  variant="outlined"
-                  type="password"
-                  onChange={e => this.onChangePassword(e)} />
-              </div>
-            </div>
-          )
-          :
-          <LDCircular />
-        }
-      </React.Fragment>
+      <Router>
+        <App />
+      </Router>
     );
   }
 }

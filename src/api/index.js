@@ -1,6 +1,6 @@
 function _webURL(){
   const URL = [ 'tofftime.com', 'thai-pga.com' ]
-  return URL[1]
+  return URL[0]
 }
 
 function _getWebURL(){
