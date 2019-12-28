@@ -221,7 +221,7 @@ function DetailComponent(props){
         </div>
       }
       { detail &&
-        <div className="ql-editor">
+        <div className="ql-editor" style={{ maxHeight: 'none' }}>
           {ReactHtmlParser(detail)}
         </div>
       }
@@ -471,21 +471,17 @@ export default function MatchDetailBody(props) {
   }
 
   function toggleShowAction(userto, userfrom, requestaction){
-    if(sess && sess.status === 1){
-      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
-      socket.emit('match-request-client-message', {
-        action: 'showaction',
-        matchid: matchid,
-        userto: userto,
-        userfrom: userfrom,
-        requestaction: requestaction
-      })
-      setTimeout(()=>{
-        handleFetch()
-      }, 500)
-    }else{
-      window.location.pathname = '/login'
-    }
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+    socket.emit('match-request-client-message', {
+      action: 'showaction',
+      matchid: matchid,
+      userto: userto,
+      userfrom: userfrom,
+      requestaction: requestaction
+    })
+    setTimeout(()=>{
+      handleFetch()
+    }, 500)
   }
 
   function handleGetButton(){
@@ -529,25 +525,29 @@ export default function MatchDetailBody(props) {
   }
 
   async function handleJoinMatch(){
-    const resToken = token? token : await API._xhrGet('getcsrf')
-    await API._xhrPost(
-      token? token : resToken.token,
-      'matchgate', {
-        action: 'request',
-        subaction: 'join',
-        matchid: matchid,
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+    if(sess && sess.status === 1){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        'matchgate', {
+          action: 'request',
+          subaction: 'join',
+          matchid: matchid,
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        if(/success/.test(d.status)){
+          toggleShowAction(d.to, d.from, 'join')
+        }
       })
-      if(/success/.test(d.status)){
-        toggleShowAction(d.to, d.from, 'join')
-      }
-    })
+    }else{
+      window.location.pathname = '/login'
+    }
   }
 
   async function handleFetch(){
@@ -626,7 +626,7 @@ export default function MatchDetailBody(props) {
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
             }}
-            src="https://thai-pga.com/system/ads/matchads.png" />
+            src={`https://${API._webURL()}/system/ads/matchads.png`} />
         </div>
         <div style={{ position: 'fixed', left: 0, zIndex: 10 }}>
           <img
@@ -639,7 +639,7 @@ export default function MatchDetailBody(props) {
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
             }}
-            src="https://thai-pga.com/system/ads/matchads.png" />
+            src={`https://${API._webURL()}/system/ads/matchads.png`} />
         </div>
       </div>
       { data ?
@@ -742,8 +742,10 @@ export default function MatchDetailBody(props) {
                   }
                 </div>
                 <div>
-                  <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'export')}>
-                    <FontAwesomeIcon icon={faFileExport} style={{ color: primary[600], fontSize: 20 }} />
+                  <IconButton disabled={userscore && userscore.length <= 0}
+                    className={classes.iconButtonSmall} onClick={e => menuClick(e, 'export')}>
+                    <FontAwesomeIcon icon={faFileExport}
+                      style={{ color: (userscore && userscore.length > 0) ? primary[600] : 'inherit', fontSize: 20 }} />
                   </IconButton>
                   <a href={`/session/share?url=/match/${matchid}`}
                     target='_blank'
@@ -753,8 +755,10 @@ export default function MatchDetailBody(props) {
                     </IconButton>
                   </a>
                   { BTN && data.scorematch === 2 && sess.status === 1 &&
-                    <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'minigame')}>
-                      <VideogameAsset fontSize="large" style={{ color: primary[600] }} />
+                    <IconButton disabled={userscore && userscore.length <= 0}
+                      className={classes.iconButtonSmall} onClick={e => menuClick(e, 'minigame')}>
+                      <VideogameAsset fontSize="large"
+                        style={{ color: (userscore && userscore.length > 0) ? primary[600] : 'inherit' }} />
                     </IconButton>
                   }
                 </div>
@@ -788,8 +792,10 @@ export default function MatchDetailBody(props) {
                   }
                 </div>
                 <div>
-                  <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'export')}>
-                    <FontAwesomeIcon icon={faFileExport} style={{ color: primary[600], fontSize: 20 }} />
+                  <IconButton disabled={userscore && userscore.length <= 0}
+                    className={classes.iconButtonSmall} onClick={e => menuClick(e, 'export')}>
+                    <FontAwesomeIcon icon={faFileExport}
+                      style={{ color: (userscore && userscore.length > 0) ? primary[600] : 'inherit', fontSize: 20 }} />
                   </IconButton>
                   <a href={`/session/share?url=/match/${matchid}`}
                     target='_blank'
@@ -799,8 +805,10 @@ export default function MatchDetailBody(props) {
                     </IconButton>
                   </a>
                   { BTN && data.scorematch === 2 && sess.status === 1 &&
-                    <IconButton className={classes.iconButtonSmall} onClick={e => menuClick(e, 'minigame')}>
-                      <VideogameAsset fontSize="large" style={{ color: primary[600] }} />
+                    <IconButton disabled={userscore && userscore.length <= 0}
+                      className={classes.iconButtonSmall} onClick={e => menuClick(e, 'minigame')}>
+                      <VideogameAsset fontSize="large"
+                        style={{ color: (userscore && userscore.length > 0) ? primary[600] : 'inherit' }} />
                     </IconButton>
                   }
                 </div>

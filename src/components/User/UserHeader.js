@@ -219,7 +219,7 @@ export default function UserHeader(props) {
               edge="start"
               className={classes.logo}
             >
-              <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
+              <img src={`https://file.${API._webURL()}/system/image/logoX2.png`} className={classes.logoImg} />
             </IconButton>
           </Link>
           <div style={{ flex: 1 }} />

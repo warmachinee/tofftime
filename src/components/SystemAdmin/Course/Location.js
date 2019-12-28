@@ -5,16 +5,29 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import * as API from './../../../api'
 import { primary, grey } from './../../../api/palette'
 
-import Button from '@material-ui/core/Button';
+import {
+  Button,
+  Dialog,
+  IconButton,
+  Typography,
+  Box,
 
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+} from '@material-ui/core';
 
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import CreateIcon from '@material-ui/icons/Create';
+import {
+  ArrowBack as ArrowBackIcon,
+  Close as CloseIcon,
+  Create as CreateIcon,
+  RemoveRedEye,
+
+} from '@material-ui/icons';
 
 import { LDCircular } from './../../loading/LDCircular'
+
+const LabelText = Loadable({
+  loader: () => import(/* webpackChunkName: "LabelText" */'./../../Utils/LabelText'),
+  loading: () => null
+});
 
 const LocationList = Loadable({
   loader: () => import(/* webpackChunkName: "LocationList" */'./LocationList'),
@@ -23,6 +36,11 @@ const LocationList = Loadable({
 
 const CourseEditor = Loadable({
   loader: () => import(/* webpackChunkName: "CourseEditor" */'./CourseEditor'),
+  loading: () => <LDCircular />
+});
+
+const CourseScorecard = Loadable({
+  loader: () => import(/* webpackChunkName: "CourseScorecard" */'./CourseScorecard'),
   loading: () => <LDCircular />
 });
 
@@ -69,6 +87,9 @@ const useStyles = makeStyles(theme => ({
   createIcon: {
     marginRight: 12,
   },
+  paperWidthSm: {
+    maxWidth: 700
+  },
 
 }));
 
@@ -94,8 +115,54 @@ const GreenTextButton = withStyles(theme => ({
 
 export default function Location(props) {
   const classes = useStyles();
-  const { sess, token, setCSRFToken, selectedField, setSelectedField, handleSnackBar, selectedFieldVersion, handleOnDoneSelectField } = props
+  const {
+    sess, token, setCSRFToken,
+    selectedField, setSelectedField, handleSnackBar, selectedFieldVersion, selectedFieldVersionCount, handleOnDoneSelectField
+  } = props
   const [ pageState, setPageState ] = React.useState('select')
+  const [ fieldScorecard, setFieldScorecard ] = React.useState(null)
+  const [ scorecardState, setScorecardState ] = React.useState(false);
+
+  const handleScorecardOpen = () => {
+    setScorecardState(true);
+  };
+
+  const handleScorecardClose = () => {
+    setScorecardState(false);
+  };
+
+  async function handleFetchLoadField(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      sess.typeid === 'admin' ? 'loadfield' : 'floadfield', {
+        action: 'score',
+        fieldid: selectedField.fieldid,
+        fieldversion: selectedFieldVersion
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      if(('fieldscore' in d) && ('hfieldscore' in d)){
+        setFieldScorecard({
+          ...d,
+          location: selectedField.fieldname,
+          locationversion: selectedFieldVersion,
+        })
+      }else{
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+      }
+    })
+  }
+
+  React.useEffect(()=>{
+    if(selectedField){
+      handleFetchLoadField()
+    }
+  },[ selectedField, selectedFieldVersion ])
 
   return (
     <div className={classes.root}>
@@ -119,15 +186,18 @@ export default function Location(props) {
             }
           </div>
           { selectedField ?
-            <Typography variant="h4">
+            <Typography variant="h4" component="div">
               {selectedField.fieldname}
+              <IconButton onClick={handleScorecardOpen}>
+                <RemoveRedEye style={{ color: primary[600] }} />
+              </IconButton>
             </Typography>
             :
             <Typography variant="h4">
               { API._getWord(sess && sess.language)['Please Select Course.'] }
             </Typography>
           }
-          { selectedField && selectedFieldVersion !== 1 &&
+          { selectedField && selectedFieldVersionCount !== 1 &&
             <Typography variant="body2" color="textSecondary">
               Version {selectedFieldVersion}
             </Typography>
@@ -146,7 +216,15 @@ export default function Location(props) {
           {...props}
           afterSuccess={()=>setPageState('select')} />
       }
-
+      <Dialog classes={{ paperWidthSm: classes.paperWidthSm }} onClose={handleScorecardClose} open={scorecardState}>
+        <LabelText text="Golf Scorecard" />
+        <IconButton onClick={handleScorecardClose} style={{ position: 'absolute', top: 8, right: 8 }}>
+          <CloseIcon />
+        </IconButton>
+        { fieldScorecard &&
+          <CourseScorecard {...props} field={fieldScorecard} />
+        }
+      </Dialog>
     </div>
   );
 }

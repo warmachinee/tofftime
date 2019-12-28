@@ -2,7 +2,7 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrophy } from '@fortawesome/free-solid-svg-icons'
+import { faTrophy, faCalculator } from '@fortawesome/free-solid-svg-icons'
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import * as COLOR from './../../api/palette'
 
@@ -42,6 +42,7 @@ import {
   GolfCourse,
   Note as NoteIcon,
   Language as LanguageIcon,
+  Help as HelpIcon,
 
 } from '@material-ui/icons';
 
@@ -229,6 +230,30 @@ export default function SideMenu(props) {
     })
   }
 
+  async function updateUserinfo(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'userinfo', {
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      handleSess(d)
+    })
+  }
+
+  async function tutorialOpen(){
+    const resToken = token? token : await API._xhrGet('getcsrf')
+    await API._xhrPost(
+      token? token : resToken.token,
+      'tutorial', {
+        action: 'loginfirst',
+        toggle: 'true'
+    }, (csrf, d) =>{
+      setCSRFToken(csrf)
+      updateUserinfo()
+    })
+  }
+
   const [ ,updateState ] = React.useState(null)
 
   function resizeHandler(){
@@ -352,6 +377,11 @@ export default function SideMenu(props) {
                       </div>
                     </div>
                   }
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <IconButton onClick={tutorialOpen} style={{ padding: 4 }}>
+                      <HelpIcon style={{ color: COLOR.primary[700] }} />
+                    </IconButton>
+                  </div>
                 </div>
               }
             </div>
@@ -443,7 +473,7 @@ export default function SideMenu(props) {
             <BTN.NoStyleLink to='/'>
               <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
                 <ListItemIcon>
-                  <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
+                  <img src={`https://file.${API._webURL()}/system/image/logoX2.png`} className={classes.logoImg} />
                 </ListItemIcon>
                 <ListItemText primary="ToffTime" />
               </ListItem>
@@ -468,6 +498,15 @@ export default function SideMenu(props) {
 
             </BTN.NoStyleLink>*/
           }
+          <BTN.NoStyleLink to={`/user/simulator`}>
+            <ListItem button onClick={()=>window.innerWidth <= 600 ? props.setOpen(false) : console.log()}>
+              <Tooltip title={ API._getWord(sess && sess.language).Simulator } placement="right">
+                <ListItemIcon><FontAwesomeIcon icon={faCalculator} style={{ marginLeft: 4, fontSize: 20 }} /></ListItemIcon>
+              </Tooltip>
+              <ListItemText primary={ API._getWord(sess && sess.language).Simulator } />
+            </ListItem>
+          </BTN.NoStyleLink>
+
           <ListItem button onClick={()=>handleExpand('management')}>
             <Tooltip title={ API._getWord(sess && sess.language).Management } placement="right">
               <ListItemIcon><SettingsApplications /></ListItemIcon>

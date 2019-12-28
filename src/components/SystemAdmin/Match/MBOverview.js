@@ -280,7 +280,7 @@ export default function MBOverview(props){
       fieldname: d.location
     })
     setSelectedFieldVersion(d.locationversion)
-    setSelectedPrivacy('public')
+    setSelectedPrivacy(d.privacy)
     setSpecialRewardData({
       lownet: d.lownet !== 0,
       lowgross: d.lowgross !== 0,
@@ -388,8 +388,17 @@ export default function MBOverview(props){
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         if(/success/.test(d.status)){
-          handleRulesClose()
-          handleFetch()
+          //handleRulesClose()
+          //handleFetch()
+          if(sess.typeid === 'admin'){
+            window.location.replace(`/system_admin/match/${matchid}`);
+          }else{
+            if(props.pageOrganizer){
+              window.location.replace(`/organizer/${props.pageData.pageid}/management/match/${matchid}`);
+            }else{
+              window.location.replace(`/user/management/match/${matchid}`);
+            }
+          }
         }
       })
     }
@@ -494,10 +503,14 @@ export default function MBOverview(props){
       status = response.status
     }else{
       setCSRFToken(csrf)
-      if(props.pageOrganizer){
-        window.location.replace(`/organizer/${props.pageData.pageid}/management/match/${matchid}`);
+      if(sess.typeid === 'admin'){
+        window.location.replace(`/system_admin/match/${matchid}`);
       }else{
-        window.location.replace(`/user/management/match/${matchid}`);
+        if(props.pageOrganizer){
+          window.location.replace(`/organizer/${props.pageData.pageid}/management/match/${matchid}`);
+        }else{
+          window.location.replace(`/user/management/match/${matchid}`);
+        }
       }
     }
     handleSnackBar({
@@ -508,10 +521,14 @@ export default function MBOverview(props){
     })
     await handleFetch()
     if(/success/.test(status)){
-      if(props.pageOrganizer){
-        window.location.replace(`/organizer/${props.pageData.pageid}/management/match/${matchid}`);
+      if(sess.typeid === 'admin'){
+        window.location.replace(`/system_admin/match/${matchid}`);
       }else{
-        window.location.replace(`/user/management/match/${matchid}`);
+        if(props.pageOrganizer){
+          window.location.replace(`/organizer/${props.pageData.pageid}/management/match/${matchid}`);
+        }else{
+          window.location.replace(`/user/management/match/${matchid}`);
+        }
       }
     }
   }
@@ -523,7 +540,8 @@ export default function MBOverview(props){
         token? token : resToken.token,
         sess.typeid === 'admin'? 'loadmatch' :'mloadmatch', {
           action: 'detail',
-          matchid: matchid
+          matchid: matchid,
+          message: true
       }, (csrf, d) =>{
         setCSRFToken(csrf)
         if(

@@ -70,14 +70,14 @@ export default function MatchDetail(props){
 
   }
 
-  async function handleFetch(){
+  async function handleFetch(mainClassProps){
     const resToken = token? token : await API._xhrGet('getcsrf')
     await API._xhrPost(
       token? token : resToken.token,
       'loadmatchsystem', {
         action: 'userscore',
         matchid: parseInt(props.computedMatch.params.matchid),
-        mainclass: parseInt(mainClassSelected)
+        mainclass: parseInt(mainClassProps)
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       setData(d)
@@ -100,13 +100,14 @@ export default function MatchDetail(props){
     })
   }
 
-  function response(action){
+  function response(mainClassProps){
     const matchid = parseInt(props.computedMatch.params.matchid)
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`admin-match-${matchid}-server-message`, (messageNew) => {
       if(messageNew && /success/.test(messageNew.status)){
         const d = messageNew.result
         const dh = messageNew.hostdetail
+        hashCheckFetch(d)
         if(dh && !window.location.pathname.includes('management' || 'user')){
           handleSnackBarL({
             state: true,
@@ -118,22 +119,37 @@ export default function MatchDetail(props){
             sPAR: dh.par
           })
         }
-        setUserscore(d.userscore)
-        setRawUserscore(d)
       }
     })
   }
+
+  function hashCheckFetch(d){
+    var passingMainclass = '1'
+    if(window.location.hash){
+      setMainClassSelected(window.location.hash.substring(1, window.location.hash.length).toString())
+      passingMainclass = window.location.hash.substring(1, window.location.hash.length).toString()
+    }else{
+      setMainClassSelected('1')
+    }
+    /*
+    setUserscore(null)
+    setRawUserscore(null)
+    setSortBy('net')*/
+    /*setUserscore(d.userscore)
+    setRawUserscore(d)*/
+    handleFetch(passingMainclass)
+  }
+
+  React.useEffect(()=>{
+    hashCheckFetch()
+  },[ window.location.href, window.location.hash ])
 
   React.useEffect(()=>{
     response()
   },[ ])
 
   React.useEffect(()=>{
-    handleFetch()
-  },[ window.location.href, mainClassSelected ])
-
-  React.useEffect(()=>{
-    if(rawUserscore){//usersolo
+    if(rawUserscore){
       if(rawUserscore.scorematch !== 1){
         if(rawUserscore.scorematch === 2){
           setUserscore( sortBy === 'sf' ? rawUserscore.userscore : rawUserscore.userscoreSortBySF)

@@ -225,6 +225,7 @@ function CreateMatchBody(props){
   const [ matchName, setMatchName ] = React.useState('');
   const [ selectedField, setSelectedField ] = React.useState(null);
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
+  const [ selectedFieldVersionCount, setSelectedFieldVersionCount ] = React.useState(1);
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState('public');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState('1');
   const [ selectedDate, setSelectedDate ] = React.useState(new Date());
@@ -246,7 +247,9 @@ function CreateMatchBody(props){
     handleMatchType: handleMatchType,
     handleDateChange: handleDateChange,
     handlePicture: handlePicture,
-    setSelectedFieldVersion: setSelectedFieldVersion
+    setSelectedFieldVersion: setSelectedFieldVersion,
+    setSelectedFieldVersionCount: setSelectedFieldVersionCount,
+    
   }
 
   const handleOpen = () => {

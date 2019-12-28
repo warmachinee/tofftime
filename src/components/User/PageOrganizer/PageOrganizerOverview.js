@@ -187,7 +187,7 @@ function DetailComponent(props){
 
   return(
     <div id={id} className="ql-container ql-snow" style={{ border: 'none' }}>
-      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '2px 15px 0 15px' }}>
+      <div className="ql-editor" style={{ overflow: 'hidden', maxHeight: 'none', height: 'auto', padding: '2px 15px 0 15px' }}>
         {ReactHtmlParser(detail)}
       </div>
     </div>
@@ -196,7 +196,7 @@ function DetailComponent(props){
 
 export default function PageOrganizerOverview(props) {
   const classes = useStyles();
-  const { API, BTN, token, setCSRFToken, handleSnackBar, sess, pageData, isSupportWebp } = props
+  const { API, BTN, token, setCSRFToken, handleSnackBar, sess, pageData, isSupportWebp, handlePageData } = props
   const [ isFollow, setIsFollow ] = React.useState(false)
   const [ confirmPassword, setConfirmPassword ] = React.useState(null)
   const [ dialog, setDialog ] = React.useState({
@@ -206,6 +206,7 @@ export default function PageOrganizerOverview(props) {
   })
   const [ anchorEl, setAnchorEl ] = React.useState(null);
   const [ moreState, setMoreState ] = React.useState(false)
+  const [ mainRequest, setMainRequest ] = React.useState(false)
   const aboutElement = document.getElementById(`about-page-${pageData.pageid}`)
 
   const handleClick = event => {
@@ -264,6 +265,7 @@ export default function PageOrganizerOverview(props) {
       })
       if(/success/.test(d.status)){
         confirmCloseAll()
+        handleFetch()
       }
     })
   }
@@ -301,6 +303,68 @@ export default function PageOrganizerOverview(props) {
       }catch(err) { console.log(err.message) }
     })
   }
+
+  async function handleFetch(){
+    if(sess){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        sess.typeid === 'admin' ? 'loadpage' : 'ploadpage', {
+          action: 'detail',
+          pageid: pageData.pageid
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        if(d.length < 2){
+          window.location.pathname = '/user'
+        }else{
+          handlePageData({
+            ...d[0],
+            pageid: pageData.pageid
+          })
+          if(d && d[0] && ('pagename' in d[0])){
+            document.title = `${d[0].pagename} (Organizer) - T-off Time Organizer`
+          }
+          setMainRequest(function(){
+            switch (true) {
+              case d[0].mainstatus === 0 && d[0].mainrequest === 'complete':
+                return 'complete'
+                break;
+              case d[0].mainstatus === 1 || d[0].mainrequest === 'complete':
+                return 'reject'
+                break;
+              case d[0].mainstatus === 0 && d[0].mainrequest === 'pending':
+                return 'pending'
+                break;
+              default:
+                return 'none'
+            }
+          }())
+        }
+      })
+    }
+  }
+
+  React.useEffect(()=>{
+    setMainRequest(function(){
+      switch (true) {
+        case pageData.mainstatus === 0 && pageData.mainrequest === 'complete':
+          return 'complete'
+          break;
+        case pageData.mainstatus === 1 || pageData.mainrequest === 'complete':
+          return 'reject'
+          break;
+        case pageData.mainstatus === 0 && pageData.mainrequest === 'pending':
+          return 'pending'
+          break;
+        default:
+          return 'none'
+      }
+    }())
+  },[ ])
+
+  React.useEffect(()=>{
+    console.log(mainRequest);
+  },[ mainRequest ])
 
   return (
     <div className={classes.root}>
@@ -487,7 +551,7 @@ export default function PageOrganizerOverview(props) {
         onClose={confirmCloseAll}
         icon={{ width: 96, height: 96 }}
         iconColor={primary[600]}
-        title={API._getWord(sess && sess.language)['Send a request to show this Group on the Toff-time page.']}
+        title={API._getWord(sess && sess.language)['Send a request to show this Group on the T-off time page.']}
         content={
           pageData && pageData.pageid &&
           <Typography component="div" style={{ display: 'flex', justifyContent: 'center', marginTop: 24 }}>
@@ -508,7 +572,15 @@ export default function PageOrganizerOverview(props) {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleClose}>
-        <MenuItem onClick={()=>confirmOpen('request')}>{ API._getWord(sess && sess.language).Request_mainpage_BTN }</MenuItem>
+        { mainRequest && mainRequest !== 'complete' &&
+          <MenuItem
+            disabled={mainRequest === 'pending'}
+            onClick={()=>confirmOpen('request')}>
+            {
+              API._getWord(sess && sess.language).Request_mainpage_BTN +
+              (mainRequest === 'pending' ? ` (${API._getWord(sess && sess.language).Pending})` : '')
+            }</MenuItem>
+        }
         <MenuItem onClick={()=>props.dialogOpen('setAdmin')}>{ API._getWord(sess && sess.language).Group_admin }</MenuItem>
         { pageData &&
           <BTN.NoStyleLink to={`/organizer/${pageData.pageid}/profile/`}>

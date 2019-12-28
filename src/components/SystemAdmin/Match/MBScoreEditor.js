@@ -492,9 +492,11 @@ export default function MBScoreEditor(props){
 
   async function handleSelectPlayer(newVal){
     if(selected && oldSelected){
-      setOldSelected(selected)
+      scoreDisplayStatus(newVal, selected)
+      //setOldSelected(selected)
       setSelected(newVal)
     }else{
+      handleScoreDisplay(newVal, newVal, newVal.score)
       setSelected(newVal)
       setOldSelected(newVal)
     }
@@ -516,7 +518,6 @@ export default function MBScoreEditor(props){
 
   function handleFocus(e){
     e.target.select()
-    //handleScoreDisplay()
   }
 
   function setScore(value, index){
@@ -528,6 +529,8 @@ export default function MBScoreEditor(props){
         tempArr[index] = parseInt(value)
       }
       setArrScore(tempArr)
+      console.log('Update score');
+      handleScoreDisplay(selected, oldSelected, tempArr)
       resolve();
     });
   }
@@ -538,25 +541,48 @@ export default function MBScoreEditor(props){
     }
   }
 
-  function handleScoreDisplay(newVal){
+  function handleScoreDisplay(current, old, score){
     return new Promise(resolve => {
       const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
       socket.emit('player-show-client-message', {
         action: "showplayerscore",
         matchid: matchid,
-        userid: oldSelected.userid,
-        newuserid: selected.userid,
-        holescore: arrScore,
+        ...( !(current.userid === old.userid) && {myid: sess.userid} ),
+        userid: old.userid,
+        newuserid: current.userid,
+        holescore: score,
       })
       resolve();
     });
   }
 
-  React.useEffect(()=>{
-    if(oldSelected && selected){
-      handleScoreDisplay()
-    }
-  }, [ arrScore, oldSelected, selected ])
+  function scoreDisplayStatus(current, old){
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+    socket.on(`${matchid}-${sess.userid}-input-server-message`, (messageNew) => {
+      if(messageNew){
+        console.log('Response ', {
+          currentResponse: messageNew.currentid,
+          currentInput: current.userid,
+          oldResponse: messageNew.oldid,
+          oldInput: old.userid
+        });
+        setOldSelected({
+          userid: messageNew.currentid
+        })
+        /*
+        handleScoreDisplay(current, {
+          userid: messageNew.oldid
+        }, current.score)*/
+      }else{
+        handleSnackBar({
+          state: true,
+          message: 'Some thing wrong !!!',
+          variant: 'error',
+          autoHideDuration: 5000
+        })
+      }
+    })
+  }
 
   function handleUpdateScore(){
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
@@ -601,22 +627,24 @@ export default function MBScoreEditor(props){
     const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
     socket.on(`admin-match-status-${matchid}-server-message`, (messageNew) => {
       const d = messageNew.status
-      if(!/fail/.test(d)){
-        setSelected(null)
-        setExpanded(true)
-        handleSnackBar({
-          state: true,
-          message: `Update ${d.fullname} ${d.lastname} complete. OUT = ${d.sout}, IN = ${d.sin}, Total = ${d.gross}`,
-          variant: 'success',
-          autoHideDuration: 200
-        })
-      }else{
-        handleSnackBar({
-          state: true,
-          message: 'Update score fail',
-          variant: 'error',
-          autoHideDuration: 5000
-        })
+      if(!/playoff/.test(d)){
+        if(!/fail/.test(d)){
+          setSelected(null)
+          setExpanded(true)
+          handleSnackBar({
+            state: true,
+            message: `Update ${d.fullname} ${d.lastname} complete. OUT = ${d.sout}, IN = ${d.sin}, Total = ${d.gross}`,
+            variant: 'success',
+            autoHideDuration: 200
+          })
+        }else{
+          handleSnackBar({
+            state: true,
+            message: 'Update score fail',
+            variant: 'error',
+            autoHideDuration: 5000
+          })
+        }
       }
     })
   }
@@ -755,7 +783,7 @@ export default function MBScoreEditor(props){
                       key={d}
                       className={classes.textfield}
                       label={d + 1}
-                      value={arrScore[d] || 0}
+                      value={arrScore[d] || ''}
                       onChange={e =>handleChange(e.target.value, d)}
                       onFocus={e => handleFocus(e)}
                       onKeyPress={e =>handleKeyPress(e)}
@@ -771,7 +799,7 @@ export default function MBScoreEditor(props){
                       key={d}
                       className={classes.textfield}
                       label={d + 1}
-                      value={arrScore[d] || 0}
+                      value={arrScore[d] || ''}
                       onChange={e =>handleChange(e.target.value, d)}
                       onFocus={e => handleFocus(e)}
                       onKeyPress={e =>handleKeyPress(e)}
@@ -813,19 +841,12 @@ export default function MBScoreEditor(props){
               <Button disabled={selected === null} className={classes.button} onClick={handleReset}>
                 { API._getWord(sess && sess.language).Reset }
               </Button>
-              { selected?
-                <GreenButton
-                  disabled={selected === null}
-                  variant="contained" color="primary"
-                  className={classes.button} onClick={handleFetchUpdateScore}>
-                  { API._getWord(sess && sess.language).Save }
-                </GreenButton>
-                :
-                <Button
-                  disabled
-                  variant="contained" color="primary"
-                  className={classes.button}>{ API._getWord(sess && sess.language).Save }</Button>
-              }
+              <GreenButton
+                disabled={selected === null || arrScore.some(s => s === 0)}
+                variant="contained" color="primary"
+                className={classes.button} onClick={handleFetchUpdateScore}>
+                { API._getWord(sess && sess.language).Save }
+              </GreenButton>
             </div>
           </React.Fragment>
         )
@@ -849,7 +870,7 @@ export default function MBScoreEditor(props){
                     key={d}
                     className={classes.textfield}
                     label={d + 1}
-                    value={arrScore[d] || 0}
+                    value={arrScore[d] || ''}
                     onChange={e =>handleChange(e.target.value, d)}
                     onFocus={e => handleFocus(e)}
                     onKeyPress={e =>handleKeyPress(e)}
@@ -865,7 +886,7 @@ export default function MBScoreEditor(props){
                     key={d}
                     className={classes.textfield}
                     label={d + 1}
-                    value={arrScore[d] || 0}
+                    value={arrScore[d] || ''}
                     onChange={e =>handleChange(e.target.value, d)}
                     onFocus={e => handleFocus(e)}
                     onKeyPress={e =>handleKeyPress(e)}

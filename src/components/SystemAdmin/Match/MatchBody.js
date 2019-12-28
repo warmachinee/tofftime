@@ -472,13 +472,13 @@ export default function MatchBody(props){
               <FormControlLabel value="mine" control={<GreenRadio />}
                 label={API._getWord(sess && sess.language).My_match} />
               <FormControlLabel value="admin" control={<GreenRadio />}
-                label={API._getWord(sess && sess.language).Admin} />
+                label={API._getWord(sess && sess.language).My_admin_match} />
             </RadioGroup>
           </FormControl>
         </div>
       }
       <div style={{ display: 'flex', marginTop: 24, boxSizing: 'border-box' }}>
-        { !editing &&
+        { !editing && matchOwnerStatus === 'mine' &&
           <GreenTextButton variant="outlined" color="primary" onClick={toggleEditingDisplay}>
             { editingDisplay?
               ( API._getWord(sess && sess.language).Done )
@@ -488,7 +488,7 @@ export default function MatchBody(props){
           </GreenTextButton>
         }
         <div style={{ flex: 1 }} />
-        { !editingDisplay &&
+        { !editingDisplay && matchOwnerStatus === 'mine' &&
           <GreenTextButton variant="outlined" color="primary" onClick={toggleEditing}>
             { editing?
               ( API._getWord(sess && sess.language).Done )

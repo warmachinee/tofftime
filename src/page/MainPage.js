@@ -42,7 +42,7 @@ function Banner1(props){
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
           }}
-          src="https://thai-pga.com/system/ads/ads.png" />
+          src={`https://${props.API._webURL()}/system/ads/ads.png`} />
       </div>
     </a>
   );

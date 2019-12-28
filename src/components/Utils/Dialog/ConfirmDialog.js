@@ -95,7 +95,7 @@ export default function ConfirmDialog(props) {
             { icon && typeof(icon) === 'object' ?
               <Avatar
                 style={{ width: icon.width ? icon.width : 64, height: icon.height ? icon.height : 64 }}
-                src={icon.src ? icon.src : "https://file.thai-pga.com/system/image/logoX2.png"} />
+                src={icon.src ? icon.src : `https://file.${API._webURL()}/system/image/logoX2.png`} />
               :
               <Avatar
                 style={{

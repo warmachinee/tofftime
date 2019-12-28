@@ -348,25 +348,12 @@ export default function MBGroup(props){
           <Typography gutterBottom variant="h6" style={{ fontWeight: 600, textDecoration: 'underline' }}>
             { API._getWord(sess && sess.language).Example }
           </Typography>
-          { isAvailableEditing && data && data.scorematch === 0 ?
-            <React.Fragment>
-              <img style={{ width: '100%' }}
-                src={`https://file.thai-pga.com/system/image/MBGroup0${sess && sess.language === 'TH' ? 'TH' : ''}.jpg`} />
-              <Typography gutterBottom variant="h6" style={{ fontWeight: 600, textDecoration: 'underline' }}>
-                { API._getWord(sess && sess.language).Result }
-              </Typography>
-              <img
-                src={`https://file.thai-pga.com/system/image/MBGroup0_result.jpg`} />
-            </React.Fragment>
-            :
-            <React.Fragment>
-              <img style={{ width: '100%' }}
-                src={`https://file.thai-pga.com/system/image/MBGroup1${sess && sess.language === 'TH' ? 'TH' : ''}.jpg`} />
-              <img style={{ width: '100%' }}
-                src={`https://file.thai-pga.com/system/image/MBGroup2${sess && sess.language === 'TH' ? 'TH' : ''}.jpg`} />
-            </React.Fragment>
+          { isAvailableEditing && data &&
+            [0,1,2,3,4,5,6,7,8,9,10].map( d =>
+              <img style={{ width: '100%' }} key={d}
+                src={`https://file.${API._webURL()}/system/image/group${d}.jpg`} />
+            )
           }
-
         </Typography>
       }
       <TemplateDialog maxWidth="xs" open={dialog.create} handleClose={()=>dialogClose('create')}>

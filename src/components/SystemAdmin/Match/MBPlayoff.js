@@ -253,6 +253,18 @@ export default function MBPlayoff(props){
     setValue(newValue);
   }
 
+  function afterClearPlayoff(){
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+    socket.emit('admin-match-client-message', {
+      action: "showmatchscore",
+      matchid: matchid,
+      mainclass: parseInt(mainClassSelected)
+    })
+    setTimeout(()=>{
+      handleFetch()
+    }, 1000)
+  }
+
   async function handleFetch(){
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
@@ -333,7 +345,7 @@ export default function MBPlayoff(props){
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
         try {
-          handleFetch()
+          afterClearPlayoff()
         }catch(err) { console.log(err.message) }
       })
     }

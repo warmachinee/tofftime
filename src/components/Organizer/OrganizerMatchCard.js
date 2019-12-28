@@ -73,21 +73,17 @@ export default function OrganizerMatchCard(props) {
   const { API, BTN, sess, token, setCSRFToken, handleSnackBar, data, setData, isSupportWebp, pageOrganizer, pageData, pageid } = props
 
   function toggleShowAction(userto, userfrom, requestaction){
-    if(sess && sess.status === 1){
-      const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
-      socket.emit('match-request-client-message', {
-        action: 'showaction',
-        matchid: data.messagedetail.matchid,
-        userto: userto,
-        userfrom: userfrom,
-        requestaction: requestaction
-      })
-      setTimeout(()=>{
-        handleFetch()
-      }, 500)
-    }else{
-      window.location.pathname = '/login'
-    }
+    const socket = socketIOClient( API._getWebURL(), { transports: ['websocket', 'polling'] } )
+    socket.emit('match-request-client-message', {
+      action: 'showaction',
+      matchid: data.messagedetail.matchid,
+      userto: userto,
+      userfrom: userfrom,
+      requestaction: requestaction
+    })
+    setTimeout(()=>{
+      handleFetch()
+    }, 500)
   }
 
   function handleGetButton(){
@@ -124,25 +120,29 @@ export default function OrganizerMatchCard(props) {
   }
 
   async function handleJoinMatch(){
-    const resToken = token? token : await API._xhrGet('getcsrf')
-    await API._xhrPost(
-      token? token : resToken.token,
-      'matchgate', {
-        action: 'request',
-        subaction: 'join',
-        matchid: data.messagedetail.matchid,
-    }, (csrf, d) =>{
-      setCSRFToken(csrf)
-      handleSnackBar({
-        state: true,
-        message: d.status,
-        variant: /success/.test(d.status) ? d.status : 'error',
-        autoHideDuration: /success/.test(d.status)? 2000 : 5000
+    if(sess && sess.status === 1){
+      const resToken = token? token : await API._xhrGet('getcsrf')
+      await API._xhrPost(
+        token? token : resToken.token,
+        'matchgate', {
+          action: 'request',
+          subaction: 'join',
+          matchid: data.messagedetail.matchid,
+      }, (csrf, d) =>{
+        setCSRFToken(csrf)
+        handleSnackBar({
+          state: true,
+          message: d.status,
+          variant: /success/.test(d.status) ? d.status : 'error',
+          autoHideDuration: /success/.test(d.status)? 2000 : 5000
+        })
+        if(/success/.test(d.status)){
+          toggleShowAction(d.to, d.from, 'join')
+        }
       })
-      if(/success/.test(d.status)){
-        toggleShowAction(d.to, d.from, 'join')
-      }
-    })
+    }else{
+      window.location.pathname = '/login'
+    }
   }
 
   async function handleFetch(){
@@ -170,13 +170,13 @@ export default function OrganizerMatchCard(props) {
               src={API._getPictureUrl(data.messagedetail.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
             :
             <img className={classes.image}
-              src="https://thai-pga.com/default/match/matchcard.png" />
+              src={`https://${API._webURL()}/default/match/matchcard.png`} />
           }
         </BTN.NoStyleLink>
         :
         /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
         <img className={classes.image}
-          src="https://thai-pga.com/default/match/matchcard.png" />
+          src={`https://${API._webURL()}/default/match/matchcard.png`} />
       }
       { ( data && data.messagedetail ) ?
         <Box className={classes.box}>

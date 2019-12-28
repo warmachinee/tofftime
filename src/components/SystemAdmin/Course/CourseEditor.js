@@ -24,7 +24,9 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    //marginTop: 36
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    maxWidth: 700
   },
   formControl: {
     margin: theme.spacing(1),
@@ -390,10 +392,11 @@ export default function CourseEditor(props){
           }else{
             if(props.setSelectedField){
               props.setSelectedField({
-                ...d,
+                fieldid: d.fieldid,
                 fieldname: location
               })
               props.setSelectedFieldVersion(1)
+              props.setSelectedFieldVersionCount(1)
             }
             afterSuccess()
           }
@@ -435,10 +438,11 @@ export default function CourseEditor(props){
     afterSuccess()
     if(props.setSelectedField){
       props.setSelectedField({
-        ...d,
+        fieldid: fieldid,
         fieldname: location
       })
       props.setSelectedFieldVersion(1)
+      props.setSelectedFieldVersionCount(1)
     }
   }
 

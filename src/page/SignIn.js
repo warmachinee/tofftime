@@ -95,6 +95,11 @@ export default function SignIn(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSess(d)
+      if(d.typeid === 'admin'){
+        window.location.replace('/system_admin');
+      }else{
+        window.location.replace('/user');
+      }
     })
   }
 
@@ -158,6 +163,10 @@ export default function SignIn(props) {
       }
     })
   }
+
+  React.useEffect(()=>{
+    document.title = 'Sign in - T-off Time'
+  },[ ])
 
   return (
     <div>

@@ -131,7 +131,7 @@ export default function Upcoming(props) {
             </Paper>
           )
           :
-          Array.from(new Array(2)).map((d, i) => <MatchCard key={i} />)
+          Array.from(new Array(2)).map((d, i) => <MatchCard key={i} {...props} />)
         }
         { data && ( data.length === 1 || data.length === 2 ) &&
           Array.from(new Array( 3 - data.length )).map((d, i) => <div key={i} style={{ width: 300 }} />)

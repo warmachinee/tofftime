@@ -30,6 +30,8 @@ import {
 
 } from '@material-ui/icons'
 
+import { LDCircular } from './../loading/LDCircular'
+
 const ScoreTableChip = Loadable({
   loader: () => import(/* webpackChunkName: "ScoreTableChip" */'./ScoreTableChip'),
   loading: () => null
@@ -415,6 +417,19 @@ export default function ScoreTable(props) {
     }
   },[ inputEl ])
 
+  const [ ,updateState ] = React.useState(null)
+
+  function resizeHandler(){
+    updateState({})
+  }
+
+  React.useEffect(()=>{
+    window.addEventListener('resize', resizeHandler)
+    return ()=>{
+      window.removeEventListener('resize', resizeHandler)
+    }
+  },[ window.innerWidth ])
+
   return (
     <div>
       <Grow in={op}>
@@ -448,21 +463,25 @@ export default function ScoreTable(props) {
         </AppBar>
       </Zoom>
       <Paper className={classes.root}>
-        { userscore &&
-          userscore.filter( d =>{
-            return ( d.classno === matchClass.classno )
-          }).length > 0 ?
-          userscore.filter( d =>{
-            return ( d.classno === matchClass.classno )
-          }).map( ( row, i ) => (
-            <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i} />
-          ))
+        { userscore ?
+          (
+            userscore.filter( d =>{
+              return ( d.classno === matchClass.classno )
+            }).length > 0 ?
+            userscore.filter( d =>{
+              return ( d.classno === matchClass.classno )
+            }).map( ( row, i ) => (
+              <ScoreRow {...props} key={row.userid} row={row} data={data} fieldData={fieldData} index={i} />
+            ))
+            :
+            <Typography component="div" style={{ width: '100%', paddingTop: 24, paddingBottom: 24  }}>
+              <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                { API._getWord(sess && sess.language).No_player }
+              </Box>
+            </Typography>
+          )
           :
-          <Typography component="div" style={{ width: '100%', paddingTop: 24, paddingBottom: 24  }}>
-            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-              { API._getWord(sess && sess.language).No_player }
-            </Box>
-          </Typography>
+          <LDCircular />
         }
       </Paper>
     </div>

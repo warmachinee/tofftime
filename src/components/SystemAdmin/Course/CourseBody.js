@@ -327,7 +327,7 @@ export default function CourseBody(props){
                         src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toString() } />
                       :
                       <img className={classes.image}
-                        src="https://thai-pga.com/default/match/matchcard.png" />
+                        src={`https://${API._webURL()}/default/match/matchcard.png`} />
                       /*<Skeleton className={classes.image} style={{ margin: 0 }} disableAnimate />*/
                     }
                   </ListItemIcon>

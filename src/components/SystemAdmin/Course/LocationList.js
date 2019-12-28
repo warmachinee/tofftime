@@ -182,6 +182,7 @@ export default function LocationList(props){
       }
     }else{
       setSearchField('')
+      handleLoadDefaultField()
     }
   }
 
@@ -351,7 +352,7 @@ function ListField(props){
   const classes = useStyles();
   const {
     API, sess, token, setCSRFToken, isSupportWebp,
-    selectedField, setSelectedField, setSelectedFieldVersion,
+    selectedField, setSelectedField, setSelectedFieldVersion, setSelectedFieldVersionCount,
     data
   } = props
   const [ anchorEl, setAnchorEl ] = React.useState(null);
@@ -369,9 +370,11 @@ function ListField(props){
     if(data.version > 1){
       handleClick(event)
       handleFetchLoadFieldVersion(event)
+      setSelectedFieldVersion(data.version)
     }else{
       setSelectedField(data)
       setSelectedFieldVersion(1)
+      setSelectedFieldVersionCount(1)
     }
   }
 
@@ -379,6 +382,7 @@ function ListField(props){
     handleClose()
     setSelectedField(data)
     setSelectedFieldVersion(d.version)
+    setSelectedFieldVersionCount(fieldVersion.length)
   }
 
   async function handleFetchLoadFieldVersion(event){
@@ -432,7 +436,9 @@ function ListField(props){
         >
           { fieldVersion &&
             fieldVersion.map( d =>
-              <MenuItem key={d.createdate} onClick={()=>selectVersion(d)}>{ API._dateToString(d.createdate) }</MenuItem>
+              <MenuItem key={d.createdate} onClick={()=>selectVersion(d)}>
+                {`Version ${d.version} ( ${ API._dateToString(d.createdate) } )`}
+              </MenuItem>
             )
           }
           <div />

@@ -2,13 +2,19 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import MobileStepper from '@material-ui/core/MobileStepper';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import {
+  MobileStepper,
+  Paper,
+  Typography,
+  Button,
 
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+} from '@material-ui/core';
+
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+
+} from '@material-ui/icons';
 
 const CreateMatchBody = Loadable({
   loader: () => import(/* webpackChunkName: "CreateMatchBody" */'./CreateMatchBody'),
@@ -56,6 +62,7 @@ export default function MatchStepper(props) {
   const [ matchName, setMatchName ] = React.useState('');
   const [ selectedField, setSelectedField ] = React.useState(null);
   const [ selectedFieldVersion, setSelectedFieldVersion ] = React.useState(1);
+  const [ selectedFieldVersionCount, setSelectedFieldVersionCount ] = React.useState(1);
   const [ selectedPrivacy, setSelectedPrivacy ] = React.useState( (sess && sess.creatematch) ? sess.creatematch : 'public');
   const [ selectedMatchType, setSelectedMatchType ] = React.useState('1');
   const [ selectedDate, setSelectedDate ] = React.useState(new Date());
@@ -75,6 +82,7 @@ export default function MatchStepper(props) {
     matchName: matchName,
     selectedField: selectedField,
     selectedFieldVersion: selectedFieldVersion,
+    selectedFieldVersionCount: selectedFieldVersionCount,
     selectedPrivacy: selectedPrivacy,
     selectedMatchType: selectedMatchType,
     selectedDate: selectedDate,
@@ -87,6 +95,7 @@ export default function MatchStepper(props) {
     handleDateChange: handleDateChange,
     handlePicture: handlePicture,
     setSelectedFieldVersion: setSelectedFieldVersion,
+    setSelectedFieldVersionCount: setSelectedFieldVersionCount,
     pageState: pageState,
     setPageState: setPageState,
     handleEditorOnChange: handleEditorOnChange,
@@ -134,6 +143,7 @@ export default function MatchStepper(props) {
   function handleReset() {
     setSelectedField('')
     setSelectedFieldVersion(1)
+    setSelectedFieldVersionCount(1)
     setSelectedPrivacy('public')
     setSelectedMatchType('1')
     setSelectedDate(new Date())

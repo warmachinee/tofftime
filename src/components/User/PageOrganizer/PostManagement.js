@@ -97,9 +97,6 @@ const useStyles = makeStyles(theme => ({
   listDetail: {
     overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
   },
-  greenIcon: {
-    color: primary[600]
-  },
 
 }))
 
@@ -294,63 +291,72 @@ export default function PagePost(props){
         </ListItem>
       </List>
       <List className={classes.listRoot}>
-        { data && !data.status &&
-          data.length > 0 ? /*API._sortArrByDate(data, 'createdate', 'title')*/
-          data.map( d =>{
-            return d &&
-            <React.Fragment key={d.postid}>
-              <ListItem>
-                <ListItemAvatar style={{ marginRight: 16 }}>
-                  {
-                    d.photopath?
-                      <Avatar
-                        alt={d.message.split('<$$split$$>')[0]}
-                        src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
-                        className={classes.bigAvatar} />
-                      :
-                      <img className={classes.bigAvatar}
-                        src="https://thai-pga.com/default/match/matchcard.png" />
-                      /*<ImageIcon className={classes.bigAvatar} />*/
-                  }
-                </ListItemAvatar>
-                <ListItemText className={classes.listDetail}
-                  primary={
-                    <Typography className={classes.name} component="div">
-                      { d.type === 'match' ?
-                        (
-                          d.messagedetail && d.messagedetail.matchname
-                        )
-                        :
-                        d.message.split('<$$split$$>')[0]
+        { data ?
+          ( !('status' in data) &&
+            ( data.length > 0 ? /*API._sortArrByDate(data, 'createdate', 'title')*/
+              data.map( d =>{
+                return d &&
+                <React.Fragment key={d.postid}>
+                  <ListItem>
+                    <ListItemAvatar style={{ marginRight: 16 }}>
+                      {
+                        d.photopath?
+                          <img className={classes.bigAvatar}
+                            alt={d.message.split('<$$split$$>')[0]}
+                            src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()} />
+                          /*
+                          <Avatar
+                            alt={d.message.split('<$$split$$>')[0]}
+                            src={API._getPictureUrl(d.photopath) + ( isSupportWebp? '.webp' : '.jpg' ) + '#' + new Date().toISOString()}
+                            className={classes.bigAvatar} />*/
+                          :
+                          <img className={classes.bigAvatar}
+                            src={`https://${API._webURL()}/default/match/matchcard.png`} />
+                          /*<ImageIcon className={classes.bigAvatar} />*/
                       }
-                    </Typography>
-                  }
-                  secondary={
-                    <Typography variant="subtitle2" color="textSecondary" style={{ textTransform: 'capitalize' }}>
-                      {d.type}
-                    </Typography>
-                  } />
-                <ListItemIcon>
-                  { editing?
-                    <IconButton onClick={()=>handleDeleteItem(d)}>
-                      <DeleteIcon classes={{ root: classes.greenIcon }} />
-                    </IconButton>
-                    :
-                    <IconButton onClick={()=>handleSelectPagePost(d)}>
-                      <CreateIcon />
-                    </IconButton>
-                  }
-                </ListItemIcon>
-              </ListItem>
-              <Divider />
-            </React.Fragment>
-          })
+                    </ListItemAvatar>
+                    <ListItemText className={classes.listDetail}
+                      primary={
+                        <Typography className={classes.name} component="div">
+                          { d.type === 'match' ?
+                            (
+                              d.messagedetail && d.messagedetail.matchname
+                            )
+                            :
+                            d.message.split('<$$split$$>')[0]
+                          }
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography variant="subtitle2" color="textSecondary" style={{ textTransform: 'capitalize' }}>
+                          {d.type}
+                        </Typography>
+                      } />
+                    <ListItemIcon>
+                      { editing?
+                        <IconButton onClick={()=>handleDeleteItem(d)}>
+                          <DeleteIcon />
+                        </IconButton>
+                        :
+                        <IconButton onClick={()=>handleSelectPagePost(d)}>
+                          <CreateIcon />
+                        </IconButton>
+                      }
+                    </ListItemIcon>
+                  </ListItem>
+                  <Divider />
+                </React.Fragment>
+              })
+              :
+              <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
+                <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
+                  { API._getWord(sess && sess.language).No_post }
+                </Box>
+              </Typography>
+            )
+          )
           :
-          <Typography component="div" style={{ width: '100%', marginTop: 48 }}>
-            <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
-              { API._getWord(sess && sess.language).No_post }
-            </Box>
-          </Typography>
+          <LDCircular />
         }
       </List>
       <TemplateDialog maxWidth={selectedTypePost === 'match' ? "md" : "sm"}

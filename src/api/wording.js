@@ -140,22 +140,22 @@ export default function _getWord(lang){
         return 'Please input group name.'
     }
   }()
-  Imperative['Send a request to show this Match on the Toff-time page.'] = function(){
+  Imperative['Send a request to show this Match on the T-off time page.'] = function(){
     switch (lang) {
       case 'TH':
-        return 'ส่งคำขอเพื่อแสดงการแข่งขันนี้ในหน้า Toff-time'
+        return 'ส่งคำขอเพื่อแสดงการแข่งขันนี้ในหน้า T-off time'
         break;
       default:
-        return 'Send a request to show this Match on the Toff-time page.'
+        return 'Send a request to show this Match on the T-off time page.'
     }
   }()
-  Imperative['Send a request to show this Group on the Toff-time page.'] = function(){
+  Imperative['Send a request to show this Group on the T-off time page.'] = function(){
     switch (lang) {
       case 'TH':
-        return 'ส่งคำขอเพื่อแสดงกลุ่มนี้ในหน้า Toff-time'
+        return 'ส่งคำขอเพื่อแสดงกลุ่มนี้ในหน้า T-off time'
         break;
       default:
-        return 'Send a request to show this Group on the Toff-time page.'
+        return 'Send a request to show this Group on the T-off time page.'
     }
   }()
   Imperative['Create the match group.'] = function(){
@@ -327,6 +327,15 @@ export default function _getWord(lang){
   }()
 
   const Action = {
+    Skip: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ข้าม'
+          break;
+        default:
+          return 'Skip'
+      }
+    }(),
     Add: function(){
       switch (lang) {
         case 'TH':
@@ -1252,6 +1261,15 @@ export default function _getWord(lang){
   }()
 
   const Name = {
+    Simulator: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ระบบจำลองคะแนน'
+          break;
+        default:
+          return 'Simulator'
+      }
+    }(),
     Add_about_group: function(){
       switch (lang) {
         case 'TH':
@@ -1873,6 +1891,15 @@ export default function _getWord(lang){
           return 'Admin'
       }
     }(),
+    My_admin_match: function(){
+      switch (lang) {
+        case 'TH':
+          return 'ฉันเป็นผู้ดูแล'
+          break;
+        default:
+          return 'My admin match'
+      }
+    }(),
     View: function(){
       switch (lang) {
         case 'TH':
@@ -2011,10 +2038,10 @@ export default function _getWord(lang){
     Request_mainpage_BTN: function(){
       switch (lang) {
         case 'TH':
-          return 'หน้า Toff-time'
+          return 'หน้า T-off time'
           break;
         default:
-          return 'Toff-time Page'
+          return 'T-off time Page'
       }
     }(),
     Main_menu: function(){
@@ -2074,10 +2101,10 @@ export default function _getWord(lang){
     Auto_generate: function(){
       switch (lang) {
         case 'TH':
-          return 'สร้างอัตโนมัติ'
+          return 'จัดทีมอัตโนมัติ'
           break;
         default:
-          return 'Auto-generate'
+          return 'Auto-generate team'
       }
     }(),
     Flight: function(){

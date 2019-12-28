@@ -121,18 +121,20 @@ export default function OrganizerPostDetail(props){
           <Typography gutterBottom variant="body2" className={classes.lessThan600}>
             {API._dateToString(data.createdate)}
           </Typography>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            { data.photopath &&
-              <img onTouchStart={API._openFullScreen} onClick={API._openFullScreen} className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
-            }
+          <div className="ql-container ql-snow">
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              { data.photopath &&
+                <img onTouchStart={API._openFullScreen} onClick={API._openFullScreen} className={classes.img} src={API._getPictureUrl(data.photopath) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              }
+            </div>
+            <DetailComponent
+              detail={
+                data.type === 'announce' ?
+                ( data.messagedetail && data.messagedetail )
+                :
+                ( data.message && data.message.split('<$$split$$>')[1] )
+              } />
           </div>
-          <DetailComponent
-            detail={
-              data.type === 'announce' ?
-              ( data.messagedetail && data.messagedetail )
-              :
-              ( data.message && data.message.split('<$$split$$>')[1] )
-            } />
         </div>
       }
     </Paper>
@@ -143,10 +145,8 @@ function DetailComponent(props){
   const { detail } = props
 
   return(
-    <div className="ql-container ql-snow">
-      <div className="ql-editor">
-        {ReactHtmlParser(detail)}
-      </div>
+    <div className="ql-editor" style={{ maxHeight: 'none' }}>
+      {ReactHtmlParser(detail)}
     </div>
   );
 }

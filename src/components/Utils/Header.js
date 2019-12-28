@@ -235,7 +235,7 @@ export default function Header(props) {
                     edge="start"
                     className={classes.logo}
                   >
-                    <img src="https://file.thai-pga.com/system/image/logoX2.png" className={classes.logoImg} />
+                    <img src={`https://file.${API._webURL()}/system/image/logoX2.png`} className={classes.logoImg} />
                   </IconButton>
                 </Link>
                 <Typography className={clsx(classes.moreThan500, classes.title)} variant="h6" noWrap>

@@ -101,16 +101,21 @@ export default function NewsDetail(props){
           <Typography gutterBottom variant="body2" className={classes.lessThan600}>
             {API._dateToString(data.createdate)}
           </Typography>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            {
-              data.picture &&
-                <img onTouchStart={API._openFullScreen} onClick={API._openFullScreen} className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
-            }
-          </div>
-          <Typography variant="h5">
+          <Typography variant="h6" className={classes.moreThan600}>
             {data.subtitle}
           </Typography>
-          <DetailComponent detail={data.newsdetail} />
+          <Typography variant="body2" className={classes.lessThan600}>
+            {data.subtitle}
+          </Typography>
+          <div className="ql-container ql-snow">
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              {
+                data.picture &&
+                  <img onTouchStart={API._openFullScreen} onClick={API._openFullScreen} className={classes.img} src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
+              }
+            </div>
+            <DetailComponent detail={data.newsdetail} />
+          </div>
         </div>
       }
     </Paper>
@@ -121,10 +126,8 @@ function DetailComponent(props){
   const { detail } = props
 
   return(
-    <div className="ql-container ql-snow">
-      <div className="ql-editor">
-        {ReactHtmlParser(detail)}
-      </div>
+    <div className="ql-editor" style={{ maxHeight: 'none' }}>
+      {ReactHtmlParser(detail)}
     </div>
   );
 }

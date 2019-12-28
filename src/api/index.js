@@ -41,7 +41,9 @@ const urlLink = {
   logout: _getWebURL() + '/session/logout',
   forgotpassword: _getWebURL() + '/users/forgotpassword',
   loadusersystem: _getWebURL() + '/users/loadusersystem',
-  uusersystem: _getWebURL() + '/users/usersystem',
+  tutorial: _getWebURL() + '/users/tutorial',
+  loadsimulator: _getWebURL() + '/users/loadsimulator',
+  simulatorsystem: _getWebURL() + '/users/simulatorsystem',
   //--------------------Admin--------------------
   load_error: _getWebURL() + '/admin/load_error',
   report_error: _getWebURL() + '/admin/report_error',

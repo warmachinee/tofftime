@@ -40,6 +40,11 @@ const NotificationsDialog = Loadable({
   loading: () => null
 });
 
+const UserTutorial = Loadable({
+  loader: () => import(/* webpackChunkName: "UserTutorial" */ './../components/Tutorial/UserTutorial'),
+  loading: () => null
+});
+
 const CreatePage = Loadable({
   loader: () => import(/* webpackChunkName: "CreatePage" */ './../components/User/Panel/CreatePage'),
   loading: () => null
@@ -106,6 +111,23 @@ const RouteManagement = Loadable.Map({
   loading: () => null
 });
 
+const RouteSimulator = Loadable.Map({
+  loader: {
+    Simulator: () => import(/* webpackChunkName: "Simulator" */'./../components/Simulator/Simulator'),
+  },
+  render(loaded, props) {
+    let Component = loaded.Simulator.default;
+    return (
+      <Route
+        {...props}
+        render={()=> (
+          <Component {...props} />
+        )} />
+    )
+  },
+  loading: () => null
+});
+
 const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
@@ -145,6 +167,9 @@ export default function UserPage(props) {
   const [ addFriendState, setAddFriendState ] = React.useState(false);
   const [ notiState, setNotiState ] = React.useState(false);
   const [ notiData, setNotiData ] = React.useState(null);
+  const [ dialog, setDialog ] = React.useState({
+    loginFirst: false
+  })
 
   const passingProps = {
     API: props.API,
@@ -179,6 +204,20 @@ export default function UserPage(props) {
     notiState: notiState,
     toggleNoti: toggleNoti,
 
+  }
+
+  function dialogOpen(type){
+    setDialog({ ...dialog, [type]: true })
+  }
+
+  function dialogClose(type){
+    setDialog({ ...dialog, [type]: false })
+  }
+
+  function dialogCloseAll(){
+    setDialog({
+      loginFirst: false
+    })
   }
 
   function toggleAddFriend(){
@@ -250,6 +289,7 @@ export default function UserPage(props) {
       window.location.pathname = '/system_admin'
     }
     window.scrollTo(0, 0)
+    setDialog({ ...dialog, loginFirst: sess && sess.loginfirst === 1 })
   },[ sess, props.location ])
 
   React.useEffect(()=>{
@@ -285,6 +325,8 @@ export default function UserPage(props) {
           <RouteTimeline path="/user/timeline/:userid"
             {...passingProps} location={props.location} />
         }
+        <RouteSimulator path={`/user/simulator`}
+          {...passingProps} {...dialogProps} />
         <RouteManagement path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/management`}
           {...passingProps} {...dialogProps} location={props.location} />
 
@@ -297,6 +339,7 @@ export default function UserPage(props) {
         <Route path={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/upcoming`}
           render={()=> <UpcomingList {...props} {...dialogProps} />} />
       </main>
+      <UserTutorial {...props} open={dialog.loginFirst} handleClose={dialogCloseAll} />
       <NotificationsDialog
         {...props}
         {...dialogProps}

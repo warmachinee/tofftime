@@ -334,7 +334,7 @@ export default function MBReward(props){
   const [ matchDetail, setMatchDetail ] = React.useState(null)
   const [ value, setValue ] = React.useState(0);
   const [ editing, setEditing ] = React.useState(false);
-  const [ rewardEdit, setRewardEdit ] = React.useState([]);
+  const [ rewardEdit, setRewardEdit ] = React.useState(0);
   const [ mainClassSelected, setMainClassSelected ] = React.useState('1')
 
   function getRewardStatus(status){
@@ -352,7 +352,7 @@ export default function MBReward(props){
   }
 
   function handleRewardChange(d) {
-    if(d === ''){
+    if(d < 0){
       setRewardEdit(0)
     }else{
       setRewardEdit(d)
@@ -391,14 +391,12 @@ export default function MBReward(props){
 
   async function handleEdit(){
     let classno = []
-    let customsequence = []
     if(
       matchDetail.mainclass &&  matchDetail.mainclass.length > 0 &&
       matchDetail.mainclass[parseInt(mainClassSelected) - 1].values.length > 0
     ){
       classno.push(matchDetail.mainclass[parseInt(mainClassSelected) - 1].values[value].classno)
     }
-    customsequence.push(parseInt(rewardEdit))
     if(matchid){
       const resToken = token? token : await API._xhrGet('getcsrf')
       await API._xhrPost(
@@ -407,7 +405,7 @@ export default function MBReward(props){
           action: 'edit',
           matchid: matchid,
           classno: classno,
-          customsequence: customsequence,
+          customsequence: [parseInt(rewardEdit)],
           mainclass: parseInt(mainClassSelected)
       }, (csrf, d) =>{
         setCSRFToken(csrf)
@@ -417,6 +415,7 @@ export default function MBReward(props){
           variant: /success/.test(d.status) ? 'success' : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
+        setEditing(false)
         try {
           handleFetch()
         }catch(err) { console.log(err.message) }
@@ -446,6 +445,7 @@ export default function MBReward(props){
           variant: /success/.test(d.status) ? 'success' : 'error',
           autoHideDuration: /success/.test(d.status)? 2000 : 5000
         })
+        setEditing(false)
         try {
           handleFetch()
         }catch(err) { console.log(err.message) }
@@ -601,7 +601,7 @@ export default function MBReward(props){
             { isAvailableEditing &&
               <React.Fragment>
                 <div style={{ display: 'flex', height: 56, marginBottom: 16, marginTop: 16 }}>
-                  { data && data.status &&
+                  { data && ( 'status' in data ) &&
                     <RedButton className={classes.buttonMargin}
                       style={{ marginRight: 8, paddingLeft: 12, paddingRight: 12 }}
                       onClick={handleCreate}>
@@ -612,6 +612,7 @@ export default function MBReward(props){
                     <React.Fragment>
                       <ThemeProvider theme={theme}>
                         <TextField
+                          value={rewardEdit || ''}
                           onChange={e =>handleRewardChange(e.target.value)}
                           onFocus={e => e.target.select()}
                           onKeyPress={e =>handleRewardKeyPress(e)}
@@ -625,7 +626,7 @@ export default function MBReward(props){
                     </GreenButton>
                     </React.Fragment>
                   }
-                  { data && !/not create/.test(data.status) &&
+                  { data && !/not create/.test(data.status) && !editing &&
                     <GreenTextButton className={classes.buttonMargin} style={{ marginRight: 8 }} color='primary' onClick={handleReset}>
                       { API._getWord(sess && sess.language).Reset }
                     </GreenTextButton>
@@ -638,7 +639,7 @@ export default function MBReward(props){
                       { API._getWord(sess && sess.language).Done }
                     </GreenTextButton>
                   }
-                  { !editing &&
+                  { !editing && data && !( 'status' in data ) &&
                     <GreenButton
                       className={classes.buttonMargin} color='primary' onClick={()=>setEditing(!editing)}>
                       { API._getWord(sess && sess.language).Edit }

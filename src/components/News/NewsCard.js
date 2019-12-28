@@ -85,13 +85,13 @@ export default function NewsCard(props) {
               src={API._getPictureUrl(data.picture) + ( isSupportWebp? '.webp' : '.jpg' )} />
             :
             <img className={classes.image}
-              src="https://thai-pga.com/default/match/matchcard.png" />
+              src={`https://${API._webURL()}/default/match/matchcard.png`} />
           }
         </BTN.NoStyleLink>
         :
         /*<Skeleton disableAnimate className={classes.image} style={{ margin: 0, cursor: 'auto' }} />*/
         <img className={classes.image}
-          src="https://thai-pga.com/default/match/matchcard.png" />
+          src={`https://${API._webURL()}/default/match/matchcard.png`} />
       }
       { ( !loading && data ) ?
         <Box className={classes.box}>
@@ -100,7 +100,7 @@ export default function NewsCard(props) {
               <div style={{ display: 'flex' }}>
                 <div className={classes.imageGrid}>
                   <Avatar className={classes.avatarImage}
-                    src="https://file.thai-pga.com/system/image/logoX2.png" />
+                    src={`https://file.${API._webURL()}/system/image/logoX2.png`} />
                 </div>
                 <div style={{ marginBottom: 'auto', marginTop: 'auto' }}>
                   <Typography variant="body1" className={classes.title}>
@@ -111,10 +111,10 @@ export default function NewsCard(props) {
                   </Typography>
                 </div>
               </div>
-              <Typography gutterBottom variant="body1" className={classes.title}>
+              <Typography gutterBottom variant="body1" className={classes.title} style={{ height: 44 }}>
                 {data.title}
               </Typography>
-              <Typography variant="body2" color="textSecondary" className={classes.title}>
+              <Typography variant="body2" color="textSecondary" className={classes.title} style={{ height: 38 }}>
                 {data.subtitle}
               </Typography>
             </div>

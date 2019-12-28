@@ -747,7 +747,7 @@ export default function MatchEditor(props){
           disableTouchListener
           title={
             <Typography>
-              { API._getWord(sess && sess.language)['Send a request to show this Match on the Toff-time page.'] }
+              { API._getWord(sess && sess.language)['Send a request to show this Match on the T-off time page.'] }
             </Typography>
           }>
           <IconButton onClick={handleClickHelpState}>
@@ -917,7 +917,7 @@ export default function MatchEditor(props){
             onClose={dialogCloseAll}
             icon={{ width: 96, height: 96 }}
             iconColor={primary[600]}
-            title={API._getWord(sess && sess.language)['Send a request to show this Match on the Toff-time page.']}
+            title={API._getWord(sess && sess.language)['Send a request to show this Match on the T-off time page.']}
             content={
               data &&
               <Typography variant="h6" align="center">{data.title}</Typography>

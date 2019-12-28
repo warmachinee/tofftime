@@ -166,14 +166,14 @@ export default function SignInComponent(props){
         <Facebook variant="contained" color="primary" className={classes.button}
           onClick={()=>window.location.pathname = '/session/auth/facebook'}>
           <img
-            src={ (window.innerWidth >= 500)? "https://file.thai-pga.com/system/image/facebook.png" : "https://file.thai-pga.com/system/image/facebook16px.png"}
+            src={ (window.innerWidth >= 500)? `https://file.${API._webURL()}/system/image/facebook.png` : `https://file.${API._webURL()}/system/image/facebook16px.png`}
             className={classes.loginWith} />
           Sign in with Facebook
         </Facebook>
         <Google variant="contained" color="primary" className={classes.button}
           onClick={()=>window.location.pathname = '/session/auth/google'}>
           <img
-            src={ (window.innerWidth >= 500)? "https://file.thai-pga.com/system/image/google.png" : "https://file.thai-pga.com/system/image/google16px.png"} className={classes.loginWith} />
+            src={ (window.innerWidth >= 500)? `https://file.${API._webURL()}/system/image/google.png` : `https://file.${API._webURL()}/system/image/google16px.png`} className={classes.loginWith} />
           Sign in with Google
         </Google>
         <div style={{ display: 'flex' }}>

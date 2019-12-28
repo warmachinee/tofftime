@@ -48,11 +48,6 @@ const TemplateDialog = Loadable({
   loading: () => <LDCircular />
 });
 
-const AddPlayerModal = Loadable({
-  loader: () => import(/* webpackChunkName: "AddPlayerModal" */'./AddPlayerModal'),
-  loading: () => <LDCircular />
-});
-
 const EditDisplayModal= Loadable({
   loader: () => import(/* webpackChunkName: "EditDisplayModal" */'./EditDisplayModal'),
   loading: () => <LDCircular />
@@ -224,7 +219,6 @@ export default function MBPlayer(props){
   const [ editing, setEditing ] = React.useState(false);
   const [ editingClass, setEditingClass ] = React.useState(false);
   const [ editingDisplay, setEditingDisplay ] = React.useState(false);
-  const [ open, setOpen ] = React.useState(false);
   const [ displayModal, setDisplayModal ] = React.useState(false);
   const [ data, setData ] = React.useState(null)
   const [ matchDetail, setMatchDetail ] = React.useState(null)
@@ -279,14 +273,6 @@ export default function MBPlayer(props){
       }
     }
   }
-
-  function handleOpen(){
-    setOpen(true);
-  };
-
-  function handleClose(){
-    setOpen(false);
-  };
 
   function handleDisplayModalOpen(){
     setDisplayModal(true);
@@ -609,13 +595,6 @@ export default function MBPlayer(props){
         <React.Fragment>
           <List className={classes.listRoot}>
             <ListItem className={classes.controls}>
-              { sess && sess.typeid === 'admin' &&
-                <Button className={classes.addPlayerButton} variant="contained"
-                  onClick={handleOpen}>
-                  <AddCircleIcon style={{ marginRight: 8, marginLeft: 12 }} />
-                  Add player
-                </Button>
-              }
               <div style={{ flex: 1 }} />
               { isAvailableEditing &&
                 <div
@@ -1170,11 +1149,6 @@ export default function MBPlayer(props){
           </Menu>
         </React.Fragment>
       }
-      <TemplateDialog open={open} handleClose={handleClose}>
-        <AddPlayerModal
-          {...props}
-          playerAction="add" />
-      </TemplateDialog>
       <TemplateDialog open={displayModal} handleClose={handleDisplayModalClose}>
         { selectedPlayer &&
           <EditDisplayModal

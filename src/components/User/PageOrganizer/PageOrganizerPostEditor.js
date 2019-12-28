@@ -527,7 +527,7 @@ export default function PageOrganizerPostEditor(props) {
                 return ( selectedMatch === null )
                 break;
               case 'announce':
-                return ( title === '' || selectedFile === null )
+                return ( title === '' || tempFile === null )
                 break;
               default:
                 return ( title === '' )

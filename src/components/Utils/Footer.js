@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import * as API from './../../api'
 import * as COLOR from './../../api/palette'
 
 import {
@@ -91,7 +92,7 @@ export default function Footer(props) {
   <div>
     <div style={{ marginTop: 24, color: 'white', fontSize: 18, fontWeight: 600 }}>Support</div>
     <div style={{ marginTop: 24 }}>
-      <a href="http://thai-pga.com/system/manual/TestPDF.pdf"
+      <a href={`http://${API._webURL()}/system/manual/TestPDF.pdf`}
         target = "_blank"
         style={{ color: 'white', fontWeight: 600 }}>{'Guide.pdf'}</a>
     </div>
@@ -112,7 +113,7 @@ export default function Footer(props) {
   return (
     <footer className={classes.root}>
       <img className={classes.backgroundImage}
-        src="https://file.thai-pga.com/system/image/footer.jpg" />
+        src={`https://file.${API._webURL()}/system/image/footer.jpg`} />
       <div className={classes.grid}>
         <div className={classes.category}>
           <div className={classes.categoryBox}>
@@ -136,7 +137,7 @@ export default function Footer(props) {
               className={classes.title}
               classes={{ root: classes.whiteText }}>Help</Typography>
             <LinkMaterial
-              href="https://file.thai-pga.com/system/manual/guide.pdf"
+              href={`https://file.${API._webURL()}/system/manual/guide.pdf`}
               target = "_blank"
               variant="body1"
               className={classes.subtitle}>

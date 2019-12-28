@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from "react-router-dom";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import * as API from './../../api'
 import { primary } from './../../api/palette'
@@ -198,7 +199,7 @@ export default function Scoreboard(props) {
 
   function handleSelectMainClass(e){
     setValue(0)
-    setMainClassSelected(e.target.value)
+    //setMainClassSelected(e.target.value)
   }
 
   return (
@@ -207,14 +208,17 @@ export default function Scoreboard(props) {
         <div style={{ display: 'flex' }}>
           { data.scorematch !== 0 && data.mainclass.length > 1 &&
             <FormControl className={classes.formControl} style={{ maxWidth: '50%' }}>
-              <InputLabel>Main Group</InputLabel>
+              <InputLabel>{ API._getWord(sess && sess.language).Main_group }</InputLabel>
               <Select
                 value={mainClassSelected}
                 onChange={e => handleSelectMainClass(e)}>
                 { data &&
                   data.mainclass.map( (d, i) =>
                     <MenuItem key={d.mainclass} value={d.mainclass.toString()}>
-                      {d.mainclassname} ({d.type})
+                      <Link style={{ textDecoration: 'none', color: 'inherit' }}
+                        to={`${window.location.pathname}#${d.mainclass}`}>
+                        {d.mainclassname} ({d.type})
+                      </Link>
                     </MenuItem>
                 )}
               </Select>

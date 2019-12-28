@@ -13,6 +13,8 @@ const SomthingWrongPage = Loadable({
   loading: () => <LDCircular />
 });
 
+import Simulator from './components/Simulator/Simulator'
+
 class RenderApp extends React.Component {
   constructor(props) {
     super(props);
@@ -43,7 +45,7 @@ class RenderApp extends React.Component {
 
     return (
       <Router>
-        <App />
+        {/localhost/.test(window.location.href) ? <Simulator /> : <App />}
       </Router>
     );
   }

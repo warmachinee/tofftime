@@ -123,7 +123,7 @@ function DetailComponent(props){
 
   return(
     <div id={id} className="ql-container ql-snow" style={{ border: 'none' }}>
-      <div className="ql-editor" style={{ overflow: 'hidden', height: 'auto', padding: '2px 15px 0 15px' }}>
+      <div className="ql-editor" style={{ overflow: 'hidden', maxHeight: 'none', height: 'auto', padding: '2px 15px 0 15px' }}>
         {ReactHtmlParser(detail)}
       </div>
     </div>

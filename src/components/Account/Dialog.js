@@ -134,6 +134,11 @@ export default function Dialog(props) {
     }, (csrf, d) =>{
       setCSRFToken(csrf)
       handleSess(d)
+      if(d.typeid === 'admin'){
+        window.location.replace('/system_admin');
+      }else{
+        window.location.replace('/user');
+      }
     })
   }
 
@@ -223,7 +228,7 @@ export default function Dialog(props) {
             </IconButton>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               { window.innerHeight >= 600 &&
-                <Avatar className={classes.logo} src="https://file.thai-pga.com/system/image/logoX2.png" />
+                <Avatar className={classes.logo} src={`https://file.${API._webURL()}/system/image/logoX2.png`} />
                 /*<AccountCircleIcon classes={{ root: classes.accountCircle }} />*/
               }
             </div>

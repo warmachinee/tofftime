@@ -603,7 +603,7 @@ export default function Profile(props) {
             { editing ?
               <FormControl component="fieldset" className={classes.margin}
                 style={{
-                  width: '100%', border: '1px rgba(0, 0, 0, 0.23) solid',
+                  border: '1px rgba(0, 0, 0, 0.23) solid',
                   padding: '4px 16px 8px 24px',
                   borderRadius: 4, boxSizing: 'border-box'
                 }}>
@@ -766,9 +766,9 @@ export default function Profile(props) {
               </List>
             }
 
-            <div style={{ display: 'flex', marginTop: 36, justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', ...( !editing && {marginTop: 36}) }}>
               { editing &&
-                <BTN.Primary style={{ padding: '8px 36px'}} onClick={handleSave}>
+                <BTN.Primary style={{ margin: '0 16px 16px 0', padding: '8px 36px'}} onClick={handleSave}>
                   { API._getWord(sess && sess.language).Save }
                 </BTN.Primary>
               }
