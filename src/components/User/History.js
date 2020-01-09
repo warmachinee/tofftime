@@ -481,6 +481,13 @@ export default function History(props) {
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={16} m={1}>
                 { API._getWord(sess && sess.language)['Please join or create match'] }
               </Box>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`}>
+                  <BTN.PrimaryOutlined>
+                    { API._getWord(sess && sess.language).Create_Match }
+                  </BTN.PrimaryOutlined>
+                </BTN.NoStyleLink>
+              </div>
             </Typography>
           )
           :

@@ -415,9 +415,13 @@ function ListSpecialReward(props){
                     { !( data.scorematch === 1 || scoringMethod === 'stroke' ) &&
                       <React.Fragment>
                         <Chip variant="outlined" style={{ marginRight: 12 }}
-                          label={`${sortBy === 'net' ? 'NET' : 'SF'} | ${sortBy === 'net' ? row.net36sys : row.sf36sys}`} />
+                          label={`${sortBy === 'net' ? 'NET' : 'SF'} | ${
+                            sortBy === 'net' ? row[booby ? 'net' : 'net36sys'] : row[booby ? 'sf' : 'sf36sys']
+                          }`} />
                         <Chip variant="outlined" style={{ marginRight: 12 }}
-                          label={`${sortBy === 'net' ? 'SF' : 'NET'} | ${sortBy === 'net' ? row.sf36sys : row.net36sys}`} />
+                          label={`${sortBy === 'net' ? 'SF' : 'NET'} | ${
+                            sortBy === 'net' ? row[booby ? 'sf' : 'sf36sys'] : row[booby ? 'net' : 'net36sys']
+                          }`} />
                       </React.Fragment>
                     }
                   </div>
@@ -820,14 +824,14 @@ export default function MatchDetailBody(props) {
                 { ((data.lowgross === 1 && data.reward.lowgross === 1) || (data.reward.lownet === 1&& data.reward.lownet)) &&
                   <Divider />
                 }
-                { data.lowgross === 1 && data.reward.lowgross &&
+                { data.lowgross === 1 && data.reward.lowgross && !/no score/.test(data.reward.lowgross) &&
                   <ListSpecialReward
                     {...props}
                     label={ API._getWord(sess && sess.language).Lowgross }
                     row={data.reward.lowgross}
                     data={data} />
                 }
-                { data.lownet === 1 && data.reward.lownet &&
+                { data.lownet === 1 && data.reward.lownet && !/no score/.test(data.reward.lownet) &&
                   <ListSpecialReward
                     {...props}
                     label={ API._getWord(sess && sess.language).Lownet }

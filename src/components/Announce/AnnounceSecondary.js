@@ -8,6 +8,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 const useStyles = makeStyles(theme => ({
   root: {
+    overflow: 'hidden',
     position: 'relative',
     width: '100%',
     display: 'flex',
@@ -37,7 +38,6 @@ const useStyles = makeStyles(theme => ({
   },
   item: {
     height: '100%',
-    width: '100%',
     color: 'black',
     display: 'block',
     backgroundColor: grey[300],
@@ -55,6 +55,7 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up(900)]: {
       height: window.innerWidth * .3,
       maxHeight: (450 - 24)/2,
+      width: '100%'
     },
   },
   label: {
@@ -113,7 +114,7 @@ export default function AnnounceSecondary(props) {
       window.removeEventListener('resize', resizeHandler)
     }
   },[ window.innerWidth ])
-  
+
   return (
     <div className={classes.root}>
       { ( data && data.length > 0 ) ?

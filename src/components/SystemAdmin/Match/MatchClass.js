@@ -537,11 +537,9 @@ export default function MatchClass(props) {
           lists.map( (d, i) =>{
             return (
               <ListItem key={i}>
-                { data.scorematch !== 0 &&
-                  <ListItemIcon>
-                    <ListColorSelector disabled index={i} />
-                  </ListItemIcon>
-                }
+                <ListItemIcon>
+                  <ListColorSelector disabled index={i} />
+                </ListItemIcon>
                 { ( data.scorematch === 0 || matchClass.type === 'flight' ) &&
                   <ListItemText
                     style={{ width: 100, flex: 'none' }}
@@ -605,9 +603,7 @@ export default function MatchClass(props) {
               {arrEdit.map( (d, i) =>{
                   return (
                     <ListItem key={i}>
-                      { data.scorematch !== 0 &&
-                        <ListColorSelector index={i} />
-                      }
+                      <ListColorSelector index={i} />
                       <ThemeProvider theme={theme}>
                         <TextField
                           fullWidth

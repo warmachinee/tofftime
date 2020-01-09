@@ -283,7 +283,10 @@ export default function Schedule(props) {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   { data &&
-                    <SchedulePDF {...props} data={data} matchDetail={matchDetail} />
+                    <SchedulePDF {...props} data={data} matchDetail={{
+                        ...matchDetail,
+                        matchid: parseInt(props.computedMatch.params.matchid)
+                      }} />
                   }
                 </div>
                 <List disablePadding style={{ marginTop: 16 }}>

@@ -16,6 +16,7 @@ import {
 
 import {
   AccountCircle,
+  Close as CloseIcon,
 
 } from '@material-ui/icons';
 
@@ -69,7 +70,12 @@ export default function UserOverview(props) {
       open={Boolean(anchorEl)}
       onClose={handleClose}
     >
-      <div style={{ padding: 16, width: 250 }}>
+      <div style={{ padding: '0 16px 16px 16px', width: 250 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <IconButton onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </div>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <BTN.NoStyleLink to={`/user/timeline/${data.userid}`}>
             <IconButton style={{ padding: 4 }} onClick={handleDoneAndClose}>
@@ -93,9 +99,11 @@ export default function UserOverview(props) {
           </Button>
         </BTN.NoStyleLink>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
-          <BTN.PrimaryText style={{ padding: 4, width: '100%' }} onClick={handleClose}>
-            { API._getWord(sess && sess.language).Cancel }
-          </BTN.PrimaryText>
+          {/*
+            <BTN.PrimaryText style={{ padding: 4, width: '100%' }} onClick={handleClose}>
+              { API._getWord(sess && sess.language).Cancel }
+            </BTN.PrimaryText>*/
+          }
           <BTN.Primary style={{ padding: 4, width: '100%' }}
             onClick={()=>
               data.status === 'pending' ? handleFriendClick(data.userid, 'un') :

@@ -121,14 +121,21 @@ export default function Upcoming(props) {
           ( data.length > 0 ?
             API.sortReverseArrByDate(data, 'matchdate').slice(0, cardLimit).map( d => <MatchCard key={d.matchid} data={d} setData={setData} {...props} />)
             :
-            <Paper component="div" style={{ width: '100%', padding: 12, boxSizing: 'border-box' }}>
+            <Typography component="div" style={{ width: '100%', padding: 12, boxSizing: 'border-box' }}>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={24} m={1}>
                 { API._getWord(sess && sess.language).No_match }
               </Box>
               <Box style={{ textAlign: 'center', color: primary[900] }} fontWeight={500} fontSize={16} m={1}>
                 { API._getWord(sess && sess.language)['Please join or create match'] }
               </Box>
-            </Paper>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <BTN.NoStyleLink to={`/${ pageOrganizer ? `organizer/${pageData.pageid}` : 'user' }/create_match`}>
+                  <BTN.PrimaryOutlined>
+                    { API._getWord(sess && sess.language).Create_Match }
+                  </BTN.PrimaryOutlined>
+                </BTN.NoStyleLink>
+              </div>
+            </Typography>
           )
           :
           Array.from(new Array(2)).map((d, i) => <MatchCard key={i} {...props} />)
